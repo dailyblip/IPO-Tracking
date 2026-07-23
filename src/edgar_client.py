@@ -1,0 +1,174 @@
+"""
+edgar_client.py
+
+Discovers newly filed 424B4 (final IPO prospectus) filings on SEC EDGAR,
+filters out non-US filers and SPACs, and locates the matching S-1/S-1A
+for the same company so the original filing-range price can be captured
+alongside the final offering price.
+
+Requires SEC_EDGAR_USER_AGENT to be set as an environment variable -
+SEC requires a descriptive User-Agent with a real contact email on
+every request (e.g. "YourName your@email.com"), and will rate-limit or
+block requests that don't provide one.
+"""
+
+import os
+import time
+import requests
+
+EDGAR_FULL_TEXT_SEARCH_URL = "https://efts.sec.gov/LATEST/search-index"
+EDGAR_SUBMISSIONS_URL = "https://data.sec.gov/submissions/CIK{cik}.json"
+EDGAR_ARCHIVES_BASE = "https://www.sec.gov/Archives/edgar/data"
+
+REQUEST_DELAY_SECONDS = 0.15  # keeps us under SEC's ~10 req/sec limit
+
+# Heuristic phrases that show up on SPAC cover pages / Item 1 text.
+# Anything matching gets flagged for manual review rather than silently
+# dropped, since this is a heuristic, not a guarantee.
+SPAC_INDICATOR_PHRASES = [
+    "blank check company",
+    "special purpose acquisition",
+    "business combination with one or more businesses",
+]
+
+
+class EdgarClientError(Exception):
+    pass
+
+
+def _get_headers() -> dict:
+    user_agent = os.environ.get("SEC_EDGAR_USER_AGENT")
+    if not user_agent:
+        raise EdgarClientError(
+            "SEC_EDGAR_USER_AGENT environment variable is not set. "
+            "SEC requires a descriptive User-Agent with a contact email, "
+            "e.g. 'YourName your@email.com'."
+        )
+    return {"User-Agent": user_agent}
+
+
+def find_recent_424b4_filings(days_back: int = 1) -> list:
+    """
+    Search EDGAR full-text search for 424B4 filings filed in the last
+    `days_back` days. Returns a list of dicts with basic filing metadata
+    (company name, CIK, accession number, filing date, document URL).
+    """
+    headers = _get_headers()
+    params = {
+        "forms": "424B4",
+        "dateRange": "custom",
+        "startdt": _date_days_ago(days_back),
+        "enddt": _today(),
+    }
+
+    response = requests.get(
+        EDGAR_FULL_TEXT_SEARCH_URL, headers=headers, params=params, timeout=15
+    )
+    response.raise_for_status()
+    data = response.json()
+
+    results = []
+    for hit in data.get("hits", {}).get("hits", []):
+        source = hit.get("_source", {})
+        cik = source.get("ciks", [None])[0]
+        accession_no = hit.get("_id", "").split(":")[0]
+        results.append({
+            "company_name": source.get("display_names", ["Unknown"])[0],
+            "cik": cik,
+            "accession_no": accession_no,
+            "filing_date": source.get("file_date"),
+            "form_type": source.get("root_form"),
+        })
+        time.sleep(REQUEST_DELAY_SECONDS)
+
+    return results
+
+
+def is_us_based(cik: str) -> bool:
+    """
+    Check the filer's business address state/country via the EDGAR
+    submissions API. Returns True if the filer's address country is US
+    (or blank, which EDGAR uses for US addresses in some older filings).
+    """
+    headers = _get_headers()
+    padded_cik = str(cik).zfill(10)
+    url = EDGAR_SUBMISSIONS_URL.format(cik=padded_cik)
+
+    response = requests.get(url, headers=headers, timeout=15)
+    response.raise_for_status()
+    data = response.json()
+    time.sleep(REQUEST_DELAY_SECONDS)
+
+    address = data.get("addresses", {}).get("business", {})
+    country = (address.get("countryOfIncorporation") or address.get("country") or "").strip()
+    return country in ("", "US")
+
+
+def check_spac_indicators(filing_text: str) -> bool:
+    """
+    Heuristic check for SPAC language in the filing's cover page / Item 1
+    text. Returns True if any indicator phrase is found. This is a
+    heuristic, not a guarantee - treat a True result as "flag for manual
+    review," not an automatic exclusion, since legitimate operating
+    companies occasionally reference "business combination" in unrelated
+    contexts (e.g. describing a past acquisition).
+    """
+    lowered = filing_text.lower()
+    return any(phrase in lowered for phrase in SPAC_INDICATOR_PHRASES)
+
+
+def find_matching_s1(cik: str) -> dict:
+    """
+    Find the most recent S-1 or S-1/A filed by the same CIK prior to the
+    424B4, to capture the original filing-range price. Returns filing
+    metadata, or an empty dict if none is found.
+    """
+    headers = _get_headers()
+    padded_cik = str(cik).zfill(10)
+    url = EDGAR_SUBMISSIONS_URL.format(cik=padded_cik)
+
+    response = requests.get(url, headers=headers, timeout=15)
+    response.raise_for_status()
+    data = response.json()
+    time.sleep(REQUEST_DELAY_SECONDS)
+
+    recent = data.get("filings", {}).get("recent", {})
+    forms = recent.get("form", [])
+    accession_numbers = recent.get("accessionNumber", [])
+    filing_dates = recent.get("filingDate", [])
+
+    for form, accession_no, filing_date in zip(forms, accession_numbers, filing_dates):
+        if form in ("S-1", "S-1/A"):
+            return {
+                "form_type": form,
+                "accession_no": accession_no,
+                "filing_date": filing_date,
+            }
+
+    return {}
+
+
+def build_filing_index_url(cik: str, accession_no: str) -> str:
+    """Build the URL to the filing's index page, which lists its documents."""
+    clean_accession = accession_no.replace("-", "")
+    return f"{EDGAR_ARCHIVES_BASE}/{int(cik)}/{clean_accession}/"
+
+
+def _today() -> str:
+    from datetime import date
+    return date.today().isoformat()
+
+
+def _date_days_ago(days: int) -> str:
+    from datetime import date, timedelta
+    return (date.today() - timedelta(days=days)).isoformat()
+
+
+if __name__ == "__main__":
+    # Quick manual test: python edgar_client.py [days_back]
+    import sys
+    import json
+
+    days = int(sys.argv[1]) if len(sys.argv) > 1 else 1
+    filings = find_recent_424b4_filings(days_back=days)
+    print(json.dumps(filings, indent=2))
