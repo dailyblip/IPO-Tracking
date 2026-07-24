@@ -170,7 +170,9 @@ def run(days_back: int = DEFAULT_LOOKBACK_DAYS):
         all_rows.extend(rows)
 
     if not all_rows:
-        print("[main] No rows produced this run. Nothing to write.")
+        print("[main] No rows produced this run. Ensuring Sheet tabs/headers exist...")
+        sheets_writer.ensure_tabs_exist(spreadsheet_id)
+        print("[main] Done. No data to write this run.")
         return
 
     print(f"[main] Fetching previous run's data for QC comparison...")
