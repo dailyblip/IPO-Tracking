@@ -85,7 +85,14 @@ def process_filing(filing_meta: dict) -> list:
             except Exception as e:
                 print(f"[main] Warning: could not parse S-1 for {company_name}: {e}")
 
-        current_price = price_lookup.get_current_price(ticker) if ticker else None
+        current_price = None
+        if ticker:
+            try:
+                current_price = price_lookup.get_current_price(ticker)
+            except price_lookup.PriceLookupError as e:
+                print(f"[main] Warning: could not get current price for {ticker}: {e}")
+                # Continue anyway - qc_review.py will flag the missing
+                # price rather than losing this filing's rows entirely.
         lockup = parsed.get("lockup_info", {})
         bios = parsed.get("management_bios", {})
 
