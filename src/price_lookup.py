@@ -9,7 +9,7 @@ import os
 import time
 import requests
 
-FINNHUB_BASE_URL = "https://finnhub.io/api/v2"
+FINNHUB_BASE_URL = "https://finnhub.io/api/v1"
 MAX_RETRIES = 3
 RETRY_BACKOFF_SECONDS = 2
 
