@@ -240,15 +240,50 @@
   }
   .entry.open .entry-body { display: block; }
 
+  .detail-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    padding: 14px 20px;
+    background: var(--surface-raised);
+    border-bottom: 1px solid var(--border);
+  }
+  .detail-strip .detail-item { display: flex; flex-direction: column; gap: 3px; }
+  .detail-strip .detail-label {
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 10px;
+  }
+  .detail-strip .detail-value {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .holder-header {
+    display: grid;
+    grid-template-columns: 26px 1.4fr 1fr 1fr 0.9fr 1.3fr;
+    gap: 12px;
+    padding: 9px 20px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-faint);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-raised);
+  }
+
   .holder-row {
     display: grid;
-    grid-template-columns: 1.6fr 1fr 1fr 0.9fr 1.4fr;
+    grid-template-columns: 26px 1.4fr 1fr 1fr 0.9fr 1.3fr;
     gap: 12px;
     padding: 13px 20px;
     align-items: center;
     border-bottom: 1px solid var(--border);
     font-size: 13.5px;
   }
+  .holder-checkbox { accent-color: var(--cardinal); cursor: pointer; width: 15px; height: 15px; }
   .holder-row:last-child { border-bottom: none; }
   .holder-row.flagged { border-left: 3px solid var(--digital-red); background: rgba(177, 4, 14, 0.04); }
 
@@ -281,11 +316,135 @@
     color: var(--text-faint);
     font-family: var(--mono);
   }
+  .stamp[title] { cursor: help; border-bottom: 1px dotted var(--text-faint); padding-bottom: 1px; }
 
   .lockup-tag {
     font-size: 11.5px;
     color: var(--text-faint);
     font-family: var(--mono);
+  }
+
+  /* ---------- Selection bar & email modal (UI scaffold, not wired up yet) ---------- */
+  .selection-bar {
+    position: sticky;
+    bottom: 16px;
+    background: var(--cardinal);
+    color: #FFFFFF;
+    padding: 13px 20px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+    font-size: 13px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  }
+  .selection-bar .count { font-family: var(--mono); }
+  .selection-bar-actions { display: flex; gap: 8px; align-items: center; }
+  .selection-bar button {
+    background: #FFFFFF;
+    color: var(--cardinal);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 3px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 12.5px;
+  }
+  .selection-bar .clear-btn {
+    background: none;
+    color: #FFFFFF;
+    font-weight: 400;
+    text-decoration: underline;
+    padding: 8px 4px;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 18, 15, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  .modal-box {
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 28px;
+    max-width: 460px;
+    width: 100%;
+  }
+  .modal-box h3 {
+    font-family: var(--serif);
+    font-weight: 400;
+    margin: 0 0 6px;
+    font-size: 20px;
+    color: var(--text);
+  }
+  .modal-box .modal-sub {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+  .modal-box .field-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-faint);
+    display: block;
+    margin-bottom: 6px;
+  }
+  .recipient-list {
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 10px 12px;
+    margin-bottom: 18px;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--surface);
+  }
+  .recipient-list .recipient-row { padding: 3px 0; }
+  .modal-box input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 3px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    font-family: var(--sans);
+  }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .modal-actions button {
+    padding: 9px 16px;
+    border-radius: 3px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: var(--sans);
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--text-dim);
+  }
+  .modal-actions button.primary {
+    background: var(--cardinal);
+    color: #FFFFFF;
+    border-color: var(--cardinal);
+  }
+  .modal-note {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 12px;
+    line-height: 1.5;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
   }
 
   /* ---------- Empty / loading / error states ---------- */
@@ -376,10 +535,14 @@
   }
 
   @media (max-width: 640px) {
-    .holder-row { grid-template-columns: 1fr 1fr; row-gap: 4px; }
+    .holder-row, .holder-header { grid-template-columns: 22px 1fr 1fr; row-gap: 4px; }
+    .holder-header span:nth-child(4), .holder-header span:nth-child(5),
+    .holder-row > *:nth-child(5), .holder-row > *:nth-child(6) { display: none; }
     .entry-meta { display: none; }
+    .detail-strip { gap: 16px; }
     .stat-strip { flex-wrap: wrap; }
     .stat { flex: 1 1 50%; border-bottom: 1px solid var(--border); }
+    .selection-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -428,6 +591,8 @@ let state = {
   search: "",
   showFlaggedOnly: false,
   openCompanies: new Set(),
+  selectedHolders: new Set(),
+  showEmailModal: false,
 };
 
 function loadConfig() {
@@ -487,11 +652,18 @@ function groupByCompany(rows) {
     const key = r['Ticker'] || r['Company Name'];
     if (!groups[key]) groups[key] = { company: r['Company Name'], ticker: r['Ticker'],
       filingPrice: r['Filing Price'], actualPrice: r['Actual Price'], currentPrice: r['Current Price'],
+      dateOfFiling: r['Date of Filing'], dateOfPricing: r['Date of Pricing'],
+      ipoSize: r['IPO Size (Shares)'], amountRaised: r['Amount Raised'],
       lockup: r['Lock-Up Expiry'], holders: [] };
     groups[key].holders.push(r);
   });
   return Object.values(groups);
 }
+
+const STANFORD_GRADE_RUBRIC =
+  '0 = no evidence found. 1-2 = weak or ambiguous signal (name match only, no corroborating detail). ' +
+  '3-4 = reasonably confident, corroborated by title/company/location/era. ' +
+  '5 = directly confirmed in a bio or reliable source.';
 
 function stampHtml(grade) {
   const g = parseInt(grade, 10) || 0;
@@ -500,7 +672,7 @@ function stampHtml(grade) {
     dots += `<span class="stamp-dot ${i <= g ? 'filled' : ''}"></span>`;
   }
   const label = g === 5 ? 'confirmed' : g === 0 ? 'none found' : 'partial';
-  return `<span class="stamp">${dots}<span class="stamp-label">${label}</span></span>`;
+  return `<span class="stamp" title="${STANFORD_GRADE_RUBRIC}">${dots}<span class="stamp-label">${label}</span></span>`;
 }
 
 function render() {
@@ -596,8 +768,12 @@ function render() {
   } else {
     entriesHtml = groups.map((g, idx) => {
       const isOpen = state.openCompanies.has(g.ticker);
-      const holdersHtml = g.holders.map(h => `
+      const holdersHtml = g.holders.map(h => {
+        const holderKey = `${g.ticker}::${h['Holder Name']}`;
+        const isChecked = state.selectedHolders.has(holderKey);
+        return `
         <div class="holder-row ${h['QC Status'] === 'Needs Review' ? 'flagged' : ''}">
+          <input type="checkbox" class="holder-checkbox" data-holder-key="${holderKey}" ${isChecked ? 'checked' : ''} aria-label="Select ${h['Holder Name'] || 'holder'} for email" />
           <div class="holder-name">${h['Holder Name'] || '—'}${
             h['QC Status'] === 'Needs Review' && h['QC Notes']
               ? `<span class="qc-note">${h['QC Notes']}</span>` : ''
@@ -606,9 +782,18 @@ function render() {
           <div class="holder-num">${fmtMoney(h['Cash Value'])}</div>
           <div>${stampHtml(h['Stanford Grade'])}</div>
           <div class="lockup-tag">${h['Lock-Up Expiry'] || '—'}</div>
-        </div>`).join('');
+        </div>`;
+      }).join('');
 
       const priceMoveClass = (parseFloat(g.currentPrice) >= parseFloat(g.actualPrice)) ? 'up' : 'down';
+
+      const detailStripHtml = `
+        <div class="detail-strip">
+          <div class="detail-item"><span class="detail-label">Filed</span><span class="detail-value">${g.dateOfFiling || '—'}</span></div>
+          <div class="detail-item"><span class="detail-label">Priced</span><span class="detail-value">${g.dateOfPricing || '—'}</span></div>
+          <div class="detail-item"><span class="detail-label">IPO Size</span><span class="detail-value">${g.ipoSize ? fmtShares(g.ipoSize) + ' sh' : '—'}</span></div>
+          <div class="detail-item"><span class="detail-label">Amount Raised</span><span class="detail-value">${fmtMoney(g.amountRaised)}</span></div>
+        </div>`;
 
       return `
         <div class="entry ${isOpen ? 'open' : ''}" data-ticker="${g.ticker}">
@@ -624,7 +809,13 @@ function render() {
               <span>${g.holders.length} holder${g.holders.length === 1 ? '' : 's'}</span>
             </div>
           </div>
-          <div class="entry-body">${holdersHtml}</div>
+          <div class="entry-body">
+            ${detailStripHtml}
+            <div class="holder-header">
+              <span></span><span>Holder</span><span>Shares</span><span>Cash Value</span><span>Stanford</span><span>Lock-Up</span>
+            </div>
+            ${holdersHtml}
+          </div>
         </div>`;
     }).join('');
   }
@@ -654,6 +845,34 @@ function render() {
     </div>
 
     ${entriesHtml}
+
+    ${state.selectedHolders.size > 0 ? `
+      <div class="selection-bar">
+        <span class="count">${state.selectedHolders.size} holder${state.selectedHolders.size === 1 ? '' : 's'} selected</span>
+        <div class="selection-bar-actions">
+          <button class="clear-btn" id="btn-clear-selection">Clear</button>
+          <button id="btn-email-selected">Email Selected</button>
+        </div>
+      </div>` : ''}
+
+    ${state.showEmailModal ? `
+      <div class="modal-overlay" id="email-modal-overlay">
+        <div class="modal-box">
+          <h3>Email selected holders</h3>
+          <div class="modal-sub">Sends a summary of the selected holders' details to the address below.</div>
+          <label class="field-label">Recipients (${state.selectedHolders.size})</label>
+          <div class="recipient-list">
+            ${Array.from(state.selectedHolders).map(k => `<div class="recipient-row">${k.split('::')[1]} — ${k.split('::')[0]}</div>`).join('')}
+          </div>
+          <label class="field-label">Send to</label>
+          <input id="in-email-to" type="email" placeholder="name@example.com" />
+          <div class="modal-actions">
+            <button id="btn-modal-cancel">Cancel</button>
+            <button class="primary" id="btn-modal-send">Send</button>
+          </div>
+          <div class="modal-note">Sending isn't wired up yet — this records the intended recipient and selection so the send action can be connected later.</div>
+        </div>
+      </div>` : ''}
   `;
 
   document.getElementById('btn-refresh').onclick = () => init(true);
@@ -678,6 +897,41 @@ function render() {
     el.onclick = toggle;
     el.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } };
   });
+
+  document.querySelectorAll('.holder-checkbox').forEach(cb => {
+    cb.onclick = (e) => e.stopPropagation();
+    cb.onchange = (e) => {
+      const key = e.target.getAttribute('data-holder-key');
+      if (e.target.checked) state.selectedHolders.add(key);
+      else state.selectedHolders.delete(key);
+      render();
+    };
+  });
+
+  const clearBtn = document.getElementById('btn-clear-selection');
+  if (clearBtn) clearBtn.onclick = () => { state.selectedHolders.clear(); render(); };
+
+  const emailBtn = document.getElementById('btn-email-selected');
+  if (emailBtn) emailBtn.onclick = () => { state.showEmailModal = true; render(); };
+
+  const modalOverlay = document.getElementById('email-modal-overlay');
+  if (modalOverlay) {
+    modalOverlay.onclick = (e) => { if (e.target === modalOverlay) { state.showEmailModal = false; render(); } };
+    document.getElementById('btn-modal-cancel').onclick = () => { state.showEmailModal = false; render(); };
+    document.getElementById('btn-modal-send').onclick = () => {
+      const to = document.getElementById('in-email-to').value.trim();
+      if (!to) {
+        document.getElementById('in-email-to').focus();
+        return;
+      }
+      // Placeholder only - no backend wired up yet. This is where a
+      // future integration (e.g. a mail API call) would be triggered.
+      alert(`This would send details for ${state.selectedHolders.size} holder(s) to ${to} once email sending is connected.`);
+      state.showEmailModal = false;
+      state.selectedHolders.clear();
+      render();
+    };
+  }
 }
 
 async function init(forceRefresh) {
