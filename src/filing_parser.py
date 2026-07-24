@@ -290,8 +290,8 @@ def extract_offering_size(soup: BeautifulSoup) -> int:
 
 OWNERSHIP_TABLE_HEADER_KEYWORDS = [
     "beneficially owned", "beneficial owner", "shares owned", "shares beneficially",
-    "number of shares", "percent of class", "percentage of", "shares of common stock",
-    "name of beneficial owner", "class of stock",
+    "percent of class", "percentage of class", "percent owned", "percentage owned",
+    "name of beneficial owner",
 ]
 
 
