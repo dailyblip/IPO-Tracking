@@ -288,6 +288,30 @@ def extract_offering_size(soup: BeautifulSoup) -> int:
     return None
 
 
+OWNERSHIP_TABLE_HEADER_KEYWORDS = [
+    "beneficially owned", "beneficial owner", "shares owned", "shares beneficially",
+    "number of shares", "percent of class", "percentage of", "shares of common stock",
+    "name of beneficial owner", "class of stock",
+]
+
+
+def _table_header_looks_like_ownership(table) -> bool:
+    """
+    Checks the table's first two rows (where a header typically lives)
+    for actual ownership-grid language. This is a much sharper filter
+    than checking individual data rows - a financial highlights table
+    (e.g. "Revenues", "Net loss", "Adjusted EBITDA") can superficially
+    resemble a person/number grid at the row level, but its header
+    won't contain ownership-specific phrasing the way a real
+    "Principal Stockholders" table's header does.
+    """
+    rows = table.find_all("tr")[:2]
+    header_text = " ".join(
+        c.get_text(" ", strip=True) for row in rows for c in row.find_all(["td", "th"])
+    ).lower()
+    return any(keyword in header_text for keyword in OWNERSHIP_TABLE_HEADER_KEYWORDS)
+
+
 def extract_principal_stockholders(soup: BeautifulSoup) -> list:
     """
     Extract the beneficial ownership grid. Returns a list of dicts:
@@ -297,9 +321,12 @@ def extract_principal_stockholders(soup: BeautifulSoup) -> list:
     the next 3 tables that follow it - not just the immediate next
     one, since a false-positive heading match elsewhere in a large
     document can otherwise grab an unrelated table entirely. A table
-    is only accepted if it yields at least one row with a name that
-    contains actual letters (guards against misreading a numeric cell,
-    like a price or share count, as if it were a person's name).
+    is only accepted if BOTH: (a) its header row contains actual
+    ownership-grid language (guards against matching an unrelated
+    table like financial highlights, which can superficially resemble
+    a name+number grid at the row level), and (b) it yields at least
+    one row with a name that contains actual letters (guards against
+    misreading a numeric cell as a person's name).
     """
     heading_tag = _find_heading_tag(soup, OWNERSHIP_HEADING_PATTERNS)
     if heading_tag is None:
@@ -308,6 +335,9 @@ def extract_principal_stockholders(soup: BeautifulSoup) -> list:
     candidate_tables = heading_tag.find_all_next("table", limit=3)
 
     for table in candidate_tables:
+        if not _table_header_looks_like_ownership(table):
+            continue
+
         results = []
         for row in table.find_all("tr"):
             cells = [c.get_text(" ", strip=True) for c in row.find_all(["td", "th"])]
