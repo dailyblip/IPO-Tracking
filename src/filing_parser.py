@@ -293,50 +293,60 @@ def extract_principal_stockholders(soup: BeautifulSoup) -> list:
     Extract the beneficial ownership grid. Returns a list of dicts:
     {"name": str, "shares": int or None, "percent": float or None}
 
-    Strategy: locate the ownership section heading, then parse the
-    first substantial <table> that follows it (these tables reliably
-    have a Name column and a Shares/Number column and a % column, in
-    varying order and header text).
+    Strategy: locate the ownership section heading, then check up to
+    the next 3 tables that follow it - not just the immediate next
+    one, since a false-positive heading match elsewhere in a large
+    document can otherwise grab an unrelated table entirely. A table
+    is only accepted if it yields at least one row with a name that
+    contains actual letters (guards against misreading a numeric cell,
+    like a price or share count, as if it were a person's name).
     """
     heading_tag = _find_heading_tag(soup, OWNERSHIP_HEADING_PATTERNS)
     if heading_tag is None:
         return []
 
-    table = heading_tag.find_next("table")
-    if table is None:
-        return []
+    candidate_tables = heading_tag.find_all_next("table", limit=3)
 
-    rows = table.find_all("tr")
-    results = []
-    for row in rows:
-        cells = [c.get_text(" ", strip=True) for c in row.find_all(["td", "th"])]
-        cells = [c for c in cells if c]  # drop empty spacer cells
-        if not cells:
-            continue
+    for table in candidate_tables:
+        results = []
+        for row in table.find_all("tr"):
+            cells = [c.get_text(" ", strip=True) for c in row.find_all(["td", "th"])]
+            cells = [c for c in cells if c]  # drop empty spacer cells
+            if not cells:
+                continue
 
-        # Skip header rows (no digits at all in the row)
-        if not any(char.isdigit() for char in " ".join(cells)):
-            continue
+            # Skip header rows (no digits at all in the row)
+            if not any(char.isdigit() for char in " ".join(cells)):
+                continue
 
-        name = cells[0]
-        # Find a cell that looks like a share count (has commas/digits,
-        # no % sign, reasonably long number)
-        shares = None
-        percent = None
-        for cell in cells[1:]:
-            if "%" in cell:
-                pct_match = re.search(r"(\d+(?:\.\d+)?)\s?%", cell)
-                if pct_match:
-                    percent = float(pct_match.group(1))
-            else:
-                num_match = re.search(r"([\d,]{4,})", cell)
-                if num_match and shares is None:
-                    shares = int(num_match.group(1).replace(",", ""))
+            name = cells[0]
+            # A real holder name has at least one letter - guards
+            # against a misfired match where the first cell is
+            # actually a price, share count, or other numeric value.
+            if not any(ch.isalpha() for ch in name):
+                continue
 
-        if name and (shares is not None or percent is not None):
-            results.append({"name": name, "shares": shares, "percent": percent})
+            shares = None
+            percent = None
+            for cell in cells[1:]:
+                if "%" in cell:
+                    pct_match = re.search(r"(\d+(?:\.\d+)?)\s?%", cell)
+                    if pct_match:
+                        percent = float(pct_match.group(1))
+                else:
+                    num_match = re.search(r"([\d,]{4,})", cell)
+                    if num_match and shares is None:
+                        shares = int(num_match.group(1).replace(",", ""))
 
-    return results
+            if name and (shares is not None or percent is not None):
+                results.append({"name": name, "shares": shares, "percent": percent})
+
+        # Accept the first candidate table that actually produced
+        # valid-looking rows; otherwise keep checking the next one.
+        if results:
+            return results
+
+    return []
 
 
 def extract_management_bios(soup: BeautifulSoup) -> dict:
