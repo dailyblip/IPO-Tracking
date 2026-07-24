@@ -51,6 +51,14 @@ def process_filing(filing_meta: dict) -> list:
             print(f"[main] Skipping {company_name} (CIK {cik}): not US-based")
             return []
 
+        if not edgar_client.is_first_time_registrant(cik):
+            print(
+                f"[main] Skipping {company_name} (CIK {cik}): already an SEC "
+                f"reporting company (has a prior 10-K) - this 424B4 is a "
+                f"follow-on/resale offering, not a first-time IPO"
+            )
+            return []
+
         index_url = edgar_client.build_filing_index_url(cik, filing_meta["accession_no"])
         document_url = filing_parser.find_primary_document_url(index_url, expected_form_types=["424B4"])
 
