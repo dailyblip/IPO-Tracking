@@ -71,6 +71,48 @@ def _row_key(row: dict) -> tuple:
     return (row.get("Ticker", "").upper(), row.get("Holder Name", "").strip().lower())
 
 
+def fetch_existing_rows(spreadsheet_id: str) -> dict:
+    """
+    Fetch all current rows from the main tab, keyed by (ticker, holder
+    name), so callers (e.g. qc_review.py) can compare today's values
+    against the last run before writing. Returns {} if the tab is
+    empty or doesn't exist yet.
+    """
+    client = _get_client()
+    spreadsheet = client.open_by_key(spreadsheet_id)
+
+    try:
+        main_ws = spreadsheet.worksheet(MAIN_TAB_NAME)
+    except gspread.exceptions.WorksheetNotFound:
+        return {}
+
+    existing_values = main_ws.get_all_values()
+    if len(existing_values) < 2:
+        return {}
+
+    header = existing_values[0]
+    data_rows = existing_values[1:]
+
+    result = {}
+    for data_row in data_rows:
+        row_dict = dict(zip(header, data_row))
+        result[_row_key(row_dict)] = row_dict
+    return result
+
+
+def ensure_tabs_exist(spreadsheet_id: str) -> None:
+    """
+    Create both tabs with headers if they don't exist yet, without
+    writing any data rows. Called on every run - including runs that
+    produce zero rows - so the Sheet always shows its structure and
+    confirms the pipeline is actually reaching it.
+    """
+    client = _get_client()
+    spreadsheet = client.open_by_key(spreadsheet_id)
+    _get_or_create_worksheet(spreadsheet, MAIN_TAB_NAME, COLUMNS)
+    _get_or_create_worksheet(spreadsheet, QC_TAB_NAME, COLUMNS)
+
+
 def upsert_rows(spreadsheet_id: str, rows: list) -> dict:
     """
     Write or update rows in the main IPO Tracker tab.
