@@ -67,10 +67,15 @@ def process_filing(filing_meta: dict) -> list:
 
         stockholder_count = len(parsed.get("principal_stockholders", []))
         bio_count = len([k for k in parsed.get("management_bios", {}) if k != "_full_text"])
+        diagnostics = parsed.get("diagnostics", {})
         print(
             f"[main] {company_name}: ticker={ticker}, offering_price={actual_price}, "
             f"stockholders_found={stockholder_count}, bios_split={bio_count}, "
-            f"lockup_text_found={bool(parsed.get('lockup_info', {}).get('raw_text'))}"
+            f"lockup_text_found={bool(parsed.get('lockup_info', {}).get('raw_text'))}, "
+            f"page_text_length={diagnostics.get('page_text_length')}, "
+            f"ownership_keyword_present={diagnostics.get('ownership_keyword_present')}, "
+            f"management_keyword_present={diagnostics.get('management_keyword_present')}, "
+            f"underwriting_keyword_present={diagnostics.get('underwriting_keyword_present')}"
         )
 
         if not ticker:
