@@ -46,18 +46,31 @@ def get_current_price(ticker: str) -> float:
         try:
             response = requests.get(url, params=params, timeout=10)
             response.raise_for_status()
-            data = response.json()
+
+            try:
+                data = response.json()
+            except ValueError:
+                raise PriceLookupError(
+                    f"Finnhub returned a non-JSON response for '{ticker}' "
+                    f"(HTTP {response.status_code}). Raw body: {response.text[:200]!r}"
+                )
 
             # Finnhub returns all zeros for an unrecognized symbol rather
             # than an HTTP error, so we need to check explicitly.
             current_price = data.get("c")
             if current_price is None or current_price == 0:
                 raise PriceLookupError(
-                    f"No price data returned for ticker '{ticker}'. "
-                    f"It may be delisted, mistyped, or not yet trading."
+                    f"No price data returned for ticker '{ticker}'. It may be "
+                    f"delisted, mistyped, too newly listed for this data "
+                    f"provider to have indexed yet, or not yet trading."
                 )
             return float(current_price)
 
+        except PriceLookupError:
+            # Not retryable - these mean we got a real response with no
+            # usable price, not a transient network issue. Fail fast
+            # rather than burning 3 retries on the same non-answer.
+            raise
         except requests.exceptions.RequestException as e:
             last_error = e
             if attempt < MAX_RETRIES:
