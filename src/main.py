@@ -48,12 +48,12 @@ def process_filing(filing_meta: dict) -> list:
 
     try:
         if not edgar_client.is_us_based(cik):
-            print(f"[main] Skipping {company_name} (CIK {cik}): not US-based")
+            print(f"[main] Skipping {company_name}: not US-based")
             return []
 
         if not edgar_client.is_first_time_registrant(cik):
             print(
-                f"[main] Skipping {company_name} (CIK {cik}): already an SEC "
+                f"[main] Skipping {company_name}: already an SEC "
                 f"reporting company (has a prior 10-K) - this 424B4 is a "
                 f"follow-on/resale offering, not a first-time IPO"
             )
@@ -66,7 +66,7 @@ def process_filing(filing_meta: dict) -> list:
 
         full_text_soup = filing_parser.fetch_document(document_url)
         if edgar_client.check_spac_indicators(full_text_soup.get_text(" ", strip=True)):
-            print(f"[main] Flagging {company_name} (CIK {cik}): possible SPAC language detected - skipping")
+            print(f"[main] Flagging {company_name}: possible SPAC language detected - skipping")
             return []
 
         cover = parsed["cover_page"]
@@ -176,7 +176,7 @@ def process_filing(filing_meta: dict) -> list:
         return rows
 
     except Exception as e:
-        print(f"[main] ERROR processing {company_name} (CIK {cik}): {e}")
+        print(f"[main] ERROR processing {company_name}: {e}")
         return []
 
 

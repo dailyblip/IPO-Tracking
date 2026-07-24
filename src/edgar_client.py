@@ -105,7 +105,18 @@ def find_recent_424b4_filings(days_back: int = 1, start_date: str = None,
         if offset >= total_available:
             break
 
-    return results
+    # Deduplicate by accession number - EDGAR's "from" pagination
+    # parameter doesn't reliably advance for this endpoint, which can
+    # cause the same page to be returned more than once across loop
+    # iterations. Dedup here guards against reprocessing the same
+    # filing multiple times regardless of the underlying cause.
+    seen = set()
+    deduped = []
+    for r in results:
+        if r["accession_no"] not in seen:
+            seen.add(r["accession_no"])
+            deduped.append(r)
+    return deduped
 
 
 def is_us_based(cik: str) -> bool:
