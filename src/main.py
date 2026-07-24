@@ -137,11 +137,19 @@ def process_filing(filing_meta: dict) -> list:
             # the bio dict keys (falls back to the full management text).
             bio_text = bios.get(holder_name, "") or bios.get("_full_text", "")
 
-            stanford_result = stanford_grader.grade_stanford_affiliation(
-                person_name=holder_name,
-                company_name=company_name,
-                bio_text=bio_text,
-            )
+            try:
+                stanford_result = stanford_grader.grade_stanford_affiliation(
+                    person_name=holder_name,
+                    company_name=company_name,
+                    bio_text=bio_text,
+                )
+            except Exception as e:
+                print(f"[main] Warning: Stanford grading failed for {holder_name} "
+                      f"({company_name}): {e}")
+                stanford_result = {
+                    "grade": 0,
+                    "justification": f"Grading failed to run: {e}",
+                }
 
             cash_value = (shares * current_price) if (shares and current_price) else None
 
