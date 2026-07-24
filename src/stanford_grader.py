@@ -1,327 +1,221 @@
 """
-filing_parser.py
+stanford_grader.py
 
-Extracts structured data out of a 424B4 (or S-1) filing's HTML:
-- Cover page: company name, ticker, exchange, offering price
-- "Principal Stockholders" / beneficial ownership grid: name, shares, %
-- "Management" bios (for the Stanford-affiliation check downstream)
-- "Underwriting" lock-up terms
+For each person on the beneficial ownership grid:
+1. Check the bio text extracted from the filing's Management section
+   for a direct Stanford mention -> grade 5, no search needed.
+2. If silent, run up to two web searches (Brave Search API) looking
+   for a public Stanford connection.
+3. Score 0-5 using an LLM judgment call over the combined evidence,
+   requiring at least one corroborating detail (title, company, or
+   location) beyond just the name matching - guards against common-name
+   false positives.
 
-SEC prospectus formatting varies a lot between filers, so this locates
-sections by heading TEXT (with fuzzy matching on common heading
-variants) rather than fixed positions. Expect to refine the regex
-patterns here after testing against a handful of real filings - this
-is the piece most likely to need iteration.
+Requires:
+- BRAVE_SEARCH_API_KEY (brave.com/search/api - a single API key, no
+  separate search-engine ID needed, unlike the old Google Custom
+  Search setup)
+- ANTHROPIC_API_KEY (used for the grading judgment call itself)
 """
 
 import os
 import re
+import json
 import time
 import requests
-from bs4 import BeautifulSoup
 
-REQUEST_DELAY_SECONDS = 0.15
+SEARCH_API_URL = "https://api.search.brave.com/res/v1/web/search"
+ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages"
+ANTHROPIC_MODEL = "claude-sonnet-4-6"
 
-# Section headings vary by filer. List common variants, matched
-# case-insensitively, in priority order.
-OWNERSHIP_HEADING_PATTERNS = [
-    r"principal\s+stockholders",
-    r"principal\s+shareholders",
-    r"security\s+ownership\s+of\s+certain\s+beneficial\s+owners",
-    r"beneficial\s+ownership",
-]
+MAX_SEARCH_ATTEMPTS = 2
+REQUEST_DELAY_SECONDS = 0.5
 
-MANAGEMENT_HEADING_PATTERNS = [
-    r"^management$",
-    r"executive\s+officers\s+and\s+directors",
-    r"directors\s+and\s+executive\s+officers",
-]
-
-UNDERWRITING_HEADING_PATTERNS = [
-    r"^underwriting$",
-    r"lock-?up\s+agreements",
-]
+DIRECT_MENTION_PATTERN = re.compile(r"\bstanford\b", re.IGNORECASE)
 
 
-class FilingParserError(Exception):
+class StanfordGraderError(Exception):
     pass
 
 
-def _get_headers() -> dict:
-    user_agent = os.environ.get("SEC_EDGAR_USER_AGENT")
-    if not user_agent:
-        raise FilingParserError(
-            "SEC_EDGAR_USER_AGENT environment variable is not set."
-        )
-    return {"User-Agent": user_agent}
+def _get_env(name: str) -> str:
+    value = os.environ.get(name)
+    if not value:
+        raise StanfordGraderError(f"{name} environment variable is not set.")
+    return value
 
 
-def fetch_document(url: str) -> BeautifulSoup:
-    """Fetch a filing document and return it as a parsed soup object."""
-    headers = _get_headers()
-    response = requests.get(url, headers=headers, timeout=20)
-    response.raise_for_status()
-    time.sleep(REQUEST_DELAY_SECONDS)
-    return BeautifulSoup(response.text, "lxml")
-
-
-def find_primary_document_url(index_url: str) -> str:
+def check_bio_for_stanford(bio_text: str) -> dict:
     """
-    Given a filing's index page URL, find the primary document - usually
-    the largest .htm file, or the one whose "Type" column in the filing
-    index table matches the form type (424B4, S-1, etc).
+    Direct check against filing bio text. Returns a grade-5 result
+    if "Stanford" appears, along with the matching sentence for context.
+    Returns None if no mention is found (caller should proceed to search).
     """
-    soup = fetch_document(index_url)
-    table = soup.find("table", class_="tableFile") or soup.find("table")
-    if table is None:
-        raise FilingParserError(f"Could not find document table at {index_url}")
+    if not bio_text or not DIRECT_MENTION_PATTERN.search(bio_text):
+        return None
 
-    candidates = []
-    for row in table.find_all("tr"):
-        link = row.find("a", href=True)
-        if link and link["href"].lower().endswith((".htm", ".html")):
-            candidates.append(link["href"])
-
-    if not candidates:
-        raise FilingParserError(f"No .htm documents found at {index_url}")
-
-    # Heuristic: the primary document is usually the first substantial
-    # .htm file listed, and is rarely named things like "ex-" (exhibits).
-    main_candidates = [c for c in candidates if "ex" not in c.lower().split("/")[-1][:3]]
-    chosen = main_candidates[0] if main_candidates else candidates[0]
-
-    if chosen.startswith("http"):
-        return chosen
-    base = index_url.rsplit("/", 1)[0]
-    return f"{base}/{chosen}"
-
-
-def _find_section_text(soup: BeautifulSoup, heading_patterns: list, max_chars: int = 20000) -> str:
-    """
-    Locate a section by scanning heading-like elements (b, strong, h1-h4,
-    or bold-styled spans/divs commonly used in EDGAR filings instead of
-    real heading tags) for a match against heading_patterns, then
-    collect the sibling text following it up to max_chars or the next
-    heading of similar prominence.
-    """
-    heading_regex = re.compile("|".join(heading_patterns), re.IGNORECASE)
-
-    candidates = soup.find_all(["b", "strong", "h1", "h2", "h3", "h4"])
-    for tag in candidates:
-        text = tag.get_text(strip=True)
-        if heading_regex.search(text):
-            collected = []
-            total_len = 0
-            for sibling in tag.find_all_next():
-                sibling_text = sibling.get_text(" ", strip=True)
-                if sibling.name in ("b", "strong", "h1", "h2", "h3", "h4") and sibling_text:
-                    # Stop if we hit what looks like the next major heading
-                    if len(sibling_text) < 100 and sibling_text[0:1].isupper():
-                        break
-                if sibling_text:
-                    collected.append(sibling_text)
-                    total_len += len(sibling_text)
-                if total_len >= max_chars:
-                    break
-            return " ".join(collected)[:max_chars]
-
-    return ""
-
-
-def extract_cover_page_data(soup: BeautifulSoup) -> dict:
-    """
-    Extract company name, ticker, exchange, and offering price from the
-    cover page. These usually appear in the first ~2000 characters of
-    the document body.
-    """
-    full_text = soup.get_text(" ", strip=True)
-    cover_text = full_text[:5000]
-
-    ticker_match = re.search(
-        r"(?:symbol|ticker)[\s\"“]*[:\-]?\s*[\"“]?([A-Z]{1,6})[\"”]?",
-        cover_text,
-    )
-    price_match = re.search(
-        r"\$\s?(\d{1,4}(?:\.\d{1,2})?)\s+per\s+share",
-        cover_text,
-        re.IGNORECASE,
-    )
-    exchange_match = re.search(
-        r"(Nasdaq|New York Stock Exchange|NYSE)",
-        cover_text,
-        re.IGNORECASE,
+    sentences = re.split(r"(?<=[.])\s+", bio_text)
+    matching_sentence = next(
+        (s for s in sentences if DIRECT_MENTION_PATTERN.search(s)), bio_text[:300]
     )
 
     return {
-        "ticker": ticker_match.group(1) if ticker_match else None,
-        "offering_price": float(price_match.group(1)) if price_match else None,
-        "exchange": exchange_match.group(1) if exchange_match else None,
+        "grade": 5,
+        "justification": f"Directly stated in filing bio: \"{matching_sentence.strip()}\"",
+        "source": "filing_bio",
     }
 
 
-def extract_price_range(soup: BeautifulSoup) -> dict:
+def brave_search(query: str) -> list:
     """
-    Extract the estimated price range from an S-1/S-1A cover page,
-    e.g. "$14.00 and $16.00 per share".
+    Run a single query against the Brave Search API.
+    Returns a list of {title, snippet, link} dicts (top results only).
     """
-    full_text = soup.get_text(" ", strip=True)
-    cover_text = full_text[:5000]
+    api_key = _get_env("BRAVE_SEARCH_API_KEY")
 
-    range_match = re.search(
-        r"\$\s?(\d{1,4}(?:\.\d{1,2})?)\s+and\s+\$\s?(\d{1,4}(?:\.\d{1,2})?)\s+per\s+share",
-        cover_text,
-        re.IGNORECASE,
-    )
-    if range_match:
-        return {
-            "range_low": float(range_match.group(1)),
-            "range_high": float(range_match.group(2)),
-        }
-    return {"range_low": None, "range_high": None}
+    headers = {"Accept": "application/json", "X-Subscription-Token": api_key}
+    params = {"q": query, "count": 5}
+    response = requests.get(SEARCH_API_URL, headers=headers, params=params, timeout=15)
+    response.raise_for_status()
+    time.sleep(REQUEST_DELAY_SECONDS)
 
-
-def extract_principal_stockholders(soup: BeautifulSoup) -> list:
-    """
-    Extract the beneficial ownership grid. Returns a list of dicts:
-    {"name": str, "shares": int or None, "percent": float or None}
-
-    Strategy: locate the ownership section heading, then parse the
-    first substantial <table> that follows it (these tables reliably
-    have a Name column and a Shares/Number column and a % column, in
-    varying order and header text).
-    """
-    heading_regex = re.compile("|".join(OWNERSHIP_HEADING_PATTERNS), re.IGNORECASE)
-    heading_tag = None
-    for tag in soup.find_all(["b", "strong", "h1", "h2", "h3", "h4"]):
-        if heading_regex.search(tag.get_text(strip=True)):
-            heading_tag = tag
-            break
-
-    if heading_tag is None:
-        return []
-
-    table = heading_tag.find_next("table")
-    if table is None:
-        return []
-
-    rows = table.find_all("tr")
+    data = response.json()
     results = []
-    for row in rows:
-        cells = [c.get_text(" ", strip=True) for c in row.find_all(["td", "th"])]
-        cells = [c for c in cells if c]  # drop empty spacer cells
-        if not cells:
-            continue
-
-        # Skip header rows (no digits at all in the row)
-        if not any(char.isdigit() for char in " ".join(cells)):
-            continue
-
-        name = cells[0]
-        # Find a cell that looks like a share count (has commas/digits,
-        # no % sign, reasonably long number)
-        shares = None
-        percent = None
-        for cell in cells[1:]:
-            if "%" in cell:
-                pct_match = re.search(r"(\d+(?:\.\d+)?)\s?%", cell)
-                if pct_match:
-                    percent = float(pct_match.group(1))
-            else:
-                num_match = re.search(r"([\d,]{4,})", cell)
-                if num_match and shares is None:
-                    shares = int(num_match.group(1).replace(",", ""))
-
-        if name and (shares is not None or percent is not None):
-            results.append({"name": name, "shares": shares, "percent": percent})
-
+    for item in data.get("web", {}).get("results", []):
+        results.append({
+            "title": item.get("title", ""),
+            "snippet": item.get("description", ""),
+            "link": item.get("url", ""),
+        })
     return results
 
 
-def extract_management_bios(soup: BeautifulSoup) -> dict:
+# Kept as an alias so any earlier references (or notes) using the old
+# name still resolve correctly.
+google_search = brave_search
+
+
+def run_search_fallback(person_name: str, company_name: str) -> list:
     """
-    Extract the Management section text and split it into per-person
-    bio chunks keyed by name where possible. Falls back to returning
-    the whole section under a single "_full_text" key if per-person
-    splitting isn't reliable for this filer's formatting - the grader
-    can still substring-search names against that.
+    Run the two-attempt search fallback. First query pairs name with
+    company (highest signal for corroboration); second is a looser
+    "bio Stanford" query. Stops early if the first query already
+    returns clearly relevant results, but always tries at most two.
     """
-    section_text = _find_section_text(soup, MANAGEMENT_HEADING_PATTERNS, max_chars=40000)
-    if not section_text:
-        return {}
+    all_results = []
 
-    # Bios often start with "Jane Smith has served as our Chief..." -
-    # try splitting on capitalized name-like patterns followed by "has
-    # served" / "is our" / "joined" as a light heuristic.
-    name_pattern = re.compile(
-        r"([A-Z][a-z]+(?:\s[A-Z]\.)?\s[A-Z][a-z]+)\s+(?:has served|is our|joined|has been)"
-    )
-    matches = list(name_pattern.finditer(section_text))
-
-    if not matches:
-        return {"_full_text": section_text}
-
-    bios = {}
-    for i, match in enumerate(matches):
-        name = match.group(1)
-        start = match.start()
-        end = matches[i + 1].start() if i + 1 < len(matches) else len(section_text)
-        bios[name] = section_text[start:end].strip()
-
-    bios["_full_text"] = section_text
-    return bios
-
-
-def extract_lockup_info(soup: BeautifulSoup) -> dict:
-    """
-    Extract lock-up language from the Underwriting section. Returns the
-    raw matched text plus a best-effort parsed duration in days, where
-    the standard boilerplate ("180 days") is detected.
-    """
-    section_text = _find_section_text(soup, UNDERWRITING_HEADING_PATTERNS, max_chars=15000)
-    if not section_text:
-        return {"raw_text": None, "duration_days": None}
-
-    lockup_sentences = [
-        s for s in re.split(r"(?<=[.])\s+", section_text)
-        if "lock-up" in s.lower() or "lockup" in s.lower()
+    queries = [
+        f'"{person_name}" "{company_name}" Stanford',
+        f'"{person_name}" bio Stanford',
     ]
-    raw_text = " ".join(lockup_sentences[:5]) if lockup_sentences else None
 
-    duration_match = re.search(r"(\d{2,3})\s+days", raw_text or "")
-    duration_days = int(duration_match.group(1)) if duration_match else None
+    for i, query in enumerate(queries[:MAX_SEARCH_ATTEMPTS]):
+        try:
+            results = brave_search(query)
+            all_results.extend(results)
+        except requests.exceptions.RequestException as e:
+            print(f"[stanford_grader] Search attempt {i + 1} failed: {e}")
+            continue
 
-    return {"raw_text": raw_text, "duration_days": duration_days}
+    return all_results
 
 
-def parse_filing(document_url: str, is_range_filing: bool = False) -> dict:
+def _build_grading_prompt(person_name: str, company_name: str, title: str,
+                           bio_text: str, search_results: list) -> str:
+    search_block = "\n".join(
+        f"- \"{r['title']}\" - {r['snippet']} ({r['link']})" for r in search_results
+    ) or "(no search results found)"
+
+    return f"""You are assessing whether there is public evidence that a specific individual has a Stanford University affiliation (student, alumnus, faculty, researcher, or similar).
+
+Person: {person_name}
+Role/context: {title or "unknown"} at {company_name}
+
+Filing bio text (may be empty):
+{bio_text or "(none available)"}
+
+Web search results:
+{search_block}
+
+Score their Stanford affiliation confidence from 0-5:
+- 5 = Directly and unambiguously confirmed (explicit statement of degree/role at Stanford, clearly matching this specific person)
+- 3-4 = Reasonably confident, corroborated by at least one matching detail beyond the name alone (same company, same professional role, same general time period, etc.)
+- 1-2 = Weak or uncertain signal (name matches something Stanford-related but corroborating details are thin, ambiguous, or the match could plausibly be a different person)
+- 0 = No relevant evidence found, or evidence points to a clear name collision with a different person
+
+Important: do not give a score above 2 based on name matching alone. Require at least one corroborating detail (title, company, location, or time period) tying the Stanford reference to this specific person.
+
+Respond with ONLY a JSON object, no other text:
+{{"grade": <integer 0-5>, "justification": "<one sentence explaining the score and what corroboration, if any, was found>"}}"""
+
+
+def grade_via_llm(person_name: str, company_name: str, title: str,
+                   bio_text: str, search_results: list) -> dict:
     """
-    Top-level entry point: fetch a filing document and extract
-    everything main.py needs. Set is_range_filing=True when parsing an
-    S-1/S-1A (returns range_low/range_high instead of offering_price).
+    Send the combined evidence (bio text + search results) to Claude for
+    a judgment call, since this requires weighing ambiguous corroborating
+    detail rather than simple keyword matching.
     """
-    soup = fetch_document(document_url)
+    api_key = _get_env("ANTHROPIC_API_KEY")
 
-    result = {
-        "cover_page": extract_cover_page_data(soup),
-        "principal_stockholders": extract_principal_stockholders(soup),
-        "management_bios": extract_management_bios(soup),
-        "lockup_info": extract_lockup_info(soup),
-    }
+    prompt = _build_grading_prompt(person_name, company_name, title, bio_text, search_results)
 
-    if is_range_filing:
-        result["price_range"] = extract_price_range(soup)
+    response = requests.post(
+        ANTHROPIC_API_URL,
+        headers={
+            "x-api-key": api_key,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+        },
+        json={
+            "model": ANTHROPIC_MODEL,
+            "max_tokens": 300,
+            "messages": [{"role": "user", "content": prompt}],
+        },
+        timeout=30,
+    )
+    response.raise_for_status()
+    data = response.json()
 
-    return result
+    text = "".join(
+        block.get("text", "") for block in data.get("content", []) if block.get("type") == "text"
+    )
+    cleaned = text.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+
+    try:
+        parsed = json.loads(cleaned)
+        return {
+            "grade": int(parsed["grade"]),
+            "justification": parsed["justification"],
+            "source": "llm_judgment",
+        }
+    except (json.JSONDecodeError, KeyError, ValueError) as e:
+        return {
+            "grade": 0,
+            "justification": f"Grading call returned unparseable response; defaulted to 0. Raw: {text[:200]}",
+            "source": "parse_error",
+        }
+
+
+def grade_stanford_affiliation(person_name: str, company_name: str,
+                                title: str = "", bio_text: str = "") -> dict:
+    """
+    Top-level entry point. Returns {"grade": int, "justification": str, "source": str}.
+    """
+    direct_result = check_bio_for_stanford(bio_text)
+    if direct_result:
+        return direct_result
+
+    search_results = run_search_fallback(person_name, company_name)
+    return grade_via_llm(person_name, company_name, title, bio_text, search_results)
 
 
 if __name__ == "__main__":
-    # Quick manual test: python filing_parser.py <document_url>
+    # Quick manual test: python stanford_grader.py "Jane Smith" "Example Corp"
     import sys
-    import json
 
-    if len(sys.argv) < 2:
-        print("Usage: python filing_parser.py <document_url>")
-        sys.exit(1)
+    name_arg = sys.argv[1] if len(sys.argv) > 1 else "Jane Smith"
+    company_arg = sys.argv[2] if len(sys.argv) > 2 else "Example Corp"
 
-    parsed = parse_filing(sys.argv[1])
-    print(json.dumps(parsed, indent=2, default=str))
+    result = grade_stanford_affiliation(name_arg, company_arg)
+    print(json.dumps(result, indent=2))
