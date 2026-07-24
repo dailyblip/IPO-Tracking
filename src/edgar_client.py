@@ -149,9 +149,14 @@ def find_matching_s1(cik: str) -> dict:
 
 
 def build_filing_index_url(cik: str, accession_no: str) -> str:
-    """Build the URL to the filing's index page, which lists its documents."""
-    clean_accession = accession_no.replace("-", "")
-    return f"{EDGAR_ARCHIVES_BASE}/{int(cik)}/{clean_accession}/"
+    """
+    Build the URL to the filing's proper index page (the "-index.htm"
+    summary page with a Document/Type/Size table), not the bare
+    directory listing - the bare listing mixes in metadata files
+    (e.g. "-index-headers.html") that aren't actual filing documents.
+    """
+    folder = accession_no.replace("-", "")
+    return f"{EDGAR_ARCHIVES_BASE}/{int(cik)}/{folder}/{accession_no}-index.htm"
 
 
 def _today() -> str:
