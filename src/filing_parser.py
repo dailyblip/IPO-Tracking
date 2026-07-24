@@ -151,9 +151,9 @@ def _find_heading_tag(soup: BeautifulSoup, heading_patterns: list):
         if text and len(text) < 150 and heading_regex.search(text):
             return tag
 
-    for tag in soup.find_all(["p", "span", "div", "font"]):
+    for tag in soup.find_all(["p", "span", "div", "font", "td", "th"]):
         # Skip large wrapper containers - only interested in
-        # paragraph-level elements with no block-level children.
+        # paragraph/cell-level elements with no block-level children.
         if tag.find(["p", "div", "table"]):
             continue
         text = tag.get_text(strip=True)
@@ -163,6 +163,18 @@ def _find_heading_tag(soup: BeautifulSoup, heading_patterns: list):
             return tag
 
     return None
+
+
+def keyword_present_in_text(soup: BeautifulSoup, patterns: list) -> bool:
+    """
+    Diagnostic helper: checks whether any heading pattern appears
+    ANYWHERE in the document's raw text, regardless of tag structure.
+    Used to distinguish "section exists but our heading detection
+    missed it" from "section genuinely isn't in this document."
+    """
+    heading_regex = re.compile("|".join(patterns), re.IGNORECASE)
+    full_text = soup.get_text(" ", strip=True)
+    return bool(heading_regex.search(full_text))
 
 
 def _find_section_text(soup: BeautifulSoup, heading_patterns: list, max_chars: int = 20000) -> str:
@@ -370,6 +382,12 @@ def parse_filing(document_url: str, is_range_filing: bool = False) -> dict:
         "principal_stockholders": extract_principal_stockholders(soup),
         "management_bios": extract_management_bios(soup),
         "lockup_info": extract_lockup_info(soup),
+        "diagnostics": {
+            "ownership_keyword_present": keyword_present_in_text(soup, OWNERSHIP_HEADING_PATTERNS),
+            "management_keyword_present": keyword_present_in_text(soup, MANAGEMENT_HEADING_PATTERNS),
+            "underwriting_keyword_present": keyword_present_in_text(soup, UNDERWRITING_HEADING_PATTERNS),
+            "page_text_length": len(soup.get_text(strip=True)),
+        },
     }
 
     if is_range_filing:
