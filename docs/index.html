@@ -21,6 +21,36 @@
     --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 
+  :root[data-theme="dark"] {
+    --bg: #171613;
+    --surface: #211F1B;
+    --surface-raised: #2A2823;
+    --border: #3A3830;
+    --text: #F2F0EA;
+    --text-dim: #B7B4AC;
+    --text-faint: #7D7A72;
+    --cardinal: #C23B3B;
+    --cardinal-dark: #E85454;
+    --paloverde: #3FBBA8;
+    --digital-red: #E5534B;
+  }
+
+  body { transition: background-color 0.15s ease, color 0.15s ease; }
+
+  .theme-toggle {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 12px;
+    padding: 8px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-family: var(--sans);
+    margin-right: 8px;
+  }
+  .theme-toggle:hover { border-color: var(--cardinal-dark); color: var(--cardinal); }
+  .theme-toggle:focus-visible { outline: 2px solid var(--cardinal); outline-offset: 2px; }
+
   body { border-top: 6px solid var(--cardinal); }
 
   * { box-sizing: border-box; }
@@ -367,6 +397,29 @@ const COLUMNS = [
   "Lock-Up Expiry","QC Status","QC Notes","Last Updated"
 ];
 
+function getTheme() {
+  return document.documentElement.getAttribute('data-theme') || 'light';
+}
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  try { localStorage.setItem('ipo-ledger-theme', theme); } catch (e) { /* no-op */ }
+}
+
+function initTheme() {
+  let saved = null;
+  try { saved = localStorage.getItem('ipo-ledger-theme'); } catch (e) { /* no-op */ }
+  const preferred = saved || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  applyTheme(preferred);
+}
+
+function toggleTheme() {
+  applyTheme(getTheme() === 'dark' ? 'light' : 'dark');
+  render();
+}
+
+initTheme();
+
 let state = {
   config: null,
   rows: [],
@@ -582,7 +635,10 @@ function render() {
         <h1>IPO Ledger</h1>
         <div class="sub">Beneficial ownership &amp; Stanford affiliation tracker</div>
       </div>
-      <button class="refresh-btn" id="btn-refresh">&#8635; Refresh</button>
+      <div>
+        <button class="theme-toggle" id="btn-theme-toggle">${getTheme() === 'dark' ? '☀ Light' : '☾ Dark'}</button>
+        <button class="refresh-btn" id="btn-refresh">&#8635; Refresh</button>
+      </div>
     </div>
 
     <div class="stat-strip">
@@ -601,6 +657,7 @@ function render() {
   `;
 
   document.getElementById('btn-refresh').onclick = () => init(true);
+  document.getElementById('btn-theme-toggle').onclick = () => toggleTheme();
   const searchInput = document.getElementById('in-search');
   searchInput.oninput = (e) => { state.search = e.target.value; render(); };
   searchInput.focus();
