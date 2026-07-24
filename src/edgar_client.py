@@ -117,6 +117,29 @@ def check_spac_indicators(filing_text: str) -> bool:
     return any(phrase in lowered for phrase in SPAC_INDICATOR_PHRASES)
 
 
+def is_first_time_registrant(cik: str) -> bool:
+    """
+    Distinguishes a genuine first-time IPO from a follow-on or resale
+    offering by an already-public company - both get filed on Form
+    424B4, but only the former is actually an "IPO" in the sense this
+    tracker cares about. Heuristic: a company that has already filed a
+    10-K (annual report) is already an SEC reporting company, since
+    10-Ks require a completed fiscal year of public reporting first -
+    a fresh IPO company won't have one yet.
+    """
+    headers = _get_headers()
+    padded_cik = str(cik).zfill(10)
+    url = EDGAR_SUBMISSIONS_URL.format(cik=padded_cik)
+
+    response = requests.get(url, headers=headers, timeout=15)
+    response.raise_for_status()
+    time.sleep(REQUEST_DELAY_SECONDS)
+    data = response.json()
+
+    forms = data.get("filings", {}).get("recent", {}).get("form", [])
+    return not any(form == "10-K" for form in forms)
+
+
 def find_matching_s1(cik: str) -> dict:
     """
     Find the most recent S-1 or S-1/A filed by the same CIK prior to the
