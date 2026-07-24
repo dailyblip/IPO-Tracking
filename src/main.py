@@ -52,7 +52,7 @@ def process_filing(filing_meta: dict) -> list:
             return []
 
         index_url = edgar_client.build_filing_index_url(cik, filing_meta["accession_no"])
-        document_url = filing_parser.find_primary_document_url(index_url)
+        document_url = filing_parser.find_primary_document_url(index_url, expected_form_types=["424B4"])
 
         parsed = filing_parser.parse_filing(document_url)
 
@@ -75,7 +75,9 @@ def process_filing(filing_meta: dict) -> list:
         if s1_meta:
             try:
                 s1_index_url = edgar_client.build_filing_index_url(cik, s1_meta["accession_no"])
-                s1_document_url = filing_parser.find_primary_document_url(s1_index_url)
+                s1_document_url = filing_parser.find_primary_document_url(
+                    s1_index_url, expected_form_types=["S-1", "S-1/A"]
+                )
                 s1_parsed = filing_parser.parse_filing(s1_document_url, is_range_filing=True)
                 price_range = s1_parsed.get("price_range", {})
                 if price_range.get("range_low") and price_range.get("range_high"):
