@@ -92,6 +92,13 @@ def find_primary_document_url(index_url: str) -> str:
 
     if chosen.startswith("http"):
         return chosen
+    if chosen.startswith("/"):
+        # Root-relative path (relative to sec.gov's domain root), e.g.
+        # "/Archives/edgar/data/.../doc.htm" - this is the common case
+        # for EDGAR's filing index tables.
+        return f"https://www.sec.gov{chosen}"
+    # Bare filename with no leading slash - relative to the index page's
+    # own directory.
     base = index_url.rsplit("/", 1)[0]
     return f"{base}/{chosen}"
 
