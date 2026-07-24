@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IPO Ledger</title>
+<style>
+  :root {
+    --bg: #0E1420;
+    --surface: #161D2C;
+    --surface-raised: #1C2438;
+    --border: #2A3349;
+    --text: #E8E1D3;
+    --text-dim: #9CA3B5;
+    --text-faint: #5C6478;
+    --brass: #B8944D;
+    --brass-dim: #7A6538;
+    --sage: #6B8F71;
+    --brick: #B5482D;
+    --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+    --mono: 'SF Mono', 'Roboto Mono', Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* ---------- Header / ticker strip ---------- */
+  .masthead {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .masthead h1 {
+    font-family: var(--serif);
+    font-size: 30px;
+    font-weight: 400;
+    letter-spacing: 0.3px;
+    margin: 0;
+    color: var(--text);
+  }
+
+  .masthead .sub {
+    font-size: 12px;
+    color: var(--text-faint);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .refresh-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    padding: 8px 14px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+    font-family: var(--sans);
+  }
+  .refresh-btn:hover { border-color: var(--brass-dim); color: var(--brass); }
+  .refresh-btn:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+
+  .stat-strip {
+    display: flex;
+    gap: 0;
+    margin-bottom: 32px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .stat {
+    flex: 1;
+    padding: 16px 20px;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+  .stat .num {
+    font-family: var(--mono);
+    font-size: 26px;
+    color: var(--brass);
+    line-height: 1;
+  }
+  .stat .label {
+    font-size: 11px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 6px;
+  }
+
+  /* ---------- Controls ---------- */
+  .controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .search-input {
+    flex: 1;
+    min-width: 200px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    border-radius: 3px;
+    font-size: 14px;
+    font-family: var(--sans);
+  }
+  .search-input:focus-visible { outline: 2px solid var(--brass); outline-offset: 1px; }
+  .search-input::placeholder { color: var(--text-faint); }
+
+  .toggle-flagged {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    padding: 10px 16px;
+    border-radius: 3px;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: var(--sans);
+  }
+  .toggle-flagged.active {
+    border-color: var(--brick);
+    color: var(--brick);
+    background: rgba(181, 72, 45, 0.08);
+  }
+  .toggle-flagged:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+
+  /* ---------- Ledger entries (companies) ---------- */
+  .entry {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 14px;
+    background: var(--surface);
+    overflow: hidden;
+  }
+
+  .entry-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .entry-head:focus-visible { outline: 2px solid var(--brass); outline-offset: -2px; }
+
+  .entry-title {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .entry-title .company {
+    font-family: var(--serif);
+    font-size: 18px;
+    color: var(--text);
+  }
+  .entry-title .ticker {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--brass);
+    letter-spacing: 0.5px;
+  }
+
+  .entry-meta {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .entry-meta .price-move.up { color: var(--sage); }
+  .entry-meta .price-move.down { color: var(--brick); }
+
+  .chev {
+    color: var(--text-faint);
+    font-size: 11px;
+    transition: transform 0.15s ease;
+  }
+  .entry.open .chev { transform: rotate(90deg); }
+
+  .entry-body {
+    display: none;
+    border-top: 1px solid var(--border);
+  }
+  .entry.open .entry-body { display: block; }
+
+  .holder-row {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 0.9fr 1.4fr;
+    gap: 12px;
+    padding: 13px 20px;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+  }
+  .holder-row:last-child { border-bottom: none; }
+  .holder-row.flagged { border-left: 3px solid var(--brick); background: rgba(181, 72, 45, 0.04); }
+
+  .holder-name { color: var(--text); }
+  .holder-name .qc-note {
+    display: block;
+    font-size: 11px;
+    color: var(--brick);
+    margin-top: 3px;
+  }
+
+  .holder-num { font-family: var(--mono); color: var(--text-dim); }
+
+  /* Stamp: the signature element for Stanford confidence */
+  .stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .stamp-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1.3px solid var(--brass-dim);
+  }
+  .stamp-dot.filled { background: var(--brass); border-color: var(--brass); }
+  .stamp-label {
+    margin-left: 6px;
+    font-size: 11px;
+    color: var(--text-faint);
+    font-family: var(--mono);
+  }
+
+  .lockup-tag {
+    font-size: 11.5px;
+    color: var(--text-faint);
+    font-family: var(--mono);
+  }
+
+  /* ---------- Empty / loading / error states ---------- */
+  .state-panel {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 48px 32px;
+    text-align: center;
+    color: var(--text-dim);
+  }
+  .state-panel h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 19px;
+    color: var(--text);
+    margin: 0 0 8px;
+  }
+  .state-panel p { font-size: 14px; line-height: 1.6; margin: 0; color: var(--text-dim); }
+  .state-panel .mono-hint {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-faint);
+    margin-top: 14px;
+  }
+
+  /* ---------- Setup form ---------- */
+  .setup-form {
+    max-width: 480px;
+    margin: 60px auto;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 32px;
+    background: var(--surface);
+  }
+  .setup-form h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 21px;
+    margin: 0 0 6px;
+  }
+  .setup-form .desc {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 22px;
+  }
+  .field-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-faint);
+    margin-bottom: 6px;
+    display: block;
+  }
+  .setup-form input {
+    width: 100%;
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 3px;
+    font-size: 13px;
+    font-family: var(--mono);
+    margin-bottom: 18px;
+  }
+  .setup-form input:focus-visible { outline: 2px solid var(--brass); outline-offset: 1px; }
+  .setup-form button {
+    width: 100%;
+    background: var(--brass);
+    border: none;
+    color: #1A1408;
+    font-weight: 600;
+    padding: 11px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: var(--sans);
+  }
+  .setup-form button:hover { background: #C9A15C; }
+  .setup-form button:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+  .setup-form .privacy-note {
+    font-size: 11.5px;
+    color: var(--text-faint);
+    line-height: 1.6;
+    margin-top: 16px;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+  }
+
+  @media (max-width: 640px) {
+    .holder-row { grid-template-columns: 1fr 1fr; row-gap: 4px; }
+    .entry-meta { display: none; }
+    .stat-strip { flex-wrap: wrap; }
+    .stat { flex: 1 1 50%; border-bottom: 1px solid var(--border); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app">Loading&hellip;</div>
+
+<script>
+const COLUMNS = [
+  "Company Name","Ticker","Filing Price","Actual Price","Current Price",
+  "Holder Name","Shares","Cash Value","Stanford Grade","Stanford Justification",
+  "Lock-Up Expiry","QC Status","QC Notes","Last Updated"
+];
+
+let state = {
+  config: null,
+  rows: [],
+  loading: true,
+  error: null,
+  search: "",
+  showFlaggedOnly: false,
+  openCompanies: new Set(),
+};
+
+async function loadConfig() {
+  try {
+    const result = await window.storage.get('sheets-config');
+    if (result && result.value) return JSON.parse(result.value);
+  } catch (e) { /* not set yet */ }
+  return null;
+}
+
+async function saveConfig(cfg) {
+  await window.storage.set('sheets-config', JSON.stringify(cfg));
+}
+
+function fmtMoney(v) {
+  const n = parseFloat(v);
+  if (isNaN(n)) return '—';
+  return '$' + n.toLocaleString('en-US', { maximumFractionDigits: n < 10 ? 4 : 2 });
+}
+
+function fmtShares(v) {
+  const n = parseInt(String(v).replace(/,/g, ''), 10);
+  if (isNaN(n)) return '—';
+  return n.toLocaleString('en-US');
+}
+
+async function fetchSheetData(spreadsheetId, apiKey) {
+  const range = encodeURIComponent("IPO Tracker!A1:N2000");
+  const url = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${range}?key=${apiKey}`;
+  const res = await fetch(url);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body?.error?.message || `Request failed (HTTP ${res.status})`);
+  }
+  const data = await res.json();
+  const values = data.values || [];
+  if (values.length < 2) return [];
+  const header = values[0];
+  return values.slice(1).map(row => {
+    const obj = {};
+    header.forEach((col, i) => { obj[col] = row[i] ?? ''; });
+    return obj;
+  });
+}
+
+function groupByCompany(rows) {
+  const groups = {};
+  rows.forEach(r => {
+    const key = r['Ticker'] || r['Company Name'];
+    if (!groups[key]) groups[key] = { company: r['Company Name'], ticker: r['Ticker'],
+      filingPrice: r['Filing Price'], actualPrice: r['Actual Price'], currentPrice: r['Current Price'],
+      lockup: r['Lock-Up Expiry'], holders: [] };
+    groups[key].holders.push(r);
+  });
+  return Object.values(groups);
+}
+
+function stampHtml(grade) {
+  const g = parseInt(grade, 10) || 0;
+  let dots = '';
+  for (let i = 1; i <= 5; i++) {
+    dots += `<span class="stamp-dot ${i <= g ? 'filled' : ''}"></span>`;
+  }
+  const label = g === 5 ? 'confirmed' : g === 0 ? 'none found' : 'partial';
+  return `<span class="stamp">${dots}<span class="stamp-label">${label}</span></span>`;
+}
+
+function render() {
+  const app = document.getElementById('app');
+
+  if (state.loading) {
+    app.innerHTML = `<div class="state-panel"><h2>Reading the ledger&hellip;</h2><p>Pulling the latest tracked filings.</p></div>`;
+    return;
+  }
+
+  if (!state.config) {
+    app.innerHTML = `
+      <div class="setup-form">
+        <h2>Connect the ledger</h2>
+        <div class="desc">This dashboard reads directly from your IPO Tracker Google Sheet. It needs the sheet's ID and a read-only API key — it never writes anything back.</div>
+        <label class="field-label" for="in-sheet">Spreadsheet ID</label>
+        <input id="in-sheet" placeholder="from the sheet's URL" />
+        <label class="field-label" for="in-key">Read-only API key</label>
+        <input id="in-key" placeholder="Google Cloud API key" />
+        <button id="btn-connect">Connect</button>
+        <div class="privacy-note">Stored only in this artifact's private storage on your account — not shared, not sent anywhere else. The sheet must be set to "Anyone with the link can view" for this key to read it.</div>
+      </div>`;
+    document.getElementById('btn-connect').onclick = async () => {
+      const spreadsheetId = document.getElementById('in-sheet').value.trim();
+      const apiKey = document.getElementById('in-key').value.trim();
+      if (!spreadsheetId || !apiKey) return;
+      state.config = { spreadsheetId, apiKey };
+      await saveConfig(state.config);
+      init();
+    };
+    return;
+  }
+
+  if (state.error) {
+    app.innerHTML = `
+      <div class="state-panel">
+        <h2>Couldn't reach the sheet</h2>
+        <p>${state.error}</p>
+        <div class="mono-hint">Check the API key is restricted to Sheets API and the sheet allows link-viewers.</div>
+      </div>
+      <div style="text-align:center;margin-top:16px;">
+        <button class="refresh-btn" id="btn-retry">Try again</button>
+        <button class="refresh-btn" id="btn-reset" style="margin-left:8px;">Reset connection</button>
+      </div>`;
+    document.getElementById('btn-retry').onclick = () => init();
+    document.getElementById('btn-reset').onclick = async () => {
+      state.config = null;
+      await window.storage.delete('sheets-config').catch(() => {});
+      render();
+    };
+    return;
+  }
+
+  const totalCompanies = new Set(state.rows.map(r => r['Ticker'])).size;
+  const flaggedCount = state.rows.filter(r => r['QC Status'] === 'Needs Review').length;
+  const confirmedStanford = state.rows.filter(r => parseInt(r['Stanford Grade'], 10) === 5).length;
+
+  let filtered = state.rows;
+  if (state.showFlaggedOnly) filtered = filtered.filter(r => r['QC Status'] === 'Needs Review');
+  if (state.search.trim()) {
+    const q = state.search.toLowerCase();
+    filtered = filtered.filter(r =>
+      (r['Company Name'] || '').toLowerCase().includes(q) ||
+      (r['Ticker'] || '').toLowerCase().includes(q) ||
+      (r['Holder Name'] || '').toLowerCase().includes(q)
+    );
+  }
+
+  const groups = groupByCompany(filtered);
+
+  let entriesHtml;
+  if (groups.length === 0) {
+    entriesHtml = `
+      <div class="state-panel">
+        <h2>${state.rows.length === 0 ? 'No filings tracked yet' : 'Nothing matches'}</h2>
+        <p>${state.rows.length === 0
+          ? 'The daily pipeline checks SEC EDGAR each morning for newly priced IPOs. This ledger fills in as real filings come through.'
+          : 'Try a different search term, or clear the flagged-only filter.'}</p>
+      </div>`;
+  } else {
+    entriesHtml = groups.map((g, idx) => {
+      const isOpen = state.openCompanies.has(g.ticker);
+      const holdersHtml = g.holders.map(h => `
+        <div class="holder-row ${h['QC Status'] === 'Needs Review' ? 'flagged' : ''}">
+          <div class="holder-name">${h['Holder Name'] || '—'}${
+            h['QC Status'] === 'Needs Review' && h['QC Notes']
+              ? `<span class="qc-note">${h['QC Notes']}</span>` : ''
+          }</div>
+          <div class="holder-num">${fmtShares(h['Shares'])} sh</div>
+          <div class="holder-num">${fmtMoney(h['Cash Value'])}</div>
+          <div>${stampHtml(h['Stanford Grade'])}</div>
+          <div class="lockup-tag">${h['Lock-Up Expiry'] || '—'}</div>
+        </div>`).join('');
+
+      const priceMoveClass = (parseFloat(g.currentPrice) >= parseFloat(g.actualPrice)) ? 'up' : 'down';
+
+      return `
+        <div class="entry ${isOpen ? 'open' : ''}" data-ticker="${g.ticker}">
+          <div class="entry-head" tabindex="0" role="button" aria-expanded="${isOpen}">
+            <div class="entry-title">
+              <span class="chev">&#9656;</span>
+              <span class="company">${g.company}</span>
+              <span class="ticker">${g.ticker}</span>
+            </div>
+            <div class="entry-meta">
+              <span>IPO ${fmtMoney(g.actualPrice)}</span>
+              <span class="price-move ${priceMoveClass}">now ${fmtMoney(g.currentPrice)}</span>
+              <span>${g.holders.length} holder${g.holders.length === 1 ? '' : 's'}</span>
+            </div>
+          </div>
+          <div class="entry-body">${holdersHtml}</div>
+        </div>`;
+    }).join('');
+  }
+
+  app.innerHTML = `
+    <div class="masthead">
+      <div>
+        <h1>IPO Ledger</h1>
+        <div class="sub">Beneficial ownership &amp; Stanford affiliation tracker</div>
+      </div>
+      <button class="refresh-btn" id="btn-refresh">&#8635; Refresh</button>
+    </div>
+
+    <div class="stat-strip">
+      <div class="stat"><div class="num">${totalCompanies}</div><div class="label">Companies tracked</div></div>
+      <div class="stat"><div class="num">${state.rows.length}</div><div class="label">Holders logged</div></div>
+      <div class="stat"><div class="num">${confirmedStanford}</div><div class="label">Confirmed Stanford</div></div>
+      <div class="stat"><div class="num" style="color:${flaggedCount ? 'var(--brick)' : 'var(--brass)'}">${flaggedCount}</div><div class="label">Flagged for review</div></div>
+    </div>
+
+    <div class="controls">
+      <input class="search-input" id="in-search" placeholder="Search company, ticker, or holder&hellip;" value="${state.search}" />
+      <button class="toggle-flagged ${state.showFlaggedOnly ? 'active' : ''}" id="btn-toggle-flagged">Flagged only</button>
+    </div>
+
+    ${entriesHtml}
+  `;
+
+  document.getElementById('btn-refresh').onclick = () => init(true);
+  const searchInput = document.getElementById('in-search');
+  searchInput.oninput = (e) => { state.search = e.target.value; render(); };
+  searchInput.focus();
+  searchInput.selectionStart = searchInput.selectionEnd = searchInput.value.length;
+
+  document.getElementById('btn-toggle-flagged').onclick = () => {
+    state.showFlaggedOnly = !state.showFlaggedOnly;
+    render();
+  };
+
+  document.querySelectorAll('.entry-head').forEach(el => {
+    const toggle = () => {
+      const ticker = el.parentElement.getAttribute('data-ticker');
+      if (state.openCompanies.has(ticker)) state.openCompanies.delete(ticker);
+      else state.openCompanies.add(ticker);
+      render();
+    };
+    el.onclick = toggle;
+    el.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } };
+  });
+}
+
+async function init(forceRefresh) {
+  state.loading = true;
+  state.error = null;
+  render();
+
+  if (!state.config) {
+    state.config = await loadConfig();
+  }
+  if (!state.config) {
+    state.loading = false;
+    render();
+    return;
+  }
+
+  try {
+    state.rows = await fetchSheetData(state.config.spreadsheetId, state.config.apiKey);
+  } catch (e) {
+    state.error = e.message || String(e);
+  }
+  state.loading = false;
+  render();
+}
+
+init();
+</script>
+</body>
+</html>
