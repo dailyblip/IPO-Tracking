@@ -262,6 +262,32 @@ def extract_price_range(soup: BeautifulSoup) -> dict:
     return {"range_low": None, "range_high": None}
 
 
+def extract_offering_size(soup: BeautifulSoup) -> int:
+    """
+    Extract the number of shares being offered from the cover page,
+    e.g. "We are offering 5,000,000 shares of our common stock."
+    Returns None if no confident match is found - cover page phrasing
+    varies enough between filers that this is a best-effort extraction,
+    not a guarantee.
+    """
+    full_text = soup.get_text(" ", strip=True)
+    cover_text = full_text[:5000]
+
+    patterns = [
+        r"offering\s+([\d,]{4,})\s+shares",
+        r"([\d,]{4,})\s+shares\s+of\s+(?:our\s+)?common\s+stock",
+        r"sale\s+of\s+([\d,]{4,})\s+shares",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, cover_text, re.IGNORECASE)
+        if match:
+            try:
+                return int(match.group(1).replace(",", ""))
+            except ValueError:
+                continue
+    return None
+
+
 def extract_principal_stockholders(soup: BeautifulSoup) -> list:
     """
     Extract the beneficial ownership grid. Returns a list of dicts:
@@ -377,8 +403,11 @@ def parse_filing(document_url: str, is_range_filing: bool = False) -> dict:
     """
     soup = fetch_document(document_url)
 
+    cover_page_data = extract_cover_page_data(soup)
+    cover_page_data["offering_size_shares"] = extract_offering_size(soup)
+
     result = {
-        "cover_page": extract_cover_page_data(soup),
+        "cover_page": cover_page_data,
         "principal_stockholders": extract_principal_stockholders(soup),
         "management_bios": extract_management_bios(soup),
         "lockup_info": extract_lockup_info(soup),

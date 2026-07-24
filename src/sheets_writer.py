@@ -23,8 +23,12 @@ SCOPES = [
 COLUMNS = [
     "Company Name",
     "Ticker",
+    "Date of Filing",
+    "Date of Pricing",
     "Filing Price",
     "Actual Price",
+    "IPO Size (Shares)",
+    "Amount Raised",
     "Current Price",
     "Holder Name",
     "Shares",

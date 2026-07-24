@@ -47,39 +47,63 @@ def _get_headers() -> dict:
     return {"User-Agent": user_agent}
 
 
-def find_recent_424b4_filings(days_back: int = 1) -> list:
+def find_recent_424b4_filings(days_back: int = 1, start_date: str = None,
+                                end_date: str = None, max_results: int = 500) -> list:
     """
-    Search EDGAR full-text search for 424B4 filings filed in the last
-    `days_back` days. Returns a list of dicts with basic filing metadata
-    (company name, CIK, accession number, filing date, document URL).
+    Search EDGAR full-text search for 424B4 filings.
+
+    Either pass days_back (default daily-run behavior: filings from the
+    last N days), or pass start_date/end_date explicitly (YYYY-MM-DD,
+    used for backfilling a historical range) - if both are given,
+    start_date/end_date take precedence.
+
+    Paginates automatically (EDGAR returns ~10 hits per page) up to
+    max_results, since a multi-week or multi-month backfill window can
+    easily exceed a single page across the whole market.
     """
     headers = _get_headers()
-    params = {
-        "forms": "424B4",
-        "dateRange": "custom",
-        "startdt": _date_days_ago(days_back),
-        "enddt": _today(),
-    }
-
-    response = requests.get(
-        EDGAR_FULL_TEXT_SEARCH_URL, headers=headers, params=params, timeout=15
-    )
-    response.raise_for_status()
-    data = response.json()
+    effective_start = start_date or _date_days_ago(days_back)
+    effective_end = end_date or _today()
 
     results = []
-    for hit in data.get("hits", {}).get("hits", []):
-        source = hit.get("_source", {})
-        cik = source.get("ciks", [None])[0]
-        accession_no = hit.get("_id", "").split(":")[0]
-        results.append({
-            "company_name": source.get("display_names", ["Unknown"])[0],
-            "cik": cik,
-            "accession_no": accession_no,
-            "filing_date": source.get("file_date"),
-            "form_type": source.get("root_form"),
-        })
+    offset = 0
+    page_size = 10  # EDGAR full-text search's default page size
+
+    while offset < max_results:
+        params = {
+            "forms": "424B4",
+            "dateRange": "custom",
+            "startdt": effective_start,
+            "enddt": effective_end,
+            "from": offset,
+        }
+        response = requests.get(
+            EDGAR_FULL_TEXT_SEARCH_URL, headers=headers, params=params, timeout=15
+        )
+        response.raise_for_status()
         time.sleep(REQUEST_DELAY_SECONDS)
+        data = response.json()
+
+        hits = data.get("hits", {}).get("hits", [])
+        if not hits:
+            break
+
+        for hit in hits:
+            source = hit.get("_source", {})
+            cik = source.get("ciks", [None])[0]
+            accession_no = hit.get("_id", "").split(":")[0]
+            results.append({
+                "company_name": source.get("display_names", ["Unknown"])[0],
+                "cik": cik,
+                "accession_no": accession_no,
+                "filing_date": source.get("file_date"),
+                "form_type": source.get("root_form"),
+            })
+
+        total_available = data.get("hits", {}).get("total", {}).get("value", 0)
+        offset += page_size
+        if offset >= total_available:
+            break
 
     return results
 
