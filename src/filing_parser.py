@@ -65,30 +65,47 @@ def fetch_document(url: str) -> BeautifulSoup:
     return BeautifulSoup(response.text, "lxml")
 
 
-def find_primary_document_url(index_url: str) -> str:
+def find_primary_document_url(index_url: str, expected_form_types: list = None) -> str:
     """
-    Given a filing's index page URL, find the primary document - usually
-    the largest .htm file, or the one whose "Type" column in the filing
-    index table matches the form type (424B4, S-1, etc).
+    Given a filing's "-index.htm" page URL, find the primary document.
+    Prefers the row whose "Type" column matches one of
+    expected_form_types (e.g. ["424B4"] or ["S-1", "S-1/A"]) - EDGAR's
+    index table reliably has this column, which is a much more precise
+    signal than guessing from the filename. Falls back to the first
+    non-exhibit, non-metadata .htm file if no type match is found.
     """
     soup = fetch_document(index_url)
     table = soup.find("table", class_="tableFile") or soup.find("table")
     if table is None:
         raise FilingParserError(f"Could not find document table at {index_url}")
 
-    candidates = []
+    candidates = []  # (href, matched_type_bool)
     for row in table.find_all("tr"):
         link = row.find("a", href=True)
-        if link and link["href"].lower().endswith((".htm", ".html")):
-            candidates.append(link["href"])
+        if not (link and link["href"].lower().endswith((".htm", ".html"))):
+            continue
+        cell_texts = [c.get_text(strip=True) for c in row.find_all("td")]
+        matched_type = bool(expected_form_types) and any(
+            ft.upper() == cell.upper() for ft in expected_form_types for cell in cell_texts
+        )
+        candidates.append((link["href"], matched_type))
 
     if not candidates:
         raise FilingParserError(f"No .htm documents found at {index_url}")
 
-    # Heuristic: the primary document is usually the first substantial
-    # .htm file listed, and is rarely named things like "ex-" (exhibits).
-    main_candidates = [c for c in candidates if "ex" not in c.lower().split("/")[-1][:3]]
-    chosen = main_candidates[0] if main_candidates else candidates[0]
+    type_matches = [href for href, matched in candidates if matched]
+    if type_matches:
+        chosen = type_matches[0]
+    else:
+        # Fall back: skip exhibits ("ex-...") and EDGAR metadata files
+        # (the "-index.htm"/"-index-headers.html" pages link to
+        # themselves in this same table).
+        non_exhibit = [
+            href for href, _ in candidates
+            if "ex" not in href.lower().split("/")[-1][:3]
+            and "-index" not in href.lower()
+        ]
+        chosen = non_exhibit[0] if non_exhibit else candidates[0][0]
 
     if chosen.startswith("http"):
         return chosen
