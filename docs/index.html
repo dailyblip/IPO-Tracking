@@ -375,16 +375,24 @@ let state = {
   openCompanies: new Set(),
 };
 
-async function loadConfig() {
+function loadConfig() {
   try {
-    const result = await window.storage.get('sheets-config');
-    if (result && result.value) return JSON.parse(result.value);
-  } catch (e) { /* not set yet */ }
+    const raw = localStorage.getItem('ipo-ledger-sheets-config');
+    if (raw) return JSON.parse(raw);
+  } catch (e) { /* not set yet, or storage unavailable */ }
   return null;
 }
 
-async function saveConfig(cfg) {
-  await window.storage.set('sheets-config', JSON.stringify(cfg));
+function saveConfig(cfg) {
+  try {
+    localStorage.setItem('ipo-ledger-sheets-config', JSON.stringify(cfg));
+  } catch (e) { /* storage unavailable - config will need re-entry each visit */ }
+}
+
+function clearConfig() {
+  try {
+    localStorage.removeItem('ipo-ledger-sheets-config');
+  } catch (e) { /* no-op */ }
 }
 
 function fmtMoney(v) {
@@ -458,14 +466,27 @@ function render() {
         <label class="field-label" for="in-key">Read-only API key</label>
         <input id="in-key" placeholder="Google Cloud API key" />
         <button id="btn-connect">Connect</button>
-        <div class="privacy-note">Stored only in this artifact's private storage on your account — not shared, not sent anywhere else. The sheet must be set to "Anyone with the link can view" for this key to read it.</div>
+        <div id="setup-error" style="color: var(--brick); font-size: 12px; margin-top: 10px; display: none;"></div>
+        <div class="privacy-note">Stored only in this browser's local storage on this device — never sent anywhere except directly to Google's Sheets API. The sheet must be set to "Anyone with the link can view" for this key to read it.</div>
       </div>`;
-    document.getElementById('btn-connect').onclick = async () => {
+    document.getElementById('btn-connect').onclick = () => {
+      const errorEl = document.getElementById('setup-error');
       const spreadsheetId = document.getElementById('in-sheet').value.trim();
       const apiKey = document.getElementById('in-key').value.trim();
-      if (!spreadsheetId || !apiKey) return;
+
+      if (!spreadsheetId || !apiKey) {
+        errorEl.textContent = !spreadsheetId && !apiKey
+          ? 'Enter both the Spreadsheet ID and API key.'
+          : !spreadsheetId
+            ? 'Enter the Spreadsheet ID.'
+            : 'Enter the API key.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      errorEl.style.display = 'none';
       state.config = { spreadsheetId, apiKey };
-      await saveConfig(state.config);
+      saveConfig(state.config);
       init();
     };
     return;
@@ -483,9 +504,9 @@ function render() {
         <button class="refresh-btn" id="btn-reset" style="margin-left:8px;">Reset connection</button>
       </div>`;
     document.getElementById('btn-retry').onclick = () => init();
-    document.getElementById('btn-reset').onclick = async () => {
+    document.getElementById('btn-reset').onclick = () => {
       state.config = null;
-      await window.storage.delete('sheets-config').catch(() => {});
+      clearConfig();
       render();
     };
     return;
@@ -606,7 +627,7 @@ async function init(forceRefresh) {
   render();
 
   if (!state.config) {
-    state.config = await loadConfig();
+    state.config = loadConfig();
   }
   if (!state.config) {
     state.loading = false;
@@ -617,11 +638,18 @@ async function init(forceRefresh) {
   try {
     state.rows = await fetchSheetData(state.config.spreadsheetId, state.config.apiKey);
   } catch (e) {
-    state.error = e.message || String(e);
+    state.error = (e && e.message) ? e.message : String(e);
   }
   state.loading = false;
   render();
 }
+
+window.addEventListener('error', (e) => {
+  const app = document.getElementById('app');
+  if (app && !app.innerHTML.trim()) {
+    app.innerHTML = `<div class="state-panel"><h2>Something went wrong</h2><p>${e.message || 'Unknown error'}</p></div>`;
+  }
+});
 
 init();
 </script>
