@@ -65,6 +65,14 @@ def process_filing(filing_meta: dict) -> list:
         ticker = cover.get("ticker")
         actual_price = cover.get("offering_price")
 
+        stockholder_count = len(parsed.get("principal_stockholders", []))
+        bio_count = len([k for k in parsed.get("management_bios", {}) if k != "_full_text"])
+        print(
+            f"[main] {company_name}: ticker={ticker}, offering_price={actual_price}, "
+            f"stockholders_found={stockholder_count}, bios_split={bio_count}, "
+            f"lockup_text_found={bool(parsed.get('lockup_info', {}).get('raw_text'))}"
+        )
+
         if not ticker:
             print(f"[main] Skipping {company_name}: could not extract ticker")
             return []
