@@ -90,10 +90,17 @@ def process_filing(filing_meta: dict) -> list:
         parsed = filing_parser.parse_filing(document_url)
 
         full_text_soup = filing_parser.fetch_document(document_url)
+        filing_text = full_text_soup.get_text(" ", strip=True)
         if edgar_client.check_spac_indicators(
-            full_text_soup.get_text(" ", strip=True), company_name=company_name
+            filing_text, company_name=company_name
         ):
             print(f"[main] Flagging {company_name}: possible SPAC language detected - skipping")
+            return []
+        if edgar_client.check_direct_listing_indicators(filing_text):
+            print(
+                f"[main] Skipping {company_name}: direct listing/resale prospectus, "
+                f"not an underwritten primary IPO"
+            )
             return []
 
         cover = parsed["cover_page"]

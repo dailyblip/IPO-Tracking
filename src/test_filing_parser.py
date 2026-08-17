@@ -18,7 +18,11 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from bs4 import BeautifulSoup
 
-from filing_parser import extract_principal_stockholders
+from filing_parser import (
+    extract_cover_page_data,
+    extract_offering_size,
+    extract_principal_stockholders,
+)
 
 
 def _soup(html: str) -> BeautifulSoup:
@@ -79,6 +83,20 @@ class ExtractPrincipalStockholdersTests(unittest.TestCase):
         html = "<html><body><p>No relevant section here.</p></body></html>"
         result = extract_principal_stockholders(_soup(html))
         self.assertEqual(result, [])
+
+
+    def test_extracts_price_and_size_from_long_spaced_cover(self):
+        html = f"""
+        <html><body>
+        <p>{"x" * 6000}</p>
+        <p>This is the initial public offering of shares of common stock.</p>
+        <p>We are offering 21,250,000 shares of our common stock.</p>
+        <p>The initial public offering price per share is $ 18.00.</p>
+        </body></html>
+        """
+        soup = _soup(html)
+        self.assertEqual(extract_cover_page_data(soup)["offering_price"], 18.0)
+        self.assertEqual(extract_offering_size(soup), 21_250_000)
 
 
 if __name__ == "__main__":
