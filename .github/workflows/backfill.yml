@@ -1,20 +1,16 @@
-name: Backfill Historical IPOs
+name: Backfill Historical IPOs (Manual)
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/backfill.yml'
   workflow_dispatch:
     inputs:
       start_date:
         description: 'Backfill from this date (YYYY-MM-DD)'
         required: true
-        default: '2026-07-17'
+        default: '2026-06-01'
       end_date:
-        description: 'Backfill through this date (YYYY-MM-DD)'
-        required: true
-        default: '2026-08-17'
+        description: 'Backfill through this date (YYYY-MM-DD, blank = today)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -30,8 +26,8 @@ jobs:
     timeout-minutes: 180
 
     env:
-      BACKFILL_START: ${{ github.event.inputs.start_date || '2026-07-17' }}
-      BACKFILL_END: ${{ github.event.inputs.end_date || '2026-08-17' }}
+      BACKFILL_START: ${{ github.event.inputs.start_date }}
+      BACKFILL_END: ${{ github.event.inputs.end_date }}
 
     steps:
       - name: Check out repo
@@ -49,6 +45,12 @@ jobs:
 
       - name: Run unit tests
         run: python -m unittest discover -s src -p 'test_*.py' -v
+
+      - name: Resolve backfill range
+        run: |
+          if [ -z "$BACKFILL_END" ]; then
+            echo "BACKFILL_END=$(date -u +%F)" >> "$GITHUB_ENV"
+          fi
 
       - name: Run backfill
         working-directory: src
