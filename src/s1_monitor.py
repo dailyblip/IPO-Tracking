@@ -226,6 +226,8 @@ def _queue_record(record: dict) -> dict:
         "accession_no": record.get("accession_no") or record.get("id") or "",
         "form": record.get("form") or "S-1",
         "filed": record.get("filed") or "",
+        "stage": record.get("stage") or "Pre-pricing",
+        "price_range": record.get("price_range"),
         "priority": record.get("priority") or "Medium",
         "status": "New",
         "value": None,
