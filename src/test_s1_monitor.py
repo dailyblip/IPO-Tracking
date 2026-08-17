@@ -1,4 +1,5 @@
 import json
+import csv
 import os
 import tempfile
 import unittest
@@ -138,6 +139,11 @@ class S1MonitorTests(unittest.TestCase):
             self.assertEqual(payload["filings"][0]["accession_no"], "new-accession")
             self.assertEqual(payload["filings"][0]["form"], "S-1/A")
             self.assertFalse(Path(str(path) + ".tmp").exists())
+            with path.with_suffix(".csv").open(encoding="utf-8", newline="") as handle:
+                rows = list(csv.DictReader(handle))
+            self.assertEqual(len(rows), 1)
+            self.assertEqual(rows[0]["form"], "S-1/A")
+            self.assertEqual(rows[0]["filing_price"], "")
 
     def test_sync_queue_removes_prepricing_row_after_424b4(self):
         prepricing = {
