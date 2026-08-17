@@ -118,6 +118,7 @@ jobs:
 
       - name: Publish Research Monitor data
         run: |
+          echo "Publishing corrected range $BACKFILL_START through $BACKFILL_END."
           if git diff --quiet -- docs/data/filings.json; then
             echo "Research Monitor data is unchanged."
             exit 0
