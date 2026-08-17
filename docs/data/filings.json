@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-17T06:11:45.797577+00:00",
+  "generated_at": "2026-08-17T06:18:37.466443+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -72,13 +72,14 @@
       "accession_no": "0001628280-26-054354",
       "form": "424B4",
       "filed": "2026-08-06",
-      "priority": "Low",
+      "priority": "Medium",
       "status": "New",
-      "value": null,
-      "value_label": "—",
+      "value": 382500000.0,
+      "value_label": "$382M",
       "people_count": 0,
       "signals": [
-        "Final prospectus available for researcher review"
+        "Final prospectus available for researcher review",
+        "Offering raised approximately $382M"
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2131524/000162828026054354/0001628280-26-054354-index.htm"
