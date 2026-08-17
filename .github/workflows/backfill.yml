@@ -112,7 +112,7 @@ jobs:
           with open(summary, "a", encoding="utf-8") as handle:
               handle.write("## Research Monitor backfill\n\n")
               handle.write(f"- Range: {os.environ['BACKFILL_START']} through {os.environ['BACKFILL_END']}\n")
-              handle.write(f"- Published qualifying filings: {len(rows)}\n")
+              handle.write(f"- Public feed filings after range replacement: {len(rows)}\n")
           print(f"Validated public feed with {len(rows)} qualifying filings.")
           PY
 
