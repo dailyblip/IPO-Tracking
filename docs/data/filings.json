@@ -1,6 +1,88 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-17T04:46:08.681814+00:00",
+  "generated_at": "2026-08-17T04:49:12.863850+00:00",
   "source": "SEC EDGAR",
-  "filings": []
+  "filings": [
+    {
+      "id": "0001193125-26-351136",
+      "company": "Londian Wason New Energy Tech Inc.  (CIK 0002006960)",
+      "ticker": "FOIL",
+      "cik": "0002006960",
+      "accession_no": "0001193125-26-351136",
+      "form": null,
+      "filed": "2026-08-14",
+      "priority": "High",
+      "status": "New",
+      "value": null,
+      "value_label": "$0",
+      "people_count": 12,
+      "signals": [
+        "12 named beneficial owners disclosed",
+        "Named holdings currently valued at approximately $16.8B"
+      ],
+      "people": [
+        {
+          "name": "Guanran Wang (1)(2)(8)",
+          "shares": 200335615.0,
+          "cash_value": 4828088321.5
+        },
+        {
+          "name": "Guangling Zhou (3)",
+          "shares": 150000.0,
+          "cash_value": 3615000.0
+        },
+        {
+          "name": "Zhongbo Bai (4)",
+          "shares": 200000.0,
+          "cash_value": 4820000.0
+        },
+        {
+          "name": "Yuchi Tsui (4)",
+          "shares": 200000.0,
+          "cash_value": 4820000.0
+        },
+        {
+          "name": "Zheng Zheng (5)",
+          "shares": 90000.0,
+          "cash_value": 2169000.0
+        },
+        {
+          "name": "Xi Zhou (3)",
+          "shares": 150000.0,
+          "cash_value": 3615000.0
+        },
+        {
+          "name": "All directors and executive officers as a group",
+          "shares": 201125615.0,
+          "cash_value": 4847127321.5
+        },
+        {
+          "name": "DR Global Holdings Limited (2)",
+          "shares": 131493850.0,
+          "cash_value": 3169001785.0
+        },
+        {
+          "name": "Golden Pearl EV Solutions\nLimited (6)",
+          "shares": 67193167.0,
+          "cash_value": 1619355324.7
+        },
+        {
+          "name": "Alexandria III Corp. Limited (7)",
+          "shares": 35488829.0,
+          "cash_value": 855280778.9000001
+        },
+        {
+          "name": "Jesi Industrial Development (Hong Kong)\nLimited (8)",
+          "shares": 30206719.0,
+          "cash_value": 727981927.9000001
+        },
+        {
+          "name": "Advanced New Energy Material Technology Holding\nLtd. (9)",
+          "shares": 28453440.0,
+          "cash_value": 685727904.0
+        }
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2006960/000119312526351136/0001193125-26-351136-index.htm"
+    }
+  ]
 }
