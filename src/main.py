@@ -76,6 +76,14 @@ def process_filing(filing_meta: dict) -> list:
             )
             return []
 
+        s1_meta = edgar_client.find_matching_s1(cik)
+        if not s1_meta:
+            print(
+                f"[main] Skipping {company_name}: no S-1/S-1A registration found; "
+                f"likely a foreign private issuer or non-domestic offering"
+            )
+            return []
+
         index_url = edgar_client.build_filing_index_url(cik, filing_meta["accession_no"])
         document_url = filing_parser.find_primary_document_url(index_url, expected_form_types=["424B4"])
 
@@ -109,7 +117,6 @@ def process_filing(filing_meta: dict) -> list:
 
         # Pull the matching S-1 for the original range price and the
         # original filing date.
-        s1_meta = edgar_client.find_matching_s1(cik)
         filing_price = None
         date_of_filing = s1_meta.get("filing_date") if s1_meta else None
         if s1_meta:
@@ -220,7 +227,7 @@ def run(days_back: int = DEFAULT_LOOKBACK_DAYS, start_date: str = None, end_date
             row.update({
                 "_cik": filing_meta.get("cik", ""),
                 "_accession_no": filing_meta.get("accession_no", ""),
-                "_form": filing_meta.get("form_type", "424B4"),
+                "_form": filing_meta.get("form_type") or "424B4",
                 "_sec_url": index_url,
             })
         all_rows.extend(rows)
