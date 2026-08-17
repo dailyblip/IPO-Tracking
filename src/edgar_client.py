@@ -13,6 +13,7 @@ block requests that don't provide one.
 """
 
 import os
+import re
 import time
 from datetime import date, timedelta
 
@@ -47,6 +48,11 @@ def _get_headers() -> dict:
             "e.g. 'YourName your@email.com'."
         )
     return {"User-Agent": user_agent}
+
+
+def _clean_company_name(value: str) -> str:
+    """Remove EFTS display suffixes such as '(CIK 0000123456)'."""
+    return re.sub(r"\s*\(CIK\s+\d+\)\s*$", "", str(value or ""), flags=re.IGNORECASE).strip()
 
 
 def _request_json(url: str, headers: dict, params: dict = None) -> dict:
@@ -107,7 +113,7 @@ def _find_from_daily_indexes(start_date: str, end_date: str, max_results: int,
             cik, company_name, form_type, filing_date, filename = parts
             accession_no = filename.rsplit("/", 1)[-1].removesuffix(".txt")
             results.append({
-                "company_name": company_name.strip(),
+                "company_name": _clean_company_name(company_name),
                 "cik": cik.strip(),
                 "accession_no": accession_no,
                 "filing_date": filing_date.strip(),
@@ -150,11 +156,11 @@ def find_recent_424b4_filings(days_back: int = 1, start_date: str = None,
                 cik = source.get("ciks", [None])[0]
                 accession_no = hit.get("_id", "").split(":")[0]
                 results.append({
-                    "company_name": source.get("display_names", ["Unknown"])[0],
+                    "company_name": _clean_company_name(source.get("display_names", ["Unknown"])[0]),
                     "cik": cik,
                     "accession_no": accession_no,
                     "filing_date": source.get("file_date"),
-                    "form_type": source.get("root_form"),
+                    "form_type": source.get("root_form") or "424B4",
                 })
 
             total = data.get("hits", {}).get("total", {})

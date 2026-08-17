@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -25,7 +26,7 @@ def _number(value):
 
 def _money(value):
     value = _number(value)
-    if value is None:
+    if value is None or value <= 0:
         return "—"
     if value >= 1_000_000_000:
         return f"${value / 1_000_000_000:.1f}B"
@@ -34,6 +35,20 @@ def _money(value):
     if value >= 1_000:
         return f"${value / 1_000:.0f}K"
     return f"${value:,.0f}"
+
+
+def _clean_company_name(value):
+    return re.sub(r"\s*\(CIK\s+\d+\)\s*$", "", str(value or ""), flags=re.IGNORECASE).strip()
+
+
+def _clean_holder_name(value):
+    name = " ".join(str(value or "").split())
+    return re.sub(r"(?:\s*\(\d+\))+$", "", name).strip()
+
+
+def _is_aggregate_holder(name):
+    lowered = name.lower()
+    return lowered.startswith("all directors and executive officers") or lowered.startswith("all executive officers and directors")
 
 
 def _public_only(filing):
@@ -47,27 +62,27 @@ def _public_only(filing):
     return clean
 
 
-def _priority(rows):
+def _priority(rows, people):
     amount = max((_number(row.get("Amount Raised")) or 0 for row in rows), default=0)
-    holdings = sum((_number(row.get("Cash Value")) or 0 for row in rows))
-    if amount >= 500_000_000 or holdings >= 250_000_000:
+    largest_holding = max((person.get("cash_value") or 0 for person in people), default=0)
+    if amount >= 500_000_000 or largest_holding >= 250_000_000:
         return "High"
-    if amount >= 100_000_000 or holdings >= 50_000_000:
+    if amount >= 100_000_000 or largest_holding >= 50_000_000:
         return "Medium"
     return "Low"
 
 
-def _signals(rows):
+def _signals(rows, people):
     signals = []
     amount = max((_number(row.get("Amount Raised")) or 0 for row in rows), default=0)
-    holdings = sum((_number(row.get("Cash Value")) or 0 for row in rows))
+    largest_holding = max((person.get("cash_value") or 0 for person in people), default=0)
     lockup = next((row.get("Lock-Up Expiry") for row in rows if row.get("Lock-Up Expiry")), None)
 
-    signals.append(f"{len(rows)} named beneficial owner{'s' if len(rows) != 1 else ''} disclosed")
+    signals.append(f"{len(people)} named beneficial owner{'s' if len(people) != 1 else ''} disclosed")
     if amount:
         signals.append(f"Offering raised approximately {_money(amount)}")
-    if holdings:
-        signals.append(f"Named holdings currently valued at approximately {_money(holdings)}")
+    if largest_holding:
+        signals.append(f"Largest named holding currently valued at approximately {_money(largest_holding)}")
     if lockup:
         signals.append("Lock-up terms captured for liquidity-event follow-up")
     return signals or ["New final prospectus available for researcher review"]
@@ -90,8 +105,8 @@ def build_payload(rows, generated_at=None):
         people = []
         seen = set()
         for row in group:
-            name = str(row.get("Holder Name", "")).strip()
-            if not name or name.lower() in seen:
+            name = _clean_holder_name(row.get("Holder Name", ""))
+            if not name or _is_aggregate_holder(name) or name.lower() in seen:
                 continue
             seen.add(name.lower())
             people.append({
@@ -102,18 +117,18 @@ def build_payload(rows, generated_at=None):
 
         filings.append({
             "id": key,
-            "company": first.get("Company Name", "Unknown"),
+            "company": _clean_company_name(first.get("Company Name", "Unknown")),
             "ticker": first.get("Ticker", ""),
             "cik": str(first.get("_cik", "")).zfill(10) if first.get("_cik") else "",
             "accession_no": first.get("_accession_no", ""),
-            "form": first.get("_form", "424B4"),
+            "form": first.get("_form") or "424B4",
             "filed": first.get("Date of Pricing") or first.get("Date of Filing") or "",
-            "priority": _priority(group),
+            "priority": _priority(group, people),
             "status": "New",
             "value": amount or None,
             "value_label": _money(amount),
             "people_count": len(people),
-            "signals": _signals(group),
+            "signals": _signals(group, people),
             "people": people,
             "sec_url": first.get("_sec_url", "https://www.sec.gov/edgar/search/"),
         })
