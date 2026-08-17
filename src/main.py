@@ -212,14 +212,27 @@ def run(days_back: int = DEFAULT_LOOKBACK_DAYS, start_date: str = None, end_date
         all_rows.extend(rows)
 
     if not all_rows:
-        print("[main] No rows produced this run. Ensuring Sheet tabs/headers exist...")
-        sheets_writer.ensure_tabs_exist(spreadsheet_id)
+        print("[main] No rows produced this run. Refreshing dashboard metadata...")
         dashboard_export.export_dashboard([], DASHBOARD_OUTPUT_PATH)
+        try:
+            sheets_writer.ensure_tabs_exist(spreadsheet_id)
+        except Exception as error:
+            print(
+                f"[main] WARNING: Google Sheet unavailable; dashboard refresh "
+                f"will continue and Sheets will retry next run: {error}"
+            )
         print("[main] Dashboard feed checked; no data to write this run.")
         return
 
     print(f"[main] Fetching previous run's data for QC comparison...")
-    previous_rows_by_key = sheets_writer.fetch_existing_rows(spreadsheet_id)
+    try:
+        previous_rows_by_key = sheets_writer.fetch_existing_rows(spreadsheet_id)
+    except Exception as error:
+        print(
+            f"[main] WARNING: Could not read previous Sheet rows; "
+            f"continuing without cross-run comparison: {error}"
+        )
+        previous_rows_by_key = {}
 
     source_excerpts_by_key = {}
     for row in all_rows:
@@ -240,12 +253,21 @@ def run(days_back: int = DEFAULT_LOOKBACK_DAYS, start_date: str = None, end_date
     )
 
     print(f"[main] Writing to Google Sheet...")
-    summary = sheets_writer.upsert_rows(spreadsheet_id, reviewed_rows)
+    try:
+        summary = sheets_writer.upsert_rows(spreadsheet_id, reviewed_rows)
+    except Exception as error:
+        print(
+            f"[main] WARNING: Google Sheet write deferred until the next run: {error}"
+        )
+        summary = None
 
-    print(
-        f"[main] Done. New: {summary['new']}, Updated: {summary['updated']}, "
-        f"Flagged for review: {summary['flagged']}"
-    )
+    if summary:
+        print(
+            f"[main] Done. New: {summary['new']}, Updated: {summary['updated']}, "
+            f"Flagged for review: {summary['flagged']}"
+        )
+    else:
+        print("[main] Done. Dashboard updated; Google Sheet sync deferred.")
 
 
 if __name__ == "__main__":
