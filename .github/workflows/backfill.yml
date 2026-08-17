@@ -1,7 +1,7 @@
 name: Backfill Historical IPOs (Manual)
 
 on:
-  # One-shot launch for the audited ownership rebuild; removed after success.
+  # Final one-shot launch after covering the selling-stockholder heading variant.
   push:
     branches: [main]
     paths:
