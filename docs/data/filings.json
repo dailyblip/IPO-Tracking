@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-17T06:47:43.621915+00:00",
+  "generated_at": "2026-08-17T06:53:41.073087+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -470,16 +470,28 @@
       "accession_no": "0001104659-26-088733",
       "form": "424B4",
       "filed": "2026-07-30",
-      "priority": "Medium",
+      "priority": "High",
       "status": "New",
       "value": 142182315.0,
       "value_label": "$142M",
-      "people_count": 0,
+      "people_count": 2,
       "signals": [
-        "Final prospectus available for researcher review",
-        "Offering raised approximately $142M"
+        "2 named beneficial owners disclosed",
+        "Offering raised approximately $142M",
+        "Largest named holding currently valued at approximately $499M"
       ],
-      "people": [],
+      "people": [
+        {
+          "name": "Entities affiliated with Permira ﻿",
+          "shares": 32078948.0,
+          "cash_value": 498827641.40000004
+        },
+        {
+          "name": "Aflalo Family Trust ﻿",
+          "shares": 12929832.0,
+          "cash_value": 201058887.60000002
+        }
+      ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1787117/000110465926088733/0001104659-26-088733-index.htm"
     },
     {
