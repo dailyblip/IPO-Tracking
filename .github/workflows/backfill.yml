@@ -1,7 +1,7 @@
 name: Backfill Historical IPOs (Manual)
 
 on:
-  # Final one-shot launch after covering the selling-stockholder heading variant.
+  # Final one-shot launch after covering split headings and continued grids.
   push:
     branches: [main]
     paths:
