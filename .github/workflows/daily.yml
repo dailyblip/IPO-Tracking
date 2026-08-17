@@ -1,6 +1,19 @@
 name: Daily IPO Tracker
 
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-ipo-tracker
+  cancel-in-progress: false
+
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'requirements.txt'
+      - '.github/workflows/daily.yml'
   schedule:
     # 12:00 UTC = ~7-8am US Eastern depending on DST. Adjust as needed.
     - cron: '0 12 * * 1-5'
@@ -26,6 +39,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      - name: Run unit tests
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+
       - name: Run daily pipeline
         working-directory: src
         env:
@@ -36,3 +52,15 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
         run: python main.py
+
+      - name: Publish Research Monitor data
+        run: |
+          if git diff --quiet -- docs/data/filings.json; then
+            echo "Research Monitor data is unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/filings.json
+          git commit -m "Update Research Monitor data"
+          git push

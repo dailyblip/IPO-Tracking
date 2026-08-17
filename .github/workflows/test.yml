@@ -1,0 +1,35 @@
+name: Test Research Monitor
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run unit tests
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+      - name: Validate dashboard assets
+        run: |
+          python - <<'PY'
+          import json
+          from html.parser import HTMLParser
+          from pathlib import Path
+
+          HTMLParser().feed(Path('docs/index.html').read_text(encoding='utf-8'))
+          payload = json.loads(Path('docs/data/filings.json').read_text(encoding='utf-8'))
+          assert payload['schema_version'] == 1
+          assert isinstance(payload['filings'], list)
+          print('Dashboard assets are valid')
+          PY
