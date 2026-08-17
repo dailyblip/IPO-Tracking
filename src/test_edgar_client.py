@@ -8,6 +8,12 @@ import edgar_client
 
 
 class EdgarDiscoveryTests(unittest.TestCase):
+    def test_cleans_cik_suffix_from_efts_company_name(self):
+        self.assertEqual(
+            edgar_client._clean_company_name("Acme Robotics  (CIK 0001234567)"),
+            "Acme Robotics",
+        )
+
     @patch("edgar_client.requests.get")
     def test_daily_index_fallback_parses_424b4_only(self, get):
         response = Mock()
