@@ -2,11 +2,12 @@
 stanford_grader.py
 
 For each person on the beneficial ownership grid:
-1. Check the bio text extracted from the filing's Management section
+1. Skip legal entities / combined affiliate rows that are not people.
+2. Check the bio text extracted from the filing's Management section
    for a direct Stanford mention -> grade 5, no search needed.
-2. If silent, run up to two web searches (Brave Search API) looking
+3. If silent, run up to two web searches (Brave Search API) looking
    for a public Stanford connection.
-3. Only when search returns Stanford-related evidence, score 0-5 using
+4. Only when search returns Stanford-related evidence, score 0-5 using
    an LLM judgment call over the combined evidence. This avoids paid
    grading calls when there is nothing public to evaluate.
 
@@ -32,6 +33,12 @@ MAX_SEARCH_ATTEMPTS = 2
 REQUEST_DELAY_SECONDS = 0.5
 
 DIRECT_MENTION_PATTERN = re.compile(r"\bstanford\b", re.IGNORECASE)
+ORGANIZATION_PATTERN = re.compile(
+    r"\b(?:entities? affiliated|affiliates?|asset management|capital|ventures?|partners?|"
+    r"funds?|holdings?|management|trust|foundation|company|corporation|corp\.?|inc\.?|"
+    r"llc|l\.l\.c\.?|lp|l\.p\.?|ltd\.?|limited|master fund|biopartners)\b",
+    re.IGNORECASE,
+)
 
 
 class StanfordGraderError(Exception):
@@ -48,6 +55,18 @@ def _get_env(name: str) -> str:
 def _anthropic_model() -> str:
     """Return configured model, falling back to a documented API model ID."""
     return os.environ.get("ANTHROPIC_MODEL", DEFAULT_ANTHROPIC_MODEL).strip() or DEFAULT_ANTHROPIC_MODEL
+
+
+def is_likely_organization(person_name: str) -> bool:
+    """Return True for holder labels that are organizations or combined affiliate rows."""
+    name = " ".join(str(person_name or "").split())
+    if not name:
+        return False
+    if ORGANIZATION_PATTERN.search(name):
+        return True
+    if re.search(r"\band\s+(?:related\s+)?affiliates?\b", name, re.IGNORECASE):
+        return True
+    return False
 
 
 def check_bio_for_stanford(bio_text: str) -> dict:
@@ -207,6 +226,16 @@ def grade_via_llm(person_name: str, company_name: str, title: str,
 def grade_stanford_affiliation(person_name: str, company_name: str,
                                 title: str = "", bio_text: str = "") -> dict:
     """Return {grade, justification, source} from public evidence only."""
+    if is_likely_organization(person_name):
+        return {
+            "grade": 0,
+            "justification": (
+                "Beneficial-owner label appears to be an organization or combined affiliate row; "
+                "person-level Stanford grading skipped."
+            ),
+            "source": "non_person_holder",
+        }
+
     direct_result = check_bio_for_stanford(bio_text)
     if direct_result:
         return direct_result
