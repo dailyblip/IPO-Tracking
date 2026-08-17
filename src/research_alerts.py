@@ -199,9 +199,14 @@ def run(feed_path: Path, alerts_path: Path, state_path: Path) -> int:
     if not isinstance(filings, list):
         raise ValueError(f"{feed_path} does not contain a filings list")
 
+    state_exists = state_path.exists()
     previous_state = _load_json(state_path, {})
     existing_alerts = _load_json(alerts_path, {})
     new_alerts, new_state = detect_alerts(filings, previous_state)
+    # The first production run establishes a baseline rather than treating the
+    # entire existing queue as newly discovered. Subsequent runs emit deltas.
+    if not state_exists:
+        new_alerts = []
     merged = merge_alert_history(existing_alerts, new_alerts)
     _write_json_atomic(alerts_path, merged)
     _write_json_atomic(state_path, new_state)
