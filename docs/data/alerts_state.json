@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-08-17T22:46:05.737894+00:00",
+  "items": {
+    "0001185185-26-003448": {
+      "id": "0001185185-26-003448",
+      "cik": "0001903784",
+      "company": "Vogenx, Inc.",
+      "form": "424B4",
+      "filed": "2026-08-12",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "Low",
+      "value": 81250000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1903784/000118518526003448/0001185185-26-003448-index.htm"
+    },
+    "0001193125-26-340329": {
+      "id": "0001193125-26-340329",
+      "cik": "0002056611",
+      "company": "Latigo Biotherapeutics, Inc.",
+      "form": "424B4",
+      "filed": "2026-08-07",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 345600000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2056611/000119312526340329/0001193125-26-340329-index.htm"
+    },
+    "0001193125-26-340215": {
+      "id": "0001193125-26-340215",
+      "cik": "0001839970",
+      "company": "BlossomHill Therapeutics, Inc.",
+      "form": "424B4",
+      "filed": "2026-08-07",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "Medium",
+      "value": 150000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1839970/000119312526340215/0001193125-26-340215-index.htm"
+    },
+    "0001628280-26-054354": {
+      "id": "0001628280-26-054354",
+      "cik": "0002131524",
+      "company": "Braveheart Bio, Inc.",
+      "form": "424B4",
+      "filed": "2026-08-06",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 382500000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2131524/000162828026054354/0001628280-26-054354-index.htm"
+    },
+    "0001193125-26-334997": {
+      "id": "0001193125-26-334997",
+      "cik": "0002058707",
+      "company": "Attovia Therapeutics, Inc.",
+      "form": "424B4",
+      "filed": "2026-08-05",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "Medium",
+      "value": 289000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2058707/000119312526334997/0001193125-26-334997-index.htm"
+    },
+    "0001193125-26-326453": {
+      "id": "0001193125-26-326453",
+      "cik": "0002127043",
+      "company": "Jersey Mike's Subs Inc.",
+      "form": "424B4",
+      "filed": "2026-07-31",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 682999996.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2127043/000119312526326453/0001193125-26-326453-index.htm"
+    },
+    "0001193125-26-328422": {
+      "id": "0001193125-26-328422",
+      "cik": "0001745648",
+      "company": "Apnimed, Inc.",
+      "form": "424B4",
+      "filed": "2026-07-31",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "Medium",
+      "value": 192000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1745648/000119312526328422/0001193125-26-328422-index.htm"
+    },
+    "0001104659-26-088733": {
+      "id": "0001104659-26-088733",
+      "cik": "0001787117",
+      "company": "Reformation Inc.",
+      "form": "424B4",
+      "filed": "2026-07-30",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 142182315.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1787117/000110465926088733/0001104659-26-088733-index.htm"
+    },
+    "0001193125-26-316503": {
+      "id": "0001193125-26-316503",
+      "cik": "0001853921",
+      "company": "Scribe Therapeutics, Inc.",
+      "form": "424B4",
+      "filed": "2026-07-27",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "Medium",
+      "value": 128700000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1853921/000119312526316503/0001193125-26-316503-index.htm"
+    }
+  },
+  "ciks": {
+    "0001903784": {
+      "company": "Vogenx, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001185185-26-003448",
+      "last_filed": "2026-08-12"
+    },
+    "0002056611": {
+      "company": "Latigo Biotherapeutics, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-340329",
+      "last_filed": "2026-08-07"
+    },
+    "0001839970": {
+      "company": "BlossomHill Therapeutics, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-340215",
+      "last_filed": "2026-08-07"
+    },
+    "0002131524": {
+      "company": "Braveheart Bio, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-054354",
+      "last_filed": "2026-08-06"
+    },
+    "0002058707": {
+      "company": "Attovia Therapeutics, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-334997",
+      "last_filed": "2026-08-05"
+    },
+    "0002127043": {
+      "company": "Jersey Mike's Subs Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-326453",
+      "last_filed": "2026-07-31"
+    },
+    "0001745648": {
+      "company": "Apnimed, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-328422",
+      "last_filed": "2026-07-31"
+    },
+    "0001787117": {
+      "company": "Reformation Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001104659-26-088733",
+      "last_filed": "2026-07-30"
+    },
+    "0001853921": {
+      "company": "Scribe Therapeutics, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-316503",
+      "last_filed": "2026-07-27"
+    }
+  }
+}
