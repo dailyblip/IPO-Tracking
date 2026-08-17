@@ -75,6 +75,38 @@ jobs:
           if not isinstance(rows, list):
               raise SystemExit("docs/data/filings.json must contain a filings list")
 
+          filing_fields = {
+              "id", "company", "ticker", "cik", "accession_no", "form", "filed",
+              "priority", "status", "value", "value_label", "people_count",
+              "signals", "people", "sec_url",
+          }
+          person_fields = {"name", "shares", "cash_value"}
+          seen_ids = set()
+          for filing in rows:
+              unexpected = set(filing) - filing_fields
+              if unexpected:
+                  raise SystemExit(f"Non-public filing fields found: {sorted(unexpected)}")
+              if not filing.get("id") or not filing.get("company"):
+                  raise SystemExit("Every published filing requires an id and company")
+              if filing.get("id") in seen_ids:
+                  raise SystemExit(f"Duplicate filing id: {filing['id']}")
+              seen_ids.add(filing["id"])
+              if filing.get("form") != "424B4":
+                  raise SystemExit(f"Unexpected form for {filing['id']}: {filing.get('form')}")
+              people = filing.get("people")
+              if not isinstance(people, list):
+                  raise SystemExit(f"People must be a list for {filing['id']}")
+              for person in people:
+                  unexpected = set(person) - person_fields
+                  if unexpected:
+                      raise SystemExit(f"Non-public person fields found: {sorted(unexpected)}")
+                  lowered = str(person.get("name", "")).lower()
+                  if (
+                      "directors and executive officers as a group" in lowered
+                      or "executive officers and directors as a group" in lowered
+                  ):
+                      raise SystemExit(f"Aggregate ownership row published for {filing['id']}")
+
           summary = os.environ["GITHUB_STEP_SUMMARY"]
           with open(summary, "a", encoding="utf-8") as handle:
               handle.write("## Research Monitor backfill\n\n")

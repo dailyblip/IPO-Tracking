@@ -90,12 +90,19 @@ def process_filing(filing_meta: dict) -> list:
         parsed = filing_parser.parse_filing(document_url)
 
         full_text_soup = filing_parser.fetch_document(document_url)
-        if edgar_client.check_spac_indicators(full_text_soup.get_text(" ", strip=True)):
+        if edgar_client.check_spac_indicators(
+            full_text_soup.get_text(" ", strip=True), company_name=company_name
+        ):
             print(f"[main] Flagging {company_name}: possible SPAC language detected - skipping")
             return []
 
         cover = parsed["cover_page"]
-        ticker = cover.get("ticker")
+        ticker = cover.get("ticker") or filing_meta.get("ticker")
+        if not ticker:
+            try:
+                ticker = edgar_client.get_primary_ticker(cik)
+            except Exception as error:
+                print(f"[main] Warning: could not resolve SEC ticker for {company_name}: {error}")
         actual_price = cover.get("offering_price")
 
         stockholder_count = len(parsed.get("principal_stockholders", []))
@@ -110,10 +117,6 @@ def process_filing(filing_meta: dict) -> list:
             f"management_keyword_present={diagnostics.get('management_keyword_present')}, "
             f"underwriting_keyword_present={diagnostics.get('underwriting_keyword_present')}"
         )
-
-        if not ticker:
-            print(f"[main] Skipping {company_name}: could not extract ticker")
-            return []
 
         # Pull the matching S-1 for the original range price and the
         # original filing date.
@@ -153,7 +156,14 @@ def process_filing(filing_meta: dict) -> list:
         bios = parsed.get("management_bios", {})
 
         rows = []
-        for holder in parsed.get("principal_stockholders", []):
+        holders = parsed.get("principal_stockholders", [])
+        if not holders:
+            # A filing can qualify as a domestic IPO even when a filer-specific
+            # ownership table defeats the enrichment parser. Keep a filing-level
+            # row so the public monitor never silently drops the IPO.
+            holders = [{"name": "", "shares": None}]
+
+        for holder in holders:
             holder_name = holder["name"]
             shares = holder.get("shares")
 
@@ -161,18 +171,24 @@ def process_filing(filing_meta: dict) -> list:
             # the bio dict keys (falls back to the full management text).
             bio_text = bios.get(holder_name, "") or bios.get("_full_text", "")
 
-            try:
-                stanford_result = stanford_grader.grade_stanford_affiliation(
-                    person_name=holder_name,
-                    company_name=company_name,
-                    bio_text=bio_text,
-                )
-            except Exception as e:
-                print(f"[main] Warning: Stanford grading failed for {holder_name} "
-                      f"({company_name}): {e}")
+            if holder_name:
+                try:
+                    stanford_result = stanford_grader.grade_stanford_affiliation(
+                        person_name=holder_name,
+                        company_name=company_name,
+                        bio_text=bio_text,
+                    )
+                except Exception as e:
+                    print(f"[main] Warning: Stanford grading failed for {holder_name} "
+                          f"({company_name}): {e}")
+                    stanford_result = {
+                        "grade": 0,
+                        "justification": f"Grading failed to run: {e}",
+                    }
+            else:
                 stanford_result = {
                     "grade": 0,
-                    "justification": f"Grading failed to run: {e}",
+                    "justification": "No named beneficial owner was parsed.",
                 }
 
             cash_value = (shares * current_price) if (shares and current_price) else None

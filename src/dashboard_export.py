@@ -38,7 +38,14 @@ def _money(value):
 
 
 def _clean_company_name(value):
-    return re.sub(r"\s*\(CIK\s+\d+\)\s*$", "", str(value or ""), flags=re.IGNORECASE).strip()
+    cleaned = re.sub(
+        r"\s*\(CIK\s+\d+\)\s*$", "", str(value or ""), flags=re.IGNORECASE
+    ).strip()
+    return re.sub(
+        r"\s+\([A-Z][A-Z0-9.-]{0,9}(?:,\s*[A-Z][A-Z0-9.-]{0,9})*\)\s*$",
+        "",
+        cleaned,
+    ).strip()
 
 
 def _clean_holder_name(value):
@@ -48,7 +55,10 @@ def _clean_holder_name(value):
 
 def _is_aggregate_holder(name):
     lowered = name.lower()
-    return lowered.startswith("all directors and executive officers") or lowered.startswith("all executive officers and directors")
+    return (
+        "directors and executive officers as a group" in lowered
+        or "executive officers and directors as a group" in lowered
+    )
 
 
 def _public_only(filing):
@@ -78,7 +88,12 @@ def _signals(rows, people):
     largest_holding = max((person.get("cash_value") or 0 for person in people), default=0)
     lockup = next((row.get("Lock-Up Expiry") for row in rows if row.get("Lock-Up Expiry")), None)
 
-    signals.append(f"{len(people)} named beneficial owner{'s' if len(people) != 1 else ''} disclosed")
+    if people:
+        signals.append(
+            f"{len(people)} named beneficial owner{'s' if len(people) != 1 else ''} disclosed"
+        )
+    else:
+        signals.append("Final prospectus available for researcher review")
     if amount:
         signals.append(f"Offering raised approximately {_money(amount)}")
     if largest_holding:
