@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-17T07:00:33.497422+00:00",
+  "generated_at": "2026-08-17T07:08:37.250644+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -83,9 +83,9 @@
       "status": "New",
       "value": 345600000.0,
       "value_label": "$346M",
-      "people_count": 5,
+      "people_count": 12,
       "signals": [
-        "5 named beneficial owners disclosed",
+        "12 named beneficial owners disclosed",
         "Offering raised approximately $346M",
         "Largest named holding currently valued at approximately $257M"
       ],
@@ -114,6 +114,41 @@
           "name": "Deep Track Biotechnology Master Fund, Ltd.",
           "shares": 2496656.0,
           "cash_value": 48659825.44
+        },
+        {
+          "name": "Nima Farzan",
+          "shares": 2902419.0,
+          "cash_value": 56568146.309999995
+        },
+        {
+          "name": "Timothy Lugo",
+          "shares": 166354.0,
+          "cash_value": 3242239.46
+        },
+        {
+          "name": "Neil Singla, M.D.",
+          "shares": 532795.0,
+          "cash_value": 10384174.549999999
+        },
+        {
+          "name": "Timothy P. Walbert",
+          "shares": 329819.0,
+          "cash_value": 6428172.31
+        },
+        {
+          "name": "Sara Bonstein",
+          "shares": 105542.0,
+          "cash_value": 2057013.5799999998
+        },
+        {
+          "name": "Beth Seidenberg, M.D.",
+          "shares": 13199669.0,
+          "cash_value": 257261548.80999997
+        },
+        {
+          "name": "James B. Tananbaum, M.D.",
+          "shares": 9041328.0,
+          "cash_value": 176215482.72
         }
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2056611/000119312526340329/0001193125-26-340329-index.htm"
@@ -304,9 +339,9 @@
       "status": "New",
       "value": 289000000.0,
       "value_label": "$289M",
-      "people_count": 9,
+      "people_count": 10,
       "signals": [
-        "9 named beneficial owners disclosed",
+        "10 named beneficial owners disclosed",
         "Offering raised approximately $289M",
         "Largest named holding currently valued at approximately $111M"
       ],
@@ -355,6 +390,11 @@
           "name": "Mitchell Gold",
           "shares": 41873.0,
           "cash_value": 831597.78
+        },
+        {
+          "name": "Angie You",
+          "shares": 59490.0,
+          "cash_value": 1181471.4
         }
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2058707/000119312526334997/0001193125-26-334997-index.htm"
@@ -371,12 +411,55 @@
       "status": "New",
       "value": 682999996.0,
       "value_label": "$683M",
-      "people_count": 0,
+      "people_count": 8,
       "signals": [
-        "Final prospectus available for researcher review",
-        "Offering raised approximately $683M"
+        "8 named beneficial owners disclosed",
+        "Offering raised approximately $683M",
+        "Largest named holding currently valued at approximately $3.8B",
+        "Lock-up terms captured for liquidity-event follow-up"
       ],
-      "people": [],
+      "people": [
+        {
+          "name": "Blackstone",
+          "shares": 171858631.0,
+          "cash_value": 3808387262.96
+        },
+        {
+          "name": "Abu Dhabi Investment Authority",
+          "shares": 40525336.0,
+          "cash_value": 898041445.76
+        },
+        {
+          "name": "Charles R. Morrison",
+          "shares": 118.0,
+          "cash_value": 2614.88
+        },
+        {
+          "name": "Michele Allen",
+          "shares": 43.0,
+          "cash_value": 952.88
+        },
+        {
+          "name": "Walter C. Tombs",
+          "shares": 118.0,
+          "cash_value": 2614.88
+        },
+        {
+          "name": "Nigel Travis",
+          "shares": 118.0,
+          "cash_value": 2614.88
+        },
+        {
+          "name": "Peter Cancro",
+          "shares": 72072.0,
+          "cash_value": 1597115.52
+        },
+        {
+          "name": "Fran Horowitz",
+          "shares": 59.0,
+          "cash_value": 1307.44
+        }
+      ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2127043/000119312526326453/0001193125-26-326453-index.htm"
     },
     {
@@ -474,9 +557,9 @@
       "status": "New",
       "value": 142182315.0,
       "value_label": "$142M",
-      "people_count": 2,
+      "people_count": 10,
       "signals": [
-        "2 named beneficial owners disclosed",
+        "10 named beneficial owners disclosed",
         "Offering raised approximately $142M",
         "Largest named holding currently valued at approximately $499M"
       ],
@@ -490,6 +573,46 @@
           "name": "Aflalo Family Trust ﻿",
           "shares": 12929832.0,
           "cash_value": 201058887.60000002
+        },
+        {
+          "name": "Hali Borenstein",
+          "shares": 2166129.0,
+          "cash_value": 33683305.95
+        },
+        {
+          "name": "Ivan Tchakarov",
+          "shares": 584920.0,
+          "cash_value": 9095506.0
+        },
+        {
+          "name": "Yael Aflalo",
+          "shares": 12929832.0,
+          "cash_value": 201058887.60000002
+        },
+        {
+          "name": "Zipporah Allen",
+          "shares": 110528.0,
+          "cash_value": 1718710.4000000001
+        },
+        {
+          "name": "John Coyle",
+          "shares": 56980.0,
+          "cash_value": 886039.0
+        },
+        {
+          "name": "Brigitte Kleine",
+          "shares": 110528.0,
+          "cash_value": 1718710.4000000001
+        },
+        {
+          "name": "Stripes III, LP",
+          "shares": 2016976.0,
+          "cash_value": 31363976.8
+        },
+        {
+          "name": "Entities affiliated with Yael Aflalo ﻿",
+          "shares": 15127312.0,
+          "cash_value": 235229701.60000002
         }
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1787117/000110465926088733/0001104659-26-088733-index.htm"
