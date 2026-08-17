@@ -1,7 +1,10 @@
+import json
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
-from research_alerts import detect_alerts, merge_alert_history
+from research_alerts import detect_alerts, merge_alert_history, run
 
 
 class ResearchAlertsTests(unittest.TestCase):
@@ -79,6 +82,18 @@ class ResearchAlertsTests(unittest.TestCase):
         old = {"alerts": [{**new, "summary": "older", "key": "same"}, {"key": "other"}]}
         payload = merge_alert_history(old, [new])
         self.assertEqual([a["key"] for a in payload["alerts"]], ["same", "other"])
+
+    @patch("research_alerts._now_iso", return_value="2026-08-17T20:00:00+00:00")
+    def test_first_run_seeds_state_without_backfill_alerts(self, _):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            feed = root / "filings.json"
+            alerts = root / "alerts.json"
+            state = root / "alerts_state.json"
+            feed.write_text(json.dumps({"filings": [self.filing(price_range="$15-$17")]}))
+            self.assertEqual(run(feed, alerts, state), 0)
+            self.assertEqual(json.loads(alerts.read_text())["alerts"], [])
+            self.assertIn("s1:0001234567", json.loads(state.read_text())["items"])
 
 
 if __name__ == "__main__":
