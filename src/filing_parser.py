@@ -25,7 +25,7 @@ REQUEST_DELAY_SECONDS = 0.15
 # Section headings vary by filer. List common variants, matched
 # case-insensitively, in priority order.
 OWNERSHIP_HEADING_PATTERNS = [
-    r"principal\s+stockholders",
+    r"principal\s+(?:and\s+selling\s+)?stockholders",
     r"principal\s+shareholders",
     r"security\s+ownership\s+of\s+certain\s+beneficial\s+owners",
     r"beneficial\s+ownership",
