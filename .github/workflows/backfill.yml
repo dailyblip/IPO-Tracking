@@ -20,7 +20,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: research-monitor-backfill
+  # Shared with daily.yml so two feed publishers can never race.
+  group: daily-ipo-tracker
   cancel-in-progress: false
 
 jobs:
