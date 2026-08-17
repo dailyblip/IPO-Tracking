@@ -91,5 +91,23 @@ class EdgarDiscoveryTests(unittest.TestCase):
         self.assertEqual(edgar_client.get_primary_ticker("1234567"), "ACME")
 
 
+    def test_direct_listing_is_not_a_qualifying_primary_ipo(self):
+        self.assertTrue(
+            edgar_client.check_direct_listing_indicators(
+                "Registered stockholders may sell shares pursuant to a direct listing."
+            )
+        )
+        self.assertTrue(
+            edgar_client.check_direct_listing_indicators(
+                "This listing is not an underwritten initial public offering."
+            )
+        )
+        self.assertFalse(
+            edgar_client.check_direct_listing_indicators(
+                "This is the initial public offering of our common stock."
+            )
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

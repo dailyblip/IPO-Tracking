@@ -45,6 +45,19 @@ SPAC_SELF_DESCRIPTION_PATTERNS = [
     ),
 ]
 
+DIRECT_LISTING_PATTERNS = [
+    re.compile(
+        r"\b(?:pursuant to|in connection with|through) "
+        r"(?:our|a|the) (?:proposed )?direct listing\b",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\bthis (?:registration and )?listing is not an underwritten "
+        r"initial public offering\b",
+        re.IGNORECASE,
+    ),
+]
+
 
 class EdgarClientError(Exception):
     pass
@@ -257,6 +270,14 @@ def check_spac_indicators(filing_text: str, company_name: str = "") -> bool:
 
     cover_and_summary = str(filing_text or "")[:75000]
     return any(pattern.search(cover_and_summary) for pattern in SPAC_SELF_DESCRIPTION_PATTERNS)
+
+
+
+
+def check_direct_listing_indicators(filing_text: str) -> bool:
+    """Return True for a first-time direct listing rather than a primary IPO."""
+    cover_and_summary = str(filing_text or "")[:100000]
+    return any(pattern.search(cover_and_summary) for pattern in DIRECT_LISTING_PATTERNS)
 
 
 def is_first_time_registrant(cik: str) -> bool:

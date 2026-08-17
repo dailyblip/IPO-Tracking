@@ -217,16 +217,26 @@ def extract_cover_page_data(soup: BeautifulSoup) -> dict:
     the document body.
     """
     full_text = soup.get_text(" ", strip=True)
-    cover_text = full_text[:5000]
+    cover_text = full_text[:30000]
 
     ticker_match = re.search(
         r"(?:symbol|ticker)[\s\"“]*[:\-]?\s*[\"“]?([A-Z]{1,6})[\"”]?",
         cover_text,
     )
-    price_match = re.search(
-        r"\$\s?(\d{1,4}(?:\.\d{1,2})?)\s+per\s+share",
-        cover_text,
-        re.IGNORECASE,
+    price_patterns = [
+        r"initial public offering price(?:\s+per\s+share)?"
+        r"\s*(?:is|:)?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
+        r"public offering price(?:\s+per\s+share)?"
+        r"\s*(?:is|:)?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
+        r"\$\s*(\d{1,4}(?:\.\d{1,2})?)\s+per\s+share",
+    ]
+    price_match = next(
+        (
+            match
+            for pattern in price_patterns
+            if (match := re.search(pattern, cover_text, re.IGNORECASE))
+        ),
+        None,
     )
     exchange_match = re.search(
         r"(Nasdaq|New York Stock Exchange|NYSE)",
@@ -247,7 +257,7 @@ def extract_price_range(soup: BeautifulSoup) -> dict:
     e.g. "$14.00 and $16.00 per share".
     """
     full_text = soup.get_text(" ", strip=True)
-    cover_text = full_text[:5000]
+    cover_text = full_text[:30000]
 
     range_match = re.search(
         r"\$\s?(\d{1,4}(?:\.\d{1,2})?)\s+and\s+\$\s?(\d{1,4}(?:\.\d{1,2})?)\s+per\s+share",
@@ -271,7 +281,7 @@ def extract_offering_size(soup: BeautifulSoup) -> int:
     not a guarantee.
     """
     full_text = soup.get_text(" ", strip=True)
-    cover_text = full_text[:5000]
+    cover_text = full_text[:30000]
 
     patterns = [
         r"offering\s+([\d,]{4,})\s+shares",
