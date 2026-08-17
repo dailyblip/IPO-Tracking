@@ -121,15 +121,19 @@ def find_primary_document_url(index_url: str, expected_form_types: list = None) 
 
 
 def _looks_bold(tag) -> bool:
-    """Check for inline CSS bold styling, since many EDGAR filings use
-    styled spans/divs for headings instead of semantic <b>/<strong> tags."""
-    if tag.name in ("b", "strong"):
-        return True
-    style = tag.get("style", "") or ""
-    if re.search(r"font-weight\s*:\s*(bold|[6-9]00)", style, re.IGNORECASE):
-        return True
-    return False
+    """Check the element and inline descendants for bold styling.
 
+    EDGAR generators often split a visual heading across several styled
+    font or span children while leaving the wrapping paragraph unstyled.
+    """
+    candidates = [tag, *tag.find_all(["b", "strong", "span", "font"])]
+    for candidate in candidates:
+        if candidate.name in ("b", "strong"):
+            return True
+        style = candidate.get("style", "") or ""
+        if re.search(r"font-weight\s*:\s*(bold|[6-9]00)", style, re.IGNORECASE):
+            return True
+    return False
 
 def _find_heading_tags(soup: BeautifulSoup, heading_patterns: list) -> list:
     """Return every plausible heading; SEC tables of contents repeat names."""
@@ -323,19 +327,17 @@ def extract_principal_stockholders(soup: BeautifulSoup) -> list:
 
     Strategy: locate every ownership heading candidate, then check up to
     12 tables after each one. Prospectuses often repeat the heading in a
-    table of contents long before the actual section, and grouped ownership
-    headers can be separated from that section heading by several tables. A table
-    is only accepted if BOTH: (a) its header row contains actual
-    ownership-grid language (guards against matching an unrelated
-    table like financial highlights, which can superficially resemble
-    a name+number grid at the row level), and (b) it yields at least
-    one row with a name that contains actual letters (guards against
-    misreading a numeric cell as a person's name).
+    table of contents long before the actual section, split visual headings
+    across styled inline elements, or continue a wide ownership grid in a
+    second table. A table is accepted only when its header contains actual
+    ownership-grid language and it yields plausible named rows.
     """
     heading_tags = _find_heading_tags(soup, OWNERSHIP_HEADING_PATTERNS)
     if not heading_tags:
         return []
 
+    results = []
+    seen_names = set()
     seen_tables = set()
     for heading_tag in heading_tags:
         # Inspect tables after every match; the first is often the contents page.
@@ -348,25 +350,25 @@ def extract_principal_stockholders(soup: BeautifulSoup) -> list:
             seen_tables.add(table_identity)
             if not _table_header_looks_like_ownership(table):
                 continue
-    
-            results = []
+
+            table_results = []
             for row in table.find_all("tr"):
                 cells = [c.get_text(" ", strip=True) for c in row.find_all(["td", "th"])]
                 cells = [c for c in cells if c]  # drop empty spacer cells
                 if not cells:
                     continue
-    
+
                 # Skip header rows (no digits at all in the row)
                 if not any(char.isdigit() for char in " ".join(cells)):
                     continue
-    
+
                 name = cells[0]
                 # A real holder name has at least one letter - guards
                 # against a misfired match where the first cell is
                 # actually a price, share count, or other numeric value.
                 if not any(ch.isalpha() for ch in name):
                     continue
-    
+
                 shares = None
                 percent = None
                 for cell in cells[1:]:
@@ -374,21 +376,30 @@ def extract_principal_stockholders(soup: BeautifulSoup) -> list:
                         pct_match = re.search(r"(\d+(?:\.\d+)?)\s?%", cell)
                         if pct_match:
                             percent = float(pct_match.group(1))
-                    else:
-                        num_match = re.search(r"([\d,]{4,})", cell)
-                        if num_match and shares is None:
+                    elif shares is None:
+                        # Ownership tables can contain legitimate holdings below
+                        # 1,000 shares. Requiring the entire cell to be numeric
+                        # avoids confusing footnote markers with share counts.
+                        num_match = re.fullmatch(r"\s*([\d,]+)\s*", cell)
+                        if num_match:
                             shares = int(num_match.group(1).replace(",", ""))
-    
-                if name and (shares is not None or percent is not None):
-                    results.append({"name": name, "shares": shares, "percent": percent})
-    
-            # Accept the first candidate table that actually produced
-            # valid-looking rows; otherwise keep checking the next one.
-            if results:
-                return results
-    
-    return []
 
+                if name and (shares is not None or percent is not None):
+                    table_results.append(
+                        {"name": name, "shares": shares, "percent": percent}
+                    )
+
+            # Wide SEC ownership grids are sometimes split into consecutive
+            # tables. Combine every accepted grid while deduplicating holders
+            # repeated in a continuation.
+            for holder in table_results:
+                holder_key = " ".join(holder["name"].lower().split())
+                if holder_key in seen_names:
+                    continue
+                seen_names.add(holder_key)
+                results.append(holder)
+
+    return results
 
 def extract_management_bios(soup: BeautifulSoup) -> dict:
     """
