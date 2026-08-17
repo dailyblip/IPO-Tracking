@@ -1,7 +1,8 @@
-"""Build the static JSON feed consumed by the Research Monitor UI."""
+"""Build the static JSON and CSV feeds consumed by the Research Monitor UI."""
 
 from __future__ import annotations
 
+import csv
 import json
 import re
 import unicodedata
@@ -16,6 +17,10 @@ PUBLIC_FILING_FIELDS = {
     "people", "sec_url",
 }
 PUBLIC_PERSON_FIELDS = {"name", "shares", "cash_value"}
+CSV_FIELDS = (
+    "company", "ticker", "cik", "accession_no", "form", "filed", "priority",
+    "status", "offering_value", "holder_name", "shares", "cash_value", "sec_url",
+)
 
 
 def _number(value):
@@ -164,9 +169,43 @@ def build_payload(rows, generated_at=None):
     }
 
 
+def _csv_rows(filings):
+    """Flatten one filing per holder; preserve filing-only rows when no owner was parsed."""
+    for filing in filings:
+        people = filing.get("people") or [None]
+        for person in people:
+            person = person or {}
+            yield {
+                "company": filing.get("company", ""),
+                "ticker": filing.get("ticker", ""),
+                "cik": filing.get("cik", ""),
+                "accession_no": filing.get("accession_no", ""),
+                "form": filing.get("form", ""),
+                "filed": filing.get("filed", ""),
+                "priority": filing.get("priority", ""),
+                "status": filing.get("status", ""),
+                "offering_value": filing.get("value"),
+                "holder_name": person.get("name", ""),
+                "shares": person.get("shares"),
+                "cash_value": person.get("cash_value"),
+                "sec_url": filing.get("sec_url", ""),
+            }
+
+
+def _write_csv(filings, output_path):
+    csv_path = output_path.with_suffix(".csv")
+    temporary = csv_path.with_suffix(csv_path.suffix + ".tmp")
+    with temporary.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=CSV_FIELDS)
+        writer.writeheader()
+        writer.writerows(_csv_rows(filings))
+    temporary.replace(csv_path)
+    return csv_path
+
+
 def export_dashboard(rows, output_path, replace_start=None, replace_end=None):
     """
-    Write the public feed atomically.
+    Write the public JSON and flattened CSV feeds atomically.
 
     Daily runs merge into history. An explicit backfill range replaces existing
     records in that range first, so corrected eligibility rules can remove stale
@@ -207,4 +246,5 @@ def export_dashboard(rows, output_path, replace_start=None, replace_end=None):
     temporary = output_path.with_suffix(output_path.suffix + ".tmp")
     temporary.write_text(json.dumps(current, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     temporary.replace(output_path)
+    _write_csv(current["filings"], output_path)
     return current
