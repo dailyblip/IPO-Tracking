@@ -72,7 +72,7 @@ class DashboardExportTests(unittest.TestCase):
         payload = build_payload([
             sample_row(**{
                 "Company Name": "Acme Robotics (CIK 0001234567)",
-                "Holder Name": "Jane Founder (1)(2)",
+                "Holder Name": "Jane \uFEFFFounder (1)(2)",
                 "Amount Raised": None,
                 "_form": None,
             }),
