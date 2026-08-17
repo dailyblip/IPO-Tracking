@@ -14,6 +14,8 @@ block requests that don't provide one.
 
 import os
 import time
+from datetime import date, timedelta
+
 import requests
 
 EDGAR_FULL_TEXT_SEARCH_URL = "https://efts.sec.gov/LATEST/search-index"
@@ -47,77 +49,133 @@ def _get_headers() -> dict:
     return {"User-Agent": user_agent}
 
 
+def _request_json(url: str, headers: dict, params: dict = None) -> dict:
+    """GET JSON with bounded retries for SEC throttling and transient 5xx errors."""
+    last_error = None
+    for attempt in range(4):
+        try:
+            response = requests.get(url, headers=headers, params=params, timeout=20)
+            if response.status_code == 429 or response.status_code >= 500:
+                raise requests.exceptions.HTTPError(
+                    f"SEC returned {response.status_code}", response=response
+                )
+            response.raise_for_status()
+            time.sleep(REQUEST_DELAY_SECONDS)
+            return response.json()
+        except (requests.exceptions.RequestException, ValueError) as error:
+            last_error = error
+            if attempt < 3:
+                time.sleep(2 ** attempt)
+    raise EdgarClientError(f"SEC request failed after retries: {last_error}")
+
+
+def _find_from_daily_indexes(start_date: str, end_date: str, max_results: int,
+                             headers: dict) -> list:
+    """Fallback discovery using SEC daily master indexes instead of EFTS."""
+    current = date.fromisoformat(start_date)
+    final = date.fromisoformat(end_date)
+    results = []
+
+    while current <= final and len(results) < max_results:
+        quarter = ((current.month - 1) // 3) + 1
+        url = (
+            f"https://www.sec.gov/Archives/edgar/daily-index/{current.year}/"
+            f"QTR{quarter}/master.{current.strftime('%Y%m%d')}.idx"
+        )
+        try:
+            response = requests.get(url, headers=headers, timeout=20)
+            if response.status_code == 404:
+                current += timedelta(days=1)
+                continue
+            response.raise_for_status()
+            time.sleep(REQUEST_DELAY_SECONDS)
+        except requests.exceptions.RequestException as error:
+            print(f"[edgar_client] Daily index unavailable for {current}: {error}")
+            current += timedelta(days=1)
+            continue
+
+        in_records = False
+        for line in response.text.splitlines():
+            if line.startswith("-----"):
+                in_records = True
+                continue
+            if not in_records:
+                continue
+            parts = line.split("|")
+            if len(parts) != 5 or parts[2].strip().upper() != "424B4":
+                continue
+            cik, company_name, form_type, filing_date, filename = parts
+            accession_no = filename.rsplit("/", 1)[-1].removesuffix(".txt")
+            results.append({
+                "company_name": company_name.strip(),
+                "cik": cik.strip(),
+                "accession_no": accession_no,
+                "filing_date": filing_date.strip(),
+                "form_type": form_type.strip(),
+            })
+            if len(results) >= max_results:
+                break
+        current += timedelta(days=1)
+
+    return results
+
+
 def find_recent_424b4_filings(days_back: int = 1, start_date: str = None,
                                 end_date: str = None, max_results: int = 500) -> list:
-    """
-    Search EDGAR full-text search for 424B4 filings.
-
-    Either pass days_back (default daily-run behavior: filings from the
-    last N days), or pass start_date/end_date explicitly (YYYY-MM-DD,
-    used for backfilling a historical range) - if both are given,
-    start_date/end_date take precedence.
-
-    Paginates automatically (EDGAR returns ~10 hits per page) up to
-    max_results, since a multi-week or multi-month backfill window can
-    easily exceed a single page across the whole market.
-    """
+    """Discover recent 424B4 filings, falling back when SEC EFTS is unstable."""
     headers = _get_headers()
     effective_start = start_date or _date_days_ago(days_back)
     effective_end = end_date or _today()
 
     results = []
     offset = 0
-    page_size = 10  # EDGAR full-text search's default page size
+    page_size = 10
 
-    while offset < max_results:
-        params = {
-            "forms": "424B4",
-            "dateRange": "custom",
-            "startdt": effective_start,
-            "enddt": effective_end,
-            "from": offset,
-        }
-        response = requests.get(
-            EDGAR_FULL_TEXT_SEARCH_URL, headers=headers, params=params, timeout=15
+    try:
+        while offset < max_results:
+            params = {
+                "forms": "424B4",
+                "dateRange": "custom",
+                "startdt": effective_start,
+                "enddt": effective_end,
+                "from": offset,
+            }
+            data = _request_json(EDGAR_FULL_TEXT_SEARCH_URL, headers, params)
+            hits = data.get("hits", {}).get("hits", [])
+            if not hits:
+                break
+
+            for hit in hits:
+                source = hit.get("_source", {})
+                cik = source.get("ciks", [None])[0]
+                accession_no = hit.get("_id", "").split(":")[0]
+                results.append({
+                    "company_name": source.get("display_names", ["Unknown"])[0],
+                    "cik": cik,
+                    "accession_no": accession_no,
+                    "filing_date": source.get("file_date"),
+                    "form_type": source.get("root_form"),
+                })
+
+            total = data.get("hits", {}).get("total", {})
+            total_available = total.get("value", 0) if isinstance(total, dict) else int(total or 0)
+            offset += page_size
+            if offset >= total_available:
+                break
+    except EdgarClientError as error:
+        print(f"[edgar_client] EFTS unavailable ({error}); using SEC daily indexes")
+        results = _find_from_daily_indexes(
+            effective_start, effective_end, max_results, headers
         )
-        response.raise_for_status()
-        time.sleep(REQUEST_DELAY_SECONDS)
-        data = response.json()
 
-        hits = data.get("hits", {}).get("hits", [])
-        if not hits:
-            break
-
-        for hit in hits:
-            source = hit.get("_source", {})
-            cik = source.get("ciks", [None])[0]
-            accession_no = hit.get("_id", "").split(":")[0]
-            results.append({
-                "company_name": source.get("display_names", ["Unknown"])[0],
-                "cik": cik,
-                "accession_no": accession_no,
-                "filing_date": source.get("file_date"),
-                "form_type": source.get("root_form"),
-            })
-
-        total_available = data.get("hits", {}).get("total", {}).get("value", 0)
-        offset += page_size
-        if offset >= total_available:
-            break
-
-    # Deduplicate by accession number - EDGAR's "from" pagination
-    # parameter doesn't reliably advance for this endpoint, which can
-    # cause the same page to be returned more than once across loop
-    # iterations. Dedup here guards against reprocessing the same
-    # filing multiple times regardless of the underlying cause.
     seen = set()
     deduped = []
-    for r in results:
-        if r["accession_no"] not in seen:
-            seen.add(r["accession_no"])
-            deduped.append(r)
+    for result in results:
+        accession_no = result.get("accession_no")
+        if accession_no and accession_no not in seen:
+            seen.add(accession_no)
+            deduped.append(result)
     return deduped
-
 
 def is_us_based(cik: str) -> bool:
     """
