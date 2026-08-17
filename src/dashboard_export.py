@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -49,7 +50,12 @@ def _clean_company_name(value):
 
 
 def _clean_holder_name(value):
-    name = " ".join(str(value or "").split())
+    raw = "".join(
+        character
+        for character in str(value or "")
+        if unicodedata.category(character) != "Cf"
+    )
+    name = " ".join(raw.split())
     return re.sub(r"(?:\s*\(\d+\))+$", "", name).strip()
 
 
