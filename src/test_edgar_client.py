@@ -55,5 +55,41 @@ class EdgarDiscoveryTests(unittest.TestCase):
         daily_indexes.assert_called_once()
 
 
+    def test_cleans_ticker_suffix_and_keeps_ticker_hint(self):
+        label = "Apnimed, Inc.  (APMD)"
+        self.assertEqual(edgar_client._clean_company_name(label), "Apnimed, Inc.")
+        self.assertEqual(edgar_client._extract_ticker_from_company_name(label), "APMD")
+
+    def test_spac_detection_is_issuer_anchored(self):
+        operating_text = (
+            "We are a clinical-stage biotechnology company. "
+            "Our risk factors discuss special purpose acquisition companies."
+        )
+        self.assertFalse(
+            edgar_client.check_spac_indicators(
+                operating_text, company_name="BlossomHill Therapeutics, Inc."
+            )
+        )
+        self.assertTrue(
+            edgar_client.check_spac_indicators(
+                operating_text, company_name="Pinnacle Acquisition Corp"
+            )
+        )
+        self.assertTrue(
+            edgar_client.check_spac_indicators(
+                "We are a newly formed blank check company.",
+                company_name="Thunder Bridge V, Ltd.",
+            )
+        )
+
+    @patch("edgar_client.requests.get")
+    def test_primary_ticker_uses_sec_submission_profile(self, get):
+        response = Mock()
+        response.json.return_value = {"tickers": ["ACME", "ACMEW"]}
+        response.raise_for_status.return_value = None
+        get.return_value = response
+        self.assertEqual(edgar_client.get_primary_ticker("1234567"), "ACME")
+
+
 if __name__ == "__main__":
     unittest.main()
