@@ -1,11 +1,6 @@
 name: Backfill Historical IPOs (Manual)
 
 on:
-  # Final one-shot launch after covering split headings and continued grids.
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/backfill.yml'
   workflow_dispatch:
     inputs:
       start_date:
@@ -31,8 +26,8 @@ jobs:
     timeout-minutes: 180
 
     env:
-      BACKFILL_START: ${{ github.event.inputs.start_date || '2026-07-17' }}
-      BACKFILL_END: ${{ github.event.inputs.end_date || '2026-08-17' }}
+      BACKFILL_START: ${{ github.event.inputs.start_date }}
+      BACKFILL_END: ${{ github.event.inputs.end_date }}
 
     steps:
       - name: Check out repo
@@ -110,8 +105,9 @@ jobs:
                       raise SystemExit(f"Non-public person fields found: {sorted(unexpected)}")
                   lowered = str(person.get("name", "")).lower()
                   if (
-                      "directors and executive officers as a group" in lowered
-                      or "executive officers and directors as a group" in lowered
+                      "as a group" in lowered
+                      and "director" in lowered
+                      and "executive officer" in lowered
                   ):
                       raise SystemExit(f"Aggregate ownership row published for {filing['id']}")
 
