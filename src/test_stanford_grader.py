@@ -4,6 +4,32 @@ from unittest.mock import Mock, patch
 import stanford_grader as grader
 
 
+def test_organization_holder_skips_search_and_llm():
+    organization_names = [
+        "Entities affiliated with Westlake BioPartners",
+        "Foresite Capital",
+        "Deep Track Biotechnology Master Fund, Ltd.",
+        "OrbiMed Private Investments VIII, LP",
+        "J. Jean Cui, Ph.D. and Y. Peter Li, Ph.D., MBA and related affiliates",
+    ]
+
+    for name in organization_names:
+        with patch.object(grader, "run_search_fallback") as search, \
+                patch.object(grader, "grade_via_llm") as llm:
+            result = grader.grade_stanford_affiliation(name, "Acme")
+
+        assert result["grade"] == 0
+        assert result["source"] == "non_person_holder"
+        search.assert_not_called()
+        llm.assert_not_called()
+
+
+def test_real_person_names_are_not_treated_as_organizations():
+    assert grader.is_likely_organization("Beth Seidenberg, M.D.") is False
+    assert grader.is_likely_organization("James B. Tananbaum, M.D.") is False
+    assert grader.is_likely_organization("Jane Founder") is False
+
+
 def test_direct_bio_short_circuits_search():
     with patch.object(grader, "run_search_fallback") as search:
         result = grader.grade_stanford_affiliation(
