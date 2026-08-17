@@ -78,7 +78,7 @@ class DashboardExportTests(unittest.TestCase):
             }),
             sample_row(**{
                 "Company Name": "Acme Robotics (CIK 0001234567)",
-                "Holder Name": "All current directors and executive officers as a group (12 persons)",
+                "Holder Name": "Directors, director nominee and executive officers as a group (14 persons)",
                 "Amount Raised": None,
                 "Cash Value": 900_000_000,
                 "_form": None,
@@ -90,7 +90,7 @@ class DashboardExportTests(unittest.TestCase):
         self.assertEqual(filing["value_label"], "—")
         self.assertEqual(filing["people_count"], 1)
         self.assertEqual(filing["people"][0]["name"], "Jane Founder")
-        self.assertNotIn("All current directors", json.dumps(filing))
+        self.assertNotIn("director nominee", json.dumps(filing))
 
 
     def test_keeps_filing_when_no_owner_rows_are_available(self):
