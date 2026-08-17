@@ -25,6 +25,7 @@ class DashboardUiTests(unittest.TestCase):
         self.assertNotIn("demoFilings", self.html)
         self.assertNotIn("Companies</button>", self.html)
         self.assertNotIn("Settings</button>", self.html)
+        self.assertIn("No qualifying domestic IPO filings", self.html)
 
     def test_does_not_insert_feed_values_with_inner_html(self):
         self.assertNotIn(".innerHTML", self.html)
