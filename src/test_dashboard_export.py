@@ -187,6 +187,25 @@ class DashboardExportTests(unittest.TestCase):
                     "_accession_no": "older-accession",
                 }),
             ])
+            old["filings"].append({
+                "id": "s1:0007654321",
+                "company": "Prepricing Co",
+                "ticker": "PRE",
+                "cik": "0007654321",
+                "accession_no": "s1-accession",
+                "form": "S-1/A",
+                "filed": "2026-08-10",
+                "stage": "Pre-pricing",
+                "price_range": "$18.00–$20.00",
+                "priority": "High",
+                "status": "New",
+                "value": None,
+                "value_label": "—",
+                "people_count": 0,
+                "signals": [],
+                "people": [],
+                "sec_url": "https://www.sec.gov/s1",
+            })
             output.write_text(json.dumps(old), encoding="utf-8")
 
             exported = export_dashboard(
@@ -203,7 +222,7 @@ class DashboardExportTests(unittest.TestCase):
 
             self.assertEqual(
                 {filing["id"] for filing in exported["filings"]},
-                {"older-accession", "corrected-accession"},
+                {"older-accession", "corrected-accession", "s1:0007654321"},
             )
 
 

@@ -62,12 +62,12 @@ jobs:
 
       - name: Publish S-1 watch and researcher queue data
         run: |
-          if git diff --quiet -- docs/data/s1_watch.json docs/data/filings.json; then
+          if git diff --quiet -- docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv; then
             echo "S-1 watch and researcher queue data are unchanged."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/s1_watch.json docs/data/filings.json
+          git add docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv
           git commit -m "Update S-1 pre-pricing watch data"
           git push

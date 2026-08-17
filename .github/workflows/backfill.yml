@@ -81,9 +81,12 @@ jobs:
           filing_fields = {
               "id", "company", "ticker", "cik", "accession_no", "form", "filed",
               "priority", "status", "value", "value_label", "people_count",
-              "signals", "people", "sec_url",
+              "signals", "people", "sec_url", "stage", "price_range",
+              "filing_price", "offering_price", "current_price", "price_updated",
           }
-          person_fields = {"name", "shares", "cash_value"}
+          person_fields = {
+              "name", "shares", "cash_value", "stanford_university_bio",
+          }
           seen_ids = set()
           for filing in rows:
               unexpected = set(filing) - filing_fields
@@ -94,7 +97,7 @@ jobs:
               if filing.get("id") in seen_ids:
                   raise SystemExit(f"Duplicate filing id: {filing['id']}")
               seen_ids.add(filing["id"])
-              if filing.get("form") != "424B4":
+              if filing.get("form") not in {"424B4", "S-1", "S-1/A"}:
                   raise SystemExit(f"Unexpected form for {filing['id']}: {filing.get('form')}")
               people = filing.get("people")
               if not isinstance(people, list):
@@ -122,13 +125,13 @@ jobs:
       - name: Publish Research Monitor data
         run: |
           echo "Publishing corrected range $BACKFILL_START through $BACKFILL_END."
-          if git diff --quiet -- docs/data/filings.json; then
+          if git diff --quiet -- docs/data/filings.json docs/data/filings.csv; then
             echo "Research Monitor data is unchanged."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/filings.json
+          git add docs/data/filings.json docs/data/filings.csv
           git commit -m "Backfill Research Monitor data through $BACKFILL_END"
           git pull --rebase origin main
           git push origin HEAD:main
