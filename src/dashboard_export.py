@@ -56,8 +56,9 @@ def _clean_holder_name(value):
 def _is_aggregate_holder(name):
     lowered = name.lower()
     return (
-        "directors and executive officers as a group" in lowered
-        or "executive officers and directors as a group" in lowered
+        "as a group" in lowered
+        and "director" in lowered
+        and "executive officer" in lowered
     )
 
 
