@@ -16,10 +16,19 @@ class DashboardUiTests(unittest.TestCase):
 
     def test_has_functional_workflow_controls(self):
         for element_id in (
-            "queueView", "savedView", "search", "priorityFilter", "statusFilter",
+            "queueView", "savedView", "search", "formFilter", "priorityFilter",
+            "statusFilter", "dateFilter", "sortBy", "clearFilters", "resultCount",
             "startReview", "markReview", "toggleSaved", "openSec", "reload",
         ):
             self.assertIn(f'id="{element_id}"', self.html)
+
+    def test_queue_supports_researcher_filtering_and_sorting(self):
+        self.assertIn("function populateFormFilter()", self.html)
+        self.assertIn("function dateWithin(filed,days)", self.html)
+        self.assertIn('sort==="value-desc"', self.html)
+        self.assertIn('sort==="owners-desc"', self.html)
+        self.assertIn("function clearFilters()", self.html)
+        self.assertIn("Last 30 days", self.html)
 
     def test_has_no_fabricated_fallback_or_dead_navigation(self):
         self.assertNotIn("demoFilings", self.html)
