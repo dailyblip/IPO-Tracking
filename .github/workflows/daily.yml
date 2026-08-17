@@ -8,6 +8,12 @@ concurrency:
   cancel-in-progress: false
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'requirements.txt'
+      - '.github/workflows/daily.yml'
   schedule:
     # 12:00 UTC = ~7-8am US Eastern depending on DST. Adjust as needed.
     - cron: '0 12 * * 1-5'
