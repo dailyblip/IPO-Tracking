@@ -1,6 +1,95 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-17T05:44:19.963736+00:00",
+  "generated_at": "2026-08-17T05:57:41.329740+00:00",
   "source": "SEC EDGAR",
-  "filings": []
+  "filings": [
+    {
+      "id": "0001193125-26-328422",
+      "company": "Apnimed, Inc.  (APMD)",
+      "ticker": "APMD",
+      "cik": "0001745648",
+      "accession_no": "0001193125-26-328422",
+      "form": "424B4",
+      "filed": "2026-07-31",
+      "priority": "Medium",
+      "status": "New",
+      "value": 192000000.0,
+      "value_label": "$192M",
+      "people_count": 13,
+      "signals": [
+        "13 named beneficial owners disclosed",
+        "Offering raised approximately $192M",
+        "Largest named holding currently valued at approximately $224M",
+        "Lock-up terms captured for liquidity-event follow-up"
+      ],
+      "people": [
+        {
+          "name": "Morningside",
+          "shares": 6915837.0,
+          "cash_value": 219577824.75
+        },
+        {
+          "name": "Alpha Wave",
+          "shares": 7054954.0,
+          "cash_value": 223994789.5
+        },
+        {
+          "name": "Shionogi",
+          "shares": 2953817.0,
+          "cash_value": 93783689.75
+        },
+        {
+          "name": "Columbia Fund",
+          "shares": 4298843.0,
+          "cash_value": 136488265.25
+        },
+        {
+          "name": "Tao",
+          "shares": 1865638.0,
+          "cash_value": 59234006.5
+        },
+        {
+          "name": "Lawrence G. Miller, M.D.",
+          "shares": 2451036.0,
+          "cash_value": 77820393.0
+        },
+        {
+          "name": "Dennis P. Molnar",
+          "shares": 664452.0,
+          "cash_value": 21096351.0
+        },
+        {
+          "name": "Ronald H. Farkas",
+          "shares": 502298.0,
+          "cash_value": 15947961.5
+        },
+        {
+          "name": "Joseph Avellone, M.D.",
+          "shares": 155288.0,
+          "cash_value": 4930394.0
+        },
+        {
+          "name": "Paul Fonteyne",
+          "shares": 35674.0,
+          "cash_value": 1132649.5
+        },
+        {
+          "name": "Gary Sender",
+          "shares": 22702.0,
+          "cash_value": 720788.5
+        },
+        {
+          "name": "Kevin R. Lind",
+          "shares": 27798.0,
+          "cash_value": 882586.5
+        },
+        {
+          "name": "All current directors and executive officers as a group (12 persons)",
+          "shares": 3356950.0,
+          "cash_value": 106583162.5
+        }
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1745648/000119312526328422/0001193125-26-328422-index.htm"
+    }
+  ]
 }
