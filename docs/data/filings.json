@@ -1,11 +1,131 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-17T06:05:22.231773+00:00",
+  "generated_at": "2026-08-17T06:11:45.797577+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
+      "id": "0001185185-26-003448",
+      "company": "Vogenx, Inc.",
+      "ticker": "VOGX",
+      "cik": "0001903784",
+      "accession_no": "0001185185-26-003448",
+      "form": "424B4",
+      "filed": "2026-08-12",
+      "priority": "Low",
+      "status": "New",
+      "value": 81250000.0,
+      "value_label": "$81M",
+      "people_count": 0,
+      "signals": [
+        "Final prospectus available for researcher review",
+        "Offering raised approximately $81M",
+        "Lock-up terms captured for liquidity-event follow-up"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1903784/000118518526003448/0001185185-26-003448-index.htm"
+    },
+    {
+      "id": "0001193125-26-340329",
+      "company": "Latigo Biotherapeutics, Inc.",
+      "ticker": "LTGO",
+      "cik": "0002056611",
+      "accession_no": "0001193125-26-340329",
+      "form": "424B4",
+      "filed": "2026-08-07",
+      "priority": "Medium",
+      "status": "New",
+      "value": 345600000.0,
+      "value_label": "$346M",
+      "people_count": 0,
+      "signals": [
+        "Final prospectus available for researcher review",
+        "Offering raised approximately $346M"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2056611/000119312526340329/0001193125-26-340329-index.htm"
+    },
+    {
+      "id": "0001193125-26-340215",
+      "company": "BlossomHill Therapeutics, Inc.",
+      "ticker": "BLSM",
+      "cik": "0001839970",
+      "accession_no": "0001193125-26-340215",
+      "form": "424B4",
+      "filed": "2026-08-07",
+      "priority": "Medium",
+      "status": "New",
+      "value": 150000000.0,
+      "value_label": "$150M",
+      "people_count": 0,
+      "signals": [
+        "Final prospectus available for researcher review",
+        "Offering raised approximately $150M"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1839970/000119312526340215/0001193125-26-340215-index.htm"
+    },
+    {
+      "id": "0001628280-26-054354",
+      "company": "Braveheart Bio, Inc.",
+      "ticker": "BRVE",
+      "cik": "0002131524",
+      "accession_no": "0001628280-26-054354",
+      "form": "424B4",
+      "filed": "2026-08-06",
+      "priority": "Low",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 0,
+      "signals": [
+        "Final prospectus available for researcher review"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2131524/000162828026054354/0001628280-26-054354-index.htm"
+    },
+    {
+      "id": "0001193125-26-334997",
+      "company": "Attovia Therapeutics, Inc.",
+      "ticker": "ATTO",
+      "cik": "0002058707",
+      "accession_no": "0001193125-26-334997",
+      "form": "424B4",
+      "filed": "2026-08-05",
+      "priority": "Medium",
+      "status": "New",
+      "value": 289000000.0,
+      "value_label": "$289M",
+      "people_count": 0,
+      "signals": [
+        "Final prospectus available for researcher review",
+        "Offering raised approximately $289M"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2058707/000119312526334997/0001193125-26-334997-index.htm"
+    },
+    {
+      "id": "0001193125-26-326453",
+      "company": "Jersey Mike's Subs Inc.",
+      "ticker": "JMKE",
+      "cik": "0002127043",
+      "accession_no": "0001193125-26-326453",
+      "form": "424B4",
+      "filed": "2026-07-31",
+      "priority": "High",
+      "status": "New",
+      "value": 682999996.0,
+      "value_label": "$683M",
+      "people_count": 0,
+      "signals": [
+        "Final prospectus available for researcher review",
+        "Offering raised approximately $683M"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2127043/000119312526326453/0001193125-26-326453-index.htm"
+    },
+    {
       "id": "0001193125-26-328422",
-      "company": "Apnimed, Inc.  (APMD)",
+      "company": "Apnimed, Inc.",
       "ticker": "APMD",
       "cik": "0001745648",
       "accession_no": "0001193125-26-328422",
@@ -15,9 +135,9 @@
       "status": "New",
       "value": 192000000.0,
       "value_label": "$192M",
-      "people_count": 13,
+      "people_count": 12,
       "signals": [
-        "13 named beneficial owners disclosed",
+        "12 named beneficial owners disclosed",
         "Offering raised approximately $192M",
         "Largest named holding currently valued at approximately $224M",
         "Lock-up terms captured for liquidity-event follow-up"
@@ -82,14 +202,87 @@
           "name": "Kevin R. Lind",
           "shares": 27798.0,
           "cash_value": 882586.5
-        },
-        {
-          "name": "All current directors and executive officers as a group (12 persons)",
-          "shares": 3356950.0,
-          "cash_value": 106583162.5
         }
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1745648/000119312526328422/0001193125-26-328422-index.htm"
+    },
+    {
+      "id": "0001104659-26-088733",
+      "company": "Reformation Inc.",
+      "ticker": "REF",
+      "cik": "0001787117",
+      "accession_no": "0001104659-26-088733",
+      "form": "424B4",
+      "filed": "2026-07-30",
+      "priority": "Medium",
+      "status": "New",
+      "value": 142182315.0,
+      "value_label": "$142M",
+      "people_count": 0,
+      "signals": [
+        "Final prospectus available for researcher review",
+        "Offering raised approximately $142M"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1787117/000110465926088733/0001104659-26-088733-index.htm"
+    },
+    {
+      "id": "0001213900-26-082494",
+      "company": "Game Your Game Inc.",
+      "ticker": "GYGY",
+      "cik": "0002111846",
+      "accession_no": "0001213900-26-082494",
+      "form": "424B4",
+      "filed": "2026-07-29",
+      "priority": "Low",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 0,
+      "signals": [
+        "Final prospectus available for researcher review"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026082494/0001213900-26-082494-index.htm"
+    },
+    {
+      "id": "0001185185-26-003152",
+      "company": "Ionic Digital Inc.",
+      "ticker": "IOND",
+      "cik": "0002007691",
+      "accession_no": "0001185185-26-003152",
+      "form": "424B4",
+      "filed": "2026-07-28",
+      "priority": "Low",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 0,
+      "signals": [
+        "Final prospectus available for researcher review"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2007691/000118518526003152/0001185185-26-003152-index.htm"
+    },
+    {
+      "id": "0001193125-26-316503",
+      "company": "Scribe Therapeutics, Inc.",
+      "ticker": "SCTX",
+      "cik": "0001853921",
+      "accession_no": "0001193125-26-316503",
+      "form": "424B4",
+      "filed": "2026-07-27",
+      "priority": "Medium",
+      "status": "New",
+      "value": 128700000.0,
+      "value_label": "$129M",
+      "people_count": 0,
+      "signals": [
+        "Final prospectus available for researcher review",
+        "Offering raised approximately $129M"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1853921/000119312526316503/0001193125-26-316503-index.htm"
     }
   ]
 }
