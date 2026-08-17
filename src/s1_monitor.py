@@ -17,6 +17,7 @@ from pathlib import Path
 
 import requests
 
+from dashboard_export import write_dashboard_csv
 import edgar_client
 import filing_parser
 
@@ -286,6 +287,7 @@ def sync_research_queue(records: list[dict], queue_path: Path = QUEUE_PATH) -> d
     temp = queue_path.with_suffix(queue_path.suffix + ".tmp")
     temp.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     temp.replace(queue_path)
+    write_dashboard_csv(payload["filings"], queue_path)
     return payload
 
 
