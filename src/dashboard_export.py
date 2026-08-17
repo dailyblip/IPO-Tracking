@@ -228,6 +228,11 @@ def _write_csv(filings, output_path):
     return csv_path
 
 
+def write_dashboard_csv(filings, output_path):
+    """Write the flattened CSV companion for an already-built public feed."""
+    return _write_csv(filings, Path(output_path))
+
+
 def refresh_market_prices(output_path, market_prices, updated_at=None):
     """Refresh delayed quotes and holder cash values in the public feed."""
     output_path = Path(output_path)
@@ -287,6 +292,7 @@ def export_dashboard(rows, output_path, replace_start=None, replace_end=None):
             for filing in existing
             if not (
                 isinstance(filing, dict)
+                and str(filing.get("form") or "424B4").upper() == "424B4"
                 and re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(filing.get("filed", "")))
                 and replace_start <= filing["filed"] <= upper_bound
             )
