@@ -1,6 +1,11 @@
 name: Backfill Historical IPOs (Manual)
 
 on:
+  # Temporary one-shot production launch; removed after the run completes.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/backfill.yml'
   workflow_dispatch:
     inputs:
       start_date:
@@ -26,8 +31,8 @@ jobs:
     timeout-minutes: 180
 
     env:
-      BACKFILL_START: ${{ github.event.inputs.start_date }}
-      BACKFILL_END: ${{ github.event.inputs.end_date }}
+      BACKFILL_START: ${{ github.event.inputs.start_date || '2026-07-17' }}
+      BACKFILL_END: ${{ github.event.inputs.end_date || '2026-08-17' }}
 
     steps:
       - name: Check out repo
@@ -52,6 +57,12 @@ jobs:
             echo "BACKFILL_END=$(date -u +%F)" >> "$GITHUB_ENV"
           fi
 
+      - name: Refresh current pre-pricing S-1 queue
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_monitor.py 4
+
       - name: Run backfill
         working-directory: src
         env:
@@ -66,11 +77,16 @@ jobs:
           --backfill-start "$BACKFILL_START"
           --backfill-end "$BACKFILL_END"
 
+      - name: Refresh stateful research alerts
+        run: python src/research_alerts.py
+
       - name: Validate and summarize public feed
         run: |
           python - <<'PY'
           import json
+          import csv
           import os
+          from collections import Counter
           from pathlib import Path
 
           feed = json.loads(Path("docs/data/filings.json").read_text())
@@ -114,24 +130,37 @@ jobs:
                   ):
                       raise SystemExit(f"Aggregate ownership row published for {filing['id']}")
 
+          csv_path = Path("docs/data/filings.csv")
+          with csv_path.open(encoding="utf-8", newline="") as handle:
+              csv_fields = set(next(csv.reader(handle)))
+          required_csv_fields = {
+              "filing_price", "offering_price", "current_price",
+              "stanford_university_bio",
+          }
+          if not required_csv_fields <= csv_fields:
+              missing = sorted(required_csv_fields - csv_fields)
+              raise SystemExit(f"CSV is missing required public fields: {missing}")
+
           summary = os.environ["GITHUB_STEP_SUMMARY"]
+          forms = Counter(row.get("form") for row in rows)
           with open(summary, "a", encoding="utf-8") as handle:
               handle.write("## Research Monitor backfill\n\n")
               handle.write(f"- Range: {os.environ['BACKFILL_START']} through {os.environ['BACKFILL_END']}\n")
               handle.write(f"- Public feed filings after range replacement: {len(rows)}\n")
+              handle.write(f"- Forms: {dict(forms)}\n")
           print(f"Validated public feed with {len(rows)} qualifying filings.")
           PY
 
       - name: Publish Research Monitor data
         run: |
           echo "Publishing corrected range $BACKFILL_START through $BACKFILL_END."
-          if git diff --quiet -- docs/data/filings.json docs/data/filings.csv; then
+          if [ -z "$(git status --short -- docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv docs/data/alerts.json docs/data/alerts_state.json)" ]; then
             echo "Research Monitor data is unchanged."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/filings.json docs/data/filings.csv
+          git add docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv docs/data/alerts.json docs/data/alerts_state.json
           git commit -m "Backfill Research Monitor data through $BACKFILL_END"
           git pull --rebase origin main
           git push origin HEAD:main
