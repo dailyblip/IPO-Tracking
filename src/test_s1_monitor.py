@@ -86,6 +86,91 @@ class S1MonitorTests(unittest.TestCase):
             self.assertEqual([item["id"] for item in payload["filings"]], ["new", "old"])
             self.assertFalse(Path(str(path) + ".tmp").exists())
 
+    def test_queue_record_uses_stable_issuer_id(self):
+        filing = s1_monitor._queue_record({
+            "id": "0001234567-26-000001",
+            "company": "Acme Robotics, Inc.",
+            "cik": "1234567",
+            "accession_no": "0001234567-26-000001",
+            "form": "S-1/A",
+            "filed": "2026-08-17",
+            "priority": "High",
+            "signals": ["Preliminary offering range disclosed at $18.00–$20.00"],
+            "sec_url": "https://www.sec.gov/test",
+        })
+        self.assertEqual(filing["id"], "s1:0001234567")
+        self.assertEqual(filing["people"], [])
+        self.assertIsNone(filing["value"])
+
+    def test_sync_queue_replaces_older_amendment_for_same_issuer(self):
+        old = {
+            "id": "s1:0001234567",
+            "company": "Acme Robotics, Inc.",
+            "cik": "0001234567",
+            "accession_no": "old-accession",
+            "form": "S-1",
+            "filed": "2026-08-10",
+            "priority": "Medium",
+            "status": "New",
+            "value": None,
+            "value_label": "—",
+            "people_count": 0,
+            "signals": ["Initial registration statement filed — IPO is pre-pricing"],
+            "people": [],
+            "sec_url": "https://www.sec.gov/old",
+        }
+        new = {
+            "id": "new-accession",
+            "company": "Acme Robotics, Inc.",
+            "cik": "0001234567",
+            "accession_no": "new-accession",
+            "form": "S-1/A",
+            "filed": "2026-08-17",
+            "priority": "High",
+            "signals": ["Preliminary offering range disclosed at $18.00–$20.00"],
+            "sec_url": "https://www.sec.gov/new",
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "filings.json"
+            path.write_text(json.dumps({"filings": [old]}), encoding="utf-8")
+            payload = s1_monitor.sync_research_queue([new], path)
+            self.assertEqual(len(payload["filings"]), 1)
+            self.assertEqual(payload["filings"][0]["accession_no"], "new-accession")
+            self.assertEqual(payload["filings"][0]["form"], "S-1/A")
+            self.assertFalse(Path(str(path) + ".tmp").exists())
+
+    def test_sync_queue_removes_prepricing_row_after_424b4(self):
+        prepricing = {
+            "id": "s1:0001234567",
+            "company": "Acme Robotics, Inc.",
+            "cik": "0001234567",
+            "form": "S-1/A",
+            "filed": "2026-08-16",
+        }
+        priced = {
+            "id": "priced-accession",
+            "company": "Acme Robotics, Inc.",
+            "cik": "0001234567",
+            "form": "424B4",
+            "filed": "2026-08-17",
+        }
+        new = {
+            "id": "new-s1-accession",
+            "company": "Acme Robotics, Inc.",
+            "cik": "0001234567",
+            "accession_no": "new-s1-accession",
+            "form": "S-1/A",
+            "filed": "2026-08-17",
+            "priority": "High",
+            "signals": [],
+            "sec_url": "https://www.sec.gov/new",
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "filings.json"
+            path.write_text(json.dumps({"filings": [prepricing, priced]}), encoding="utf-8")
+            payload = s1_monitor.sync_research_queue([new], path)
+            self.assertEqual([item["id"] for item in payload["filings"]], ["priced-accession"])
+
 
 if __name__ == "__main__":
     unittest.main()
