@@ -157,8 +157,14 @@ def build_payload(rows, generated_at=None):
     }
 
 
-def export_dashboard(rows, output_path):
-    """Merge this run into the historical static feed and write atomically."""
+def export_dashboard(rows, output_path, replace_start=None, replace_end=None):
+    """
+    Write the public feed atomically.
+
+    Daily runs merge into history. An explicit backfill range replaces existing
+    records in that range first, so corrected eligibility rules can remove stale
+    records instead of leaving them cached forever.
+    """
     output_path = Path(output_path)
     current = build_payload(rows)
     existing = []
@@ -167,6 +173,18 @@ def export_dashboard(rows, output_path):
             existing = json.loads(output_path.read_text(encoding="utf-8")).get("filings", [])
         except (json.JSONDecodeError, OSError):
             existing = []
+
+    if replace_start:
+        upper_bound = replace_end or "9999-12-31"
+        existing = [
+            filing
+            for filing in existing
+            if not (
+                isinstance(filing, dict)
+                and re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(filing.get("filed", "")))
+                and replace_start <= filing["filed"] <= upper_bound
+            )
+        ]
 
     merged = {
         filing["id"]: _public_only(filing)

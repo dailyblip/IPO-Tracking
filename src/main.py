@@ -257,7 +257,12 @@ def run(days_back: int = DEFAULT_LOOKBACK_DAYS, start_date: str = None, end_date
 
     if not all_rows:
         print("[main] No rows produced this run. Refreshing dashboard metadata...")
-        dashboard_export.export_dashboard([], DASHBOARD_OUTPUT_PATH)
+        dashboard_export.export_dashboard(
+            [],
+            DASHBOARD_OUTPUT_PATH,
+            replace_start=start_date,
+            replace_end=(end_date or date.today().isoformat()) if start_date else None,
+        )
         try:
             sheets_writer.ensure_tabs_exist(spreadsheet_id)
         except Exception as error:
@@ -290,7 +295,12 @@ def run(days_back: int = DEFAULT_LOOKBACK_DAYS, start_date: str = None, end_date
         source_excerpts_by_key=source_excerpts_by_key,
     )
 
-    dashboard = dashboard_export.export_dashboard(reviewed_rows, DASHBOARD_OUTPUT_PATH)
+    dashboard = dashboard_export.export_dashboard(
+        reviewed_rows,
+        DASHBOARD_OUTPUT_PATH,
+        replace_start=start_date,
+        replace_end=(end_date or date.today().isoformat()) if start_date else None,
+    )
     print(
         f"[main] Exported dashboard feed with {len(dashboard['filings'])} filing(s) "
         f"to {DASHBOARD_OUTPUT_PATH}"
