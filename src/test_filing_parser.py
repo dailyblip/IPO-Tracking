@@ -123,23 +123,36 @@ class ExtractPrincipalStockholdersTests(unittest.TestCase):
         self.assertEqual(len(result), 2)
 
 
-    def test_accepts_principal_and_selling_stockholders_heading(self):
+    def test_accepts_split_heading_and_combines_continued_ownership_tables(self):
         html = """
         <html><body>
-        <p>PRINCIPAL AND SELLING STOCKHOLDERS</p>
+        <p>
+          <font style="font-weight:bold;text-transform:uppercase">Principal AND SELLING St</font>
+          <font style="font-weight:bold;text-transform:uppercase">ockholders</font>
+        </p>
         <table>
           <tr><th></th><th>Shares Beneficially Owned Prior to this Offering</th><th>Shares to be Sold</th><th>Shares Beneficially Owned After this Offering</th></tr>
           <tr><th>Name of Beneficial Owner</th><th>Number</th><th>Number</th><th>Percentage</th></tr>
           <tr><td>Entities affiliated with Permira (1)</td><td>32,078,948</td><td>2,987,199</td><td>49.2%</td></tr>
-          <tr><td>All directors and executive officers as a group (8 persons)</td><td>4,123,456</td><td>—</td><td>6.1%</td></tr>
+          <tr><td>Aflalo Family Trust (2)</td><td>12,929,832</td><td>1,000,000</td><td>20.1%</td></tr>
+        </table>
+        <table>
+          <tr><th></th><th>Shares Beneficially Owned Prior to this Offering</th><th>Shares Beneficially Owned After this Offering</th></tr>
+          <tr><th>Name of Beneficial Owner</th><th>Number</th><th>Percentage</th></tr>
+          <tr><td>Hali Borenstein (3)</td><td>2,166,129</td><td>2.4%</td></tr>
+          <tr><td>Charles R. Morrison</td><td>118</td><td>*</td></tr>
+          <tr><td>Directors, director nominee and executive officers as a group (14 persons)</td><td>4,123,456</td><td>6.1%</td></tr>
         </table>
         </body></html>
         """
         result = extract_principal_stockholders(_soup(html))
-        self.assertEqual(result[0]["name"], "Entities affiliated with Permira (1)")
-        self.assertEqual(result[0]["shares"], 32_078_948)
-        self.assertEqual(result[0]["percent"], 49.2)
-        self.assertEqual(len(result), 2)
+        by_name = {holder["name"]: holder for holder in result}
+        self.assertEqual(len(result), 5)
+        self.assertEqual(
+            by_name["Entities affiliated with Permira (1)"]["shares"], 32_078_948
+        )
+        self.assertEqual(by_name["Hali Borenstein (3)"]["percent"], 2.4)
+        self.assertEqual(by_name["Charles R. Morrison"]["shares"], 118)
 
 
 if __name__ == "__main__":
