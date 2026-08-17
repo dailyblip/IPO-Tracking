@@ -60,14 +60,14 @@ jobs:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python s1_monitor.py 4
 
-      - name: Publish S-1 watch data
+      - name: Publish S-1 watch and researcher queue data
         run: |
-          if git diff --quiet -- docs/data/s1_watch.json; then
-            echo "S-1 watch data is unchanged."
+          if git diff --quiet -- docs/data/s1_watch.json docs/data/filings.json; then
+            echo "S-1 watch and researcher queue data are unchanged."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/s1_watch.json
+          git add docs/data/s1_watch.json docs/data/filings.json
           git commit -m "Update S-1 pre-pricing watch data"
           git push
