@@ -8,6 +8,12 @@ from pathlib import Path
 
 SCHEMA_VERSION = 1
 MAX_FILINGS = 250
+PUBLIC_FILING_FIELDS = {
+    "id", "company", "ticker", "cik", "accession_no", "form", "filed",
+    "priority", "status", "value", "value_label", "people_count", "signals",
+    "people", "sec_url",
+}
+PUBLIC_PERSON_FIELDS = {"name", "shares", "cash_value"}
 
 
 def _number(value):
@@ -30,37 +36,40 @@ def _money(value):
     return f"${value:,.0f}"
 
 
+def _public_only(filing):
+    """Allowlist public output fields, including records from older feed versions."""
+    clean = {key: value for key, value in filing.items() if key in PUBLIC_FILING_FIELDS}
+    clean["people"] = [
+        {key: value for key, value in person.items() if key in PUBLIC_PERSON_FIELDS}
+        for person in filing.get("people", [])
+        if isinstance(person, dict)
+    ]
+    return clean
+
+
 def _priority(rows):
-    max_grade = max((_number(row.get("Stanford Grade")) or 0 for row in rows), default=0)
     amount = max((_number(row.get("Amount Raised")) or 0 for row in rows), default=0)
-    if max_grade >= 4 or amount >= 500_000_000:
+    holdings = sum((_number(row.get("Cash Value")) or 0 for row in rows))
+    if amount >= 500_000_000 or holdings >= 250_000_000:
         return "High"
-    if max_grade >= 2 or amount >= 100_000_000:
+    if amount >= 100_000_000 or holdings >= 50_000_000:
         return "Medium"
     return "Low"
 
 
 def _signals(rows):
     signals = []
-    strong = sum(1 for row in rows if (_number(row.get("Stanford Grade")) or 0) >= 4)
-    possible = sum(1 for row in rows if 1 <= (_number(row.get("Stanford Grade")) or 0) < 4)
     amount = max((_number(row.get("Amount Raised")) or 0 for row in rows), default=0)
     holdings = sum((_number(row.get("Cash Value")) or 0 for row in rows))
-    flagged = sum(1 for row in rows if row.get("QC Status") == "Needs Review")
     lockup = next((row.get("Lock-Up Expiry") for row in rows if row.get("Lock-Up Expiry")), None)
 
-    if strong:
-        signals.append(f"{strong} holder{'s' if strong != 1 else ''} with strong Stanford affiliation evidence")
-    if possible:
-        signals.append(f"{possible} additional affiliation signal{'s' if possible != 1 else ''} for researcher review")
+    signals.append(f"{len(rows)} named beneficial owner{'s' if len(rows) != 1 else ''} disclosed")
     if amount:
         signals.append(f"Offering raised approximately {_money(amount)}")
     if holdings:
         signals.append(f"Named holdings currently valued at approximately {_money(holdings)}")
     if lockup:
         signals.append("Lock-up terms captured for liquidity-event follow-up")
-    if flagged:
-        signals.append(f"{flagged} extracted record{'s' if flagged != 1 else ''} need data-quality review")
     return signals or ["New final prospectus available for researcher review"]
 
 
@@ -89,10 +98,6 @@ def build_payload(rows, generated_at=None):
                 "name": name,
                 "shares": _number(row.get("Shares")),
                 "cash_value": _number(row.get("Cash Value")),
-                "stanford_grade": int(_number(row.get("Stanford Grade")) or 0),
-                "affiliation_evidence": row.get("Stanford Justification", ""),
-                "qc_status": row.get("QC Status", ""),
-                "qc_notes": row.get("QC Notes", ""),
             })
 
         filings.append({
@@ -133,8 +138,12 @@ def export_dashboard(rows, output_path):
         except (json.JSONDecodeError, OSError):
             existing = []
 
-    merged = {filing["id"]: filing for filing in existing if filing.get("id")}
-    merged.update({filing["id"]: filing for filing in current["filings"]})
+    merged = {
+        filing["id"]: _public_only(filing)
+        for filing in existing
+        if isinstance(filing, dict) and filing.get("id")
+    }
+    merged.update({filing["id"]: _public_only(filing) for filing in current["filings"]})
     current["filings"] = sorted(
         merged.values(), key=lambda filing: (filing.get("filed", ""), filing.get("company", "")), reverse=True
     )[:MAX_FILINGS]
@@ -144,4 +153,3 @@ def export_dashboard(rows, output_path):
     temporary.write_text(json.dumps(current, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     temporary.replace(output_path)
     return current
-
