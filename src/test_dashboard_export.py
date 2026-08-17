@@ -109,5 +109,42 @@ class DashboardExportTests(unittest.TestCase):
         self.assertIn("Final prospectus available for researcher review", filing["signals"])
 
 
+    def test_backfill_replaces_only_the_requested_date_range(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "filings.json"
+            old = build_payload([
+                sample_row(**{
+                    "Company Name": "Stale Direct Listing",
+                    "Ticker": "STALE",
+                    "Date of Pricing": "2026-07-29",
+                    "_accession_no": "stale-accession",
+                }),
+                sample_row(**{
+                    "Company Name": "Older IPO",
+                    "Ticker": "OLD",
+                    "Date of Pricing": "2026-06-15",
+                    "_accession_no": "older-accession",
+                }),
+            ])
+            output.write_text(json.dumps(old), encoding="utf-8")
+
+            exported = export_dashboard(
+                [sample_row(**{
+                    "Company Name": "Corrected IPO",
+                    "Ticker": "NEW",
+                    "Date of Pricing": "2026-08-05",
+                    "_accession_no": "corrected-accession",
+                })],
+                output,
+                replace_start="2026-07-17",
+                replace_end="2026-08-17",
+            )
+
+            self.assertEqual(
+                {filing["id"] for filing in exported["filings"]},
+                {"older-accession", "corrected-accession"},
+            )
+
+
 if __name__ == "__main__":
     unittest.main()
