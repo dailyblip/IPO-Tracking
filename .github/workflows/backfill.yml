@@ -64,7 +64,7 @@ jobs:
           --backfill-start "$BACKFILL_START"
           --backfill-end "$BACKFILL_END"
 
-      - name: Summarize public feed
+      - name: Validate and summarize public feed
         run: |
           python - <<'PY'
           import json
