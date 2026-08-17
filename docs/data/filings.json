@@ -13,7 +13,7 @@
       "filed": "2026-08-12",
       "priority": "Low",
       "status": "New",
-      "value": 81250000.0,
+      "value": 81250000,
       "value_label": "$81M",
       "people_count": 9,
       "signals": [
@@ -25,47 +25,47 @@
       "people": [
         {
           "name": "Richard Cheatham",
-          "shares": 757222.0,
+          "shares": 757222,
           "cash_value": 11191741.16
         },
         {
           "name": "Lypul, Ltd.",
-          "shares": 657895.0,
+          "shares": 657895,
           "cash_value": 9723688.1
         },
         {
           "name": "Maxim Partners LLC",
-          "shares": 451873.0,
+          "shares": 451873,
           "cash_value": 6678682.9399999995
         },
         {
           "name": "James Green",
-          "shares": 1925555.0,
+          "shares": 1925555,
           "cash_value": 28459702.9
         },
         {
           "name": "William Wilkison",
-          "shares": 1925555.0,
+          "shares": 1925555,
           "cash_value": 28459702.9
         },
         {
           "name": "Steven Delmar",
-          "shares": 791667.0,
+          "shares": 791667,
           "cash_value": 11700838.26
         },
         {
           "name": "Peter Pieraccini",
-          "shares": 23332.0,
+          "shares": 23332,
           "cash_value": 344846.95999999996
         },
         {
           "name": "Timothy Boris",
-          "shares": 23332.0,
+          "shares": 23332,
           "cash_value": 344846.95999999996
         },
         {
           "name": "Richard Gorman",
-          "shares": 23332.0,
+          "shares": 23332,
           "cash_value": 344846.95999999996
         }
       ],
@@ -81,7 +81,7 @@
       "filed": "2026-08-07",
       "priority": "High",
       "status": "New",
-      "value": 345600000.0,
+      "value": 345600000,
       "value_label": "$346M",
       "people_count": 12,
       "signals": [
@@ -92,62 +92,62 @@
       "people": [
         {
           "name": "Entities affiliated with Westlake BioPartners",
-          "shares": 13199669.0,
+          "shares": 13199669,
           "cash_value": 257261548.80999997
         },
         {
           "name": "Entities affiliated with Foresite Capital",
-          "shares": 9041328.0,
+          "shares": 9041328,
           "cash_value": 176215482.72
         },
         {
           "name": "Entities affiliated with 5AM Ventures",
-          "shares": 7325962.0,
+          "shares": 7325962,
           "cash_value": 142782999.38
         },
         {
           "name": "Entities affiliated with Blue Owl Healthcare",
-          "shares": 3146780.0,
+          "shares": 3146780,
           "cash_value": 61330742.199999996
         },
         {
           "name": "Deep Track Biotechnology Master Fund, Ltd.",
-          "shares": 2496656.0,
+          "shares": 2496656,
           "cash_value": 48659825.44
         },
         {
           "name": "Nima Farzan",
-          "shares": 2902419.0,
+          "shares": 2902419,
           "cash_value": 56568146.309999995
         },
         {
           "name": "Timothy Lugo",
-          "shares": 166354.0,
+          "shares": 166354,
           "cash_value": 3242239.46
         },
         {
           "name": "Neil Singla, M.D.",
-          "shares": 532795.0,
+          "shares": 532795,
           "cash_value": 10384174.549999999
         },
         {
           "name": "Timothy P. Walbert",
-          "shares": 329819.0,
+          "shares": 329819,
           "cash_value": 6428172.31
         },
         {
           "name": "Sara Bonstein",
-          "shares": 105542.0,
+          "shares": 105542,
           "cash_value": 2057013.5799999998
         },
         {
           "name": "Beth Seidenberg, M.D.",
-          "shares": 13199669.0,
+          "shares": 13199669,
           "cash_value": 257261548.80999997
         },
         {
           "name": "James B. Tananbaum, M.D.",
-          "shares": 9041328.0,
+          "shares": 9041328,
           "cash_value": 176215482.72
         }
       ],
@@ -163,7 +163,7 @@
       "filed": "2026-08-07",
       "priority": "Medium",
       "status": "New",
-      "value": 150000000.0,
+      "value": 150000000,
       "value_label": "$150M",
       "people_count": 14,
       "signals": [
@@ -174,72 +174,72 @@
       "people": [
         {
           "name": "J. Jean Cui, Ph.D. and Y. Peter Li, Ph.D., MBA and related affiliates",
-          "shares": 3973138.0,
+          "shares": 3973138,
           "cash_value": 64285372.839999996
         },
         {
           "name": "Entities affiliated with Cormorant Asset Management LP",
-          "shares": 3301534.0,
+          "shares": 3301534,
           "cash_value": 53418820.12
         },
         {
           "name": "OrbiMed Private Investments VIII, LP",
-          "shares": 2089279.0,
+          "shares": 2089279,
           "cash_value": 33804534.22
         },
         {
           "name": "Vivo Innovation Fund II Holdings, L.P.",
-          "shares": 1493740.0,
+          "shares": 1493740,
           "cash_value": 24168713.2
         },
         {
           "name": "Janus Henderson Biotech Innovation Master Fund Limited",
-          "shares": 1134361.0,
+          "shares": 1134361,
           "cash_value": 18353960.98
         },
         {
           "name": "J. Jean Cui, Ph.D.",
-          "shares": 3973138.0,
+          "shares": 3973138,
           "cash_value": 64285372.839999996
         },
         {
           "name": "Y. Peter Li, Ph.D., MBA",
-          "shares": 3973138.0,
+          "shares": 3973138,
           "cash_value": 64285372.839999996
         },
         {
           "name": "Geoff Oxnard, M.D.",
-          "shares": 75861.0,
+          "shares": 75861,
           "cash_value": 1227430.98
         },
         {
           "name": "Jason Keyes, MBA",
-          "shares": 54818.0,
+          "shares": 54818,
           "cash_value": 886955.24
         },
         {
           "name": "Sundeep Agrawal, M.D.",
-          "shares": 589195.0,
+          "shares": 589195,
           "cash_value": 9533175.1
         },
         {
           "name": "Bihua Chen, MBA",
-          "shares": 3301534.0,
+          "shares": 3301534,
           "cash_value": 53418820.12
         },
         {
           "name": "Carl L. Gordon, Ph.D., CFA",
-          "shares": 2089279.0,
+          "shares": 2089279,
           "cash_value": 33804534.22
         },
         {
           "name": "Sheila Gujrathi, M.D.",
-          "shares": 90160.0,
+          "shares": 90160,
           "cash_value": 1458788.8
         },
         {
           "name": "John Schmid, MBA",
-          "shares": 67620.0,
+          "shares": 67620,
           "cash_value": 1094091.6
         }
       ],
@@ -255,7 +255,7 @@
       "filed": "2026-08-06",
       "priority": "High",
       "status": "New",
-      "value": 382500000.0,
+      "value": 382500000,
       "value_label": "$382M",
       "people_count": 12,
       "signals": [
@@ -266,62 +266,62 @@
       "people": [
         {
           "name": "AH Bio Fund IV, L.P.",
-          "shares": 9132420.0,
+          "shares": 9132420,
           "cash_value": 246849312.60000002
         },
         {
           "name": "Entities affiliated with Forbion",
-          "shares": 18226024.0,
+          "shares": 18226024,
           "cash_value": 492649428.72
         },
         {
           "name": "Jiangsu Hengrui Pharmaceuticals Co., Ltd.",
-          "shares": 7420091.0,
+          "shares": 7420091,
           "cash_value": 200565059.73000002
         },
         {
           "name": "Orbimed Private Investments IX, LP",
-          "shares": 10235159.0,
+          "shares": 10235159,
           "cash_value": 276656347.77000004
         },
         {
           "name": "ES Braveheart Aggregator, L.P.",
-          "shares": 3424657.0,
+          "shares": 3424657,
           "cash_value": 92568478.71000001
         },
         {
           "name": "Frazier Life Sciences Public Fund, L.P.",
-          "shares": 3424657.0,
+          "shares": 3424657,
           "cash_value": 92568478.71000001
         },
         {
           "name": "Travis Murdoch, M.D., Chief Executive Officer, President and Director",
-          "shares": 8250304.0,
+          "shares": 8250304,
           "cash_value": 223005717.12
         },
         {
           "name": "Michele Anderson, Chief Development Officer",
-          "shares": 331050.0,
+          "shares": 331050,
           "cash_value": 8948281.5
         },
         {
           "name": "J. Paul Rickey, Chief Financial Officer",
-          "shares": 675798.0,
+          "shares": 675798,
           "cash_value": 18266819.94
         },
         {
           "name": "Christopher Viehbacher",
-          "shares": 676524.0,
+          "shares": 676524,
           "cash_value": 18286443.720000003
         },
         {
           "name": "Jason Coloma, Ph.D., M.B.A.",
-          "shares": 1100456.0,
+          "shares": 1100456,
           "cash_value": 29745325.68
         },
         {
           "name": "David Malek, M.B.A.",
-          "shares": 1009131.0,
+          "shares": 1009131,
           "cash_value": 27276810.93
         }
       ],
@@ -337,7 +337,7 @@
       "filed": "2026-08-05",
       "priority": "Medium",
       "status": "New",
-      "value": 289000000.0,
+      "value": 289000000,
       "value_label": "$289M",
       "people_count": 10,
       "signals": [
@@ -348,52 +348,52 @@
       "people": [
         {
           "name": "Frazier Life Sciences XI, L.P.",
-          "shares": 5565980.0,
+          "shares": 5565980,
           "cash_value": 110540362.8
         },
         {
           "name": "Alamar HoldCo, LLC",
-          "shares": 3229279.0,
+          "shares": 3229279,
           "cash_value": 64133480.94
         },
         {
           "name": "venBio Global Strategic Fund IV, L.P.",
-          "shares": 3799016.0,
+          "shares": 3799016,
           "cash_value": 75448457.75999999
         },
         {
           "name": "Entities affiliated with Goldman Sachs & Co. LLC",
-          "shares": 2435641.0,
+          "shares": 2435641,
           "cash_value": 48371830.26
         },
         {
           "name": "Deep Track Biotechnology Master Fund, Ltd",
-          "shares": 1957139.0,
+          "shares": 1957139,
           "cash_value": 38868780.54
         },
         {
           "name": "Tao Fu",
-          "shares": 893456.0,
+          "shares": 893456,
           "cash_value": 17744036.16
         },
         {
           "name": "Petter Veiby",
-          "shares": 212258.0,
+          "shares": 212258,
           "cash_value": 4215443.88
         },
         {
           "name": "Hubert Chen",
-          "shares": 153279.0,
+          "shares": 153279,
           "cash_value": 3044120.94
         },
         {
           "name": "Mitchell Gold",
-          "shares": 41873.0,
+          "shares": 41873,
           "cash_value": 831597.78
         },
         {
           "name": "Angie You",
-          "shares": 59490.0,
+          "shares": 59490,
           "cash_value": 1181471.4
         }
       ],
@@ -409,7 +409,7 @@
       "filed": "2026-07-31",
       "priority": "High",
       "status": "New",
-      "value": 682999996.0,
+      "value": 682999996,
       "value_label": "$683M",
       "people_count": 8,
       "signals": [
@@ -421,42 +421,42 @@
       "people": [
         {
           "name": "Blackstone",
-          "shares": 171858631.0,
+          "shares": 171858631,
           "cash_value": 3808387262.96
         },
         {
           "name": "Abu Dhabi Investment Authority",
-          "shares": 40525336.0,
+          "shares": 40525336,
           "cash_value": 898041445.76
         },
         {
           "name": "Charles R. Morrison",
-          "shares": 118.0,
+          "shares": 118,
           "cash_value": 2614.88
         },
         {
           "name": "Michele Allen",
-          "shares": 43.0,
+          "shares": 43,
           "cash_value": 952.88
         },
         {
           "name": "Walter C. Tombs",
-          "shares": 118.0,
+          "shares": 118,
           "cash_value": 2614.88
         },
         {
           "name": "Nigel Travis",
-          "shares": 118.0,
+          "shares": 118,
           "cash_value": 2614.88
         },
         {
           "name": "Peter Cancro",
-          "shares": 72072.0,
+          "shares": 72072,
           "cash_value": 1597115.52
         },
         {
           "name": "Fran Horowitz",
-          "shares": 59.0,
+          "shares": 59,
           "cash_value": 1307.44
         }
       ],
@@ -472,7 +472,7 @@
       "filed": "2026-07-31",
       "priority": "Medium",
       "status": "New",
-      "value": 192000000.0,
+      "value": 192000000,
       "value_label": "$192M",
       "people_count": 12,
       "signals": [
@@ -484,62 +484,62 @@
       "people": [
         {
           "name": "Morningside",
-          "shares": 6915837.0,
+          "shares": 6915837,
           "cash_value": 219577824.75
         },
         {
           "name": "Alpha Wave",
-          "shares": 7054954.0,
+          "shares": 7054954,
           "cash_value": 223994789.5
         },
         {
           "name": "Shionogi",
-          "shares": 2953817.0,
+          "shares": 2953817,
           "cash_value": 93783689.75
         },
         {
           "name": "Columbia Fund",
-          "shares": 4298843.0,
+          "shares": 4298843,
           "cash_value": 136488265.25
         },
         {
           "name": "Tao",
-          "shares": 1865638.0,
+          "shares": 1865638,
           "cash_value": 59234006.5
         },
         {
           "name": "Lawrence G. Miller, M.D.",
-          "shares": 2451036.0,
-          "cash_value": 77820393.0
+          "shares": 2451036,
+          "cash_value": 77820393
         },
         {
           "name": "Dennis P. Molnar",
-          "shares": 664452.0,
-          "cash_value": 21096351.0
+          "shares": 664452,
+          "cash_value": 21096351
         },
         {
           "name": "Ronald H. Farkas",
-          "shares": 502298.0,
+          "shares": 502298,
           "cash_value": 15947961.5
         },
         {
           "name": "Joseph Avellone, M.D.",
-          "shares": 155288.0,
-          "cash_value": 4930394.0
+          "shares": 155288,
+          "cash_value": 4930394
         },
         {
           "name": "Paul Fonteyne",
-          "shares": 35674.0,
+          "shares": 35674,
           "cash_value": 1132649.5
         },
         {
           "name": "Gary Sender",
-          "shares": 22702.0,
+          "shares": 22702,
           "cash_value": 720788.5
         },
         {
           "name": "Kevin R. Lind",
-          "shares": 27798.0,
+          "shares": 27798,
           "cash_value": 882586.5
         }
       ],
@@ -555,7 +555,7 @@
       "filed": "2026-07-30",
       "priority": "High",
       "status": "New",
-      "value": 142182315.0,
+      "value": 142182315,
       "value_label": "$142M",
       "people_count": 10,
       "signals": [
@@ -565,53 +565,53 @@
       ],
       "people": [
         {
-          "name": "Entities affiliated with Permira ﻿",
-          "shares": 32078948.0,
+          "name": "Entities affiliated with Permira",
+          "shares": 32078948,
           "cash_value": 498827641.40000004
         },
         {
-          "name": "Aflalo Family Trust ﻿",
-          "shares": 12929832.0,
+          "name": "Aflalo Family Trust",
+          "shares": 12929832,
           "cash_value": 201058887.60000002
         },
         {
           "name": "Hali Borenstein",
-          "shares": 2166129.0,
+          "shares": 2166129,
           "cash_value": 33683305.95
         },
         {
           "name": "Ivan Tchakarov",
-          "shares": 584920.0,
-          "cash_value": 9095506.0
+          "shares": 584920,
+          "cash_value": 9095506
         },
         {
           "name": "Yael Aflalo",
-          "shares": 12929832.0,
+          "shares": 12929832,
           "cash_value": 201058887.60000002
         },
         {
           "name": "Zipporah Allen",
-          "shares": 110528.0,
+          "shares": 110528,
           "cash_value": 1718710.4000000001
         },
         {
           "name": "John Coyle",
-          "shares": 56980.0,
-          "cash_value": 886039.0
+          "shares": 56980,
+          "cash_value": 886039
         },
         {
           "name": "Brigitte Kleine",
-          "shares": 110528.0,
+          "shares": 110528,
           "cash_value": 1718710.4000000001
         },
         {
           "name": "Stripes III, LP",
-          "shares": 2016976.0,
+          "shares": 2016976,
           "cash_value": 31363976.8
         },
         {
-          "name": "Entities affiliated with Yael Aflalo ﻿",
-          "shares": 15127312.0,
+          "name": "Entities affiliated with Yael Aflalo",
+          "shares": 15127312,
           "cash_value": 235229701.60000002
         }
       ],
@@ -627,7 +627,7 @@
       "filed": "2026-07-27",
       "priority": "Medium",
       "status": "New",
-      "value": 128700000.0,
+      "value": 128700000,
       "value_label": "$129M",
       "people_count": 10,
       "signals": [
@@ -638,52 +638,52 @@
       "people": [
         {
           "name": "Benjamin L. Oakes, Ph.D.",
-          "shares": 660998.0,
+          "shares": 660998,
           "cash_value": 13702488.540000001
         },
         {
           "name": "David L. Parrot",
-          "shares": 114860.0,
+          "shares": 114860,
           "cash_value": 2381047.8000000003
         },
         {
           "name": "Svetlana Lucas, Ph.D.",
-          "shares": 114345.0,
+          "shares": 114345,
           "cash_value": 2370371.85
         },
         {
           "name": "Behzad Aghazadeh, Ph.D.",
-          "shares": 697650.0,
+          "shares": 697650,
           "cash_value": 14462284.5
         },
         {
           "name": "Carl L. Gordon, Ph.D., CFA",
-          "shares": 348825.0,
+          "shares": 348825,
           "cash_value": 7231142.25
         },
         {
           "name": "Entities affiliated with Andreessen Horowitz",
-          "shares": 2749392.0,
+          "shares": 2749392,
           "cash_value": 56994896.160000004
         },
         {
           "name": "Eli Lilly and Company",
-          "shares": 1054828.0,
+          "shares": 1054828,
           "cash_value": 21866584.44
         },
         {
           "name": "Entities affiliated with Avoro Life Sciences Fund LLC",
-          "shares": 697650.0,
+          "shares": 697650,
           "cash_value": 14462284.5
         },
         {
           "name": "Jennifer A. Doudna",
-          "shares": 603547.0,
+          "shares": 603547,
           "cash_value": 12511529.31
         },
         {
           "name": "Brett T. Staahl",
-          "shares": 550056.0,
+          "shares": 550056,
           "cash_value": 11402660.88
         }
       ],
