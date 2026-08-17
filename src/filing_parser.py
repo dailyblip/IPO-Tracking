@@ -300,7 +300,7 @@ OWNERSHIP_TABLE_HEADER_KEYWORDS = [
 
 def _table_header_looks_like_ownership(table) -> bool:
     """
-    Checks the table's first two rows (where a header typically lives)
+    Checks the table's first eight rows (where grouped headers can span rows)
     for actual ownership-grid language. This is a much sharper filter
     than checking individual data rows - a financial highlights table
     (e.g. "Revenues", "Net loss", "Adjusted EBITDA") can superficially
@@ -308,7 +308,8 @@ def _table_header_looks_like_ownership(table) -> bool:
     won't contain ownership-specific phrasing the way a real
     "Principal Stockholders" table's header does.
     """
-    # Grouped Before/After Offering headers often span several rows.\n    rows = table.find_all("tr")[:8]
+    # Grouped Before/After Offering headers often span several rows.
+    rows = table.find_all("tr")[:8]
     header_text = " ".join(
         c.get_text(" ", strip=True) for row in rows for c in row.find_all(["td", "th"])
     ).lower()
@@ -320,10 +321,10 @@ def extract_principal_stockholders(soup: BeautifulSoup) -> list:
     Extract the beneficial ownership grid. Returns a list of dicts:
     {"name": str, "shares": int or None, "percent": float or None}
 
-    Strategy: locate the ownership section heading, then check up to
-    the next 3 tables that follow it - not just the immediate next
-    one, since a false-positive heading match elsewhere in a large
-    document can otherwise grab an unrelated table entirely. A table
+    Strategy: locate every ownership heading candidate, then check up to
+    12 tables after each one. Prospectuses often repeat the heading in a
+    table of contents long before the actual section, and grouped ownership
+    headers can be separated from that section heading by several tables. A table
     is only accepted if BOTH: (a) its header row contains actual
     ownership-grid language (guards against matching an unrelated
     table like financial highlights, which can superficially resemble
