@@ -15,6 +15,37 @@ class LookbackTests(unittest.TestCase):
     def test_sunday_reaches_back_to_thursday(self):
         self.assertEqual(main._default_lookback_days(date(2026, 8, 23)), 3)
 
+    def test_person_bio_matches_name_variants_without_using_full_text(self):
+        bios = {
+            "Jane Founder, Ph.D.": "Jane earned a degree from Stanford University.",
+            "_full_text": "Another director attended Stanford University.",
+        }
+        self.assertIn("Jane earned", main._person_bio(bios, "Jane Founder"))
+        self.assertEqual(main._person_bio(bios, "John Investor"), "")
+
+    def test_stanford_highlight_requires_exact_university_reference(self):
+        self.assertTrue(main._mentions_stanford_university(
+            "She received her MBA from Stanford University."
+        ))
+        self.assertFalse(main._mentions_stanford_university(
+            "He previously worked at Stanford Health Care."
+        ))
+
+    @patch("main.dashboard_export.refresh_market_prices")
+    @patch("main.price_lookup.get_current_prices", return_value={"ACME": 31.25})
+    def test_refreshes_each_dashboard_ticker_once(self, get_prices, refresh):
+        dashboard = {"filings": [
+            {"ticker": "ACME"},
+            {"ticker": "acme"},
+            {"ticker": ""},
+        ]}
+        refresh.return_value = dashboard
+
+        self.assertIs(main._refresh_dashboard_prices(dashboard), dashboard)
+
+        get_prices.assert_called_once_with(["ACME"])
+        refresh.assert_called_once()
+
     @patch("main.filing_parser.parse_filing")
     @patch("main.edgar_client.find_matching_s1", return_value={})
     @patch("main.edgar_client.is_first_time_registrant", return_value=True)
