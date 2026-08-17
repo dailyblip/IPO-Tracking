@@ -1,6 +1,11 @@
 name: Backfill Historical IPOs (Manual)
 
 on:
+  # One-shot launch for the audited ownership rebuild; removed after success.
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/backfill.yml'
   workflow_dispatch:
     inputs:
       start_date:
@@ -26,8 +31,8 @@ jobs:
     timeout-minutes: 180
 
     env:
-      BACKFILL_START: ${{ github.event.inputs.start_date }}
-      BACKFILL_END: ${{ github.event.inputs.end_date }}
+      BACKFILL_START: ${{ github.event.inputs.start_date || '2026-07-17' }}
+      BACKFILL_END: ${{ github.event.inputs.end_date || '2026-08-17' }}
 
     steps:
       - name: Check out repo
