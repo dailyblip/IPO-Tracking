@@ -123,5 +123,24 @@ class ExtractPrincipalStockholdersTests(unittest.TestCase):
         self.assertEqual(len(result), 2)
 
 
+    def test_accepts_principal_and_selling_stockholders_heading(self):
+        html = """
+        <html><body>
+        <p>PRINCIPAL AND SELLING STOCKHOLDERS</p>
+        <table>
+          <tr><th></th><th>Shares Beneficially Owned Prior to this Offering</th><th>Shares to be Sold</th><th>Shares Beneficially Owned After this Offering</th></tr>
+          <tr><th>Name of Beneficial Owner</th><th>Number</th><th>Number</th><th>Percentage</th></tr>
+          <tr><td>Entities affiliated with Permira (1)</td><td>32,078,948</td><td>2,987,199</td><td>49.2%</td></tr>
+          <tr><td>All directors and executive officers as a group (8 persons)</td><td>4,123,456</td><td>—</td><td>6.1%</td></tr>
+        </table>
+        </body></html>
+        """
+        result = extract_principal_stockholders(_soup(html))
+        self.assertEqual(result[0]["name"], "Entities affiliated with Permira (1)")
+        self.assertEqual(result[0]["shares"], 32_078_948)
+        self.assertEqual(result[0]["percent"], 49.2)
+        self.assertEqual(len(result), 2)
+
+
 if __name__ == "__main__":
     unittest.main()
