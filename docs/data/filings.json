@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-17T06:20:15.834529+00:00",
+  "generated_at": "2026-08-17T06:25:18.177536+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -226,44 +226,6 @@
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1787117/000110465926088733/0001104659-26-088733-index.htm"
-    },
-    {
-      "id": "0001213900-26-082494",
-      "company": "Game Your Game Inc.",
-      "ticker": "GYGY",
-      "cik": "0002111846",
-      "accession_no": "0001213900-26-082494",
-      "form": "424B4",
-      "filed": "2026-07-29",
-      "priority": "Low",
-      "status": "New",
-      "value": null,
-      "value_label": "—",
-      "people_count": 0,
-      "signals": [
-        "Final prospectus available for researcher review"
-      ],
-      "people": [],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026082494/0001213900-26-082494-index.htm"
-    },
-    {
-      "id": "0001185185-26-003152",
-      "company": "Ionic Digital Inc.",
-      "ticker": "IOND",
-      "cik": "0002007691",
-      "accession_no": "0001185185-26-003152",
-      "form": "424B4",
-      "filed": "2026-07-28",
-      "priority": "Low",
-      "status": "New",
-      "value": null,
-      "value_label": "—",
-      "people_count": 0,
-      "signals": [
-        "Final prospectus available for researcher review"
-      ],
-      "people": [],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2007691/000118518526003152/0001185185-26-003152-index.htm"
     },
     {
       "id": "0001193125-26-316503",
