@@ -17,6 +17,7 @@ run manually: python main.py [days_back]
 import os
 import sys
 from datetime import date
+from pathlib import Path
 
 import edgar_client
 import filing_parser
@@ -24,7 +25,9 @@ import price_lookup
 import stanford_grader
 import qc_review
 import sheets_writer
+import dashboard_export
 
+DASHBOARD_OUTPUT_PATH = Path(__file__).resolve().parents[1] / "docs" / "data" / "filings.json"
 DEFAULT_LOOKBACK_DAYS = 2  # covers EDGAR indexing lag; upsert dedupes overlap
 
 
@@ -196,12 +199,23 @@ def run(days_back: int = DEFAULT_LOOKBACK_DAYS, start_date: str = None, end_date
         print(f"[main] Processing {i}/{len(filings)}: {filing_meta.get('company_name')} "
               f"(filed {filing_meta.get('filing_date')})")
         rows = process_filing(filing_meta)
+        index_url = edgar_client.build_filing_index_url(
+            filing_meta["cik"], filing_meta["accession_no"]
+        )
+        for row in rows:
+            row.update({
+                "_cik": filing_meta.get("cik", ""),
+                "_accession_no": filing_meta.get("accession_no", ""),
+                "_form": filing_meta.get("form_type", "424B4"),
+                "_sec_url": index_url,
+            })
         all_rows.extend(rows)
 
     if not all_rows:
         print("[main] No rows produced this run. Ensuring Sheet tabs/headers exist...")
         sheets_writer.ensure_tabs_exist(spreadsheet_id)
-        print("[main] Done. No data to write this run.")
+        dashboard_export.export_dashboard([], DASHBOARD_OUTPUT_PATH)
+        print("[main] Dashboard feed checked; no data to write this run.")
         return
 
     print(f"[main] Fetching previous run's data for QC comparison...")
@@ -217,6 +231,12 @@ def run(days_back: int = DEFAULT_LOOKBACK_DAYS, start_date: str = None, end_date
         all_rows,
         previous_rows_by_key=previous_rows_by_key,
         source_excerpts_by_key=source_excerpts_by_key,
+    )
+
+    dashboard = dashboard_export.export_dashboard(reviewed_rows, DASHBOARD_OUTPUT_PATH)
+    print(
+        f"[main] Exported dashboard feed with {len(dashboard['filings'])} filing(s) "
+        f"to {DASHBOARD_OUTPUT_PATH}"
     )
 
     print(f"[main] Writing to Google Sheet...")
