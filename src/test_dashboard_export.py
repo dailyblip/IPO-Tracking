@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from dashboard_export import build_payload, export_dashboard
+from dashboard_export import build_payload, export_dashboard, refresh_market_prices
 
 
 def sample_row(**overrides):
@@ -12,15 +12,20 @@ def sample_row(**overrides):
         "Ticker": "ACME",
         "Date of Filing": "2026-08-01",
         "Date of Pricing": "2026-08-15",
+        "Filing Price": "18.00-20.00",
+        "Actual Price": 20.00,
         "Amount Raised": 600_000_000,
+        "Current Price": 24.50,
         "Holder Name": "Jane Founder",
         "Shares": 2_000_000,
         "Cash Value": 50_000_000,
         "Stanford Grade": 5,
         "Stanford Justification": "Direct degree evidence.",
+        "Stanford University in Bio": True,
         "Lock-Up Expiry": "180 days after the offering",
         "QC Status": "Verified",
         "QC Notes": "",
+        "Last Updated": "2026-08-17",
         "_cik": "1234567",
         "_accession_no": "0001234567-26-000001",
         "_form": "424B4",
@@ -34,7 +39,11 @@ class DashboardExportTests(unittest.TestCase):
     def test_build_payload_groups_people_and_prioritizes(self):
         payload = build_payload([
             sample_row(),
-            sample_row(**{"Holder Name": "John Investor", "Stanford Grade": 0}),
+            sample_row(**{
+                "Holder Name": "John Investor",
+                "Stanford Grade": 0,
+                "Stanford University in Bio": False,
+            }),
         ], generated_at="2026-08-17T00:00:00+00:00")
         filing = payload["filings"][0]
         self.assertEqual(filing["company"], "Acme Robotics")
@@ -42,11 +51,63 @@ class DashboardExportTests(unittest.TestCase):
         self.assertEqual(filing["priority"], "High")
         self.assertEqual(filing["value_label"], "$600M")
         self.assertEqual(filing["cik"], "0001234567")
+        self.assertEqual(filing["filing_price"], "18.00-20.00")
+        self.assertEqual(filing["offering_price"], 20.0)
+        self.assertEqual(filing["current_price"], 24.5)
+        self.assertEqual(filing["price_updated"], "2026-08-17")
+        self.assertTrue(filing["people"][0]["stanford_university_bio"])
+        self.assertFalse(filing["people"][1]["stanford_university_bio"])
         serialized = json.dumps(filing)
         self.assertNotIn("stanford_grade", serialized)
         self.assertNotIn("affiliation_evidence", serialized)
         self.assertNotIn("qc_status", serialized)
         self.assertNotIn("qc_notes", serialized)
+
+    def test_refresh_market_prices_updates_quotes_and_holder_values(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "filings.json"
+            export_dashboard([sample_row()], output)
+
+            payload = refresh_market_prices(
+                output,
+                {"ACME": 31.25},
+                updated_at="2026-08-18",
+            )
+
+            filing = payload["filings"][0]
+            self.assertEqual(filing["current_price"], 31.25)
+            self.assertEqual(filing["price_updated"], "2026-08-18")
+            self.assertEqual(filing["people"][0]["cash_value"], 62_500_000)
+            self.assertEqual(
+                json.loads(output.read_text(encoding="utf-8"))["generated_at"],
+                "2026-08-18",
+            )
+            with output.with_suffix(".csv").open(encoding="utf-8") as handle:
+                self.assertIn(",31.25,2026-08-18,", handle.read())
+
+    def test_public_allowlist_preserves_s1_pricing_metadata(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "filings.json"
+            existing = build_payload([])
+            existing["filings"] = [{
+                "id": "s1:0001234567",
+                "company": "Acme Robotics",
+                "ticker": "ACME",
+                "form": "S-1/A",
+                "filed": "2026-08-17",
+                "stage": "Pre-pricing",
+                "price_range": "$18.00–$20.00",
+                "people": [],
+                "internal_note": "must not publish",
+            }]
+            output.write_text(json.dumps(existing), encoding="utf-8")
+
+            exported = export_dashboard([], output)
+
+            filing = exported["filings"][0]
+            self.assertEqual(filing["stage"], "Pre-pricing")
+            self.assertEqual(filing["price_range"], "$18.00–$20.00")
+            self.assertNotIn("internal_note", filing)
 
     def test_export_merges_existing_history(self):
         with tempfile.TemporaryDirectory() as directory:

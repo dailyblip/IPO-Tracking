@@ -15,6 +15,7 @@ run manually: python main.py [days_back]
 """
 
 import os
+import re
 import sys
 from datetime import date
 from pathlib import Path
@@ -43,6 +44,44 @@ def _default_lookback_days(today=None):
 
 
 DEFAULT_LOOKBACK_DAYS = _default_lookback_days()
+
+
+def _person_bio(bios, person_name):
+    """Return only the bio belonging to this named person, never the full-text fallback."""
+    target = " ".join(re.findall(r"\w+", str(person_name or "").casefold()))
+    if not target:
+        return ""
+    for name, bio in (bios or {}).items():
+        if name == "_full_text":
+            continue
+        candidate = " ".join(re.findall(r"\w+", str(name or "").casefold()))
+        if candidate and (
+            candidate == target
+            or candidate.startswith(f"{target} ")
+            or target.startswith(f"{candidate} ")
+        ):
+            return str(bio or "")
+    return ""
+
+
+def _mentions_stanford_university(bio_text):
+    return bool(re.search(r"\bstanford\s+university\b", str(bio_text or ""), re.I))
+
+
+def _refresh_dashboard_prices(dashboard):
+    """Refresh delayed quotes for every trading ticker already in the public queue."""
+    tickers = sorted({
+        str(filing.get("ticker") or "").strip().upper()
+        for filing in (dashboard or {}).get("filings", [])
+        if str(filing.get("ticker") or "").strip()
+    })
+    if not tickers:
+        return dashboard
+    prices = price_lookup.get_current_prices(tickers)
+    return dashboard_export.refresh_market_prices(
+        DASHBOARD_OUTPUT_PATH,
+        prices,
+    ) or dashboard
 
 
 def _get_spreadsheet_id() -> str:
@@ -174,9 +213,14 @@ def process_filing(filing_meta: dict) -> list:
             holder_name = holder["name"]
             shares = holder.get("shares")
 
-            # Try to find this holder's bio text by substring match on
-            # the bio dict keys (falls back to the full management text).
-            bio_text = bios.get(holder_name, "") or bios.get("_full_text", "")
+            # Use the person-specific bio for exact Stanford highlighting.
+            # The broader full-text fallback remains available to the grader,
+            # but it must never cause every owner in a filing to be highlighted.
+            person_bio_text = _person_bio(bios, holder_name)
+            bio_text = person_bio_text or bios.get("_full_text", "")
+            stanford_university_in_bio = _mentions_stanford_university(
+                person_bio_text
+            )
 
             if holder_name:
                 try:
@@ -215,6 +259,7 @@ def process_filing(filing_meta: dict) -> list:
                 "Cash Value": cash_value,
                 "Stanford Grade": stanford_result["grade"],
                 "Stanford Justification": stanford_result["justification"],
+                "Stanford University in Bio": stanford_university_in_bio,
                 "Lock-Up Expiry": lockup.get("raw_text", "")[:200] if lockup.get("raw_text") else "",
                 "Last Updated": date.today().isoformat(),
                 "_source_excerpt": bio_text[:500],  # consumed by qc_review, stripped before writing
@@ -257,12 +302,13 @@ def run(days_back: int = DEFAULT_LOOKBACK_DAYS, start_date: str = None, end_date
 
     if not all_rows:
         print("[main] No rows produced this run. Refreshing dashboard metadata...")
-        dashboard_export.export_dashboard(
+        dashboard = dashboard_export.export_dashboard(
             [],
             DASHBOARD_OUTPUT_PATH,
             replace_start=start_date,
             replace_end=(end_date or date.today().isoformat()) if start_date else None,
         )
+        _refresh_dashboard_prices(dashboard)
         try:
             sheets_writer.ensure_tabs_exist(spreadsheet_id)
         except Exception as error:
@@ -301,6 +347,7 @@ def run(days_back: int = DEFAULT_LOOKBACK_DAYS, start_date: str = None, end_date
         replace_start=start_date,
         replace_end=(end_date or date.today().isoformat()) if start_date else None,
     )
+    dashboard = _refresh_dashboard_prices(dashboard)
     print(
         f"[main] Exported dashboard feed with {len(dashboard['filings'])} filing(s) "
         f"to {DASHBOARD_OUTPUT_PATH}"

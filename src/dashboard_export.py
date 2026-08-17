@@ -14,12 +14,17 @@ MAX_FILINGS = 250
 PUBLIC_FILING_FIELDS = {
     "id", "company", "ticker", "cik", "accession_no", "form", "filed",
     "priority", "status", "value", "value_label", "people_count", "signals",
-    "people", "sec_url",
+    "people", "sec_url", "stage", "price_range", "filing_price",
+    "offering_price", "current_price", "price_updated",
 }
-PUBLIC_PERSON_FIELDS = {"name", "shares", "cash_value"}
+PUBLIC_PERSON_FIELDS = {
+    "name", "shares", "cash_value", "stanford_university_bio",
+}
 CSV_FIELDS = (
     "company", "ticker", "cik", "accession_no", "form", "filed", "priority",
-    "status", "offering_value", "holder_name", "shares", "cash_value", "sec_url",
+    "status", "offering_value", "filing_price", "offering_price", "current_price",
+    "price_updated", "holder_name", "shares", "cash_value",
+    "stanford_university_bio", "sec_url",
 )
 
 
@@ -41,6 +46,12 @@ def _money(value):
     if value >= 1_000:
         return f"${value / 1_000:.0f}K"
     return f"${value:,.0f}"
+
+
+def _boolean(value):
+    if isinstance(value, bool):
+        return value
+    return str(value or "").strip().lower() in {"1", "true", "yes", "y"}
 
 
 def _clean_company_name(value):
@@ -140,6 +151,9 @@ def build_payload(rows, generated_at=None):
                 "name": name,
                 "shares": _number(row.get("Shares")),
                 "cash_value": _number(row.get("Cash Value")),
+                "stanford_university_bio": _boolean(
+                    row.get("Stanford University in Bio")
+                ),
             })
 
         filings.append({
@@ -154,6 +168,10 @@ def build_payload(rows, generated_at=None):
             "status": "New",
             "value": amount or None,
             "value_label": _money(amount),
+            "filing_price": first.get("Filing Price") or None,
+            "offering_price": _number(first.get("Actual Price")),
+            "current_price": _number(first.get("Current Price")),
+            "price_updated": first.get("Last Updated") or None,
             "people_count": len(people),
             "signals": _signals(group, people),
             "people": people,
@@ -185,9 +203,16 @@ def _csv_rows(filings):
                 "priority": filing.get("priority", ""),
                 "status": filing.get("status", ""),
                 "offering_value": filing.get("value"),
+                "filing_price": filing.get("price_range") or filing.get("filing_price"),
+                "offering_price": filing.get("offering_price"),
+                "current_price": filing.get("current_price"),
+                "price_updated": filing.get("price_updated"),
                 "holder_name": person.get("name", ""),
                 "shares": person.get("shares"),
                 "cash_value": person.get("cash_value"),
+                "stanford_university_bio": person.get(
+                    "stanford_university_bio", False
+                ),
                 "sec_url": filing.get("sec_url", ""),
             }
 
@@ -201,6 +226,41 @@ def _write_csv(filings, output_path):
         writer.writerows(_csv_rows(filings))
     temporary.replace(csv_path)
     return csv_path
+
+
+def refresh_market_prices(output_path, market_prices, updated_at=None):
+    """Refresh delayed quotes and holder cash values in the public feed."""
+    output_path = Path(output_path)
+    try:
+        payload = json.loads(output_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+
+    updated_at = updated_at or datetime.now(timezone.utc).isoformat()
+    changed = False
+    for filing in payload.get("filings", []):
+        ticker = str(filing.get("ticker") or "").strip().upper()
+        price = _number(market_prices.get(ticker)) if ticker else None
+        if price is None or price <= 0:
+            continue
+        filing["current_price"] = price
+        filing["price_updated"] = updated_at
+        for person in filing.get("people", []):
+            shares = _number(person.get("shares"))
+            if shares is not None:
+                person["cash_value"] = shares * price
+        changed = True
+
+    if changed:
+        payload["generated_at"] = updated_at
+        temporary = output_path.with_suffix(output_path.suffix + ".tmp")
+        temporary.write_text(
+            json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        temporary.replace(output_path)
+        _write_csv(payload.get("filings", []), output_path)
+    return payload
 
 
 def export_dashboard(rows, output_path, replace_start=None, replace_end=None):
