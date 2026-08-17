@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-17T22:34:28.146509+00:00",
+  "generated_at": "2026-08-17T22:39:20.252906+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -71,7 +71,7 @@
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1903784/000118518526003448/0001185185-26-003448-index.htm",
       "current_price": 15.75,
-      "price_updated": "2026-08-17T22:34:28.146509+00:00"
+      "price_updated": "2026-08-17T22:39:20.252906+00:00"
     },
     {
       "id": "0001193125-26-340329",
@@ -155,7 +155,7 @@
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2056611/000119312526340329/0001193125-26-340329-index.htm",
       "current_price": 19.3,
-      "price_updated": "2026-08-17T22:34:28.146509+00:00"
+      "price_updated": "2026-08-17T22:39:20.252906+00:00"
     },
     {
       "id": "0001193125-26-340215",
@@ -249,7 +249,7 @@
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1839970/000119312526340215/0001193125-26-340215-index.htm",
       "current_price": 16.38,
-      "price_updated": "2026-08-17T22:34:28.146509+00:00"
+      "price_updated": "2026-08-17T22:39:20.252906+00:00"
     },
     {
       "id": "0001628280-26-054354",
@@ -333,7 +333,7 @@
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2131524/000162828026054354/0001628280-26-054354-index.htm",
       "current_price": 27.66,
-      "price_updated": "2026-08-17T22:34:28.146509+00:00"
+      "price_updated": "2026-08-17T22:39:20.252906+00:00"
     },
     {
       "id": "0001193125-26-334997",
@@ -407,7 +407,7 @@
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2058707/000119312526334997/0001193125-26-334997-index.htm",
       "current_price": 22.71,
-      "price_updated": "2026-08-17T22:34:28.146509+00:00"
+      "price_updated": "2026-08-17T22:39:20.252906+00:00"
     },
     {
       "id": "0001193125-26-326453",
@@ -472,7 +472,7 @@
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2127043/000119312526326453/0001193125-26-326453-index.htm",
       "current_price": 22.55,
-      "price_updated": "2026-08-17T22:34:28.146509+00:00"
+      "price_updated": "2026-08-17T22:39:20.252906+00:00"
     },
     {
       "id": "0001193125-26-328422",
@@ -557,7 +557,7 @@
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1745648/000119312526328422/0001193125-26-328422-index.htm",
       "current_price": 32.55,
-      "price_updated": "2026-08-17T22:34:28.146509+00:00"
+      "price_updated": "2026-08-17T22:39:20.252906+00:00"
     },
     {
       "id": "0001104659-26-088733",
@@ -631,7 +631,7 @@
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1787117/000110465926088733/0001104659-26-088733-index.htm",
       "current_price": 16.0,
-      "price_updated": "2026-08-17T22:34:28.146509+00:00"
+      "price_updated": "2026-08-17T22:39:20.252906+00:00"
     },
     {
       "id": "0001193125-26-316503",
@@ -705,7 +705,7 @@
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1853921/000119312526316503/0001193125-26-316503-index.htm",
       "current_price": 21.19,
-      "price_updated": "2026-08-17T22:34:28.146509+00:00"
+      "price_updated": "2026-08-17T22:39:20.252906+00:00"
     }
   ]
 }
