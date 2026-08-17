@@ -1,0 +1,69 @@
+name: Research Monitor Alerts
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-monitor-alerts
+  cancel-in-progress: false
+
+on:
+  pull_request:
+    paths:
+      - 'src/research_alerts.py'
+      - 'src/test_research_alerts.py'
+      - '.github/workflows/research-alerts.yml'
+  workflow_run:
+    workflows:
+      - 'Daily IPO Tracker'
+      - 'S-1 Pre-Pricing Monitor'
+    types: [completed]
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run alert tests
+        working-directory: src
+        run: python -m unittest test_research_alerts.py -v
+
+  update-alerts:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generate stateful research alerts
+        run: python src/research_alerts.py
+
+      - name: Publish alert feed and state
+        run: |
+          if git diff --quiet -- docs/data/alerts.json docs/data/alerts_state.json; then
+            echo "Research alert feed is unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/alerts.json docs/data/alerts_state.json
+          git commit -m "Update Research Monitor alerts"
+          git push
