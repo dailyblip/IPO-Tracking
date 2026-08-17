@@ -68,6 +68,30 @@ class DashboardExportTests(unittest.TestCase):
             self.assertNotIn("internal_note", serialized)
             self.assertNotIn("must not publish", serialized)
 
+    def test_normalizes_public_labels_and_excludes_aggregate_rows(self):
+        payload = build_payload([
+            sample_row(**{
+                "Company Name": "Acme Robotics (CIK 0001234567)",
+                "Holder Name": "Jane Founder (1)(2)",
+                "Amount Raised": None,
+                "_form": None,
+            }),
+            sample_row(**{
+                "Company Name": "Acme Robotics (CIK 0001234567)",
+                "Holder Name": "All directors and executive officers as a group",
+                "Amount Raised": None,
+                "Cash Value": 900_000_000,
+                "_form": None,
+            }),
+        ])
+        filing = payload["filings"][0]
+        self.assertEqual(filing["company"], "Acme Robotics")
+        self.assertEqual(filing["form"], "424B4")
+        self.assertEqual(filing["value_label"], "—")
+        self.assertEqual(filing["people_count"], 1)
+        self.assertEqual(filing["people"][0]["name"], "Jane Founder")
+        self.assertNotIn("All directors", json.dumps(filing))
+
 
 if __name__ == "__main__":
     unittest.main()
