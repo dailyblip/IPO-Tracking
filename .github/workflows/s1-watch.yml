@@ -1,0 +1,73 @@
+name: S-1 Pre-Pricing Monitor
+
+permissions:
+  contents: write
+
+concurrency:
+  group: s1-pre-pricing-monitor
+  cancel-in-progress: false
+
+on:
+  pull_request:
+    paths:
+      - 'src/s1_monitor.py'
+      - 'src/test_s1_monitor.py'
+      - '.github/workflows/s1-watch.yml'
+  schedule:
+    # Run shortly after the primary IPO tracker on weekdays.
+    - cron: '20 12 * * 1-5'
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run S-1 monitor tests
+        working-directory: src
+        run: python -m unittest test_s1_monitor.py -v
+
+  update-feed:
+    if: github.event_name != 'pull_request'
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Update pre-pricing S-1 feed
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_monitor.py 4
+
+      - name: Publish S-1 watch and researcher queue data
+        run: |
+          if git diff --quiet -- docs/data/s1_watch.json docs/data/filings.json; then
+            echo "S-1 watch and researcher queue data are unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/s1_watch.json docs/data/filings.json
+          git commit -m "Update S-1 pre-pricing watch data"
+          git push

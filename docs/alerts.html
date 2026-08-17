@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'; base-uri 'none'; form-action 'none'">
+  <title>Research Alerts · SEC Research Monitor</title>
+  <style>
+    :root{--ink:#17211b;--muted:#66716a;--line:#dfe5e0;--paper:#f4f6f3;--white:#fff;--green:#145c43;--green2:#e5f2eb;--amber:#8a5a0a;--amber2:#fff3d8;--red:#8d302d;--red2:#fae9e7;--blue:#24577a;--blue2:#e7f0f6}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,select{font:inherit}a{color:inherit}.shell{max-width:1120px;margin:0 auto;padding:28px 24px 52px}.top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:20px}.top h1{margin:0 0 4px;font-size:25px;letter-spacing:-.035em}.top p{margin:0;color:var(--muted)}.actions{display:flex;gap:8px;flex-wrap:wrap}.button{border:1px solid var(--line);background:var(--white);border-radius:7px;padding:9px 13px;text-decoration:none;cursor:pointer}.summary{display:grid;grid-template-columns:repeat(3,minmax(140px,1fr));gap:12px;margin-bottom:16px}.metric{background:var(--white);border:1px solid var(--line);border-radius:9px;padding:15px}.metric span{display:block;color:var(--muted);font-size:12px}.metric strong{display:block;margin-top:4px;font-size:23px}.panel{background:var(--white);border:1px solid var(--line);border-radius:9px;overflow:hidden}.toolbar{display:flex;gap:10px;padding:13px;border-bottom:1px solid var(--line)}select{border:1px solid var(--line);border-radius:7px;background:#fff;padding:8px 10px}.list{display:grid}.alert{display:grid;grid-template-columns:150px minmax(0,1fr) 140px;gap:16px;padding:15px;border-bottom:1px solid #edf0ed;align-items:start}.alert:last-child{border-bottom:0}.company{font-weight:700}.summary-text{margin-top:3px}.meta{color:var(--muted);font-size:12px;margin-top:4px}.badge{display:inline-block;border-radius:999px;padding:3px 8px;font-size:11px;font-weight:650}.high,.ipo_priced,.priority_escalation{color:var(--red);background:var(--red2)}.medium,.price_range_update{color:var(--amber);background:var(--amber2)}.low,.new_prepricing,.new_424b4{color:var(--blue);background:var(--blue2)}.empty{padding:52px 20px;text-align:center;color:var(--muted)}.empty strong{display:block;color:var(--ink);margin-bottom:5px}.sec{font-size:12px;text-decoration:none;color:var(--green);font-weight:650}.right{text-align:right}.status{color:var(--muted);font-size:12px;margin-top:5px}@media(max-width:760px){.summary{grid-template-columns:1fr}.alert{grid-template-columns:1fr}.right{text-align:left}.top{display:block}.actions{margin-top:12px}}
+  </style>
+</head>
+<body>
+<main class="shell">
+  <header class="top">
+    <div><h1>Research alerts</h1><p>Material changes detected across the monitored SEC IPO queue.</p></div>
+    <div class="actions"><a class="button" href="./">Filing queue</a><button class="button" id="reload">Reload</button></div>
+  </header>
+  <section class="summary" aria-label="Alert summary">
+    <div class="metric"><span>Total alerts</span><strong id="total">0</strong></div>
+    <div class="metric"><span>Pricing changes</span><strong id="pricing">0</strong></div>
+    <div class="metric"><span>Priority escalations</span><strong id="escalations">0</strong></div>
+  </section>
+  <section class="panel">
+    <div class="toolbar"><label for="typeFilter">Show</label><select id="typeFilter"><option value="">All alerts</option><option value="new_prepricing">New pre-pricing candidates</option><option value="price_range_update">Price-range changes</option><option value="ipo_priced">Priced / 424B4 transitions</option><option value="new_424b4">New 424B4 filings</option><option value="priority_escalation">Priority escalations</option></select></div>
+    <div class="list" id="alerts"></div>
+    <div class="empty" id="empty"><strong>Loading alerts…</strong><span>Please wait.</span></div>
+  </section>
+  <div class="status" id="status" aria-live="polite"></div>
+</main>
+<script>
+"use strict";
+let items=[];const $=id=>document.getElementById(id);
+function text(tag,cls,value){const n=document.createElement(tag);if(cls)n.className=cls;n.textContent=value??"";return n}
+function dateLabel(value){if(!value)return "—";const d=new Date(value);return Number.isNaN(d.getTime())?value:new Intl.DateTimeFormat("en-US",{year:"numeric",month:"short",day:"numeric",hour:value.includes("T")?"numeric":undefined,minute:value.includes("T")?"2-digit":undefined,timeZone:value.includes("T")?undefined:"UTC"}).format(d)}
+function safeSecUrl(value){try{const u=new URL(value);return u.protocol==="https:"&&["www.sec.gov","sec.gov"].includes(u.hostname)?u.href:null}catch{return null}}
+function label(type){return({new_prepricing:"New pre-pricing",price_range_update:"Price range",ipo_priced:"IPO priced",new_424b4:"New 424B4",priority_escalation:"Priority raised"})[type]||String(type||"Alert").replaceAll("_"," ")}
+function render(){const type=$("typeFilter").value;const visible=items.filter(a=>!type||a.type===type);const host=$("alerts");host.replaceChildren();for(const a of visible){const row=text("article","alert","");const left=document.createElement("div");left.append(text("span",`badge ${a.type||"low"}`,label(a.type)),text("div","meta",dateLabel(a.detected_at)));const center=document.createElement("div");center.append(text("div","company",a.company||"Unknown company"),text("div","summary-text",a.summary||"SEC monitoring change detected."),text("div","meta",`${a.form||"SEC filing"}${a.filed?` · filed ${dateLabel(a.filed)}`:""}${a.cik?` · CIK ${a.cik}`:""}`));const right=text("div","right","");right.append(text("span",`badge ${(a.priority||"Low").toLowerCase()}`,a.priority||"Low"));const href=safeSecUrl(a.sec_url);if(href){const link=text("a","sec","Open SEC filing ↗");link.href=href;link.target="_blank";link.rel="noopener noreferrer";right.append(document.createElement("br"),link)}row.append(left,center,right);host.append(row)}const empty=$("empty");empty.style.display=visible.length?"none":"block";if(!visible.length)empty.replaceChildren(text("strong","","No alerts in this view"),text("span","",items.length?"Try a different alert type.":"No material changes have been recorded since the alert baseline was established."));$("total").textContent=items.length;$("pricing").textContent=items.filter(a=>["price_range_update","ipo_priced","new_424b4"].includes(a.type)).length;$("escalations").textContent=items.filter(a=>a.type==="priority_escalation").length}
+async function load(){$("reload").disabled=true;$("status").textContent="Loading…";try{const r=await fetch(`data/alerts.json?ts=${Date.now()}`,{cache:"no-store"});if(!r.ok)throw new Error(`HTTP ${r.status}`);const p=await r.json();if(p.schema_version!==1||!Array.isArray(p.alerts))throw new Error("Invalid alert feed schema");items=p.alerts;$("status").textContent=p.generated_at?`Alert feed updated ${dateLabel(p.generated_at)}`:"Alert feed loaded"}catch(e){items=[];$("status").textContent=`Alert feed unavailable: ${e.message}`}finally{$("reload").disabled=false;render()}}
+$("typeFilter").addEventListener("change",render);$("reload").addEventListener("click",load);load();
+</script>
+</body>
+</html>
