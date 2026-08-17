@@ -28,7 +28,21 @@ import sheets_writer
 import dashboard_export
 
 DASHBOARD_OUTPUT_PATH = Path(__file__).resolve().parents[1] / "docs" / "data" / "filings.json"
-DEFAULT_LOOKBACK_DAYS = 2  # covers EDGAR indexing lag; upsert dedupes overlap
+
+
+def _default_lookback_days(today=None):
+    """Cover the previous two business days, including intervening weekends."""
+    today = today or date.today()
+    cursor = today
+    business_days = 0
+    while business_days < 2:
+        cursor = date.fromordinal(cursor.toordinal() - 1)
+        if cursor.weekday() < 5:
+            business_days += 1
+    return (today - cursor).days
+
+
+DEFAULT_LOOKBACK_DAYS = _default_lookback_days()
 
 
 def _get_spreadsheet_id() -> str:
