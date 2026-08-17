@@ -42,6 +42,11 @@ class DashboardExportTests(unittest.TestCase):
         self.assertEqual(filing["priority"], "High")
         self.assertEqual(filing["value_label"], "$600M")
         self.assertEqual(filing["cik"], "0001234567")
+        serialized = json.dumps(filing)
+        self.assertNotIn("stanford_grade", serialized)
+        self.assertNotIn("affiliation_evidence", serialized)
+        self.assertNotIn("qc_status", serialized)
+        self.assertNotIn("qc_notes", serialized)
 
     def test_export_merges_existing_history(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -50,6 +55,8 @@ class DashboardExportTests(unittest.TestCase):
                 "Company Name": "Older Co", "Ticker": "OLD", "Date of Pricing": "2026-07-01",
                 "_accession_no": "old-accession",
             })])
+            old["filings"][0]["internal_note"] = "must not publish"
+            old["filings"][0]["people"][0]["qc_notes"] = "must not publish"
             output.write_text(json.dumps(old), encoding="utf-8")
             exported = export_dashboard([sample_row()], output)
             self.assertEqual(
@@ -57,6 +64,9 @@ class DashboardExportTests(unittest.TestCase):
                 {"old-accession", "0001234567-26-000001"},
             )
             self.assertEqual(json.loads(output.read_text(encoding="utf-8"))["schema_version"], 1)
+            serialized = json.dumps(exported)
+            self.assertNotIn("internal_note", serialized)
+            self.assertNotIn("must not publish", serialized)
 
 
 if __name__ == "__main__":
