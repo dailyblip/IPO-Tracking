@@ -1,25 +1,42 @@
-name: Backfill Historical IPOs (Manual)
+name: Backfill Historical IPOs
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/backfill.yml'
   workflow_dispatch:
     inputs:
       start_date:
         description: 'Backfill from this date (YYYY-MM-DD)'
         required: true
-        default: '2026-06-01'
+        default: '2026-07-17'
       end_date:
-        description: 'Backfill through this date (YYYY-MM-DD, blank = today)'
-        required: false
-        default: ''
+        description: 'Backfill through this date (YYYY-MM-DD)'
+        required: true
+        default: '2026-08-17'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-monitor-backfill
+  cancel-in-progress: false
 
 jobs:
   run-backfill:
     runs-on: ubuntu-latest
     timeout-minutes: 180
 
+    env:
+      BACKFILL_START: ${{ github.event.inputs.start_date || '2026-07-17' }}
+      BACKFILL_END: ${{ github.event.inputs.end_date || '2026-08-17' }}
+
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -28,6 +45,9 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      - name: Run unit tests
+        run: python -m unittest discover -s src -p 'test_*.py' -v
 
       - name: Run backfill
         working-directory: src
@@ -40,5 +60,38 @@ jobs:
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
         run: >
           python main.py
-          --backfill-start "${{ github.event.inputs.start_date }}"
-          --backfill-end "${{ github.event.inputs.end_date }}"
+          --backfill-start "$BACKFILL_START"
+          --backfill-end "$BACKFILL_END"
+
+      - name: Summarize public feed
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          feed = json.loads(Path("docs/data/filings.json").read_text())
+          rows = feed.get("filings")
+          if not isinstance(rows, list):
+              raise SystemExit("docs/data/filings.json must contain a filings list")
+
+          summary = os.environ["GITHUB_STEP_SUMMARY"]
+          with open(summary, "a", encoding="utf-8") as handle:
+              handle.write("## Research Monitor backfill\n\n")
+              handle.write(f"- Range: {os.environ['BACKFILL_START']} through {os.environ['BACKFILL_END']}\n")
+              handle.write(f"- Published qualifying filings: {len(rows)}\n")
+          print(f"Validated public feed with {len(rows)} qualifying filings.")
+          PY
+
+      - name: Publish Research Monitor data
+        run: |
+          if git diff --quiet -- docs/data/filings.json; then
+            echo "Research Monitor data is unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/filings.json
+          git commit -m "Backfill Research Monitor data through $BACKFILL_END"
+          git pull --rebase origin main
+          git push origin HEAD:main
