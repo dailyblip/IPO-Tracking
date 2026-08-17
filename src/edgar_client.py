@@ -25,13 +25,24 @@ EDGAR_ARCHIVES_BASE = "https://www.sec.gov/Archives/edgar/data"
 
 REQUEST_DELAY_SECONDS = 0.15  # keeps us under SEC's ~10 req/sec limit
 
-# Heuristic phrases that show up on SPAC cover pages / Item 1 text.
-# Anything matching gets flagged for manual review rather than silently
-# dropped, since this is a heuristic, not a guarantee.
-SPAC_INDICATOR_PHRASES = [
-    "blank check company",
-    "special purpose acquisition",
-    "business combination with one or more businesses",
+# SPAC detection must be anchored to the issuer or its cover-page self-description.
+# Generic SPAC phrases can appear deep in an operating company's risk factors and
+# must not disqualify a legitimate IPO.
+SPAC_NAME_PATTERN = re.compile(
+    r"\b(?:acquisition|blank check)\b|\bcapital\s+(?:corp|partners?)\b",
+    re.IGNORECASE,
+)
+SPAC_SELF_DESCRIPTION_PATTERNS = [
+    re.compile(
+        r"\bwe are (?:a|an) (?:newly (?:formed|organized) )?"
+        r"(?:blank check|special purpose acquisition) company\b",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\bformed (?:for|with) the (?:sole )?purpose of (?:effecting|entering into) "
+        r"(?:an? )?(?:initial )?business combination\b",
+        re.IGNORECASE,
+    ),
 ]
 
 
@@ -50,9 +61,25 @@ def _get_headers() -> dict:
     return {"User-Agent": user_agent}
 
 
+def _extract_ticker_from_company_name(value: str):
+    """Return the primary ticker from an EFTS display suffix such as '(ACME)'."""
+    match = re.search(
+        r"\s+\(([A-Z][A-Z0-9.-]{0,9})(?:,\s*[A-Z][A-Z0-9.-]{0,9})*\)\s*$",
+        str(value or ""),
+    )
+    return match.group(1) if match else None
+
+
 def _clean_company_name(value: str) -> str:
-    """Remove EFTS display suffixes such as '(CIK 0000123456)'."""
-    return re.sub(r"\s*\(CIK\s+\d+\)\s*$", "", str(value or ""), flags=re.IGNORECASE).strip()
+    """Remove EFTS display suffixes such as '(CIK ...)' and '(ACME)'."""
+    cleaned = re.sub(
+        r"\s*\(CIK\s+\d+\)\s*$", "", str(value or ""), flags=re.IGNORECASE
+    ).strip()
+    return re.sub(
+        r"\s+\([A-Z][A-Z0-9.-]{0,9}(?:,\s*[A-Z][A-Z0-9.-]{0,9})*\)\s*$",
+        "",
+        cleaned,
+    ).strip()
 
 
 def _request_json(url: str, headers: dict, params: dict = None) -> dict:
@@ -114,6 +141,7 @@ def _find_from_daily_indexes(start_date: str, end_date: str, max_results: int,
             accession_no = filename.rsplit("/", 1)[-1].removesuffix(".txt")
             results.append({
                 "company_name": _clean_company_name(company_name),
+                "ticker": _extract_ticker_from_company_name(company_name),
                 "cik": cik.strip(),
                 "accession_no": accession_no,
                 "filing_date": filing_date.strip(),
@@ -155,8 +183,10 @@ def find_recent_424b4_filings(days_back: int = 1, start_date: str = None,
                 source = hit.get("_source", {})
                 cik = source.get("ciks", [None])[0]
                 accession_no = hit.get("_id", "").split(":")[0]
+                display_name = source.get("display_names", ["Unknown"])[0]
                 results.append({
-                    "company_name": _clean_company_name(source.get("display_names", ["Unknown"])[0]),
+                    "company_name": _clean_company_name(display_name),
+                    "ticker": _extract_ticker_from_company_name(display_name),
                     "cik": cik,
                     "accession_no": accession_no,
                     "filing_date": source.get("file_date"),
@@ -203,17 +233,30 @@ def is_us_based(cik: str) -> bool:
     return country in ("", "US")
 
 
-def check_spac_indicators(filing_text: str) -> bool:
+def get_primary_ticker(cik: str):
+    """Return the issuer's first SEC-reported exchange ticker, if present."""
+    headers = _get_headers()
+    padded_cik = str(cik).zfill(10)
+    url = EDGAR_SUBMISSIONS_URL.format(cik=padded_cik)
+    response = requests.get(url, headers=headers, timeout=15)
+    response.raise_for_status()
+    data = response.json()
+    time.sleep(REQUEST_DELAY_SECONDS)
+    tickers = data.get("tickers") or []
+    return tickers[0] if tickers else None
+
+
+def check_spac_indicators(filing_text: str, company_name: str = "") -> bool:
     """
-    Heuristic check for SPAC language in the filing's cover page / Item 1
-    text. Returns True if any indicator phrase is found. This is a
-    heuristic, not a guarantee - treat a True result as "flag for manual
-    review," not an automatic exclusion, since legitimate operating
-    companies occasionally reference "business combination" in unrelated
-    contexts (e.g. describing a past acquisition).
+    Identify a SPAC from its issuer name or an issuer self-description near
+    the front of the prospectus. References to SPACs elsewhere in an
+    operating company's filing are not exclusion evidence.
     """
-    lowered = filing_text.lower()
-    return any(phrase in lowered for phrase in SPAC_INDICATOR_PHRASES)
+    if SPAC_NAME_PATTERN.search(str(company_name or "")):
+        return True
+
+    cover_and_summary = str(filing_text or "")[:75000]
+    return any(pattern.search(cover_and_summary) for pattern in SPAC_SELF_DESCRIPTION_PATTERNS)
 
 
 def is_first_time_registrant(cik: str) -> bool:
