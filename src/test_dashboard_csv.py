@@ -15,9 +15,14 @@ class DashboardCsvExportTests(unittest.TestCase):
                 "Ticker": "EXM",
                 "Date of Pricing": "2026-08-17",
                 "Amount Raised": 125_000_000,
+                "Filing Price": "18.00-20.00",
+                "Actual Price": 20.00,
+                "Current Price": 24.50,
                 "Holder Name": "Ada Example",
                 "Shares": 1000,
                 "Cash Value": 25_000,
+                "Stanford University in Bio": True,
+                "Last Updated": "2026-08-17",
                 "_cik": "1234567",
                 "_accession_no": "0001234567-26-000001",
                 "_form": "424B4",
@@ -28,6 +33,9 @@ class DashboardCsvExportTests(unittest.TestCase):
                 "Ticker": "EXM",
                 "Date of Pricing": "2026-08-17",
                 "Amount Raised": 125_000_000,
+                "Filing Price": "18.00-20.00",
+                "Actual Price": 20.00,
+                "Current Price": 24.50,
                 "Holder Name": "Grace Example",
                 "Shares": 2000,
                 "Cash Value": 50_000,
@@ -57,6 +65,10 @@ class DashboardCsvExportTests(unittest.TestCase):
             self.assertEqual(exported[1]["holder_name"], "Grace Example")
             self.assertEqual(exported[0]["accession_no"], "0001234567-26-000001")
             self.assertEqual(exported[0]["sec_url"], "https://www.sec.gov/example")
+            self.assertEqual(exported[0]["filing_price"], "18.00-20.00")
+            self.assertEqual(exported[0]["offering_price"], "20.0")
+            self.assertEqual(exported[0]["current_price"], "24.5")
+            self.assertEqual(exported[0]["stanford_university_bio"], "True")
 
     def test_csv_preserves_filing_without_named_owner(self):
         rows = [{

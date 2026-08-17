@@ -18,7 +18,9 @@ class DashboardUiTests(unittest.TestCase):
         for element_id in (
             "queueView", "savedView", "search", "formFilter", "priorityFilter",
             "statusFilter", "dateFilter", "sortBy", "clearFilters", "resultCount",
-            "startReview", "markReview", "toggleSaved", "openSec", "reload",
+            "detailFilingPrice", "detailIpoPrice", "detailCurrentPrice",
+            "detailPriceUpdated", "startReview", "markReview", "toggleSaved",
+            "openSec", "reload",
         ):
             self.assertIn(f'id="{element_id}"', self.html)
 
@@ -29,6 +31,20 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn('sort==="owners-desc"', self.html)
         self.assertIn("function clearFilters()", self.html)
         self.assertIn("Last 30 days", self.html)
+
+    def test_displays_all_requested_price_fields(self):
+        self.assertIn("Filing price</th>", self.html)
+        self.assertIn("Final IPO price</th>", self.html)
+        self.assertIn("Current price</th>", self.html)
+        self.assertIn("filing.price_range||filing.filing_price", self.html)
+        self.assertIn("filing.offering_price", self.html)
+        self.assertIn("filing.current_price", self.html)
+        self.assertIn("Delayed quote", self.html)
+
+    def test_highlights_exact_stanford_bio_matches(self):
+        self.assertIn("--cardinal:#8c1515", self.html)
+        self.assertIn("person.stanford_university_bio===true", self.html)
+        self.assertIn("Stanford University referenced in public bio", self.html)
 
     def test_has_no_fabricated_fallback_or_dead_navigation(self):
         self.assertNotIn("demoFilings", self.html)
