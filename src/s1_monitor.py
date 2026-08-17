@@ -2,8 +2,8 @@
 
 This complements the priced-IPO 424B4 pipeline. It watches S-1 and S-1/A
 filings before pricing, filters obvious non-IPO records, captures a preliminary
-price range when one is available, and writes a small public JSON feed for the
-Research Monitor.
+price range when one is available, and writes both a dedicated S-1 history and
+normalized records into the main Research Monitor queue.
 """
 
 from __future__ import annotations
@@ -21,6 +21,7 @@ import edgar_client
 import filing_parser
 
 OUTPUT_PATH = Path(__file__).resolve().parents[1] / "docs" / "data" / "s1_watch.json"
+QUEUE_PATH = Path(__file__).resolve().parents[1] / "docs" / "data" / "filings.json"
 MAX_RECORDS = 250
 FORM_TYPES = {"S-1", "S-1/A"}
 
@@ -188,7 +189,7 @@ def build_payload(records: list[dict], generated_at: str | None = None) -> dict:
 
 
 def export_feed(records: list[dict], output_path: Path = OUTPUT_PATH) -> dict:
-    """Merge new records into bounded history and write atomically."""
+    """Merge new records into bounded S-1 history and write atomically."""
     output_path = Path(output_path)
     existing = []
     if output_path.exists():
@@ -213,6 +214,79 @@ def export_feed(records: list[dict], output_path: Path = OUTPUT_PATH) -> dict:
     return payload
 
 
+def _queue_record(record: dict) -> dict:
+    """Normalize a pre-pricing record to the existing dashboard schema."""
+    cik = str(record.get("cik") or "").zfill(10) if record.get("cik") else ""
+    return {
+        # One live pre-pricing queue row per issuer; later amendments replace it.
+        "id": f"s1:{cik or record.get('company', '')}",
+        "company": record.get("company") or "Unknown",
+        "ticker": record.get("ticker") or "",
+        "cik": cik,
+        "accession_no": record.get("accession_no") or record.get("id") or "",
+        "form": record.get("form") or "S-1",
+        "filed": record.get("filed") or "",
+        "priority": record.get("priority") or "Medium",
+        "status": "New",
+        "value": None,
+        "value_label": "—",
+        "people_count": 0,
+        "signals": list(record.get("signals") or []),
+        "people": [],
+        "sec_url": record.get("sec_url") or "https://www.sec.gov/edgar/search/",
+    }
+
+
+def sync_research_queue(records: list[dict], queue_path: Path = QUEUE_PATH) -> dict:
+    """Merge current S-1 signals into the main researcher queue atomically.
+
+    Existing priced records stay authoritative. If a 424B4 for the same CIK is
+    already present, its pre-pricing queue row is removed rather than duplicated.
+    """
+    queue_path = Path(queue_path)
+    existing = []
+    if queue_path.exists():
+        try:
+            existing = json.loads(queue_path.read_text(encoding="utf-8")).get("filings", [])
+        except (OSError, json.JSONDecodeError):
+            existing = []
+
+    priced_ciks = {
+        str(item.get("cik") or "").zfill(10)
+        for item in existing
+        if isinstance(item, dict)
+        and str(item.get("form") or "").upper() == "424B4"
+        and item.get("cik")
+    }
+
+    merged = {
+        item["id"]: item
+        for item in existing
+        if isinstance(item, dict)
+        and item.get("id")
+        and not (
+            str(item.get("id", "")).startswith("s1:")
+            and str(item.get("cik") or "").zfill(10) in priced_ciks
+        )
+    }
+
+    for record in records:
+        queue_record = _queue_record(record)
+        if queue_record["cik"] and queue_record["cik"] in priced_ciks:
+            merged.pop(queue_record["id"], None)
+            continue
+        merged[queue_record["id"]] = queue_record
+
+    payload = build_payload(list(merged.values()))
+    payload["filings"] = payload["filings"][:MAX_RECORDS]
+
+    queue_path.parent.mkdir(parents=True, exist_ok=True)
+    temp = queue_path.with_suffix(queue_path.suffix + ".tmp")
+    temp.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    temp.replace(queue_path)
+    return payload
+
+
 def run(days_back: int = 4) -> dict:
     candidates = discover_recent_s1(days_back=days_back)
     print(f"[s1_monitor] Found {len(candidates)} recent S-1/S-1A filing(s).")
@@ -223,7 +297,9 @@ def run(days_back: int = 4) -> dict:
         if record:
             records.append(record)
     payload = export_feed(records)
+    queue = sync_research_queue(records)
     print(f"[s1_monitor] Feed now contains {len(payload['filings'])} pre-pricing filing(s).")
+    print(f"[s1_monitor] Research queue now contains {len(queue['filings'])} filing(s).")
     return payload
 
 
