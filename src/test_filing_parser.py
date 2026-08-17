@@ -99,5 +99,29 @@ class ExtractPrincipalStockholdersTests(unittest.TestCase):
         self.assertEqual(extract_offering_size(soup), 21_250_000)
 
 
+    def test_skips_contents_heading_and_finds_later_ownership_table(self):
+        unrelated = "".join(
+            f"<table><tr><td>Unrelated table {index}</td></tr></table>"
+            for index in range(5)
+        )
+        html = f"""
+        <html><body>
+        <p><b>PRINCIPAL STOCKHOLDERS</b> ........ 207</p>
+        {unrelated}
+        <h2>PRINCIPAL STOCKHOLDERS</h2>
+        <table>
+          <tr><th></th><th>Before Offering</th><th>After Offering</th></tr>
+          <tr><th>Name of Beneficial Owner</th><th>Number of Shares of Common Stock Beneficially Owned</th><th>Percentage of Shares Beneficially Owned</th></tr>
+          <tr><td>AH Bio Fund IV, L.P.(1)</td><td>9,132,420</td><td>13.9%</td></tr>
+          <tr><td>All executive officers and directors as a group (10 persons)(2)</td><td>12,043,263</td><td>18.4%</td></tr>
+        </table>
+        </body></html>
+        """
+        result = extract_principal_stockholders(_soup(html))
+        self.assertEqual(result[0]["name"], "AH Bio Fund IV, L.P.(1)")
+        self.assertEqual(result[0]["shares"], 9_132_420)
+        self.assertEqual(len(result), 2)
+
+
 if __name__ == "__main__":
     unittest.main()
