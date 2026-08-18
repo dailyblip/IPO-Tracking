@@ -1,0 +1,62 @@
+name: Apply Research Monitor order/date adjustment
+
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.event.pull_request.head.ref == 'feature/adjust-monitor-order-date-format'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/adjust-monitor-order-date-format
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Patch dashboard and tests
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('docs/index.html')
+          s=p.read_text(encoding='utf-8')
+          old='<th>Company Name</th><th>Ticker</th><th>Form</th><th>Stage</th><th>Filed</th><th>IPO Size / Offering Value</th><th>Filing Price</th><th>Final IPO Price</th><th>Current Price</th><th>Public Signals</th>'
+          new='<th>Company Name</th><th>Ticker</th><th>IPO Size / Offering Value</th><th>Form</th><th>Stage</th><th>Filed</th><th>Filing Price</th><th>Current Price</th><th>Final IPO Price</th><th>Public Signals</th>'
+          if old not in s:
+              raise SystemExit('header pattern not found')
+          s=s.replace(old,new,1)
+          oldrow='appendCell(row,company);appendCell(row,text("span","",filing.ticker||"—"));appendCell(row,text("span","",filing.form));appendCell(row,text("span","",filing.stage));appendCell(row,text("span","",dateLabel(filing.filed)));appendCell(row,text("span","quote",money(filing.ipo_size||filing.value)));appendCell(row,text("span","quote",filingPrice(filing.price_range||filing.filing_price)));appendCell(row,text("span","quote",quotePrice(filing.offering_price)));appendCell(row,text("span","quote",quotePrice(filing.current_price)));'
+          newrow='appendCell(row,company);appendCell(row,text("span","",filing.ticker||"—"));appendCell(row,text("span","quote",money(filing.ipo_size||filing.value)));appendCell(row,text("span","",filing.form));appendCell(row,text("span","",filing.stage));appendCell(row,text("span","",dateLabel(filing.filed)));appendCell(row,text("span","quote",filingPrice(filing.price_range||filing.filing_price)));appendCell(row,text("span","quote",quotePrice(filing.current_price)));appendCell(row,text("span","quote",quotePrice(filing.offering_price)));'
+          if oldrow not in s:
+              raise SystemExit('row pattern not found')
+          s=s.replace(oldrow,newrow,1)
+          olddate='return Number.isNaN(d.getTime())?raw:new Intl.DateTimeFormat("en-US",{year:"numeric",month:"short",day:"numeric",timeZone:"UTC"}).format(d)'
+          newdate='return Number.isNaN(d.getTime())?raw:new Intl.DateTimeFormat("en-US",{month:"short",day:"numeric",year:"numeric",timeZone:"UTC"}).format(d)'
+          if olddate in s:
+              s=s.replace(olddate,newdate,1)
+          p.write_text(s,encoding='utf-8')
+
+          t=Path('src/test_dashboard_ui.py')
+          x=t.read_text(encoding='utf-8')
+          x=x.replace('expected = "<th>Company Name</th><th>Ticker</th><th>Form</th><th>Stage</th><th>Filed</th><th>IPO Size / Offering Value</th><th>Filing Price</th><th>Final IPO Price</th><th>Current Price</th><th>Public Signals</th>"','expected = "<th>Company Name</th><th>Ticker</th><th>IPO Size / Offering Value</th><th>Form</th><th>Stage</th><th>Filed</th><th>Filing Price</th><th>Current Price</th><th>Final IPO Price</th><th>Public Signals</th>"')
+          if 'month:"short",day:"numeric",year:"numeric"' not in x:
+              marker='    def test_main_table_uses_requested_column_order(self):\n'
+              if marker in x:
+                  x=x.replace(marker,'    def test_filed_date_uses_friendly_format(self):\n        self.assertIn(\'month:"short",day:"numeric",year:"numeric"\', self.html)\n\n'+marker,1)
+          t.write_text(x,encoding='utf-8')
+          PY
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html src/test_dashboard_ui.py
+          git commit -m "Adjust Research Monitor column order and date formatting"
+          git push origin HEAD:feature/adjust-monitor-order-date-format
