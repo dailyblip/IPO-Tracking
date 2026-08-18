@@ -1,0 +1,177 @@
+name: Apply IPO size implementation
+
+on:
+  push:
+    branches: [automation/research-monitor-stage-export]
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-test:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: automation/research-monitor-stage-export
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply IPO size changes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              if old not in text:
+                  raise SystemExit(f'Expected text not found in {path}: {old[:80]!r}')
+              p.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+          # SEC parser: extract a stated aggregate deal size; otherwise derive from shares x pricing terms.
+          parser = Path('src/filing_parser.py')
+          text = parser.read_text(encoding='utf-8')
+          marker = '\n\nOWNERSHIP_TABLE_HEADER_KEYWORDS = ['
+          if 'def extract_ipo_size(' not in text:
+              fn = r'''
+
+
+def extract_ipo_size(soup: BeautifulSoup) -> int | None:
+    """Extract or derive the anticipated IPO deal size in dollars."""
+    full_text = soup.get_text(" ", strip=True)
+    cover_text = full_text[:60000]
+
+    aggregate_patterns = [
+        r"(?:proposed\s+maximum\s+aggregate\s+offering\s+price|maximum\s+aggregate\s+offering\s+price|aggregate\s+offering\s+price)[^$]{0,160}\$\s*([\d,]+(?:\.\d+)?)",
+        r"\$\s*([\d,]+(?:\.\d+)?)\s+(?:aggregate\s+offering|maximum\s+aggregate\s+offering)",
+    ]
+    for pattern in aggregate_patterns:
+        match = re.search(pattern, cover_text, re.IGNORECASE)
+        if match:
+            try:
+                amount = float(match.group(1).replace(",", ""))
+            except ValueError:
+                continue
+            if amount >= 1_000_000:
+                return int(round(amount))
+
+    shares = extract_offering_size(soup)
+    if not shares:
+        return None
+
+    price_range = extract_price_range(soup)
+    low, high = price_range.get("range_low"), price_range.get("range_high")
+    if low and high:
+        return int(round(shares * ((float(low) + float(high)) / 2)))
+
+    offering_price = extract_cover_page_data(soup).get("offering_price")
+    if offering_price:
+        return int(round(shares * float(offering_price)))
+    return None
+'''
+              if marker not in text:
+                  raise SystemExit('filing_parser insertion marker missing')
+              text = text.replace(marker, fn + marker, 1)
+          old = '    cover_page_data["offering_size_shares"] = extract_offering_size(soup)\n'
+          new = old + '    cover_page_data["ipo_size"] = extract_ipo_size(soup)\n'
+          if 'cover_page_data["ipo_size"]' not in text:
+              if old not in text:
+                  raise SystemExit('parse_filing cover-page marker missing')
+              text = text.replace(old, new, 1)
+          parser.write_text(text, encoding='utf-8')
+
+          # S-1 monitor: carry IPO size into history and normalized queue records.
+          replace('src/s1_monitor.py',
+                  '        price_range = parsed.get("price_range", {})\n        range_label = _format_range(price_range.get("range_low"), price_range.get("range_high"))\n',
+                  '        price_range = parsed.get("price_range", {})\n        range_label = _format_range(price_range.get("range_low"), price_range.get("range_high"))\n        ipo_size = parsed.get("cover_page", {}).get("ipo_size")\n')
+          replace('src/s1_monitor.py',
+                  '            "price_range": range_label,\n            "signals": signals,\n',
+                  '            "price_range": range_label,\n            "ipo_size": ipo_size,\n            "signals": signals,\n')
+          replace('src/s1_monitor.py',
+                  '        "price_range": record.get("price_range"),\n        "priority": record.get("priority") or "Medium",\n',
+                  '        "price_range": record.get("price_range"),\n        "ipo_size": record.get("ipo_size"),\n        "priority": record.get("priority") or "Medium",\n')
+
+          # Priced feed + CSV: preserve IPO size as a first-class field.
+          replace('src/dashboard_export.py',
+                  '    "priority", "status", "offering_value", "filing_price", "offering_price",\n',
+                  '    "priority", "status", "ipo_size", "offering_value", "filing_price", "offering_price",\n')
+          replace('src/dashboard_export.py',
+                  '            "status": "New",\n            "value": amount or None,\n',
+                  '            "status": "New",\n            "ipo_size": amount or None,\n            "value": amount or None,\n')
+          replace('src/dashboard_export.py',
+                  '                "status": filing.get("status", ""),\n                "offering_value": filing.get("value", ""),\n',
+                  '                "status": filing.get("status", ""),\n                "ipo_size": filing.get("ipo_size") or filing.get("value", ""),\n                "offering_value": filing.get("value", ""),\n')
+
+          # Researcher UI: add the requested column and use the same field in detail view.
+          replace('docs/index.html',
+                  '<th>Company</th><th>Form</th><th>Filed</th><th>Filing price</th>',
+                  '<th>Company</th><th>Form</th><th>Filed</th><th>IPO size</th><th>Filing price</th>')
+          replace('docs/index.html',
+                  'appendCell(row,text("span","",dateLabel(filing.filed)));appendCell(row,text("span","quote",filingPrice(filing.price_range||filing.filing_price)));',
+                  'appendCell(row,text("span","",dateLabel(filing.filed)));appendCell(row,text("span","quote",money(filing.ipo_size||filing.value)));appendCell(row,text("span","quote",filingPrice(filing.price_range||filing.filing_price)));')
+          replace('docs/index.html',
+                  '<div class="fact"><span>Offering value</span><strong id="detailValue"></strong></div>',
+                  '<div class="fact"><span>IPO size</span><strong id="detailValue"></strong></div>')
+          replace('docs/index.html',
+                  '$("detailValue").textContent=filing.value_label||money(filing.value);',
+                  '$("detailValue").textContent=money(filing.ipo_size||filing.value);')
+
+          Path('src/test_ipo_size.py').write_text(r'''import unittest
+from pathlib import Path
+
+from bs4 import BeautifulSoup
+
+import dashboard_export
+import filing_parser
+import s1_monitor
+
+
+class IpoSizeTests(unittest.TestCase):
+    def test_extracts_stated_aggregate_ipo_size(self):
+        soup = BeautifulSoup(
+            '<html><body>Proposed Maximum Aggregate Offering Price $100,000,000</body></html>',
+            'lxml',
+        )
+        self.assertEqual(filing_parser.extract_ipo_size(soup), 100_000_000)
+
+    def test_derives_size_from_shares_and_preliminary_range(self):
+        soup = BeautifulSoup(
+            '<html><body>We are offering 5,000,000 shares of our common stock. '
+            'The price is expected to be between $18.00 and $20.00 per share. '
+            '$18.00 and $20.00 per share</body></html>',
+            'lxml',
+        )
+        self.assertEqual(filing_parser.extract_ipo_size(soup), 95_000_000)
+
+    def test_s1_queue_preserves_ipo_size(self):
+        queued = s1_monitor._queue_record({
+            'company': 'Example Corp', 'cik': '1234567', 'ipo_size': 100_000_000,
+        })
+        self.assertEqual(queued['ipo_size'], 100_000_000)
+
+    def test_csv_schema_includes_ipo_size(self):
+        self.assertIn('ipo_size', dashboard_export.CSV_FIELDS)
+
+    def test_dashboard_renders_ipo_size_column(self):
+        html = Path('docs/index.html').read_text(encoding='utf-8')
+        self.assertIn('<th>IPO size</th>', html)
+        self.assertIn('money(filing.ipo_size||filing.value)', html)
+
+
+if __name__ == '__main__':
+    unittest.main()
+''', encoding='utf-8')
+          PY
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+      - name: Commit implementation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/filing_parser.py src/s1_monitor.py src/dashboard_export.py src/test_ipo_size.py docs/index.html
+          git commit -m "Add IPO size to Research Monitor"
+          git push
