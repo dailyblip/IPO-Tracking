@@ -20,7 +20,7 @@ class DashboardUiTests(unittest.TestCase):
             "statusFilter", "dateFilter", "sortBy", "clearFilters", "resultCount",
             "detailFilingPrice", "detailIpoPrice", "detailCurrentPrice",
             "detailPriceUpdated", "startReview", "markReview", "toggleSaved",
-            "openSec", "reload",
+            "openSec", "reload", "resetColumns",
         ):
             self.assertIn(f'id="{element_id}"', self.html)
         self.assertNotIn('id="priorityFilter"', self.html)
@@ -37,17 +37,27 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn('month:"short",day:"numeric",year:"numeric"', self.html)
         self.assertIn('dateLabel(filing.filed)', self.html)
 
-    def test_main_table_uses_requested_column_order(self):
-        expected = (
-            "<th>Company Name</th><th>Ticker</th><th>IPO Size / Offering Value</th>"
-            "<th>Form</th><th>Stage</th><th>Filed</th><th>Filing Price</th>"
-            "<th>Current Price</th><th>Final IPO Price</th><th>Public Signals</th>"
+    def test_main_table_uses_requested_default_column_order(self):
+        expected_labels = (
+            "Company Name", "Ticker", "IPO Size / Offering Value", "Form", "Stage",
+            "Filed", "Filing Price", "Current Price", "Final IPO Price", "Public Signals",
         )
-        self.assertIn(expected, self.html)
+        positions = [self.html.index(f'>{label}</th>') for label in expected_labels]
+        self.assertEqual(positions, sorted(positions))
         self.assertNotIn("<th>Priority</th>", self.html)
         self.assertNotIn("<th>Status</th>", self.html)
         self.assertIn("money(filing.ipo_size||filing.value)", self.html)
         self.assertIn('filing.ticker||"—"', self.html)
+
+    def test_columns_are_drag_reorderable_and_persistent(self):
+        for index in range(10):
+            self.assertIn(f'draggable="true" data-col="{index}"', self.html)
+        self.assertIn('research-monitor:column-order', self.html)
+        self.assertIn("function setupColumnDrag()", self.html)
+        self.assertIn("function applyColumnOrder()", self.html)
+        self.assertIn("function saveColumnOrder(order)", self.html)
+        self.assertIn('storageRemove("research-monitor:column-order")', self.html)
+        self.assertIn('id="resetColumns"', self.html)
 
     def test_displays_all_requested_price_fields(self):
         self.assertIn("Filing Price</th>", self.html)
