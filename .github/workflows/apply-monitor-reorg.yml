@@ -40,7 +40,6 @@ jobs:
           new='const company=document.createElement("div");const stanfordOwner=filing.people.some(p=>p.stanford_university_bio===true);company.append(text("div",stanfordOwner?"company stanford-company":"company",filing.company),text("div","sub",filing.cik?`CIK ${filing.cik}`:""));appendCell(row,company);appendCell(row,text("span","",filing.ticker||"—"));appendCell(row,text("span","",filing.form));appendCell(row,text("span","",filing.stage));appendCell(row,text("span","",dateLabel(filing.filed)));appendCell(row,text("span","quote",money(filing.ipo_size||filing.value)));appendCell(row,text("span","quote",filingPrice(filing.price_range||filing.filing_price)));appendCell(row,text("span","quote",quotePrice(filing.offering_price)));appendCell(row,text("span","quote",quotePrice(filing.current_price)));'
           assert old in s
           s=s.replace(old,new,1)
-          # priority filter reset no longer exists
           s=s.replace('$("priorityFilter").value="";','')
           p.write_text(s)
           PY
@@ -55,3 +54,5 @@ jobs:
           git add docs/index.html
           git commit -m "Reorganize Research Monitor columns and Stanford highlighting"
           git push
+
+# trigger
