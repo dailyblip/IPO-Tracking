@@ -30,9 +30,9 @@ class IpoSizeTests(unittest.TestCase):
         self.assertEqual(queued["ipo_size"], 100_000_000)
         self.assertEqual(queued["value"], 100_000_000)
 
-    def test_dashboard_has_ipo_size_column(self):
+    def test_dashboard_has_merged_ipo_size_offering_value_column(self):
         html = Path(__file__).resolve().parents[1].joinpath("docs", "index.html").read_text(encoding="utf-8")
-        self.assertIn("<th>IPO size</th>", html)
+        self.assertIn("<th>IPO Size / Offering Value</th>", html)
         self.assertIn("money(filing.ipo_size||filing.value)", html)
 
 
