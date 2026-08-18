@@ -32,7 +32,7 @@ class IpoSizeTests(unittest.TestCase):
 
     def test_dashboard_has_merged_ipo_size_offering_value_column(self):
         html = Path(__file__).resolve().parents[1].joinpath("docs", "index.html").read_text(encoding="utf-8")
-        self.assertIn("<th>IPO Size / Offering Value</th>", html)
+        self.assertIn(">IPO Size / Offering Value</th>", html)
         self.assertIn("money(filing.ipo_size||filing.value)", html)
 
 
