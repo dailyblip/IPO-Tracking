@@ -1,0 +1,58 @@
+name: Apply offering value main page
+
+on:
+  push:
+    branches: [feature/offering-value-main-page]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Patch dashboard and tests
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          html_path = Path('docs/index.html')
+          html = html_path.read_text(encoding='utf-8')
+          old_head = '<th>IPO size</th><th>Filing price</th>'
+          new_head = '<th>IPO size</th><th>Offering value</th><th>Filing price</th>'
+          if old_head not in html:
+              raise SystemExit('table header insertion point not found')
+          html = html.replace(old_head, new_head, 1)
+
+          old_row = 'appendCell(row,text("span","quote",money(filing.ipo_size||filing.value)));appendCell(row,text("span","quote",filingPrice(filing.price_range||filing.filing_price)));'
+          new_row = 'appendCell(row,text("span","quote",money(filing.ipo_size)));appendCell(row,text("span","quote",money(filing.value)));appendCell(row,text("span","quote",filingPrice(filing.price_range||filing.filing_price)));'
+          if old_row not in html:
+              raise SystemExit('table row insertion point not found')
+          html = html.replace(old_row, new_row, 1)
+          html_path.write_text(html, encoding='utf-8')
+
+          test_path = Path('src/test_dashboard_ui.py')
+          test = test_path.read_text(encoding='utf-8')
+          needle = '        self.assertIn("Filing price</th>", self.html)\n'
+          replacement = '        self.assertIn("IPO size</th>", self.html)\n        self.assertIn("Offering value</th>", self.html)\n        self.assertIn("money(filing.ipo_size)", self.html)\n        self.assertIn("money(filing.value)", self.html)\n' + needle
+          if needle not in test:
+              raise SystemExit('UI test insertion point not found')
+          test = test.replace(needle, replacement, 1)
+          test_path.write_text(test, encoding='utf-8')
+          PY
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html src/test_dashboard_ui.py
+          git commit -m "Show offering value on Research Monitor main page"
+          git push
