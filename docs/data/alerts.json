@@ -1,6 +1,36 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-18T12:21:44.862690+00:00",
-  "count": 0,
-  "alerts": []
+  "generated_at": "2026-08-18T13:11:21.924819+00:00",
+  "count": 2,
+  "alerts": [
+    {
+      "type": "new_prepricing",
+      "company": "VARSAL TECH, INC.",
+      "cik": "0002109801",
+      "filing_id": "s1:0002109801",
+      "form": "S-1/A",
+      "filed": "20260817",
+      "stage": "pre-pricing",
+      "priority": "Medium",
+      "summary": "New pre-pricing S-1/A candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2109801/000149315226038800/0001493152-26-038800-index.htm",
+      "detected_at": "2026-08-18T13:11:21.924758+00:00",
+      "key": "new_prepricing|s1:0002109801|0002109801|20260817|"
+    },
+    {
+      "type": "new_prepricing",
+      "company": "Alopexx, Inc.",
+      "cik": "0001880995",
+      "filing_id": "s1:0001880995",
+      "form": "S-1/A",
+      "filed": "20260817",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "New pre-pricing S-1/A candidate entered the researcher queue. Preliminary range: $10.00–$12.00.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026090319/0001213900-26-090319-index.htm",
+      "detected_at": "2026-08-18T13:11:21.924783+00:00",
+      "new_value": "$10.00–$12.00",
+      "key": "new_prepricing|s1:0001880995|0001880995|20260817|$10.00–$12.00"
+    }
+  ]
 }
