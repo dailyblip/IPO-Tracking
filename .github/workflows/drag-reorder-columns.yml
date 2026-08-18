@@ -1,0 +1,51 @@
+name: Apply drag reorder columns
+
+on:
+  push:
+    branches: [feature/drag-reorder-columns]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Add persistent drag-and-drop columns
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('docs/index.html')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('.clear{border:0;background:transparent;color:var(--green)}', '.clear{border:0;background:transparent;color:var(--green)}.reset-columns{border:0;background:transparent;color:var(--green);margin-left:12px}.dragging{opacity:.45}th[draggable="true"]{cursor:grab;user-select:none}th[draggable="true"]:active{cursor:grabbing}')
+          s=s.replace('<div class="meta"><span id="resultCount">0 filings</span><button class="clear" id="clearFilters">Clear filters</button></div>', '<div class="meta"><span id="resultCount">0 filings</span><span><button class="clear" id="clearFilters">Clear filters</button><button class="reset-columns" id="resetColumns">Reset columns</button></span></div>')
+          headers=['Company Name','Ticker','IPO Size / Offering Value','Form','Stage','Filed','Filing Price','Current Price','Final IPO Price','Public Signals']
+          for i,h in enumerate(headers):
+              s=s.replace(f'<th>{h}</th>', f'<th draggable="true" data-col="{i}">{h}</th>', 1)
+          marker='function appendCell(row,node){const c=document.createElement("td");c.append(node);row.append(c)}\n'
+          block='''function columnOrder(){try{const saved=JSON.parse(storageGet("research-monitor:column-order")||"null");if(Array.isArray(saved)&&saved.length===10&&new Set(saved).size===10)return saved}catch{}return [0,1,2,3,4,5,6,7,8,9]}\nfunction saveColumnOrder(order){storageSet("research-monitor:column-order",JSON.stringify(order))}\nfunction applyColumnOrder(){const order=columnOrder(),table=document.querySelector("table"),head=table.querySelector("thead tr");const heads=[...head.children];order.forEach(i=>head.append(heads.find(h=>Number(h.dataset.col)===i)));for(const row of table.querySelectorAll("tbody tr")){const cells=[...row.children];order.forEach(i=>row.append(cells.find(c=>Number(c.dataset.col)===i)))}}\nfunction setupColumnDrag(){const head=document.querySelector("thead tr");let dragged=null;for(const th of head.children){th.addEventListener("dragstart",()=>{dragged=th;th.classList.add("dragging")});th.addEventListener("dragend",()=>{th.classList.remove("dragging");dragged=null;saveColumnOrder([...head.children].map(h=>Number(h.dataset.col)));applyColumnOrder()});th.addEventListener("dragover",e=>{e.preventDefault();if(!dragged||dragged===th)return;const r=th.getBoundingClientRect();head.insertBefore(dragged,e.clientX<r.left+r.width/2?th:th.nextSibling)})}}\n'''
+          if block not in s:
+              s=s.replace(marker,marker+block,1)
+          old='function appendCell(row,node){const c=document.createElement("td");c.append(node);row.append(c)}'
+          new='function appendCell(row,node){const c=document.createElement("td");c.dataset.col=String(row.children.length);c.append(node);row.append(c)}'
+          s=s.replace(old,new,1)
+          s=s.replace('appendCell(row,sig);rows.append(row)}', 'appendCell(row,sig);rows.append(row);applyColumnOrder()}',1)
+          s=s.replace('$("clearFilters").addEventListener("click",clearFilters);', '$("clearFilters").addEventListener("click",clearFilters);$("resetColumns").addEventListener("click",()=>{storageRemove("research-monitor:column-order");applyColumnOrder()});setupColumnDrag();applyColumnOrder();',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html
+          git commit -m "Add persistent drag-and-drop column reordering"
+          git push
