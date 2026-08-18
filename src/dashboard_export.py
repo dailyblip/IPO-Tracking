@@ -21,9 +21,9 @@ PUBLIC_PERSON_FIELDS = {
     "name", "shares", "cash_value", "stanford_university_bio",
 }
 CSV_FIELDS = (
-    "company", "ticker", "cik", "accession_no", "form", "filed", "priority",
-    "status", "offering_value", "filing_price", "offering_price", "current_price",
-    "price_updated", "holder_name", "shares", "cash_value",
+    "company", "ticker", "cik", "accession_no", "form", "stage", "filed",
+    "priority", "status", "offering_value", "filing_price", "offering_price",
+    "current_price", "price_updated", "holder_name", "shares", "cash_value",
     "stanford_university_bio", "sec_url",
 )
 
@@ -164,6 +164,7 @@ def build_payload(rows, generated_at=None):
             "accession_no": first.get("_accession_no", ""),
             "form": first.get("_form") or "424B4",
             "filed": first.get("Date of Pricing") or first.get("Date of Filing") or "",
+            "stage": "Priced",
             "priority": _priority(group, people),
             "status": "New",
             "value": amount or None,
@@ -199,6 +200,7 @@ def _csv_rows(filings):
                 "cik": filing.get("cik", ""),
                 "accession_no": filing.get("accession_no", ""),
                 "form": filing.get("form", ""),
+                "stage": filing.get("stage", ""),
                 "filed": filing.get("filed", ""),
                 "priority": filing.get("priority", ""),
                 "status": filing.get("status", ""),
