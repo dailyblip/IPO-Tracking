@@ -1,8 +1,23 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-18T20:46:11.192838+00:00",
-  "count": 2,
+  "generated_at": "2026-08-18T21:26:33.434723+00:00",
+  "count": 3,
   "alerts": [
+    {
+      "type": "new_424b4",
+      "company": "Space Exploration Technologies Corp.",
+      "cik": "0001181412",
+      "filing_id": "0001628280-26-042639",
+      "form": "424B4",
+      "filed": "2026-06-12",
+      "stage": "priced",
+      "priority": "High",
+      "summary": "New 424B4 entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026042639/0001628280-26-042639-index.htm",
+      "detected_at": "2026-08-18T21:26:33.434692+00:00",
+      "new_value": "$75B",
+      "key": "new_424b4|0001628280-26-042639|0001181412|2026-06-12|$75B"
+    },
     {
       "type": "new_prepricing",
       "company": "VARSAL TECH, INC.",
