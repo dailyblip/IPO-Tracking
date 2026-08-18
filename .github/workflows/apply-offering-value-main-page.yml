@@ -1,5 +1,6 @@
 name: Apply offering value main page
 
+# One-shot branch patch; bot commits do not retrigger.
 on:
   push:
     branches: [feature/offering-value-main-page]
