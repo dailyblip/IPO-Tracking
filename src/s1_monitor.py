@@ -114,6 +114,49 @@ def _format_range(low, high) -> str | None:
     return f"${low:,.2f}–${high:,.2f}"
 
 
+def _extract_ipo_size(filing_text: str, parsed: dict, price_range: dict) -> int | None:
+    """Extract the stated aggregate offering amount, or derive a best-effort size."""
+    text = " ".join(str(filing_text or "").split())[:80000]
+    patterns = [
+        r"(?:proposed\s+maximum\s+aggregate\s+offering\s+price|maximum\s+aggregate\s+offering\s+price|aggregate\s+offering\s+price)[^$]{0,180}\$\s*([\d,]+(?:\.\d+)?)",
+        r"\$\s*([\d,]+(?:\.\d+)?)\s+(?:aggregate\s+offering|maximum\s+aggregate\s+offering)",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if not match:
+            continue
+        try:
+            amount = float(match.group(1).replace(",", ""))
+        except ValueError:
+            continue
+        if amount >= 1_000_000:
+            return int(round(amount))
+
+    cover = parsed.get("cover_page", {}) if isinstance(parsed, dict) else {}
+    try:
+        shares = int(cover.get("offering_size_shares") or 0)
+    except (TypeError, ValueError):
+        shares = 0
+    if not shares:
+        share_match = re.search(r"(?:offering|sale\s+of)\s+([\d,]{4,})\s+shares", text, re.IGNORECASE)
+        if share_match:
+            try:
+                shares = int(share_match.group(1).replace(",", ""))
+            except ValueError:
+                shares = 0
+    if not shares:
+        return None
+
+    try:
+        low = float(price_range.get("range_low"))
+        high = float(price_range.get("range_high"))
+    except (TypeError, ValueError):
+        low = high = 0
+    if low > 0 and high > 0:
+        return int(round(shares * ((low + high) / 2)))
+    return None
+
+
 def enrich_record(meta: dict) -> dict | None:
     """Validate an S-1 candidate and capture lightweight IPO-stage signals."""
     cik = meta.get("cik")
@@ -140,6 +183,7 @@ def enrich_record(meta: dict) -> dict | None:
         parsed = filing_parser.parse_filing(document_url, is_range_filing=True)
         price_range = parsed.get("price_range", {})
         range_label = _format_range(price_range.get("range_low"), price_range.get("range_high"))
+        ipo_size = _extract_ipo_size(filing_text, parsed, price_range)
 
         ticker = None
         try:
@@ -156,6 +200,8 @@ def enrich_record(meta: dict) -> dict | None:
             signals.append(f"Preliminary offering range disclosed at {range_label}")
         else:
             signals.append("No preliminary price range detected yet")
+        if ipo_size:
+            signals.append(f"IPO size disclosed or derived at approximately ${ipo_size:,.0f}")
 
         return {
             "id": meta["accession_no"],
@@ -168,6 +214,7 @@ def enrich_record(meta: dict) -> dict | None:
             "stage": "Pre-pricing",
             "priority": "High" if range_label else "Medium",
             "price_range": range_label,
+            "ipo_size": ipo_size,
             "signals": signals,
             "sec_url": index_url,
         }
@@ -218,8 +265,8 @@ def export_feed(records: list[dict], output_path: Path = OUTPUT_PATH) -> dict:
 def _queue_record(record: dict) -> dict:
     """Normalize a pre-pricing record to the existing dashboard schema."""
     cik = str(record.get("cik") or "").zfill(10) if record.get("cik") else ""
+    ipo_size = record.get("ipo_size")
     return {
-        # One live pre-pricing queue row per issuer; later amendments replace it.
         "id": f"s1:{cik or record.get('company', '')}",
         "company": record.get("company") or "Unknown",
         "ticker": record.get("ticker") or "",
@@ -229,10 +276,11 @@ def _queue_record(record: dict) -> dict:
         "filed": record.get("filed") or "",
         "stage": record.get("stage") or "Pre-pricing",
         "price_range": record.get("price_range"),
+        "ipo_size": ipo_size,
         "priority": record.get("priority") or "Medium",
         "status": "New",
-        "value": None,
-        "value_label": "—",
+        "value": ipo_size,
+        "value_label": "—" if not ipo_size else f"${ipo_size:,.0f}",
         "people_count": 0,
         "signals": list(record.get("signals") or []),
         "people": [],
@@ -241,11 +289,7 @@ def _queue_record(record: dict) -> dict:
 
 
 def sync_research_queue(records: list[dict], queue_path: Path = QUEUE_PATH) -> dict:
-    """Merge current S-1 signals into the main researcher queue atomically.
-
-    Existing priced records stay authoritative. If a 424B4 for the same CIK is
-    already present, its pre-pricing queue row is removed rather than duplicated.
-    """
+    """Merge current S-1 signals into the main researcher queue atomically."""
     queue_path = Path(queue_path)
     existing = []
     if queue_path.exists():
