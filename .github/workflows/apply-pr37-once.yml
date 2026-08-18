@@ -56,3 +56,5 @@ jobs:
           git add docs/index.html src/test_dashboard_ui.py
           git commit -m 'Add persistent drag-and-drop column reordering'
           git push origin HEAD:feature/drag-reorder-columns
+
+# trigger
