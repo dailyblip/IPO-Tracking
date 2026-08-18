@@ -1,8 +1,55 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-18T12:21:22.076158+00:00",
+  "generated_at": "2026-08-18T13:10:59.357847+00:00",
   "source": "SEC EDGAR",
   "filings": [
+    {
+      "id": "s1:0002109801",
+      "company": "VARSAL TECH, INC.",
+      "ticker": "VAT",
+      "cik": "0002109801",
+      "accession_no": "0001493152-26-038800",
+      "form": "S-1/A",
+      "filed": "20260817",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "ipo_size": null,
+      "priority": "Medium",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 0,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "No preliminary price range detected yet"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2109801/000149315226038800/0001493152-26-038800-index.htm"
+    },
+    {
+      "id": "s1:0001880995",
+      "company": "Alopexx, Inc.",
+      "ticker": "",
+      "cik": "0001880995",
+      "accession_no": "0001213900-26-090319",
+      "form": "S-1/A",
+      "filed": "20260817",
+      "stage": "Pre-pricing",
+      "price_range": "$10.00–$12.00",
+      "ipo_size": 33000000,
+      "priority": "High",
+      "status": "New",
+      "value": 33000000,
+      "value_label": "$33,000,000",
+      "people_count": 0,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "Preliminary offering range disclosed at $10.00–$12.00",
+        "IPO size disclosed or derived at approximately $33,000,000"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026090319/0001213900-26-090319-index.htm"
+    },
     {
       "id": "0001185185-26-003448",
       "company": "Vogenx, Inc.",
