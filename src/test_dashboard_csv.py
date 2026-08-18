@@ -54,6 +54,7 @@ class DashboardCsvExportTests(unittest.TestCase):
             self.assertTrue(json_path.exists())
             self.assertTrue(csv_path.exists())
             self.assertEqual(len(payload["filings"]), 1)
+            self.assertEqual(payload["filings"][0]["stage"], "Priced")
 
             with csv_path.open(encoding="utf-8", newline="") as handle:
                 exported = list(csv.DictReader(handle))
@@ -65,6 +66,7 @@ class DashboardCsvExportTests(unittest.TestCase):
             self.assertEqual(exported[1]["holder_name"], "Grace Example")
             self.assertEqual(exported[0]["accession_no"], "0001234567-26-000001")
             self.assertEqual(exported[0]["sec_url"], "https://www.sec.gov/example")
+            self.assertEqual(exported[0]["stage"], "Priced")
             self.assertEqual(exported[0]["filing_price"], "18.00-20.00")
             self.assertEqual(exported[0]["offering_price"], "20.0")
             self.assertEqual(exported[0]["current_price"], "24.5")
@@ -91,6 +93,36 @@ class DashboardCsvExportTests(unittest.TestCase):
             self.assertEqual(len(exported), 1)
             self.assertEqual(exported[0]["company"], "No Owners Corp.")
             self.assertEqual(exported[0]["holder_name"], "")
+            self.assertEqual(exported[0]["stage"], "Priced")
+
+    def test_csv_preserves_prepricing_stage_from_s1_queue(self):
+        filings = [{
+            "id": "s1:0001234567",
+            "company": "Pending IPO Corp.",
+            "ticker": "PNDG",
+            "cik": "0001234567",
+            "accession_no": "0001234567-26-000002",
+            "form": "S-1/A",
+            "stage": "Pre-pricing",
+            "filed": "2026-08-18",
+            "priority": "High",
+            "status": "New",
+            "value": None,
+            "price_range": "$18.00–$20.00",
+            "people": [],
+            "sec_url": "https://www.sec.gov/example-s1",
+        }]
+
+        with tempfile.TemporaryDirectory() as directory:
+            json_path = Path(directory) / "filings.json"
+            dashboard_export.write_dashboard_csv(filings, json_path)
+            with (Path(directory) / "filings.csv").open(encoding="utf-8", newline="") as handle:
+                exported = list(csv.DictReader(handle))
+
+            self.assertEqual(len(exported), 1)
+            self.assertEqual(exported[0]["form"], "S-1/A")
+            self.assertEqual(exported[0]["stage"], "Pre-pricing")
+            self.assertEqual(exported[0]["filing_price"], "$18.00–$20.00")
 
 
 if __name__ == "__main__":
