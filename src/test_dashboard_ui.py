@@ -33,11 +33,15 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn("function clearFilters()", self.html)
         self.assertIn("Last 30 days", self.html)
 
+    def test_filed_date_uses_friendly_format(self):
+        self.assertIn('month:"short",day:"numeric",year:"numeric"', self.html)
+        self.assertIn('dateLabel(filing.filed)', self.html)
+
     def test_main_table_uses_requested_column_order(self):
         expected = (
-            "<th>Company Name</th><th>Ticker</th><th>Form</th><th>Stage</th>"
-            "<th>Filed</th><th>IPO Size / Offering Value</th><th>Filing Price</th>"
-            "<th>Final IPO Price</th><th>Current Price</th><th>Public Signals</th>"
+            "<th>Company Name</th><th>Ticker</th><th>IPO Size / Offering Value</th>"
+            "<th>Form</th><th>Stage</th><th>Filed</th><th>Filing Price</th>"
+            "<th>Current Price</th><th>Final IPO Price</th><th>Public Signals</th>"
         )
         self.assertIn(expected, self.html)
         self.assertNotIn("<th>Priority</th>", self.html)
