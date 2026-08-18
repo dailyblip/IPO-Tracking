@@ -16,10 +16,10 @@
       "priority": "Medium",
       "status": "New",
       "value": null,
-      "value_label": "—",
+      "value_label": "\u2014",
       "people_count": 0,
       "signals": [
-        "Registration statement amended — IPO remains pre-pricing",
+        "Registration statement amended \u2014 IPO remains pre-pricing",
         "No preliminary price range detected yet"
       ],
       "people": [],
@@ -34,15 +34,15 @@
       "form": "S-1/A",
       "filed": "20260817",
       "stage": "Pre-pricing",
-      "price_range": "$10.00–$12.00",
+      "price_range": "$10.00\u2013$12.00",
       "priority": "High",
       "status": "New",
       "value": 33000000,
       "value_label": "$33,000,000",
       "people_count": 0,
       "signals": [
-        "Registration statement amended — IPO remains pre-pricing",
-        "Preliminary offering range disclosed at $10.00–$12.00",
+        "Registration statement amended \u2014 IPO remains pre-pricing",
+        "Preliminary offering range disclosed at $10.00\u2013$12.00",
         "IPO size disclosed or derived at approximately $33,000,000"
       ],
       "people": [],
@@ -866,6 +866,87 @@
         }
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1853921/000119312526316503/0001193125-26-316503-index.htm"
+    },
+    {
+      "id": "0001628280-26-042639",
+      "company": "Space Exploration Technologies Corp.",
+      "ticker": "SPCX",
+      "cik": "0001181412",
+      "accession_no": "0001628280-26-042639",
+      "form": "424B4",
+      "filed": "2026-06-12",
+      "stage": "Priced",
+      "priority": "High",
+      "status": "New",
+      "ipo_size": 74999999925,
+      "value": 74999999925,
+      "value_label": "$75B",
+      "filing_price": "135.00",
+      "offering_price": 135.0,
+      "current_price": null,
+      "country": "United States",
+      "city": "Starbase",
+      "state": "TX",
+      "people_count": 8,
+      "signals": [
+        "8 named beneficial owners, executives, or directors disclosed in the principal ownership table",
+        "Base IPO offering approximately $75B at $135.00 per share",
+        "555,555,555 Class A shares offered, with an 83,333,333-share over-allotment option",
+        "Controlled-company structure: Elon Musk retains majority voting control",
+        "Lock-up terms include a 366-day lock-up for Elon Musk and staggered releases for other holders",
+        "Stanford affiliation confirmed for disclosed beneficial owners/directors Ira Ehrenpreis and Steve Jurvetson"
+      ],
+      "people": [
+        {
+          "name": "Elon Musk",
+          "shares": 6418547515.0,
+          "cash_value": null,
+          "stanford_university_bio": false
+        },
+        {
+          "name": "Gwynne Shotwell",
+          "shares": 12873160.0,
+          "cash_value": null,
+          "stanford_university_bio": false
+        },
+        {
+          "name": "Bret Johnsen",
+          "shares": 9048565.0,
+          "cash_value": null,
+          "stanford_university_bio": false
+        },
+        {
+          "name": "Ira Ehrenpreis",
+          "shares": 1373700.0,
+          "cash_value": null,
+          "stanford_university_bio": true
+        },
+        {
+          "name": "Randy Glein",
+          "shares": 277800.0,
+          "cash_value": null,
+          "stanford_university_bio": false
+        },
+        {
+          "name": "Antonio J. Gracias",
+          "shares": 503414530.0,
+          "cash_value": null,
+          "stanford_university_bio": false
+        },
+        {
+          "name": "Steve Jurvetson",
+          "shares": 0.0,
+          "cash_value": null,
+          "stanford_university_bio": true
+        },
+        {
+          "name": "Luke Nosek",
+          "shares": 32987360.0,
+          "cash_value": null,
+          "stanford_university_bio": false
+        }
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026042639/0001628280-26-042639-index.htm"
     }
   ]
 }
