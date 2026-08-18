@@ -1,0 +1,57 @@
+name: Apply Research Monitor reorg
+
+on:
+  push:
+    branches: [feature/reorg-research-monitor-columns]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Reorganize Research Monitor
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('docs/index.html')
+          s=p.read_text()
+          s=s.replace('.company{font-weight:700}', '.company{font-weight:700}.stanford-company{color:var(--cardinal);font-weight:800}')
+          s=s.replace('<div><select class="control" id="priorityFilter"><option value="">All priorities</option><option>High</option><option>Medium</option><option>Low</option></select></div>','')
+          s=s.replace('<option value="priority">Priority</option>','')
+          old='<th>Company</th><th>Form</th><th>Stage</th><th>Filed</th><th>IPO size</th><th>Offering value</th><th>Filing price</th><th>Final IPO price</th><th>Current price</th><th>Priority</th><th>Public signals</th><th>Status</th>'
+          new='<th>Company Name</th><th>Ticker</th><th>Form</th><th>Stage</th><th>Filed</th><th>IPO Size / Offering Value</th><th>Filing Price</th><th>Final IPO Price</th><th>Current Price</th><th>Public Signals</th><th>Status</th>'
+          assert old in s
+          s=s.replace(old,new,1)
+          s=s.replace('function priorityRank(v){return {High:3,Medium:2,Low:1}[v]||0}\n','')
+          old='const q=$("search").value.trim().toLowerCase(),form=$("formFilter").value,priority=$("priorityFilter").value,status=$("statusFilter").value,days=$("dateFilter").value,sort=$("sortBy").value;'
+          new='const q=$("search").value.trim().toLowerCase(),form=$("formFilter").value,status=$("statusFilter").value,days=$("dateFilter").value,sort=$("sortBy").value;'
+          assert old in s
+          s=s.replace(old,new,1)
+          s=s.replace('&&(!priority||f.priority===priority)','')
+          s=s.replace('if(sort==="priority")return priorityRank(b.priority)-priorityRank(a.priority);','')
+          old='const company=document.createElement("div");company.append(text("div","company",filing.company),text("div","sub",`${filing.ticker||"No ticker"}${filing.cik?` · CIK ${filing.cik}`:""}`));appendCell(row,company);appendCell(row,text("span","",filing.form));appendCell(row,text("span","",filing.stage));appendCell(row,text("span","",dateLabel(filing.filed)));appendCell(row,text("span","quote",money(filing.ipo_size)));appendCell(row,text("span","quote",money(filing.value)));appendCell(row,text("span","quote",filingPrice(filing.price_range||filing.filing_price)));appendCell(row,text("span","quote",quotePrice(filing.offering_price)));appendCell(row,text("span","quote",quotePrice(filing.current_price)));appendCell(row,text("span","",filing.priority));'
+          new='const company=document.createElement("div");const stanfordOwner=filing.people.some(p=>p.stanford_university_bio===true);company.append(text("div",stanfordOwner?"company stanford-company":"company",filing.company),text("div","sub",filing.cik?`CIK ${filing.cik}`:""));appendCell(row,company);appendCell(row,text("span","",filing.ticker||"—"));appendCell(row,text("span","",filing.form));appendCell(row,text("span","",filing.stage));appendCell(row,text("span","",dateLabel(filing.filed)));appendCell(row,text("span","quote",money(filing.ipo_size||filing.value)));appendCell(row,text("span","quote",filingPrice(filing.price_range||filing.filing_price)));appendCell(row,text("span","quote",quotePrice(filing.offering_price)));appendCell(row,text("span","quote",quotePrice(filing.current_price)));'
+          assert old in s
+          s=s.replace(old,new,1)
+          # priority filter reset no longer exists
+          s=s.replace('$("priorityFilter").value="";','')
+          p.write_text(s)
+          PY
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/index.html
+          git commit -m "Reorganize Research Monitor columns and Stanford highlighting"
+          git push
