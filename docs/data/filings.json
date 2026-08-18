@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-18T20:45:46.324629+00:00",
+  "generated_at": "2026-08-18T21:26:10.057089+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -16,10 +16,10 @@
       "priority": "Medium",
       "status": "New",
       "value": null,
-      "value_label": "\u2014",
+      "value_label": "—",
       "people_count": 0,
       "signals": [
-        "Registration statement amended \u2014 IPO remains pre-pricing",
+        "Registration statement amended — IPO remains pre-pricing",
         "No preliminary price range detected yet"
       ],
       "people": [],
@@ -34,15 +34,15 @@
       "form": "S-1/A",
       "filed": "20260817",
       "stage": "Pre-pricing",
-      "price_range": "$10.00\u2013$12.00",
+      "price_range": "$10.00–$12.00",
       "priority": "High",
       "status": "New",
       "value": 33000000,
       "value_label": "$33,000,000",
       "people_count": 0,
       "signals": [
-        "Registration statement amended \u2014 IPO remains pre-pricing",
-        "Preliminary offering range disclosed at $10.00\u2013$12.00",
+        "Registration statement amended — IPO remains pre-pricing",
+        "Preliminary offering range disclosed at $10.00–$12.00",
         "IPO size disclosed or derived at approximately $33,000,000"
       ],
       "people": [],
@@ -63,7 +63,7 @@
       "filing_price": "11.0-13.0",
       "offering_price": 13.0,
       "current_price": 19.75,
-      "price_updated": "2026-08-18T20:45:46.324629+00:00",
+      "price_updated": "2026-08-18T21:26:10.057089+00:00",
       "people_count": 9,
       "signals": [
         "9 named beneficial owners disclosed",
@@ -144,7 +144,7 @@
       "filing_price": "16.0-18.0",
       "offering_price": 18.0,
       "current_price": 20.0,
-      "price_updated": "2026-08-18T20:45:46.324629+00:00",
+      "price_updated": "2026-08-18T21:26:10.057089+00:00",
       "people_count": 12,
       "signals": [
         "12 named beneficial owners disclosed",
@@ -242,7 +242,7 @@
       "filing_price": "15.0-17.0",
       "offering_price": 16.0,
       "current_price": 16.1,
-      "price_updated": "2026-08-18T20:45:46.324629+00:00",
+      "price_updated": "2026-08-18T21:26:10.057089+00:00",
       "people_count": 14,
       "signals": [
         "14 named beneficial owners disclosed",
@@ -352,7 +352,7 @@
       "filing_price": null,
       "offering_price": 18.0,
       "current_price": 26.75,
-      "price_updated": "2026-08-18T20:45:46.324629+00:00",
+      "price_updated": "2026-08-18T21:26:10.057089+00:00",
       "people_count": 12,
       "signals": [
         "12 named beneficial owners disclosed",
@@ -450,7 +450,7 @@
       "filing_price": null,
       "offering_price": 17.0,
       "current_price": 23.24,
-      "price_updated": "2026-08-18T20:45:46.324629+00:00",
+      "price_updated": "2026-08-18T21:26:10.057089+00:00",
       "people_count": 10,
       "signals": [
         "10 named beneficial owners disclosed",
@@ -536,7 +536,7 @@
       "filing_price": "21.0-25.0",
       "offering_price": 23.0,
       "current_price": 21.71,
-      "price_updated": "2026-08-18T20:45:46.324629+00:00",
+      "price_updated": "2026-08-18T21:26:10.057089+00:00",
       "people_count": 8,
       "signals": [
         "8 named beneficial owners disclosed",
@@ -611,7 +611,7 @@
       "filing_price": "14.0-16.0",
       "offering_price": 16.0,
       "current_price": 31.81,
-      "price_updated": "2026-08-18T20:45:46.324629+00:00",
+      "price_updated": "2026-08-18T21:26:10.057089+00:00",
       "people_count": 12,
       "signals": [
         "12 named beneficial owners disclosed",
@@ -710,7 +710,7 @@
       "filing_price": null,
       "offering_price": 15.0,
       "current_price": 15.08,
-      "price_updated": "2026-08-18T20:45:46.324629+00:00",
+      "price_updated": "2026-08-18T21:26:10.057089+00:00",
       "people_count": 10,
       "signals": [
         "10 named beneficial owners disclosed",
@@ -796,7 +796,7 @@
       "filing_price": "13.0-15.0",
       "offering_price": 15.0,
       "current_price": 27.11,
-      "price_updated": "2026-08-18T20:45:46.324629+00:00",
+      "price_updated": "2026-08-18T21:26:10.057089+00:00",
       "people_count": 10,
       "signals": [
         "10 named beneficial owners disclosed",
@@ -878,15 +878,11 @@
       "stage": "Priced",
       "priority": "High",
       "status": "New",
-      "ipo_size": 74999999925,
       "value": 74999999925,
       "value_label": "$75B",
       "filing_price": "135.00",
       "offering_price": 135.0,
-      "current_price": null,
-      "country": "United States",
-      "city": "Starbase",
-      "state": "TX",
+      "current_price": 143.34,
       "people_count": 8,
       "signals": [
         "8 named beneficial owners, executives, or directors disclosed in the principal ownership table",
@@ -900,53 +896,54 @@
         {
           "name": "Elon Musk",
           "shares": 6418547515.0,
-          "cash_value": null,
+          "cash_value": 920034600800.1,
           "stanford_university_bio": false
         },
         {
           "name": "Gwynne Shotwell",
           "shares": 12873160.0,
-          "cash_value": null,
+          "cash_value": 1845238754.4,
           "stanford_university_bio": false
         },
         {
           "name": "Bret Johnsen",
           "shares": 9048565.0,
-          "cash_value": null,
+          "cash_value": 1297021307.1000001,
           "stanford_university_bio": false
         },
         {
           "name": "Ira Ehrenpreis",
           "shares": 1373700.0,
-          "cash_value": null,
+          "cash_value": 196906158.0,
           "stanford_university_bio": true
         },
         {
           "name": "Randy Glein",
           "shares": 277800.0,
-          "cash_value": null,
+          "cash_value": 39819852.0,
           "stanford_university_bio": false
         },
         {
           "name": "Antonio J. Gracias",
           "shares": 503414530.0,
-          "cash_value": null,
+          "cash_value": 72159438730.2,
           "stanford_university_bio": false
         },
         {
           "name": "Steve Jurvetson",
           "shares": 0.0,
-          "cash_value": null,
+          "cash_value": 0.0,
           "stanford_university_bio": true
         },
         {
           "name": "Luke Nosek",
           "shares": 32987360.0,
-          "cash_value": null,
+          "cash_value": 4728408182.400001,
           "stanford_university_bio": false
         }
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026042639/0001628280-26-042639-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026042639/0001628280-26-042639-index.htm",
+      "price_updated": "2026-08-18T21:26:10.057089+00:00"
     }
   ]
 }
