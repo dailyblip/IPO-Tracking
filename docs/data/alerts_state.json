@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-18T20:46:11.192820+00:00",
+  "updated_at": "2026-08-18T21:26:33.434714+00:00",
   "items": {
     "s1:0002109801": {
       "id": "s1:0002109801",
@@ -133,6 +133,18 @@
       "priority": "Medium",
       "value": 128700000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1853921/000119312526316503/0001193125-26-316503-index.htm"
+    },
+    "0001628280-26-042639": {
+      "id": "0001628280-26-042639",
+      "cik": "0001181412",
+      "company": "Space Exploration Technologies Corp.",
+      "form": "424B4",
+      "filed": "2026-06-12",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 74999999925,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026042639/0001628280-26-042639-index.htm"
     }
   },
   "ciks": {
@@ -201,6 +213,12 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0001880995",
       "last_filed": "20260817"
+    },
+    "0001181412": {
+      "company": "Space Exploration Technologies Corp.",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-042639",
+      "last_filed": "2026-06-12"
     }
   }
 }
