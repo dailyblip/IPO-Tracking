@@ -1,6 +1,44 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-17T22:41:04.672804+00:00",
+  "generated_at": "2026-08-18T13:10:59.357180+00:00",
   "source": "SEC EDGAR",
-  "filings": []
+  "filings": [
+    {
+      "id": "0001493152-26-038800",
+      "company": "VARSAL TECH, INC.",
+      "ticker": "VAT",
+      "cik": "0002109801",
+      "accession_no": "0001493152-26-038800",
+      "form": "S-1/A",
+      "filed": "20260817",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "ipo_size": null,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "No preliminary price range detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2109801/000149315226038800/0001493152-26-038800-index.htm"
+    },
+    {
+      "id": "0001213900-26-090319",
+      "company": "Alopexx, Inc.",
+      "ticker": "",
+      "cik": "0001880995",
+      "accession_no": "0001213900-26-090319",
+      "form": "S-1/A",
+      "filed": "20260817",
+      "stage": "Pre-pricing",
+      "priority": "High",
+      "price_range": "$10.00–$12.00",
+      "ipo_size": 33000000,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "Preliminary offering range disclosed at $10.00–$12.00",
+        "IPO size disclosed or derived at approximately $33,000,000"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026090319/0001213900-26-090319-index.htm"
+    }
+  ]
 }
