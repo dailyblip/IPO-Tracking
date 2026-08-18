@@ -50,7 +50,8 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn('filing.ticker||"—"', self.html)
 
     def test_columns_are_drag_reorderable_and_persistent(self):
-        self.assertEqual(self.html.count('draggable="true"'), 10)
+        for index in range(10):
+            self.assertIn(f'draggable="true" data-col="{index}"', self.html)
         self.assertIn('research-monitor:column-order', self.html)
         self.assertIn("function setupColumnDrag()", self.html)
         self.assertIn("function applyColumnOrder()", self.html)
