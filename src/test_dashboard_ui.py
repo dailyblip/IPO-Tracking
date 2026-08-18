@@ -33,6 +33,10 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn("Last 30 days", self.html)
 
     def test_displays_all_requested_price_fields(self):
+        self.assertIn("IPO size</th>", self.html)
+        self.assertIn("Offering value</th>", self.html)
+        self.assertIn("money(filing.ipo_size)", self.html)
+        self.assertIn("money(filing.value)", self.html)
         self.assertIn("Filing price</th>", self.html)
         self.assertIn("Final IPO price</th>", self.html)
         self.assertIn("Current price</th>", self.html)
