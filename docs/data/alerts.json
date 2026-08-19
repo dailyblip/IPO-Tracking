@@ -1,8 +1,22 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-19T12:22:10.414971+00:00",
-  "count": 3,
+  "generated_at": "2026-08-19T13:12:04.015607+00:00",
+  "count": 4,
   "alerts": [
+    {
+      "type": "new_prepricing",
+      "company": "Sensei Harbor Corp.",
+      "cik": "0002112634",
+      "filing_id": "s1:0002112634",
+      "form": "S-1/A",
+      "filed": "20260818",
+      "stage": "pre-pricing",
+      "priority": "Medium",
+      "summary": "New pre-pricing S-1/A candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2112634/000168316826006561/0001683168-26-006561-index.htm",
+      "detected_at": "2026-08-19T13:12:04.015532+00:00",
+      "key": "new_prepricing|s1:0002112634|0002112634|20260818|"
+    },
     {
       "type": "new_424b4",
       "company": "Space Exploration Technologies Corp.",
