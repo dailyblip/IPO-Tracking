@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-18T21:26:10.057089+00:00",
+  "generated_at": "2026-08-19T12:21:43.726688+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -63,7 +63,7 @@
       "filing_price": "11.0-13.0",
       "offering_price": 13.0,
       "current_price": 19.75,
-      "price_updated": "2026-08-18T21:26:10.057089+00:00",
+      "price_updated": "2026-08-19T12:21:43.726688+00:00",
       "people_count": 9,
       "signals": [
         "9 named beneficial owners disclosed",
@@ -144,7 +144,7 @@
       "filing_price": "16.0-18.0",
       "offering_price": 18.0,
       "current_price": 20.0,
-      "price_updated": "2026-08-18T21:26:10.057089+00:00",
+      "price_updated": "2026-08-19T12:21:43.726688+00:00",
       "people_count": 12,
       "signals": [
         "12 named beneficial owners disclosed",
@@ -242,7 +242,7 @@
       "filing_price": "15.0-17.0",
       "offering_price": 16.0,
       "current_price": 16.1,
-      "price_updated": "2026-08-18T21:26:10.057089+00:00",
+      "price_updated": "2026-08-19T12:21:43.726688+00:00",
       "people_count": 14,
       "signals": [
         "14 named beneficial owners disclosed",
@@ -352,7 +352,7 @@
       "filing_price": null,
       "offering_price": 18.0,
       "current_price": 26.75,
-      "price_updated": "2026-08-18T21:26:10.057089+00:00",
+      "price_updated": "2026-08-19T12:21:43.726688+00:00",
       "people_count": 12,
       "signals": [
         "12 named beneficial owners disclosed",
@@ -450,7 +450,7 @@
       "filing_price": null,
       "offering_price": 17.0,
       "current_price": 23.24,
-      "price_updated": "2026-08-18T21:26:10.057089+00:00",
+      "price_updated": "2026-08-19T12:21:43.726688+00:00",
       "people_count": 10,
       "signals": [
         "10 named beneficial owners disclosed",
@@ -536,7 +536,7 @@
       "filing_price": "21.0-25.0",
       "offering_price": 23.0,
       "current_price": 21.71,
-      "price_updated": "2026-08-18T21:26:10.057089+00:00",
+      "price_updated": "2026-08-19T12:21:43.726688+00:00",
       "people_count": 8,
       "signals": [
         "8 named beneficial owners disclosed",
@@ -611,7 +611,7 @@
       "filing_price": "14.0-16.0",
       "offering_price": 16.0,
       "current_price": 31.81,
-      "price_updated": "2026-08-18T21:26:10.057089+00:00",
+      "price_updated": "2026-08-19T12:21:43.726688+00:00",
       "people_count": 12,
       "signals": [
         "12 named beneficial owners disclosed",
@@ -710,7 +710,7 @@
       "filing_price": null,
       "offering_price": 15.0,
       "current_price": 15.08,
-      "price_updated": "2026-08-18T21:26:10.057089+00:00",
+      "price_updated": "2026-08-19T12:21:43.726688+00:00",
       "people_count": 10,
       "signals": [
         "10 named beneficial owners disclosed",
@@ -796,7 +796,7 @@
       "filing_price": "13.0-15.0",
       "offering_price": 15.0,
       "current_price": 27.11,
-      "price_updated": "2026-08-18T21:26:10.057089+00:00",
+      "price_updated": "2026-08-19T12:21:43.726688+00:00",
       "people_count": 10,
       "signals": [
         "10 named beneficial owners disclosed",
@@ -943,7 +943,7 @@
         }
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026042639/0001628280-26-042639-index.htm",
-      "price_updated": "2026-08-18T21:26:10.057089+00:00"
+      "price_updated": "2026-08-19T12:21:43.726688+00:00"
     }
   ]
 }
