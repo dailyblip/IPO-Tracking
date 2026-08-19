@@ -86,6 +86,14 @@ class DashboardUiTests(unittest.TestCase):
     def test_does_not_insert_feed_values_with_inner_html(self):
         self.assertNotIn(".innerHTML", self.html)
 
+    def test_prospect_liquidity_ui_and_front_page_flags(self):
+        for value in ("personDetail", "personCurrentValue", "personIpoValue", "personCashRealized", "personLiquidValue", "personLockedValue", "personLockupEnd"):
+            self.assertIn(f'id="{value}"', self.html)
+        self.assertIn("function ipoSizeBucket(value)", self.html)
+        self.assertIn('"$500M+"', self.html)
+        self.assertIn("stanford-s", self.html)
+        self.assertIn("showPerson(person,filing)", self.html)
+
     def test_sample_feed_matches_public_schema(self):
         self.assertEqual(self.feed["schema_version"], 1)
         self.assertIsInstance(self.feed["filings"], list)
