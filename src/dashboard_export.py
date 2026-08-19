@@ -6,7 +6,7 @@ import csv
 import json
 import re
 import unicodedata
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 SCHEMA_VERSION = 1
@@ -15,15 +15,20 @@ PUBLIC_FILING_FIELDS = {
     "id", "company", "ticker", "cik", "accession_no", "form", "filed",
     "priority", "status", "value", "value_label", "people_count", "signals",
     "people", "sec_url", "stage", "price_range", "filing_price",
-    "offering_price", "current_price", "price_updated",
+    "offering_price", "current_price", "price_updated", "lockup_end_date",
+    "lockup_duration_days", "lockup_text",
 }
 PUBLIC_PERSON_FIELDS = {
-    "name", "shares", "cash_value", "stanford_university_bio",
+    "name", "shares", "cash_value", "stanford_university_bio", "ipo_value",
+    "liquid_shares", "liquid_value", "locked_shares", "locked_value",
+    "cash_realized_ipo", "liquidity_status", "liquidity_confidence",
 }
 CSV_FIELDS = (
     "company", "ticker", "cik", "accession_no", "form", "stage", "filed",
     "priority", "status", "offering_value", "filing_price", "offering_price",
-    "current_price", "price_updated", "holder_name", "shares", "cash_value",
+    "current_price", "price_updated", "lockup_end_date", "holder_name", "shares",
+    "cash_value", "ipo_value", "liquid_shares", "liquid_value", "locked_shares",
+    "locked_value", "cash_realized_ipo", "liquidity_status", "liquidity_confidence",
     "stanford_university_bio", "sec_url",
 )
 
@@ -105,6 +110,34 @@ def _priority(rows, people):
     return "Low"
 
 
+def _lockup_metadata(rows):
+    raw = next((str(row.get("Lock-Up Expiry") or "") for row in rows if row.get("Lock-Up Expiry")), "")
+    match = re.search(r"(\d{2,3})\s+days", raw, re.IGNORECASE)
+    days = int(match.group(1)) if match else None
+    pricing = next((str(row.get("Date of Pricing") or "") for row in rows if row.get("Date of Pricing")), "")
+    end = None
+    if days and re.fullmatch(r"\d{4}-\d{2}-\d{2}", pricing):
+        try:
+            end = (datetime.fromisoformat(pricing).date() + timedelta(days=days)).isoformat()
+        except ValueError:
+            pass
+    return {"text": raw or None, "days": days, "end": end}
+
+
+def _person_liquidity(shares, current_value, ipo_price, lockup):
+    shares = _number(shares); current_value = _number(current_value); ipo_price = _number(ipo_price)
+    ipo_value = shares * ipo_price if shares is not None and ipo_price else None
+    if shares is None:
+        return {"ipo_value": ipo_value, "liquid_shares": None, "liquid_value": None, "locked_shares": None, "locked_value": None, "cash_realized_ipo": None, "liquidity_status": "Unknown", "liquidity_confidence": "Unknown — share count unavailable"}
+    if lockup.get("end"):
+        try:
+            active = datetime.fromisoformat(lockup["end"]).date() > datetime.now(timezone.utc).date()
+        except ValueError:
+            active = False
+        return {"ipo_value": ipo_value, "liquid_shares": 0 if active else shares, "liquid_value": 0 if active else current_value, "locked_shares": shares if active else 0, "locked_value": current_value if active else 0, "cash_realized_ipo": None, "liquidity_status": "Locked" if active else "Lock-up expired", "liquidity_confidence": "Estimated from filing-level lock-up; individual exemptions may apply"}
+    return {"ipo_value": ipo_value, "liquid_shares": None, "liquid_value": None, "locked_shares": None, "locked_value": None, "cash_realized_ipo": None, "liquidity_status": "Unclassified", "liquidity_confidence": "Unknown — lock-up coverage not structured"}
+
+
 def _signals(rows, people):
     signals = []
     amount = max((_number(row.get("Amount Raised")) or 0 for row in rows), default=0)
@@ -140,6 +173,7 @@ def build_payload(rows, generated_at=None):
     for key, group in grouped.items():
         first = group[0]
         amount = max((_number(row.get("Amount Raised")) or 0 for row in group), default=0)
+        lockup = _lockup_metadata(group)
         people = []
         seen = set()
         for row in group:
@@ -147,14 +181,9 @@ def build_payload(rows, generated_at=None):
             if not name or _is_aggregate_holder(name) or name.lower() in seen:
                 continue
             seen.add(name.lower())
-            people.append({
-                "name": name,
-                "shares": _number(row.get("Shares")),
-                "cash_value": _number(row.get("Cash Value")),
-                "stanford_university_bio": _boolean(
-                    row.get("Stanford University in Bio")
-                ),
-            })
+            shares = _number(row.get("Shares")); cash_value = _number(row.get("Cash Value"))
+            liquidity = _person_liquidity(shares, cash_value, _number(first.get("Actual Price")), lockup)
+            people.append({"name": name, "shares": shares, "cash_value": cash_value, "stanford_university_bio": _boolean(row.get("Stanford University in Bio")), **liquidity})
 
         filings.append({
             "id": key,
@@ -173,6 +202,9 @@ def build_payload(rows, generated_at=None):
             "offering_price": _number(first.get("Actual Price")),
             "current_price": _number(first.get("Current Price")),
             "price_updated": first.get("Last Updated") or None,
+            "lockup_end_date": lockup.get("end"),
+            "lockup_duration_days": lockup.get("days"),
+            "lockup_text": lockup.get("text"),
             "people_count": len(people),
             "signals": _signals(group, people),
             "people": people,
@@ -209,9 +241,13 @@ def _csv_rows(filings):
                 "offering_price": filing.get("offering_price"),
                 "current_price": filing.get("current_price"),
                 "price_updated": filing.get("price_updated"),
+                "lockup_end_date": filing.get("lockup_end_date"),
                 "holder_name": person.get("name", ""),
-                "shares": person.get("shares"),
-                "cash_value": person.get("cash_value"),
+                "shares": person.get("shares"), "cash_value": person.get("cash_value"),
+                "ipo_value": person.get("ipo_value"), "liquid_shares": person.get("liquid_shares"),
+                "liquid_value": person.get("liquid_value"), "locked_shares": person.get("locked_shares"),
+                "locked_value": person.get("locked_value"), "cash_realized_ipo": person.get("cash_realized_ipo"),
+                "liquidity_status": person.get("liquidity_status"), "liquidity_confidence": person.get("liquidity_confidence"),
                 "stanford_university_bio": person.get(
                     "stanford_university_bio", False
                 ),
@@ -256,6 +292,8 @@ def refresh_market_prices(output_path, market_prices, updated_at=None):
             shares = _number(person.get("shares"))
             if shares is not None:
                 person["cash_value"] = shares * price
+                if _number(person.get("liquid_shares")) is not None: person["liquid_value"] = _number(person.get("liquid_shares")) * price
+                if _number(person.get("locked_shares")) is not None: person["locked_value"] = _number(person.get("locked_shares")) * price
         changed = True
 
     if changed:
