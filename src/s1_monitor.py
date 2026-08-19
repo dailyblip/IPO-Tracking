@@ -38,6 +38,43 @@ def _clean_company_name(value: str) -> str:
     return " ".join(str(value or "").split()).strip()
 
 
+def _normalize_filing_date(value: str) -> str:
+    raw = str(value or "").strip()
+    if re.fullmatch(r"\d{8}", raw):
+        return f"{raw[:4]}-{raw[4:6]}-{raw[6:8]}"
+    return raw
+
+
+def _format_fixed_price(value) -> str | None:
+    try:
+        value = float(value)
+    except (TypeError, ValueError):
+        return None
+    if value <= 0:
+        return None
+    return f"${value:,.2f}"
+
+
+def _is_micro_self_underwritten_offering(filing_text: str, parsed: dict, ipo_size) -> bool:
+    """Exclude tiny self-underwritten/best-efforts registrations without an exchange listing."""
+    try:
+        amount = float(ipo_size or 0)
+    except (TypeError, ValueError):
+        amount = 0
+    if not (0 < amount < 1_000_000):
+        return False
+    text = " ".join(str(filing_text or "").lower().split())[:80000]
+    self_sold = (
+        "self-underwritten" in text
+        or "self underwritten" in text
+        or "best-efforts basis" in text
+        or "best efforts basis" in text
+    )
+    cover = parsed.get("cover_page", {}) if isinstance(parsed, dict) else {}
+    exchange = str(cover.get("exchange") or "").strip()
+    return self_sold and not exchange
+
+
 def parse_daily_index(text: str) -> list[dict]:
     """Parse S-1/S-1A records from an SEC daily master index."""
     records = []
@@ -60,7 +97,7 @@ def parse_daily_index(text: str) -> list[dict]:
             "company_name": _clean_company_name(company_name),
             "cik": cik.strip(),
             "form_type": form_type,
-            "filing_date": filing_date.strip(),
+            "filing_date": _normalize_filing_date(filing_date),
             "accession_no": accession_no,
         })
     return records
@@ -129,7 +166,7 @@ def _extract_ipo_size(filing_text: str, parsed: dict, price_range: dict) -> int 
             amount = float(match.group(1).replace(",", ""))
         except ValueError:
             continue
-        if amount >= 1_000_000:
+        if amount > 0:
             return int(round(amount))
 
     cover = parsed.get("cover_page", {}) if isinstance(parsed, dict) else {}
@@ -154,6 +191,12 @@ def _extract_ipo_size(filing_text: str, parsed: dict, price_range: dict) -> int 
         low = high = 0
     if low > 0 and high > 0:
         return int(round(shares * ((low + high) / 2)))
+    try:
+        fixed_price = float(cover.get("offering_price") or 0)
+    except (TypeError, ValueError):
+        fixed_price = 0
+    if fixed_price > 0:
+        return int(round(shares * fixed_price))
     return None
 
 
@@ -183,7 +226,12 @@ def enrich_record(meta: dict) -> dict | None:
         parsed = filing_parser.parse_filing(document_url, is_range_filing=True)
         price_range = parsed.get("price_range", {})
         range_label = _format_range(price_range.get("range_low"), price_range.get("range_high"))
+        cover = parsed.get("cover_page", {}) if isinstance(parsed, dict) else {}
+        fixed_price_label = _format_fixed_price(cover.get("offering_price"))
         ipo_size = _extract_ipo_size(filing_text, parsed, price_range)
+        if _is_micro_self_underwritten_offering(filing_text, parsed, ipo_size):
+            print(f"[s1_monitor] Skipping {company}: micro self-underwritten/best-efforts registration without exchange listing")
+            return None
 
         ticker = None
         try:
@@ -198,8 +246,10 @@ def enrich_record(meta: dict) -> dict | None:
             signals.append("Registration statement amended — IPO remains pre-pricing")
         if range_label:
             signals.append(f"Preliminary offering range disclosed at {range_label}")
+        elif fixed_price_label:
+            signals.append(f"Fixed offering price disclosed at {fixed_price_label} per share")
         else:
-            signals.append("No preliminary price range detected yet")
+            signals.append("No preliminary price range or fixed offering price detected yet")
         if ipo_size:
             signals.append(f"IPO size disclosed or derived at approximately ${ipo_size:,.0f}")
 
@@ -210,10 +260,11 @@ def enrich_record(meta: dict) -> dict | None:
             "cik": str(cik).zfill(10) if cik else "",
             "accession_no": meta["accession_no"],
             "form": form,
-            "filed": meta.get("filing_date") or "",
+            "filed": _normalize_filing_date(meta.get("filing_date") or ""),
             "stage": "Pre-pricing",
-            "priority": "High" if range_label else "Medium",
+            "priority": "High" if (range_label or fixed_price_label) else "Medium",
             "price_range": range_label,
+            "filing_price": fixed_price_label,
             "ipo_size": ipo_size,
             "signals": signals,
             "sec_url": index_url,
@@ -273,9 +324,10 @@ def _queue_record(record: dict) -> dict:
         "cik": cik,
         "accession_no": record.get("accession_no") or record.get("id") or "",
         "form": record.get("form") or "S-1",
-        "filed": record.get("filed") or "",
+        "filed": _normalize_filing_date(record.get("filed") or ""),
         "stage": record.get("stage") or "Pre-pricing",
         "price_range": record.get("price_range"),
+        "filing_price": record.get("filing_price"),
         "ipo_size": ipo_size,
         "priority": record.get("priority") or "Medium",
         "status": "New",
@@ -288,8 +340,10 @@ def _queue_record(record: dict) -> dict:
     }
 
 
-def sync_research_queue(records: list[dict], queue_path: Path = QUEUE_PATH) -> dict:
-    """Merge current S-1 signals into the main researcher queue atomically."""
+def sync_research_queue(
+    records: list[dict], queue_path: Path = QUEUE_PATH, processed_ciks: set[str] | None = None
+) -> dict:
+    """Merge current S-1 signals into the queue and prune processed records that no longer qualify."""
     queue_path = Path(queue_path)
     existing = []
     if queue_path.exists():
@@ -306,6 +360,11 @@ def sync_research_queue(records: list[dict], queue_path: Path = QUEUE_PATH) -> d
         and item.get("cik")
     }
 
+    processed_ciks = {str(cik or "").zfill(10) for cik in (processed_ciks or set()) if cik}
+    for item in existing:
+        if isinstance(item, dict) and str(item.get("id", "")).startswith("s1:"):
+            item["filed"] = _normalize_filing_date(item.get("filed") or "")
+
     merged = {
         item["id"]: item
         for item in existing
@@ -313,7 +372,10 @@ def sync_research_queue(records: list[dict], queue_path: Path = QUEUE_PATH) -> d
         and item.get("id")
         and not (
             str(item.get("id", "")).startswith("s1:")
-            and str(item.get("cik") or "").zfill(10) in priced_ciks
+            and (
+                str(item.get("cik") or "").zfill(10) in priced_ciks
+                or str(item.get("cik") or "").zfill(10) in processed_ciks
+            )
         )
     }
 
@@ -345,7 +407,8 @@ def run(days_back: int = 4) -> dict:
         if record:
             records.append(record)
     payload = export_feed(records)
-    queue = sync_research_queue(records)
+    processed_ciks = {str(meta.get("cik") or "").zfill(10) for meta in candidates if meta.get("cik")}
+    queue = sync_research_queue(records, processed_ciks=processed_ciks)
     print(f"[s1_monitor] Feed now contains {len(payload['filings'])} pre-pricing filing(s).")
     print(f"[s1_monitor] Research queue now contains {len(queue['filings'])} filing(s).")
     return payload
