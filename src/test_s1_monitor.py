@@ -27,6 +27,36 @@ class S1MonitorTests(unittest.TestCase):
         self.assertEqual(s1_monitor._format_range("18", "20"), "$18.00–$20.00")
         self.assertIsNone(s1_monitor._format_range(None, "20"))
 
+    def test_normalizes_compact_filing_date(self):
+        self.assertEqual(s1_monitor._normalize_filing_date("20260818"), "2026-08-18")
+        self.assertEqual(s1_monitor._normalize_filing_date("2026-08-18"), "2026-08-18")
+
+    def test_extracts_sub_million_aggregate_offering_size(self):
+        value = s1_monitor._extract_ipo_size(
+            "Proposed Maximum Aggregate Offering Price $120,000", {}, {}
+        )
+        self.assertEqual(value, 120_000)
+
+    def test_derives_fixed_price_offering_size(self):
+        value = s1_monitor._extract_ipo_size(
+            "Initial public offering",
+            {"cover_page": {"offering_size_shares": 6_000_000, "offering_price": 0.02}},
+            {},
+        )
+        self.assertEqual(value, 120_000)
+
+    def test_micro_self_underwritten_registration_without_exchange_is_rejected(self):
+        self.assertTrue(s1_monitor._is_micro_self_underwritten_offering(
+            "The offering is being conducted on a self-underwritten, best-efforts basis.",
+            {"cover_page": {"exchange": None}},
+            120_000,
+        ))
+        self.assertFalse(s1_monitor._is_micro_self_underwritten_offering(
+            "The offering is being conducted on a best-efforts basis.",
+            {"cover_page": {"exchange": "Nasdaq"}},
+            120_000,
+        ))
+
     @patch("s1_monitor.filing_parser.parse_filing")
     @patch("s1_monitor.filing_parser.fetch_document")
     @patch("s1_monitor.filing_parser.find_primary_document_url")
@@ -41,7 +71,7 @@ class S1MonitorTests(unittest.TestCase):
         soup = Mock()
         soup.get_text.return_value = "This is the initial public offering of our common stock."
         fetch_doc.return_value = soup
-        parse_filing.return_value = {"price_range": {"range_low": 18, "range_high": 20}}
+        parse_filing.return_value = {"price_range": {"range_low": 18, "range_high": 20}, "cover_page": {"exchange": "Nasdaq", "offering_price": None}}
 
         record = s1_monitor.enrich_record({
             "company_name": "Acme Robotics, Inc.",
@@ -144,6 +174,20 @@ class S1MonitorTests(unittest.TestCase):
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0]["form"], "S-1/A")
             self.assertEqual(rows[0]["filing_price"], "")
+
+    def test_sync_queue_prunes_processed_s1_that_no_longer_qualifies(self):
+        stale = {
+            "id": "s1:0002112634",
+            "company": "Sensei Harbor Corp.",
+            "cik": "0002112634",
+            "form": "S-1/A",
+            "filed": "20260818",
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "filings.json"
+            path.write_text(json.dumps({"filings": [stale]}), encoding="utf-8")
+            payload = s1_monitor.sync_research_queue([], path, processed_ciks={"2112634"})
+            self.assertEqual(payload["filings"], [])
 
     def test_sync_queue_removes_prepricing_row_after_424b4(self):
         prepricing = {

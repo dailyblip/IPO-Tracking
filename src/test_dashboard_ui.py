@@ -36,6 +36,7 @@ class DashboardUiTests(unittest.TestCase):
     def test_filed_date_uses_friendly_format(self):
         self.assertIn('month:"short",day:"numeric",year:"numeric"', self.html)
         self.assertIn('dateLabel(filing.filed)', self.html)
+        self.assertIn('/^\\d{8}$/.test(raw)', self.html)
 
     def test_main_table_uses_requested_default_column_order(self):
         expected_labels = (
