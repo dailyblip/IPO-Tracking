@@ -1,0 +1,95 @@
+name: Apply prospect liquidity pivot
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/apply-prospect-liquidity-pivot.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/prospect-liquidity-pivot
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Patch prospect-research liquidity features
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p=Path('src/dashboard_export.py')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('from datetime import datetime, timezone', 'from datetime import datetime, timezone, timedelta')
+          s=s.replace('''    "offering_price", "current_price", "price_updated",\n}''','''    "offering_price", "current_price", "price_updated", "lockup_end_date",\n    "lockup_duration_days", "lockup_text",\n}''')
+          s=s.replace('''PUBLIC_PERSON_FIELDS = {\n    "name", "shares", "cash_value", "stanford_university_bio",\n}''','''PUBLIC_PERSON_FIELDS = {\n    "name", "shares", "cash_value", "stanford_university_bio", "ipo_value",\n    "liquid_shares", "liquid_value", "locked_shares", "locked_value",\n    "cash_realized_ipo", "liquidity_status", "liquidity_confidence",\n}''')
+          s=s.replace('''    "current_price", "price_updated", "holder_name", "shares", "cash_value",\n    "stanford_university_bio", "sec_url",''','''    "current_price", "price_updated", "lockup_end_date", "holder_name", "shares",\n    "cash_value", "ipo_value", "liquid_shares", "liquid_value", "locked_shares",\n    "locked_value", "cash_realized_ipo", "liquidity_status", "liquidity_confidence",\n    "stanford_university_bio", "sec_url",''')
+          marker='''def _signals(rows, people):\n'''
+          helper='''def _lockup_metadata(rows):\n    raw = next((str(row.get("Lock-Up Expiry") or "") for row in rows if row.get("Lock-Up Expiry")), "")\n    match = re.search(r"(\\d{2,3})\\s+days", raw, re.IGNORECASE)\n    days = int(match.group(1)) if match else None\n    pricing = next((str(row.get("Date of Pricing") or "") for row in rows if row.get("Date of Pricing")), "")\n    end = None\n    if days and re.fullmatch(r"\\d{4}-\\d{2}-\\d{2}", pricing):\n        try:\n            end = (datetime.fromisoformat(pricing).date() + timedelta(days=days)).isoformat()\n        except ValueError:\n            end = None\n    return {"text": raw or None, "days": days, "end": end}\n\n\ndef _person_liquidity(shares, current_value, ipo_price, lockup):\n    shares = _number(shares)\n    current_value = _number(current_value)\n    ipo_price = _number(ipo_price)\n    ipo_value = shares * ipo_price if shares is not None and ipo_price else None\n    active = False\n    if lockup.get("end"):\n        try:\n            active = datetime.fromisoformat(lockup["end"]).date() > datetime.now(timezone.utc).date()\n        except ValueError:\n            active = False\n    if shares is None:\n        return {"ipo_value": ipo_value, "liquid_shares": None, "liquid_value": None, "locked_shares": None, "locked_value": None, "cash_realized_ipo": None, "liquidity_status": "Unknown", "liquidity_confidence": "Unknown — share count unavailable"}\n    if lockup.get("end"):\n        liquid_shares = 0 if active else shares\n        locked_shares = shares if active else 0\n        return {"ipo_value": ipo_value, "liquid_shares": liquid_shares, "liquid_value": 0 if active else current_value, "locked_shares": locked_shares, "locked_value": current_value if active else 0, "cash_realized_ipo": None, "liquidity_status": "Locked" if active else "Lock-up expired", "liquidity_confidence": "Estimated from filing-level lock-up; individual exemptions may apply"}\n    return {"ipo_value": ipo_value, "liquid_shares": None, "liquid_value": None, "locked_shares": None, "locked_value": None, "cash_realized_ipo": None, "liquidity_status": "Unclassified", "liquidity_confidence": "Unknown — lock-up coverage not structured"}\n\n\n'''
+          assert marker in s
+          s=s.replace(marker,helper+marker,1)
+          s=s.replace('''        amount = max((_number(row.get("Amount Raised")) or 0 for row in group), default=0)\n        people = []''','''        amount = max((_number(row.get("Amount Raised")) or 0 for row in group), default=0)\n        lockup = _lockup_metadata(group)\n        people = []''',1)
+          old='''            people.append({\n                "name": name,\n                "shares": _number(row.get("Shares")),\n                "cash_value": _number(row.get("Cash Value")),\n                "stanford_university_bio": _boolean(\n                    row.get("Stanford University in Bio")\n                ),\n            })'''
+          new='''            shares = _number(row.get("Shares"))\n            cash_value = _number(row.get("Cash Value"))\n            liquidity = _person_liquidity(shares, cash_value, _number(first.get("Actual Price")), lockup)\n            people.append({\n                "name": name,\n                "shares": shares,\n                "cash_value": cash_value,\n                "stanford_university_bio": _boolean(row.get("Stanford University in Bio")),\n                **liquidity,\n            })'''
+          assert old in s
+          s=s.replace(old,new,1)
+          s=s.replace('''            "price_updated": first.get("Last Updated") or None,\n            "people_count": len(people),''','''            "price_updated": first.get("Last Updated") or None,\n            "lockup_end_date": lockup.get("end"),\n            "lockup_duration_days": lockup.get("days"),\n            "lockup_text": lockup.get("text"),\n            "people_count": len(people),''',1)
+          s=s.replace('''                "price_updated": filing.get("price_updated"),\n                "holder_name": person.get("name", ""),\n                "shares": person.get("shares"),\n                "cash_value": person.get("cash_value"),''','''                "price_updated": filing.get("price_updated"),\n                "lockup_end_date": filing.get("lockup_end_date"),\n                "holder_name": person.get("name", ""),\n                "shares": person.get("shares"),\n                "cash_value": person.get("cash_value"),\n                "ipo_value": person.get("ipo_value"),\n                "liquid_shares": person.get("liquid_shares"),\n                "liquid_value": person.get("liquid_value"),\n                "locked_shares": person.get("locked_shares"),\n                "locked_value": person.get("locked_value"),\n                "cash_realized_ipo": person.get("cash_realized_ipo"),\n                "liquidity_status": person.get("liquidity_status"),\n                "liquidity_confidence": person.get("liquidity_confidence"),''',1)
+          old='''        for person in filing.get("people", []):\n            shares = _number(person.get("shares"))\n            if shares is not None:\n                person["cash_value"] = shares * price\n        changed = True'''
+          new='''        for person in filing.get("people", []):\n            shares = _number(person.get("shares"))\n            if shares is not None:\n                person["cash_value"] = shares * price\n                if _number(person.get("liquid_shares")) is not None:\n                    person["liquid_value"] = _number(person.get("liquid_shares")) * price\n                if _number(person.get("locked_shares")) is not None:\n                    person["locked_value"] = _number(person.get("locked_shares")) * price\n        changed = True'''
+          assert old in s
+          s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+
+          h=Path('docs/index.html')
+          x=h.read_text(encoding='utf-8')
+          x=x.replace('.stanford-person{color:var(--cardinal);font-weight:800}', '.stanford-person{color:var(--cardinal);font-weight:800}.company-line{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.size-pill{display:inline-block;border:1px solid #b9c6be;background:#eef4f0;border-radius:999px;padding:2px 7px;font-size:10px;font-weight:750;color:#254b3b;white-space:nowrap}.stanford-s{display:inline-grid;place-items:center;width:19px;height:19px;border-radius:4px;background:var(--cardinal);color:#fff;font-family:Georgia,serif;font-weight:800;font-size:13px}.owner{cursor:pointer}.owner:hover{background:#f6f8f6}.liq-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}.liq-bar{height:22px;display:flex;border-radius:999px;overflow:hidden;background:#e7ebe8;margin:14px 0 5px}.liq-liquid{background:#437d63}.liq-locked{background:#a9b2ac}.liq-unknown{background:#d9ddda;width:100%}.liq-note{font-size:12px;color:var(--muted)}')
+          dialog='''\n<dialog id="personDetail">\n<div class="detail-head"><div><strong id="personName"></strong><div class="sub" id="personCompany"></div></div><button id="closePerson" class="secondary">Close</button></div>\n<div class="detail-body">\n<div class="liq-grid"><div class="fact"><span>Current holding value</span><strong id="personCurrentValue"></strong></div><div class="fact"><span>Value at IPO price</span><strong id="personIpoValue"></strong></div><div class="fact"><span>Cash realized at IPO</span><strong id="personCashRealized"></strong></div><div class="fact"><span>Estimated liquid now</span><strong id="personLiquidValue"></strong></div><div class="fact"><span>Locked / restricted</span><strong id="personLockedValue"></strong></div><div class="fact"><span>Lock-up ends</span><strong id="personLockupEnd"></strong></div></div>\n<div class="liq-bar" id="personLiquidityBar"></div><div class="liq-note" id="personLiquidityCaption"></div>\n<p class="liq-note" id="personConfidence"></p>\n</div>\n</dialog>\n'''
+          x=x.replace('\n<script>\n"use strict";', dialog+'\n<script>\n"use strict";',1)
+          marker='function hasStanfordBeneficialOwner(filing){return filing.people.some(person=>person.stanford_university_bio===true)}\n'
+          helpers='''function ipoSizeBucket(value){const n=Number(value);if(!Number.isFinite(n)||n<100000000)return "";const levels=[[5000000000,"$5B+"],[1000000000,"$1B+"],[500000000,"$500M+"],[250000000,"$250M+"],[100000000,"$100M+"]];return (levels.find(([floor])=>n>=floor)||[])[1]||""}\nfunction stanfordBadge(){const n=text("span","stanford-s","S");n.title="Confirmed Stanford-affiliated beneficial owner";return n}\nfunction showPerson(person,filing){const d=$("personDetail");$("personName").textContent=person.name||"Unnamed owner";$("personCompany").textContent=filing.company;$("personCurrentValue").textContent=money(person.cash_value);$("personIpoValue").textContent=money(person.ipo_value);$("personCashRealized").textContent=money(person.cash_realized_ipo);$("personLiquidValue").textContent=person.liquid_value===null||person.liquid_value===undefined?"Unknown":money(person.liquid_value);$("personLockedValue").textContent=person.locked_value===null||person.locked_value===undefined?"Unknown":money(person.locked_value);$("personLockupEnd").textContent=filing.lockup_end_date?dateLabel(filing.lockup_end_date):"Unknown";const bar=$("personLiquidityBar");bar.replaceChildren();const total=Number(person.shares)||0,liquid=Number(person.liquid_shares),locked=Number(person.locked_shares);if(total>0&&Number.isFinite(liquid)&&Number.isFinite(locked)){const a=text("div","liq-liquid","");a.style.width=`${Math.max(0,Math.min(100,liquid/total*100))}%`;const b=text("div","liq-locked","");b.style.width=`${Math.max(0,Math.min(100,locked/total*100))}%`;bar.append(a,b);$("personLiquidityCaption").textContent=`${Number(liquid).toLocaleString()} shares estimated liquid · ${Number(locked).toLocaleString()} shares locked/restricted`}else{bar.append(text("div","liq-unknown",""));$("personLiquidityCaption").textContent="Liquidity classification not yet available for this holding"}$("personConfidence").textContent=person.liquidity_confidence||"Unknown — filing does not yet support a reliable liquidity classification.";d.showModal()}\n'''
+          assert marker in x
+          x=x.replace(marker,marker+helpers,1)
+          old='''const company=document.createElement("div");company.append(text("div",hasStanfordBeneficialOwner(filing)?"company stanford-company":"company",filing.company),text("div","sub",filing.cik?`CIK ${filing.cik}`:""));appendCell(row,company);appendCell(row,text("span","",filing.ticker||"—"));appendCell(row,text("span","quote",money(filing.ipo_size||filing.value)));'''
+          new='''const company=document.createElement("div"),line=document.createElement("div");line.className="company-line";line.append(text("div",hasStanfordBeneficialOwner(filing)?"company stanford-company":"company",filing.company));if(hasStanfordBeneficialOwner(filing))line.append(stanfordBadge());company.append(line,text("div","sub",filing.cik?`CIK ${filing.cik}`:""));appendCell(row,company);appendCell(row,text("span","",filing.ticker||"—"));const size=document.createElement("div");size.append(text("span","quote",money(filing.ipo_size||filing.value)));const bucket=ipoSizeBucket(filing.ipo_size||filing.value);if(bucket)size.append(document.createTextNode(" "),text("span","size-pill",bucket));appendCell(row,size);'''
+          assert old in x
+          x=x.replace(old,new,1)
+          old='''$("peopleList").replaceChildren(...(filing.people.length?filing.people.map(person=>{const r=document.createElement("div");r.className="owner";r.append(ownerName(person),document.createTextNode(` · ${Number(person.shares||0).toLocaleString()} shares · ${money(person.cash_value)}`));return r}):[text("div","owner","No named owners were extracted.")]));'''
+          new='''$("peopleList").replaceChildren(...(filing.people.length?filing.people.map(person=>{const r=document.createElement("div");r.className="owner";r.tabIndex=0;r.append(ownerName(person),document.createTextNode(` · ${Number(person.shares||0).toLocaleString()} shares · ${money(person.cash_value)}`),text("div","sub",`${person.liquidity_status||"Liquidity unclassified"} · click for liquidity view`));r.addEventListener("click",()=>showPerson(person,filing));r.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();showPerson(person,filing)}});return r}):[text("div","owner","No named owners were extracted.")]));'''
+          assert old in x
+          x=x.replace(old,new,1)
+          x=x.replace('$("closeDetail").addEventListener("click",()=>detail.close());','$("closeDetail").addEventListener("click",()=>detail.close());$("closePerson").addEventListener("click",()=>$("personDetail").close());',1)
+          h.write_text(x,encoding='utf-8')
+
+          t=Path('src/test_dashboard_ui.py')
+          u=t.read_text(encoding='utf-8')
+          marker='    def test_sample_feed_matches_public_schema(self):\n'
+          test='''    def test_prospect_liquidity_ui_and_front_page_flags(self):\n        for value in ("personDetail", "personCurrentValue", "personIpoValue", "personCashRealized", "personLiquidValue", "personLockedValue", "personLockupEnd"):\n            self.assertIn(f'id="{value}"', self.html)\n        self.assertIn("function ipoSizeBucket(value)", self.html)\n        self.assertIn('"$500M+"', self.html)\n        self.assertIn("stanford-s", self.html)\n        self.assertIn("showPerson(person,filing)", self.html)\n\n'''
+          if 'test_prospect_liquidity_ui_and_front_page_flags' not in u:
+              u=u.replace(marker,test+marker,1)
+          t.write_text(u,encoding='utf-8')
+
+          t=Path('src/test_dashboard_export.py')
+          u=t.read_text(encoding='utf-8')
+          marker='    def test_public_allowlist_preserves_s1_pricing_metadata(self):\n'
+          test='''    def test_build_payload_adds_estimated_person_liquidity(self):\n        rows = [{\n            "Company Name": "Prospect Co", "Ticker": "PRSP", "Date of Pricing": "2026-08-01",\n            "Actual Price": 20, "Amount Raised": 600000000, "Current Price": 25,\n            "Holder Name": "Jane Prospect", "Shares": 1000000, "Cash Value": 25000000,\n            "Lock-Up Expiry": "lock-up period of 180 days",\n        }]\n        filing = dashboard_export.build_payload(rows)["filings"][0]\n        person = filing["people"][0]\n        self.assertEqual(filing["lockup_duration_days"], 180)\n        self.assertEqual(filing["lockup_end_date"], "2027-01-28")\n        self.assertEqual(person["ipo_value"], 20000000)\n        self.assertEqual(person["locked_shares"], 1000000)\n        self.assertEqual(person["liquid_shares"], 0)\n        self.assertIsNone(person["cash_realized_ipo"])\n\n'''
+          if 'test_build_payload_adds_estimated_person_liquidity' not in u:
+              u=u.replace(marker,test+marker,1)
+          t.write_text(u,encoding='utf-8')
+          PY
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+      - name: Commit feature branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/dashboard_export.py src/test_dashboard_export.py src/test_dashboard_ui.py docs/index.html
+          git commit -m "Pivot Research Monitor toward prospect liquidity research"
+          git push origin HEAD:feature/prospect-liquidity-pivot
