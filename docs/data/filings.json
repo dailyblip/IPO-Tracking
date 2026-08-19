@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-19T22:58:24.202163+00:00",
+  "generated_at": "2026-08-19T23:35:49.818004+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -19,7 +19,10 @@
       "filing_price": null,
       "offering_price": null,
       "current_price": 15.01,
-      "price_updated": "2026-08-19T22:58:24.202163+00:00",
+      "price_updated": "2026-08-19T23:35:49.818004+00:00",
+      "lockup_end_date": null,
+      "lockup_duration_days": null,
+      "lockup_text": null,
       "people_count": 44,
       "signals": [
         "44 named beneficial owners disclosed",
@@ -30,265 +33,617 @@
           "name": "Trive Capital Fund IV LP",
           "shares": 27648856.0,
           "cash_value": 415009328.56,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Trive Capital Fund II LP",
           "shares": 24805921.0,
           "cash_value": 372336874.21,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Trive Capital Fund II (Offshore) LP",
           "shares": 13441095.0,
           "cash_value": 201750835.95,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Trive Capital Fund IV-A LP",
           "shares": 10065632.0,
           "cash_value": 151085136.32,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Brian Morrison",
           "shares": 1867519.0,
           "cash_value": 28031460.19,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Matthew Alty",
           "shares": 2385830.0,
           "cash_value": 35811308.3,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Tim Paulin",
           "shares": 551694.0,
           "cash_value": 8280926.9399999995,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "David Stinnett",
           "shares": 3459794.0,
           "cash_value": 51931507.94,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Brian Raduenz",
           "shares": 984460.0,
           "cash_value": 14776744.6,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Tanner Cope",
           "shares": 231987.0,
           "cash_value": 3482124.87,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Jake Lansford",
           "shares": 65882.0,
           "cash_value": 988888.82,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Richard Penrose",
           "shares": 5238879.0,
           "cash_value": 78635573.78999999,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Michael D. Frederickson",
           "shares": 2953381.0,
           "cash_value": 44330248.81,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Carlos Persichetti",
           "shares": 1498300.0,
           "cash_value": 22489483.0,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Jeffrey Ager",
           "shares": 1406753.0,
           "cash_value": 21115362.53,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "GPG Entities",
           "shares": 1400140.0,
           "cash_value": 21016101.4,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "ESW Clifford Holdings Co.",
           "shares": 1246156.0,
           "cash_value": 18704801.56,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "High Definition Goldfish Inc.",
           "shares": 708811.0,
           "cash_value": 10639253.11,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Bruce Barshop",
           "shares": 689645.0,
           "cash_value": 10351571.45,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Richard Moore",
           "shares": 672580.0,
           "cash_value": 10095425.8,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Bain Capital Entities",
           "shares": 590676.0,
           "cash_value": 8866046.76,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Bryce Richard Persichetti",
           "shares": 530000.0,
           "cash_value": 7955300.0,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Cara Jean Beauvais",
           "shares": 530000.0,
           "cash_value": 7955300.0,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Arne Vogt",
           "shares": 469827.0,
           "cash_value": 7052103.27,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "James Mitchell",
           "shares": 469827.0,
           "cash_value": 7052103.27,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Thomas Murphy",
           "shares": 420922.0,
           "cash_value": 6318039.22,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Mike Betzer",
           "shares": 410541.0,
           "cash_value": 6162220.41,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Daniel Gelyana",
           "shares": 405671.0,
           "cash_value": 6089121.71,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "MFI Foundation",
           "shares": 398213.0,
           "cash_value": 5977177.13,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Dale McIntosh",
           "shares": 381081.0,
           "cash_value": 5720025.81,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Ronald J. Lustig",
           "shares": 378583.0,
           "cash_value": 5682530.83,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Matt Parisi",
           "shares": 328627.0,
           "cash_value": 4932691.27,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Barbara Lucile Williams",
           "shares": 313379.0,
           "cash_value": 4703818.79,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Dylan Schmorrow",
           "shares": 297480.0,
           "cash_value": 4465174.8,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Thomas Peter Hodge",
           "shares": 289572.0,
           "cash_value": 4346475.72,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Rebecca Jane Clewett",
           "shares": 289572.0,
           "cash_value": 4346475.72,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Susan Elizabeth Johnson",
           "shares": 289572.0,
           "cash_value": 4346475.72,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Richard Dart",
           "shares": 281896.0,
           "cash_value": 4231258.96,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Andrew Nugent",
           "shares": 194291.0,
           "cash_value": 2916307.91,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Mike Van Lent",
           "shares": 157514.0,
           "cash_value": 2364285.14,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Kenn Bevins",
           "shares": 139467.0,
           "cash_value": 2093399.67,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Danielle Tyler",
           "shares": 77766.0,
           "cash_value": 1167267.66,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Adham Shaaban",
           "shares": 48479.0,
           "cash_value": 727669.79,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         },
         {
           "name": "Other selling stockholders",
           "shares": 1089704.0,
           "cash_value": 16356457.04,
-          "stanford_university_bio": false
+          "stanford_university_bio": false,
+          "ipo_value": null,
+          "liquid_shares": null,
+          "liquid_value": null,
+          "locked_shares": null,
+          "locked_value": null,
+          "cash_realized_ipo": null,
+          "liquidity_status": "Unclassified",
+          "liquidity_confidence": "Unknown — lock-up coverage not structured"
         }
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm"
@@ -353,7 +708,7 @@
       "filing_price": "11.0-13.0",
       "offering_price": 13.0,
       "current_price": 23.16,
-      "price_updated": "2026-08-19T22:58:24.202163+00:00",
+      "price_updated": "2026-08-19T23:35:49.818004+00:00",
       "people_count": 9,
       "signals": [
         "9 named beneficial owners disclosed",
@@ -434,7 +789,7 @@
       "filing_price": "16.0-18.0",
       "offering_price": 18.0,
       "current_price": 20.94,
-      "price_updated": "2026-08-19T22:58:24.202163+00:00",
+      "price_updated": "2026-08-19T23:35:49.818004+00:00",
       "people_count": 12,
       "signals": [
         "12 named beneficial owners disclosed",
@@ -532,7 +887,7 @@
       "filing_price": "15.0-17.0",
       "offering_price": 16.0,
       "current_price": 16.17,
-      "price_updated": "2026-08-19T22:58:24.202163+00:00",
+      "price_updated": "2026-08-19T23:35:49.818004+00:00",
       "people_count": 14,
       "signals": [
         "14 named beneficial owners disclosed",
@@ -642,7 +997,7 @@
       "filing_price": null,
       "offering_price": 18.0,
       "current_price": 28.97,
-      "price_updated": "2026-08-19T22:58:24.202163+00:00",
+      "price_updated": "2026-08-19T23:35:49.818004+00:00",
       "people_count": 12,
       "signals": [
         "12 named beneficial owners disclosed",
@@ -740,7 +1095,7 @@
       "filing_price": null,
       "offering_price": 17.0,
       "current_price": 22.14,
-      "price_updated": "2026-08-19T22:58:24.202163+00:00",
+      "price_updated": "2026-08-19T23:35:49.818004+00:00",
       "people_count": 10,
       "signals": [
         "10 named beneficial owners disclosed",
@@ -826,7 +1181,7 @@
       "filing_price": "21.0-25.0",
       "offering_price": 23.0,
       "current_price": 22.81,
-      "price_updated": "2026-08-19T22:58:24.202163+00:00",
+      "price_updated": "2026-08-19T23:35:49.818004+00:00",
       "people_count": 8,
       "signals": [
         "8 named beneficial owners disclosed",
@@ -901,7 +1256,7 @@
       "filing_price": "14.0-16.0",
       "offering_price": 16.0,
       "current_price": 32.03,
-      "price_updated": "2026-08-19T22:58:24.202163+00:00",
+      "price_updated": "2026-08-19T23:35:49.818004+00:00",
       "people_count": 12,
       "signals": [
         "12 named beneficial owners disclosed",
@@ -1000,7 +1355,7 @@
       "filing_price": null,
       "offering_price": 15.0,
       "current_price": 15.32,
-      "price_updated": "2026-08-19T22:58:24.202163+00:00",
+      "price_updated": "2026-08-19T23:35:49.818004+00:00",
       "people_count": 10,
       "signals": [
         "10 named beneficial owners disclosed",
@@ -1086,7 +1441,7 @@
       "filing_price": "13.0-15.0",
       "offering_price": 15.0,
       "current_price": 31.05,
-      "price_updated": "2026-08-19T22:58:24.202163+00:00",
+      "price_updated": "2026-08-19T23:35:49.818004+00:00",
       "people_count": 10,
       "signals": [
         "10 named beneficial owners disclosed",
@@ -1233,7 +1588,7 @@
         }
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026042639/0001628280-26-042639-index.htm",
-      "price_updated": "2026-08-19T22:58:24.202163+00:00"
+      "price_updated": "2026-08-19T23:35:49.818004+00:00"
     }
   ]
 }
