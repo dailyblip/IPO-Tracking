@@ -1,25 +1,25 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-19T22:56:13.680271+00:00",
+  "updated_at": "2026-08-19T22:58:49.579719+00:00",
   "items": {
-    "s1:0002112634": {
-      "id": "s1:0002112634",
-      "cik": "0002112634",
-      "company": "Sensei Harbor Corp.",
-      "form": "S-1/A",
-      "filed": "20260818",
-      "stage": "pre-pricing",
+    "0001193125-26-356916": {
+      "id": "0001193125-26-356916",
+      "cik": "0002132582",
+      "company": "Lyntris Inc.",
+      "form": "424B4",
+      "filed": "2026-08-19",
+      "stage": "priced",
       "price_range": null,
-      "priority": "Medium",
+      "priority": "High",
       "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2112634/000168316826006561/0001683168-26-006561-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm"
     },
     "s1:0002109801": {
       "id": "s1:0002109801",
       "cik": "0002109801",
       "company": "VARSAL TECH, INC.",
       "form": "S-1/A",
-      "filed": "20260817",
+      "filed": "2026-08-17",
       "stage": "pre-pricing",
       "price_range": null,
       "priority": "Medium",
@@ -31,7 +31,7 @@
       "cik": "0001880995",
       "company": "Alopexx, Inc.",
       "form": "S-1/A",
-      "filed": "20260817",
+      "filed": "2026-08-17",
       "stage": "pre-pricing",
       "price_range": "$10.00–$12.00",
       "priority": "High",
@@ -218,13 +218,13 @@
       "company": "VARSAL TECH, INC.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002109801",
-      "last_filed": "20260817"
+      "last_filed": "2026-08-17"
     },
     "0001880995": {
       "company": "Alopexx, Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0001880995",
-      "last_filed": "20260817"
+      "last_filed": "2026-08-17"
     },
     "0001181412": {
       "company": "Space Exploration Technologies Corp.",
@@ -237,6 +237,12 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002112634",
       "last_filed": "20260818"
+    },
+    "0002132582": {
+      "company": "Lyntris Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-356916",
+      "last_filed": "2026-08-19"
     }
   }
 }

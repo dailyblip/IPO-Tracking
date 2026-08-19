@@ -1,8 +1,23 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-19T22:56:13.680285+00:00",
-  "count": 4,
+  "generated_at": "2026-08-19T22:58:49.579728+00:00",
+  "count": 5,
   "alerts": [
+    {
+      "type": "new_424b4",
+      "company": "Lyntris Inc.",
+      "cik": "0002132582",
+      "filing_id": "0001193125-26-356916",
+      "form": "424B4",
+      "filed": "2026-08-19",
+      "stage": "priced",
+      "priority": "High",
+      "summary": "New 424B4 entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm",
+      "detected_at": "2026-08-19T22:58:49.579649+00:00",
+      "new_value": "—",
+      "key": "new_424b4|0001193125-26-356916|0002132582|2026-08-19|—"
+    },
     {
       "type": "new_prepricing",
       "company": "Sensei Harbor Corp.",
