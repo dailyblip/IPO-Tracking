@@ -1,15 +1,16 @@
 name: Apply Prospect QA
 on:
-  push:
-    branches: [fix/prospect-data-qa]
+  pull_request:
 permissions:
   contents: write
 jobs:
   apply:
-    if: github.actor != 'github-actions[bot]'
+    if: github.event.pull_request.head.ref == 'fix/prospect-data-qa'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: fix/prospect-data-qa
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -25,4 +26,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src docs/prospect-research/index.html
           git commit -m "Harden Prospect Research data integrity and parsing" || exit 0
-          git push
+          git push origin HEAD:fix/prospect-data-qa
