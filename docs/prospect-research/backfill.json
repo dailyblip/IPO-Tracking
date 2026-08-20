@@ -1,0 +1,65 @@
+{
+  "filings": [
+    {
+      "id": "backfill-neutron-424b4-2026-07-02",
+      "company": "Neutron Holdings, Inc.",
+      "ticker": "LIME",
+      "cik": "0001699963",
+      "form": "424B4",
+      "filed": "2026-07-02",
+      "stage": "Priced",
+      "ipo_size": 173913050,
+      "offering_price": 25.0,
+      "current_price": null,
+      "lockup_end_date": null,
+      "signals": [
+        "6,956,522 shares offered at $25.00 per share",
+        "276,731 shares sold by selling stockholders",
+        "Beneficial ownership table disclosed in the final prospectus"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1699963/000162828026046635/0001628280-26-046635-index.htm",
+      "people": [
+        {"name":"Wayne Ting","shares":1216341,"ipo_value":30408525,"cash_value":null,"liquid_shares":null,"liquid_value":null,"locked_shares":null,"locked_value":null,"cash_realized_ipo":null,"liquidity_confidence":"Unknown — holder-specific lock-up classification pending","stanford_university_bio":false},
+        {"name":"Joseph Kraus","shares":507570,"ipo_value":12689250,"cash_value":null,"liquid_shares":null,"liquid_value":null,"locked_shares":null,"locked_value":null,"cash_realized_ipo":null,"liquidity_confidence":"Unknown — holder-specific lock-up classification pending","stanford_university_bio":false},
+        {"name":"Ann Gugino","shares":224616,"ipo_value":5615400,"cash_value":null,"liquid_shares":null,"liquid_value":null,"locked_shares":null,"locked_value":null,"cash_realized_ipo":null,"liquidity_confidence":"Unknown — holder-specific lock-up classification pending","stanford_university_bio":false},
+        {"name":"Zhoujia Brad Bao","shares":931934,"ipo_value":23298350,"cash_value":null,"liquid_shares":null,"liquid_value":null,"locked_shares":null,"locked_value":null,"cash_realized_ipo":null,"liquidity_confidence":"Unknown — holder-specific lock-up classification pending","stanford_university_bio":false},
+        {"name":"Uber","shares":14021438,"ipo_value":350535950,"cash_value":null,"liquid_shares":null,"liquid_value":null,"locked_shares":null,"locked_value":null,"cash_realized_ipo":null,"liquidity_confidence":"Known lock-up restrictions disclosed; structured release schedule pending","stanford_university_bio":false},
+        {"name":"Entities affiliated with Andreessen Horowitz","shares":2872018,"ipo_value":71800450,"cash_value":null,"liquid_shares":null,"liquid_value":null,"locked_shares":null,"locked_value":null,"cash_realized_ipo":null,"liquidity_confidence":"Unknown — holder-specific lock-up classification pending","stanford_university_bio":false},
+        {"name":"Entities affiliated with Fidelity","shares":6621407,"ipo_value":165535175,"cash_value":null,"liquid_shares":null,"liquid_value":null,"locked_shares":null,"locked_value":null,"cash_realized_ipo":null,"liquidity_confidence":"Unknown — holder-specific lock-up classification pending","stanford_university_bio":false},
+        {"name":"Entities affiliated with Sapphire","shares":9751385,"ipo_value":243784625,"cash_value":null,"liquid_shares":null,"liquid_value":null,"locked_shares":null,"locked_value":null,"cash_realized_ipo":null,"liquidity_confidence":"Unknown — holder-specific lock-up classification pending","stanford_university_bio":false}
+      ]
+    },
+    {
+      "id": "backfill-bending-spoons-424b4-2026-07-01",
+      "company": "Bending Spoons S.p.A.",
+      "ticker": "BSP",
+      "cik": "0002004711",
+      "form": "424B4",
+      "filed": "2026-07-01",
+      "stage": "Priced",
+      "ipo_size": 1681159435,
+      "offering_price": 29.0,
+      "current_price": null,
+      "lockup_end_date": null,
+      "signals": [
+        "57,971,015 ordinary shares offered at $29.00 per share",
+        "34,398,640 primary shares and 23,572,375 shares offered by selling shareholders",
+        "Estimated net proceeds to issuer of approximately $933 million"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2004711/000110465926079884/0001104659-26-079884-index.htm",
+      "people": []
+    }
+  ],
+  "stanford_overrides": [
+    {
+      "name": "Steve Jurvetson",
+      "source": "Stanford Technology Ventures Program",
+      "source_url": "https://stvp.stanford.edu/people/steve-jurvetson"
+    },
+    {
+      "name": "Ira Ehrenpreis",
+      "source": "Stanford Precourt Institute for Energy",
+      "source_url": "https://energy.stanford.edu/people/ira-ehrenpreis"
+    }
+  ]
+}
