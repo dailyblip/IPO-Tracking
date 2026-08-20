@@ -53,4 +53,8 @@ def prospect_person_metadata(row: dict, name: str) -> dict:
         "shares_sold_ipo": first_present(row, "Shares Sold in IPO", "Shares Offered", "Secondary Shares"),
         "shares_after_ipo": first_present(row, "Shares After IPO", "Shares After Offering", "Shares"),
         "stanford_source": first_present(row, "Stanford Justification", "Stanford Source"),
+        "stanford_affiliation_confirmed": bool(first_present(row, "Stanford Affiliation Confirmed", "Stanford University in Bio")),
+        "common_shares": first_present(row, "Common Shares"),
+        "restricted_shares": first_present(row, "Restricted Shares", "Unvested Shares"),
+        "options_shares": first_present(row, "Option Shares", "Options Exercisable"),
     }

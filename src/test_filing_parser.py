@@ -157,3 +157,17 @@ class ExtractPrincipalStockholdersTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ProspectQaParserTests(unittest.TestCase):
+    def test_cover_price_parses_price_to_public(self):
+        from bs4 import BeautifulSoup
+        import filing_parser
+        soup=BeautifulSoup("<html><body>Price to public per share $17.50</body></html>", "html.parser")
+        self.assertEqual(filing_parser.extract_cover_page_data(soup)["offering_price"], 17.50)
+
+    def test_principal_office_location_prefers_cover_disclosure(self):
+        from bs4 import BeautifulSoup
+        import filing_parser
+        soup=BeautifulSoup("<html><body>Our principal executive offices are located at 123 Main Street, Falls Church, VA 22042.</body></html>", "html.parser")
+        self.assertEqual(filing_parser.extract_principal_office_location(soup), "Falls Church, VA")

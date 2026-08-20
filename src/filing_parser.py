@@ -227,7 +227,9 @@ def extract_cover_page_data(soup: BeautifulSoup) -> dict:
         r"\s*(?:is|:)?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
         r"public offering price(?:\s+per\s+share)?"
         r"\s*(?:is|:)?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
-        r"\$\s*(\d{1,4}(?:\.\d{1,2})?)\s+per\s+share",
+        r"price\s+to\s+(?:the\s+)?public(?:\s+per\s+share)?\s*[:\-]?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
+        r"offering\s+price\s+per\s+share\s*[:\-]?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
+        r"\$\s*(\d{1,4}(?:\.\d{1,2})?)\s+per\s+(?:ordinary\s+|class\s+[ab]\s+)?share",
     ]
     price_match = next(
         (
@@ -248,6 +250,30 @@ def extract_cover_page_data(soup: BeautifulSoup) -> dict:
         "offering_price": float(price_match.group(1)) if price_match else None,
         "exchange": exchange_match.group(1) if exchange_match else None,
     }
+
+
+def extract_principal_office_location(soup: BeautifulSoup):
+    """Extract principal executive office location from the filing cover page.
+
+    Prefer filing disclosure to SEC submissions metadata because the latter may
+    reflect a registered/business address that is not the research-relevant HQ.
+    Returns a compact ``City, ST`` for US addresses, otherwise None.
+    """
+    cover_text = soup.get_text(" ", strip=True)[:30000]
+    patterns = [
+        r"principal executive offices? (?:are|is) located at [^.;]{0,220}?\b([A-Za-z .'-]{2,60}),\s*([A-Z]{2})\s+\d{5}(?:-\d{4})?",
+        r"principal executive offices?[^.;]{0,220}?\b([A-Za-z .'-]{2,60}),\s*([A-Z]{2})\s+\d{5}(?:-\d{4})?",
+        r"address of principal executive offices?[^.;]{0,220}?\b([A-Za-z .'-]{2,60}),\s*([A-Z]{2})\s+\d{5}(?:-\d{4})?",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, cover_text, re.I)
+        if match:
+            city = " ".join(match.group(1).split()).strip(" ,")
+            state = match.group(2).upper()
+            if city and state:
+                return f"{city}, {state}"
+    return None
+
 
 
 def extract_price_range(soup: BeautifulSoup) -> dict:
