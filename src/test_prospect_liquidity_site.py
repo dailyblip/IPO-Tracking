@@ -93,7 +93,7 @@ class ProspectLiquiditySiteTests(unittest.TestCase):
         self.assertIn("p.cash_realized_ipo", self.html)
 
     def test_researcher_workflow_fields_and_filters(self):
-        for label in ("Stanford-linked IPOs", "Lock-ups ≤90 days", "$500M+ IPO", "Selling shareholders", "Type", "Role", "% ownership", "Ownership transition", "Estimated IPO liquidity event", "Current valuation date not available"):
+        for label in ("Stanford-linked IPOs", "Lock-ups ≤90 days", "$500M+ IPO", "Selling shareholders", "Type", "Role", "% Before", "% After", "Ownership transition", "Estimated IPO liquidity event", "Current valuation date not available"):
             self.assertIn(label, self.html)
         self.assertIn('id="researchFilter"', self.html)
         self.assertIn('p.holder_type||"Unknown"', self.html)
