@@ -68,6 +68,22 @@ def _mentions_stanford_university(bio_text):
     return bool(re.search(r"\bstanford\s+university\b", str(bio_text or ""), re.I))
 
 
+def _role_from_bio(bio_text):
+    """Extract a conservative current title from the holder's filing bio."""
+    text = " ".join(str(bio_text or "").split())
+    patterns = [
+        r"(?:has served|serves) as (?:our|the) ([^.]{2,100}?)(?: since| and|\.|,)",
+        r"(?:is|is currently) (?:our|the) ([^.]{2,100}?)(?:\.|,| and)",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, text, re.I)
+        if match:
+            role = match.group(1).strip(" ,.;")
+            if role and len(role) <= 100:
+                return role
+    return None
+
+
 def _refresh_dashboard_prices(dashboard):
     """Refresh delayed quotes for every trading ticker already in the public queue."""
     tickers = sorted({
@@ -200,6 +216,11 @@ def process_filing(filing_meta: dict) -> list:
                 # price rather than losing this filing's rows entirely.
         lockup = parsed.get("lockup_info", {})
         bios = parsed.get("management_bios", {})
+        try:
+            business_location = edgar_client.get_business_location(cik)
+        except Exception as error:
+            print(f"[main] Warning: could not resolve issuer location for {company_name}: {error}")
+            business_location = ""
 
         rows = []
         holders = parsed.get("principal_stockholders", [])
@@ -259,7 +280,9 @@ def process_filing(filing_meta: dict) -> list:
                 "IPO Size (Shares)": offering_size,
                 "Amount Raised": amount_raised,
                 "Current Price": current_price,
+                "Location": business_location,
                 "Holder Name": holder_name,
+                "Role": _role_from_bio(person_bio_text),
                 "Shares": shares,
                 "Shares Before IPO": shares_before,
                 "Shares Sold in IPO": shares_sold,
