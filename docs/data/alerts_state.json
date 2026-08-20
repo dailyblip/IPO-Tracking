@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-20T12:24:36.314785+00:00",
+  "updated_at": "2026-08-20T13:13:35.877386+00:00",
   "items": {
     "0001193125-26-356916": {
       "id": "0001193125-26-356916",
@@ -14,6 +14,18 @@
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm"
     },
+    "s1:0002064768": {
+      "id": "s1:0002064768",
+      "cik": "0002064768",
+      "company": "Canary Staked TRX ETF",
+      "form": "S-1/A",
+      "filed": "2026-08-19",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2064768/000199937126018236/0001999371-26-018236-index.htm"
+    },
     "s1:0002109801": {
       "id": "s1:0002109801",
       "cik": "0002109801",
@@ -22,8 +34,8 @@
       "filed": "2026-08-17",
       "stage": "pre-pricing",
       "price_range": null,
-      "priority": "Medium",
-      "value": null,
+      "priority": "High",
+      "value": 126500000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2109801/000149315226038800/0001493152-26-038800-index.htm"
     },
     "s1:0001880995": {
@@ -561,6 +573,12 @@
       "stage": "priced",
       "last_filing_id": "0001193125-26-256356",
       "last_filed": "2026-06-04"
+    },
+    "0002064768": {
+      "company": "Canary Staked TRX ETF",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002064768",
+      "last_filed": "2026-08-19"
     }
   }
 }
