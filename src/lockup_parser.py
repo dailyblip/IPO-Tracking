@@ -128,7 +128,14 @@ def _direct_lockup_relation(context: str, duration_text: str) -> bool:
         re.I,
     ))
     has_lockup_label = "lock-up" in lowered or "lockup" in lowered or "market standoff" in lowered
-    return has_holder_restriction and has_lockup_label
+    # Explicit holder agreements not to sell/transfer are lock-ups in substance even
+    # when the section heading is in the preceding sentence. Staggered-release clauses
+    # can describe the release schedule without repeating "will not sell."
+    if has_holder_restriction:
+        return True
+    if has_lockup_label and re.search(r"staggered|early\s+lock-?up\s+release|lock-?up\s+release", lowered):
+        return True
+    return False
 
 
 def _score(context: str, scope_tags, special_holder: str | None):
