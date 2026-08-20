@@ -1,15 +1,18 @@
+import json
 import unittest
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
 HTML_PATH = ROOT / "docs" / "prospect-research" / "index.html"
+BACKFILL_PATH = ROOT / "docs" / "prospect-research" / "backfill.json"
 
 
 class ProspectLiquiditySiteTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.html = HTML_PATH.read_text(encoding="utf-8")
+        cls.backfill = json.loads(BACKFILL_PATH.read_text(encoding="utf-8"))
 
     def test_homepage_is_company_first(self):
         for label in (
@@ -59,7 +62,28 @@ class ProspectLiquiditySiteTests(unittest.TestCase):
 
     def test_site_uses_existing_public_feed_without_changing_root_monitor(self):
         self.assertIn('fetch("../data/filings.json"', self.html)
+        self.assertIn('fetch("backfill.json"', self.html)
         self.assertIn("Open SEC Research Monitor", self.html)
+
+    def test_flags_500m_plus_ipos(self):
+        self.assertIn("$500M+ IPOs", self.html)
+        self.assertIn('Number(f.ipo_size||f.value||0)>=500000000', self.html)
+        self.assertIn('badge("IPO $500M+","major")', self.html)
+
+    def test_restores_stanford_affiliation_signals(self):
+        self.assertIn('badge("Stanford","stanford")', self.html)
+        self.assertIn("Stanford affiliation", self.html)
+        names = {row["name"] for row in self.backfill["stanford_overrides"]}
+        self.assertIn("Steve Jurvetson", names)
+        self.assertIn("Ira Ehrenpreis", names)
+
+    def test_backfills_neutron_and_bending_spoons(self):
+        companies = {row["company"]: row for row in self.backfill["filings"]}
+        self.assertEqual(companies["Neutron Holdings, Inc."]["ticker"], "LIME")
+        self.assertEqual(companies["Neutron Holdings, Inc."]["ipo_size"], 173_913_050)
+        self.assertEqual(companies["Bending Spoons S.p.A."]["ticker"], "BSP")
+        self.assertEqual(companies["Bending Spoons S.p.A."]["ipo_size"], 1_681_159_435)
+        self.assertGreater(companies["Neutron Holdings, Inc."]["people"][0]["shares"], 0)
 
 
 if __name__ == "__main__":
