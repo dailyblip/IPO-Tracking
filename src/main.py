@@ -300,7 +300,7 @@ def process_filing(filing_meta: dict) -> list:
                 "Stanford Grade": stanford_result["grade"],
                 "Stanford Justification": stanford_result["justification"],
                 "Stanford University in Bio": stanford_university_in_bio,
-                "Stanford Affiliation Confirmed": bool(stanford_university_in_bio or stanford_result.get("grade") in (1, "1", "Confirmed", "confirmed", True)),
+                "Stanford Affiliation Confirmed": bool(stanford_university_in_bio or stanford_result.get("grade") in (5, "5")),
                 "Lock-Up Expiry": lockup.get("raw_text", "")[:200] if lockup.get("raw_text") else "",
                 "Last Updated": date.today().isoformat(),
                 "_source_excerpt": bio_text[:500],  # consumed by qc_review, stripped before writing
