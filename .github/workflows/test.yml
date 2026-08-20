@@ -5,14 +5,39 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
+  apply-spacex-calibration:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'feature/prospect-calibration-spacex'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/prospect-calibration-spacex
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply calibration
+        run: python scripts/apply_spacex_calibration.py
+      - name: Commit calibration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/prospect-research/index.html docs/prospect-research/backfill.json src/test_prospect_liquidity_site.py
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Calibrate Prospect Research with verified SpaceX ownership and lock-up data"
+          git push origin HEAD:feature/prospect-calibration-spacex
+
   test:
+    needs: [apply-spacex-calibration]
+    if: always() && (needs.apply-spacex-calibration.result == 'success' || needs.apply-spacex-calibration.result == 'skipped')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
