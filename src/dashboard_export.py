@@ -24,7 +24,7 @@ PUBLIC_PERSON_FIELDS = {
     "name", "shares", "cash_value", "stanford_university_bio", "ipo_value",
     "liquid_shares", "liquid_value", "locked_shares", "locked_value",
     "cash_realized_ipo", "liquidity_status", "liquidity_confidence",
-    "holder_type", "role", "ownership_percent", "shares_before_ipo",
+    "holder_type", "role", "ownership_percent", "ownership_percent_before", "ownership_percent_after", "shares_before_ipo",
     "shares_sold_ipo", "shares_after_ipo", "stanford_source",
     "lockup_end_date", "lockup_scope", "valuation_as_of",
 }
@@ -34,7 +34,7 @@ CSV_FIELDS = (
     "current_price", "price_updated", "lockup_end_date", "holder_name", "shares",
     "cash_value", "ipo_value", "liquid_shares", "liquid_value", "locked_shares",
     "locked_value", "cash_realized_ipo", "liquidity_status", "liquidity_confidence",
-    "stanford_university_bio", "holder_type", "role", "ownership_percent",
+    "stanford_university_bio", "holder_type", "role", "ownership_percent", "ownership_percent_before", "ownership_percent_after",
     "shares_before_ipo", "shares_sold_ipo", "shares_after_ipo", "stanford_source",
     "lockup_scope", "valuation_as_of", "sec_url",
 )
@@ -191,6 +191,9 @@ def build_payload(rows, generated_at=None):
             shares = _number(row.get("Shares")); cash_value = _number(row.get("Cash Value"))
             liquidity = _person_liquidity(shares, cash_value, _number(first.get("Actual Price")), lockup)
             metadata = prospect_person_metadata(row, name)
+            realized = _number(row.get("Cash Realized IPO"))
+            if realized is not None:
+                liquidity["cash_realized_ipo"] = realized
             people.append({"name": name, "shares": shares, "cash_value": cash_value, "stanford_university_bio": _boolean(row.get("Stanford University in Bio")), "lockup_end_date": lockup.get("end"), "lockup_scope": "filing-level" if lockup.get("text") else None, "valuation_as_of": first.get("Last Updated") or None, **metadata, **liquidity})
 
         filings.append({
@@ -258,7 +261,7 @@ def _csv_rows(filings):
                 "liquidity_status": person.get("liquidity_status"), "liquidity_confidence": person.get("liquidity_confidence"),
                 "stanford_university_bio": person.get("stanford_university_bio", False),
                 "holder_type": person.get("holder_type"), "role": person.get("role"),
-                "ownership_percent": person.get("ownership_percent"),
+                "ownership_percent": person.get("ownership_percent"), "ownership_percent_before": person.get("ownership_percent_before"), "ownership_percent_after": person.get("ownership_percent_after"),
                 "shares_before_ipo": person.get("shares_before_ipo"),
                 "shares_sold_ipo": person.get("shares_sold_ipo"), "shares_after_ipo": person.get("shares_after_ipo"),
                 "stanford_source": person.get("stanford_source"), "lockup_scope": person.get("lockup_scope"),
