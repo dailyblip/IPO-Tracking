@@ -15,3 +15,10 @@ class OwnershipParserTests(unittest.TestCase):
         self.assertEqual(r['percent_after'],8.2)
 
 if __name__=='__main__': unittest.main()
+
+
+class HolderIdentityQaTests(unittest.TestCase):
+    def test_canonical_holder_name_strips_sec_dot_leaders(self):
+        import ownership_parser
+        self.assertEqual(ownership_parser.canonical_holder_name("Gwynne Shotwell..................."), "gwynne shotwell")
+        self.assertEqual(ownership_parser.canonical_holder_name("Gwynne Shotwell (12)"), "gwynne shotwell")

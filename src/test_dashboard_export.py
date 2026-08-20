@@ -228,3 +228,10 @@ class DashboardExportTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class HolderIdentityExportQaTests(unittest.TestCase):
+    def test_holder_cleaner_strips_dot_leaders(self):
+        import dashboard_export
+        self.assertEqual(dashboard_export._clean_holder_name("Gwynne Shotwell..................."), "Gwynne Shotwell")
+        self.assertEqual(dashboard_export._holder_identity_key("Gwynne Shotwell..................."), dashboard_export._holder_identity_key("Gwynne Shotwell"))
