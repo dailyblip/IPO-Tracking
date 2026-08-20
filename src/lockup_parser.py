@@ -31,18 +31,40 @@ def _duration_matches(text: str):
         (r"\b(\d{2,3})[-\s]?day\s+lock-?up\b", "days"),
         (r"\block-?up(?:\s+period)?(?:\s+of|\s+for)?\s*(\d{2,3})\s+days\b", "days"),
         (r"\bperiod(?:\s+ending|\s+continuing|\s+of)?[^.;]{0,140}?\b(\d{2,3})\s+days\s+after\b", "days"),
-        (r"\b(\d{2,3})\s+days\s+after\s+the\s+date\s+of\s+(?:this|the)\s+prospectus\b", "days"),
+        (r"\b(\d{2,3})\s+days\s+after\s+(?:the\s+date\s+of\s+(?:this|the)\s+prospectus|the\s+ipo\s+date)\b", "days"),
         (r"\bfor\s+(?:a\s+)?period\s+of\s+(?:up\s+to\s+)?(\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten|twelve|eighteen|twenty-four)(?:\s*\(\s*\d+\s*\))?\s+months?\b", "months"),
         (r"\b(\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten|twelve|eighteen|twenty-four)(?:\s*\(\s*\d+\s*\))?\s+months?\s+after\b", "months"),
         (r"\b(\d{1,2}|one|two|three)(?:\s*\(\s*\d+\s*\))?\s+years?\s+(?:after|following|from)\b", "years"),
     ]
     found = []
+    seen = set()
     for pattern, unit in patterns:
         for match in re.finditer(pattern, text, re.I):
             value = _number(match.group(1))
-            if value:
+            key = (match.start(), match.end(), value, unit)
+            if value and key not in seen:
+                seen.add(key)
                 found.append((match.start(), match.end(), value, unit, match.group(0)))
     return sorted(found, key=lambda item: item[0])
+
+
+def _clause_context(text: str, start: int, end: int) -> str:
+    """Keep scope language tied to the same clause/sentence as the duration.
+
+    Wide +/- windows caused issuer lock-ups and the following officer lock-up to bleed
+    together. SEC prospectuses frequently separate classes with semicolons, so use the
+    nearest sentence/semicolon boundaries while allowing enough room for long clauses.
+    """
+    left_floor = max(0, start - 1200)
+    right_cap = min(len(text), end + 1200)
+    before = text[left_floor:start]
+    after = text[end:right_cap]
+    left_candidates = [before.rfind(". "), before.rfind("; ")]
+    left_cut = max(left_candidates)
+    left = left_floor + (left_cut + 2 if left_cut >= 0 else 0)
+    right_candidates = [i for i in (after.find(". "), after.find("; ")) if i >= 0]
+    right = end + (min(right_candidates) if right_candidates else len(after))
+    return _norm(text[left:right])
 
 
 def _scope_tags(context: str):
@@ -50,11 +72,11 @@ def _scope_tags(context: str):
     tags = []
     if "substantially all" in lowered and any(x in lowered for x in ("shares", "securities", "stockholders", "holders")):
         tags.append("substantially_all_holders")
-    if "all other shares" in lowered or "all other stockholders" in lowered:
+    if "all other shares" in lowered or "all other stockholders" in lowered or "all other holders" in lowered:
         tags.append("all_other_holders")
     if "director" in lowered:
         tags.append("directors")
-    if "executive officer" in lowered or "officers" in lowered:
+    if "executive officer" in lowered or re.search(r"\bofficers\b", lowered):
         tags.append("executive_officers")
     if "selling stockholder" in lowered or "selling shareholder" in lowered:
         tags.append("selling_stockholders")
@@ -66,24 +88,20 @@ def _scope_tags(context: str):
 
 
 def _special_holder(context: str, duration_text: str):
-    # Named schedules are kept separate from the general holder lock-up.
-    patterns = [
-        r"\b([A-Z][A-Za-z0-9.&' -]{1,50})\s+Lock-?Up\b",
-        r"\block-?up\s+(?:period\s+)?for\s+([A-Z][A-Za-z0-9.&' -]{1,50}?)(?:[;,.)]|\s+with\b|\s+starting\b|\s+through\b)",
-        r"\b(?:for|held by)\s+([A-Z][A-Za-z0-9.&' -]{1,50}?)\s*[:;,]\s*[^.;]{0,80}?" + re.escape(duration_text),
-    ]
-    for pattern in patterns:
-        matches = list(re.finditer(pattern, context, re.I if "Lock" in pattern else 0))
-        if not matches:
-            continue
-        value = _norm(matches[-1].group(1)).strip(" ,.-")
-        value = re.sub(r"^(?:the|an?)\s+", "", value, flags=re.I)
-        if value and value.lower() not in {"general", "holder", "shareholder", "stockholder", "company"}:
-            return value
-    # Common SEC construction: "366-day lock-up for Elon Musk".
-    after = re.search(re.escape(duration_text) + r"\s+for\s+([A-Z][A-Za-z0-9.&' -]{1,50}?)(?:[;,.)]|\s+and\b|\s+with\b)", context)
+    # Most reliable named-holder form: "366-day lock-up for Elon Musk".
+    after = re.search(
+        re.escape(duration_text) + r"\s+for\s+([A-Z][A-Za-z0-9.&' -]{1,50}?)(?:[;,.)]|\s+and\b|\s+with\b|$)",
+        context,
+    )
     if after:
         return _norm(after.group(1)).strip(" ,.-")
+
+    # Named agreement headings such as "Uber Lock-Up". Avoid generic fragments like
+    # "day Lock-Up" or "Period Lock-Up" by requiring a plausible proper-noun token.
+    for match in re.finditer(r"\b([A-Z][A-Za-z0-9.&'-]{2,30}(?:\s+[A-Z][A-Za-z0-9.&'-]{2,30}){0,3})\s+Lock-?Up\b", context):
+        value = _norm(match.group(1)).strip(" ,.-")
+        if value.lower() not in {"lock up", "market standoff", "day", "days", "period", "the company"}:
+            return value
     return None
 
 
@@ -97,18 +115,23 @@ def _score(context: str, scope_tags, special_holder: str | None):
     if "agreed" in lowered or "will not" in lowered or "subject to" in lowered:
         score += 3
     if any(tag in scope_tags for tag in ("directors", "executive_officers", "selling_stockholders")):
-        score += 5
+        score += 6
     if any(tag in scope_tags for tag in ("substantially_all_holders", "all_other_holders")):
-        score += 5
+        score += 6
     if special_holder:
-        score += 4
+        score += 5
     if "registration rights" in lowered or "demand registration" in lowered:
-        score -= 8
+        score -= 10
     if "form s-1" in lowered and not scope_tags and not special_holder:
         score -= 5
-    if "we have agreed" in lowered and not scope_tags and not special_holder:
-        # Usually an issuer issuance lock-up rather than a holder liquidity restriction.
-        score -= 4
+    # Issuer issuance restrictions are not prospect-holder liquidity restrictions.
+    issuer_only = (
+        ("we have agreed" in lowered or "the company" in lowered)
+        and not scope_tags and not special_holder
+        and any(x in lowered for x in ("issue", "issuance", "registration statement"))
+    )
+    if issuer_only:
+        score -= 8
     return score
 
 
@@ -128,18 +151,12 @@ def _scope_label(tags):
 def _candidate_terms(text: str):
     terms = []
     for start, end, value, unit, matched in _duration_matches(text):
-        left = max(0, start - 900)
-        right = min(len(text), end + 900)
-        context = text[left:right]
+        context = _clause_context(text, start, end)
         tags = _scope_tags(context)
         special = _special_holder(context, matched)
         score = _score(context, tags, special)
         if score < 6:
             continue
-        # Preserve a concise source excerpt around the matched duration.
-        source_left = max(0, start - 450)
-        source_right = min(len(text), end + 650)
-        excerpt = _norm(text[source_left:source_right])
         terms.append({
             "duration_value": value,
             "duration_unit": unit,
@@ -149,9 +166,8 @@ def _candidate_terms(text: str):
             "special_holder": special,
             "has_staggered_releases": bool(re.search(r"staggered|early release|release(?:d|s)?\s+(?:of|for)|more than\s+\d+%", context, re.I)),
             "score": score,
-            "source_text": excerpt,
+            "source_text": context,
         })
-    # Deduplicate repeated prospectus text/TOC echoes while retaining different schedules.
     unique = []
     seen = set()
     for term in sorted(terms, key=lambda t: (-t["score"], t["duration_unit"], t["duration_value"])):
@@ -166,6 +182,16 @@ def _candidate_terms(text: str):
     return unique
 
 
+def _primary_weight(term):
+    tags = set(term.get("scope_tags") or [])
+    breadth = 0
+    if tags & {"substantially_all_holders", "all_other_holders"}:
+        breadth += 20
+    breadth += 6 * len(tags & {"directors", "executive_officers", "selling_stockholders"})
+    breadth += 2 * len(tags & {"five_percent_holders", "certain_other_holders"})
+    return term.get("score", 0) + breadth
+
+
 def extract_holder_lockup_info(text: str) -> dict:
     """Extract structured holder lock-up terms from flattened prospectus text."""
     text = _norm(text)
@@ -177,16 +203,18 @@ def extract_holder_lockup_info(text: str) -> dict:
         }
 
     terms = _candidate_terms(text)
-    general = [t for t in terms if not t.get("special_holder")]
-    # Prefer broad holder coverage and explicit officer/director/seller language.
-    primary = max(general, key=lambda t: t["score"], default=None)
+    general = [t for t in terms if not t.get("special_holder") and t.get("scope_tags")]
+    primary = max(general, key=_primary_weight, default=None)
+    if primary is None:
+        general = [t for t in terms if not t.get("special_holder")]
+        primary = max(general, key=_primary_weight, default=None)
     if primary is None and len(terms) == 1:
         primary = terms[0]
 
     distinct_schedules = {(t["duration_value"], t["duration_unit"], t.get("special_holder")) for t in terms}
     structured = len(distinct_schedules) > 1 or any(t.get("has_staggered_releases") for t in terms)
     raw = primary.get("source_text") if primary else (terms[0].get("source_text") if terms else None)
-    confidence = "High" if primary and primary["score"] >= 12 else ("Medium" if primary else "Unresolved")
+    confidence = "High" if primary and _primary_weight(primary) >= 16 else ("Medium" if primary else "Unresolved")
     return {
         "raw_text": raw,
         "duration_days": primary.get("duration_days") if primary else None,
