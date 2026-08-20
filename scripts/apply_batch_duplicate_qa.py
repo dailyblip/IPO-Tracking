@@ -1,10 +1,15 @@
 from pathlib import Path
 
 p=Path('src/qc_review.py'); s=p.read_text(encoding='utf-8')
+if 'import re\n' not in s:
+    if 'import os\n' in s:
+        s=s.replace('import os\n','import os\nimport re\n',1)
+    else:
+        s='import re\n'+s
 old='''    reviewed = []\n    for row in rows:\n        ticker = row.get("Ticker", "").upper()\n        key = (ticker, row.get("Holder Name", "").strip().lower())\n\n        reviewed.append(review_row(\n            row,\n            previous_row=previous_rows_by_key.get(key),\n            ipo_date=ipo_dates_by_ticker.get(ticker),\n            source_excerpt=source_excerpts_by_key.get(key, ""),\n        ))\n\n    return reviewed\n'''
 new='''    # Batch-level identity QA: two presentation variants of the same holder in\n    # one filing are a structural data error, not merely a cosmetic issue.\n    identity_counts = {}\n    for row in rows:\n        filing_key = (str(row.get("Ticker", "")).upper(), str(row.get("Date of Pricing") or row.get("Date of Filing") or ""))\n        identity = canonical_holder_identity(row.get("Holder Name"))\n        if identity:\n            identity_counts[(filing_key, identity)] = identity_counts.get((filing_key, identity), 0) + 1\n\n    reviewed = []\n    for row in rows:\n        ticker = row.get("Ticker", "").upper()\n        holder_key = canonical_holder_identity(row.get("Holder Name"))\n        key = (ticker, holder_key)\n\n        reviewed_row = review_row(\n            row,\n            previous_row=previous_rows_by_key.get(key),\n            ipo_date=ipo_dates_by_ticker.get(ticker),\n            source_excerpt=source_excerpts_by_key.get(key, ""),\n        )\n        filing_key = (ticker, str(row.get("Date of Pricing") or row.get("Date of Filing") or ""))\n        if holder_key and identity_counts.get((filing_key, holder_key), 0) > 1:\n            issue = f"Duplicate holder identity after normalization: {row.get('Holder Name', '')}"\n            notes = reviewed_row.get("QC Notes", "")\n            reviewed_row["QC Status"] = "Needs Review"\n            reviewed_row["QC Notes"] = "; ".join(x for x in (notes, issue) if x)\n        reviewed.append(reviewed_row)\n\n    return reviewed\n'''
-assert old in s
-s=s.replace(old,new,1)
+if old in s:
+    s=s.replace(old,new,1)
 p.write_text(s,encoding='utf-8')
 
 p=Path('src/test_main.py'); s=p.read_text(encoding='utf-8')
