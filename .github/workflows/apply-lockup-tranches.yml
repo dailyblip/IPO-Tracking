@@ -1,0 +1,29 @@
+name: Apply Lockup Tranches
+on:
+  pull_request:
+permissions:
+  contents: write
+jobs:
+  apply:
+    if: github.event.pull_request.head.ref == 'feature/research-grade-lockup-tranches'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/research-grade-lockup-tranches
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply tranche migration
+        run: python scripts/apply_lockup_tranches.py
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run full tests
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+      - name: Commit implementation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/dashboard_export.py docs/prospect-research/index.html
+          git commit -m "Calculate explicit staggered lock-up liquidity" || exit 0
+          git push origin HEAD:feature/research-grade-lockup-tranches
