@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-19T13:11:45.612299+00:00",
+  "generated_at": "2026-08-20T13:13:13.602228+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -22,20 +22,41 @@
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2112634/000168316826006561/0001683168-26-006561-index.htm"
     },
     {
+      "id": "0001999371-26-018236",
+      "company": "Canary Staked TRX ETF",
+      "ticker": "",
+      "cik": "0002064768",
+      "accession_no": "0001999371-26-018236",
+      "form": "S-1/A",
+      "filed": "2026-08-19",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2064768/000199937126018236/0001999371-26-018236-index.htm"
+    },
+    {
       "id": "0001493152-26-038800",
       "company": "VARSAL TECH, INC.",
       "ticker": "VAT",
       "cik": "0002109801",
       "accession_no": "0001493152-26-038800",
       "form": "S-1/A",
-      "filed": "20260817",
+      "filed": "2026-08-17",
       "stage": "Pre-pricing",
-      "priority": "Medium",
+      "priority": "High",
       "price_range": null,
-      "ipo_size": null,
+      "filing_price": "$5.50",
+      "ipo_size": 126500000,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
-        "No preliminary price range detected yet"
+        "Fixed offering price disclosed at $5.50 per share",
+        "IPO size disclosed or derived at approximately $126,500,000"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2109801/000149315226038800/0001493152-26-038800-index.htm"
     },
@@ -46,10 +67,11 @@
       "cik": "0001880995",
       "accession_no": "0001213900-26-090319",
       "form": "S-1/A",
-      "filed": "20260817",
+      "filed": "2026-08-17",
       "stage": "Pre-pricing",
       "priority": "High",
       "price_range": "$10.00–$12.00",
+      "filing_price": "$12.00",
       "ipo_size": 33000000,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
