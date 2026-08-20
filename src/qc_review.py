@@ -32,7 +32,7 @@ ANTHROPIC_MODEL = "claude-sonnet-4-6"
 MIN_PLAUSIBLE_PRICE = 1.0
 MAX_PLAUSIBLE_PRICE = 500.0
 MIN_LOCKUP_DAYS = 30
-MAX_LOCKUP_DAYS = 365
+MAX_LOCKUP_DAYS = 730
 MATERIAL_CHANGE_THRESHOLD_PCT = 25.0  # flag if shares shift >25% run to run
 
 
@@ -154,28 +154,31 @@ def check_ticker_resolved(row: dict) -> list:
 
 
 def check_lockup_date(row: dict, ipo_date: str = None) -> list:
+    """Validate structured lock-up extraction without mistaking source prose for a date."""
     issues = []
-    expiry_str = row.get("Lock-Up Expiry")
-    if not expiry_str or expiry_str in ("", "None"):
-        return issues  # absence isn't necessarily an error
-
+    language_present = bool(row.get("Lock-Up Language Present"))
+    text = str(row.get("Lock-Up Text") or "").strip()
+    value = _to_int(row.get("Lock-Up Duration Value"))
+    unit = str(row.get("Lock-Up Duration Unit") or "").strip().lower()
+    terms_raw = row.get("Lock-Up Terms JSON") or "[]"
     try:
-        expiry_date = datetime.fromisoformat(str(expiry_str)[:10])
-    except ValueError:
-        return [f"Lock-up expiry '{expiry_str}' is not a parseable date"]
+        terms = json.loads(terms_raw) if isinstance(terms_raw, str) else terms_raw
+    except json.JSONDecodeError:
+        terms = []
+        issues.append("Lock-up terms JSON is invalid")
 
-    if ipo_date:
-        try:
-            ipo_dt = datetime.fromisoformat(str(ipo_date)[:10])
-            days_diff = (expiry_date - ipo_dt).days
-            if not (MIN_LOCKUP_DAYS <= days_diff <= MAX_LOCKUP_DAYS):
-                issues.append(
-                    f"Lock-up duration ({days_diff} days) outside plausible "
-                    f"{MIN_LOCKUP_DAYS}-{MAX_LOCKUP_DAYS} day range"
-                )
-        except ValueError:
-            pass
-
+    if language_present and not text and not terms:
+        issues.append("Prospectus contains lock-up language but no holder lock-up terms were structured")
+    if text and not terms and value is None:
+        issues.append("Lock-up source text captured but duration/schedule was not structured")
+    if value is not None and unit not in {"days", "months", "years"}:
+        issues.append("Lock-up duration has an invalid or missing unit")
+    if unit == "days" and value is not None and not (MIN_LOCKUP_DAYS <= value <= MAX_LOCKUP_DAYS):
+        issues.append(f"Lock-up duration ({value} days) outside plausible {MIN_LOCKUP_DAYS}-{MAX_LOCKUP_DAYS} day range")
+    if unit == "months" and value is not None and not (1 <= value <= 24):
+        issues.append(f"Lock-up duration ({value} months) outside plausible range")
+    if unit == "years" and value is not None and not (1 <= value <= 3):
+        issues.append(f"Lock-up duration ({value} years) outside plausible range")
     return issues
 
 
