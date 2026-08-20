@@ -15,7 +15,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: Apply reliability migration
-        run: python scripts/apply_research_grade_reliability.py
+        run: |
+          python scripts/apply_research_grade_reliability.py
+          python scripts/fix_reliability_migration.py
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run full test suite
