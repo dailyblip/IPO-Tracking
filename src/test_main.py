@@ -129,3 +129,17 @@ class StanfordConfirmationThresholdTests(unittest.TestCase):
         source=Path(__file__).with_name("main.py").read_text(encoding="utf-8")
         self.assertIn('stanford_result.get("grade") in (5, "5")', source)
         self.assertNotIn('stanford_result.get("grade") in (1, "1"', source)
+
+
+class BatchDuplicateIdentityQaTests(unittest.TestCase):
+    def test_batch_qc_flags_dot_leader_duplicate_identity(self):
+        import qc_review
+        from unittest.mock import patch
+        rows=[
+            {"Ticker":"SPCX","Date of Pricing":"2026-06-11","Holder Name":"Gwynne Shotwell","Current Price":1},
+            {"Ticker":"SPCX","Date of Pricing":"2026-06-11","Holder Name":"Gwynne Shotwell...................","Current Price":1},
+        ]
+        with patch.object(qc_review, "llm_consistency_check", return_value=[]):
+            reviewed=qc_review.review_rows(rows)
+        self.assertTrue(all(r["QC Status"]=="Needs Review" for r in reviewed))
+        self.assertTrue(all("Duplicate holder identity" in r["QC Notes"] for r in reviewed))
