@@ -1,0 +1,28 @@
+name: Apply Prospect Research hardening
+on:
+  push:
+    branches: [feature/prospect-research-hardening]
+permissions:
+  contents: write
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply migration
+        run: python scripts/harden_prospect_research.py
+      - name: Run tests
+        run: |
+          pip install -r requirements.txt
+          python -m unittest discover -s src -p 'test_*.py' -v
+      - name: Commit migration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src docs/prospect-research/index.html
+          git commit -m "Harden Prospect Research workflow and research semantics"
+          git push
