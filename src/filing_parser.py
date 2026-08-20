@@ -216,7 +216,7 @@ def extract_cover_page_data(soup: BeautifulSoup) -> dict:
     the document body.
     """
     full_text = soup.get_text(" ", strip=True)
-    cover_text = full_text[:30000]
+    cover_text = full_text[:100000]
 
     ticker_match = re.search(
         r"(?:symbol|ticker)[\s\"“]*[:\-]?\s*[\"“]?([A-Z]{1,6})[\"”]?",
@@ -224,9 +224,9 @@ def extract_cover_page_data(soup: BeautifulSoup) -> dict:
     )
     price_patterns = [
         r"initial public offering price(?:\s+per\s+share)?"
-        r"\s*(?:is|:)?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
+        r"\s*(?:is|of|:)?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
         r"public offering price(?:\s+per\s+share)?"
-        r"\s*(?:is|:)?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
+        r"\s*(?:is|of|:)?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
         r"price\s+to\s+(?:the\s+)?public(?:\s+per\s+share)?\s*[:\-]?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
         r"offering\s+price\s+per\s+share\s*[:\-]?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
         r"\$\s*(\d{1,4}(?:\.\d{1,2})?)\s+per\s+(?:ordinary\s+|class\s+[ab]\s+)?share",
@@ -259,7 +259,18 @@ def extract_principal_office_location(soup: BeautifulSoup):
     reflect a registered/business address that is not the research-relevant HQ.
     Returns a compact ``City, ST`` for US addresses, otherwise None.
     """
-    cover_text = soup.get_text(" ", strip=True)[:30000]
+    cover_text = soup.get_text(" ", strip=True)[:100000]
+    # Registration/prospectus covers often put the address immediately before
+    # the parenthetical label rather than in a sentence saying "located at".
+    label = re.search(r"\(Address[^)]*principal executive offices\)", cover_text, re.I)
+    if label:
+        preceding = cover_text[max(0, label.start()-600):label.start()]
+        address_matches = re.findall(r"\b([A-Za-z][A-Za-z .'-]{1,50}),\s*([A-Z]{2})\s+\d{5}(?:-\d{4})?", preceding)
+        if address_matches:
+            city, state = address_matches[-1]
+            city = " ".join(city.split()).strip(" ,")
+            if city:
+                return f"{city}, {state.upper()}"
     patterns = [
         r"principal executive offices? (?:are|is) located at [^.;]{0,220}?\b([A-Za-z .'-]{2,60}),\s*([A-Z]{2})\s+\d{5}(?:-\d{4})?",
         r"principal executive offices?[^.;]{0,220}?\b([A-Za-z .'-]{2,60}),\s*([A-Z]{2})\s+\d{5}(?:-\d{4})?",
@@ -306,7 +317,16 @@ def extract_offering_size(soup: BeautifulSoup) -> int:
     not a guarantee.
     """
     full_text = soup.get_text(" ", strip=True)
-    cover_text = full_text[:30000]
+    cover_text = full_text[:100000]
+
+    # When both issuer and selling stockholders participate, total IPO size is
+    # the sum of both blocks. This is the relevant gross liquidity-event size.
+    combined = re.search(
+        r"we are offering\s+([\d,]{4,})\s+shares[^.]{0,1000}?selling stockholders?[^.]{0,500}?offering(?: an additional)?\s+([\d,]{4,})\s+shares",
+        cover_text, re.I
+    )
+    if combined:
+        return int(combined.group(1).replace(",", "")) + int(combined.group(2).replace(",", ""))
 
     patterns = [
         r"offering\s+([\d,]{4,})\s+shares",
