@@ -46,7 +46,9 @@ def prospect_person_metadata(row: dict, name: str) -> dict:
     return {
         "holder_type": holder_type(name),
         "role": first_present(row, "Role", "Title", "Position", "Relationship"),
-        "ownership_percent": first_present(row, "Ownership %", "Percent Ownership", "Percent", "% Ownership"),
+        "ownership_percent": first_present(row, "Ownership % After IPO", "Ownership %", "Percent Ownership", "Percent", "% Ownership"),
+        "ownership_percent_before": first_present(row, "Ownership % Before IPO", "Percent Before IPO"),
+        "ownership_percent_after": first_present(row, "Ownership % After IPO", "Percent After IPO", "Ownership %", "Percent Ownership"),
         "shares_before_ipo": first_present(row, "Shares Before IPO", "Shares Before Offering"),
         "shares_sold_ipo": first_present(row, "Shares Sold in IPO", "Shares Offered", "Secondary Shares"),
         "shares_after_ipo": first_present(row, "Shares After IPO", "Shares After Offering", "Shares"),

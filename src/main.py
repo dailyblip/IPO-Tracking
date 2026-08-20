@@ -211,7 +211,12 @@ def process_filing(filing_meta: dict) -> list:
 
         for holder in holders:
             holder_name = holder["name"]
-            shares = holder.get("shares")
+            shares_before = holder.get("shares_before")
+            shares_sold = holder.get("shares_sold")
+            shares_after = holder.get("shares_after")
+            shares = shares_after if shares_after is not None else holder.get("shares")
+            percent_before = holder.get("percent_before")
+            percent_after = holder.get("percent_after") if holder.get("percent_after") is not None else holder.get("percent")
 
             # Use the person-specific bio for exact Stanford highlighting.
             # The broader full-text fallback remains available to the grader,
@@ -256,6 +261,12 @@ def process_filing(filing_meta: dict) -> list:
                 "Current Price": current_price,
                 "Holder Name": holder_name,
                 "Shares": shares,
+                "Shares Before IPO": shares_before,
+                "Shares Sold in IPO": shares_sold,
+                "Shares After IPO": shares_after if shares_after is not None else shares,
+                "Ownership % Before IPO": percent_before,
+                "Ownership % After IPO": percent_after,
+                "Cash Realized IPO": (shares_sold * actual_price) if (shares_sold is not None and actual_price) else None,
                 "Cash Value": cash_value,
                 "Stanford Grade": stanford_result["grade"],
                 "Stanford Justification": stanford_result["justification"],
