@@ -146,3 +146,17 @@ class ProspectIdentityQaTests(unittest.TestCase):
         from pathlib import Path
         html=(Path(__file__).parents[1]/"docs/prospect-research/index.html").read_text(encoding="utf-8")
         self.assertIn('replace(/\\s*\\.{3,}\\s*$/g', html)
+
+
+class ProspectResearchGradeRegressionTests(unittest.TestCase):
+    def test_research_grade_feature_regression_contract(self):
+        from pathlib import Path
+        html=(Path(__file__).parents[1]/"docs/prospect-research/index.html").read_text(encoding="utf-8")
+        for required in (
+            'id="clearFilters"', 'id="companySignals"', 'id="companySecSource"',
+            'id="personResearchContext"', 'id="personLockupSchedule"',
+            'Stanford connection', '$500M+ IPO', 'Selling shareholders',
+            'Before IPO', 'Sold in IPO', 'IPO Cash Proceeds', 'Current Value',
+            'Liquid Now', 'Locked / Restricted', 'Classification confidence',
+        ):
+            self.assertIn(required, html)
