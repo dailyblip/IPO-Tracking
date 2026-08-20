@@ -1,8 +1,38 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-20T12:24:36.314803+00:00",
-  "count": 23,
+  "generated_at": "2026-08-20T13:13:35.877426+00:00",
+  "count": 25,
   "alerts": [
+    {
+      "type": "new_prepricing",
+      "company": "Canary Staked TRX ETF",
+      "cik": "0002064768",
+      "filing_id": "s1:0002064768",
+      "form": "S-1/A",
+      "filed": "2026-08-19",
+      "stage": "pre-pricing",
+      "priority": "Medium",
+      "summary": "New pre-pricing S-1/A candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2064768/000199937126018236/0001999371-26-018236-index.htm",
+      "detected_at": "2026-08-20T13:13:35.877275+00:00",
+      "key": "new_prepricing|s1:0002064768|0002064768|2026-08-19|"
+    },
+    {
+      "type": "priority_escalation",
+      "company": "VARSAL TECH, INC.",
+      "cik": "0002109801",
+      "filing_id": "s1:0002109801",
+      "form": "S-1/A",
+      "filed": "2026-08-17",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "Research priority increased from Medium to High.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2109801/000149315226038800/0001493152-26-038800-index.htm",
+      "detected_at": "2026-08-20T13:13:35.877308+00:00",
+      "old_value": "Medium",
+      "new_value": "High",
+      "key": "priority_escalation|s1:0002109801|0002109801|2026-08-17|High"
+    },
     {
       "type": "new_424b4",
       "company": "Standard Nuclear, Inc.",
