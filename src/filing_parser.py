@@ -21,6 +21,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from ownership_parser import extract_rich_stockholders
+from lockup_parser import extract_holder_lockup_info
 
 REQUEST_DELAY_SECONDS = 0.15
 
@@ -484,25 +485,9 @@ def extract_management_bios(soup: BeautifulSoup) -> dict:
 
 
 def extract_lockup_info(soup: BeautifulSoup) -> dict:
-    """
-    Extract lock-up language from the Underwriting section. Returns the
-    raw matched text plus a best-effort parsed duration in days, where
-    the standard boilerplate ("180 days") is detected.
-    """
-    section_text = _find_section_text(soup, UNDERWRITING_HEADING_PATTERNS, max_chars=15000)
-    if not section_text:
-        return {"raw_text": None, "duration_days": None}
-
-    lockup_sentences = [
-        s for s in re.split(r"(?<=[.])\s+", section_text)
-        if "lock-up" in s.lower() or "lockup" in s.lower()
-    ]
-    raw_text = " ".join(lockup_sentences[:5]) if lockup_sentences else None
-
-    duration_match = re.search(r"(\d{2,3})\s+days", raw_text or "")
-    duration_days = int(duration_match.group(1)) if duration_match else None
-
-    return {"raw_text": raw_text, "duration_days": duration_days}
+    """Extract structured holder-facing lock-up terms from the full prospectus."""
+    full_text = soup.get_text(" ", strip=True)
+    return extract_holder_lockup_info(full_text)
 
 
 def parse_filing(document_url: str, is_range_filing: bool = False) -> dict:

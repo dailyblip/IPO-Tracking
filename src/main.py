@@ -15,6 +15,7 @@ run manually: python main.py [days_back]
 """
 
 import os
+import json
 import re
 import sys
 from datetime import date
@@ -301,7 +302,22 @@ def process_filing(filing_meta: dict) -> list:
                 "Stanford Justification": stanford_result["justification"],
                 "Stanford University in Bio": stanford_university_in_bio,
                 "Stanford Affiliation Confirmed": bool(stanford_university_in_bio or stanford_result.get("grade") in (5, "5")),
-                "Lock-Up Expiry": lockup.get("raw_text", "")[:200] if lockup.get("raw_text") else "",
+                # Keep legacy Lock-Up Expiry for Sheet compatibility, but structured
+                # fields below are authoritative for the Prospect Research product.
+                "Lock-Up Expiry": "",
+                "Lock-Up Text": lockup.get("raw_text") or "",
+                "Lock-Up Duration Days": lockup.get("duration_days"),
+                "Lock-Up Duration Value": lockup.get("duration_value"),
+                "Lock-Up Duration Unit": lockup.get("duration_unit"),
+                "Lock-Up Scope": lockup.get("scope") or "",
+                "Lock-Up Scope Tags": ",".join(lockup.get("scope_tags") or []),
+                "Lock-Up Terms JSON": json.dumps(lockup.get("terms") or [], ensure_ascii=False),
+                "Lock-Up Confidence": lockup.get("confidence") or "Unresolved",
+                "Lock-Up Structured": bool(lockup.get("structured")),
+                "Lock-Up Language Present": bool(
+                    lockup.get("raw_text")
+                    or parsed.get("diagnostics", {}).get("underwriting_keyword_present")
+                ),
                 "Last Updated": date.today().isoformat(),
                 "_source_excerpt": bio_text[:500],  # consumed by qc_review, stripped before writing
             })
