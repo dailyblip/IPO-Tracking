@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-20T02:36:28.847931+00:00",
+  "updated_at": "2026-08-20T03:12:19.816040+00:00",
   "items": {
     "0001193125-26-356916": {
       "id": "0001193125-26-356916",
@@ -10,7 +10,7 @@
       "filed": "2026-08-19",
       "stage": "priced",
       "price_range": null,
-      "priority": "High",
+      "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm"
     },
@@ -130,7 +130,7 @@
       "filed": "2026-07-30",
       "stage": "priced",
       "price_range": null,
-      "priority": "High",
+      "priority": "Medium",
       "value": 142182315.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1787117/000110465926088733/0001104659-26-088733-index.htm"
     },
@@ -146,17 +146,233 @@
       "value": 128700000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1853921/000119312526316503/0001193125-26-316503-index.htm"
     },
+    "0001213900-26-078747": {
+      "id": "0001213900-26-078747",
+      "cik": "0002086716",
+      "company": "Standard Nuclear, Inc.",
+      "form": "424B4",
+      "filed": "2026-07-16",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 150000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2086716/000121390026078747/0001213900-26-078747-index.htm"
+    },
+    "0001104659-26-084293": {
+      "id": "0001104659-26-084293",
+      "cik": "0002105398",
+      "company": "Csquare, Inc.",
+      "form": "424B4",
+      "filed": "2026-07-16",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 1050000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2105398/000110465926084293/0001104659-26-084293-index.htm"
+    },
+    "0001628280-26-046635": {
+      "id": "0001628280-26-046635",
+      "cik": "0001699963",
+      "company": "Neutron Holdings, Inc.",
+      "form": "424B4",
+      "filed": "2026-07-02",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 166994775.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1699963/000162828026046635/0001628280-26-046635-index.htm"
+    },
+    "0001193125-26-292853": {
+      "id": "0001193125-26-292853",
+      "cik": "0002110117",
+      "company": "ITG, Inc./DE/",
+      "form": "424B4",
+      "filed": "2026-07-02",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 312195136.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2110117/000119312526292853/0001193125-26-292853-index.htm"
+    },
+    "0001193125-26-294982": {
+      "id": "0001193125-26-294982",
+      "cik": "0002080126",
+      "company": "Forgent Power Solutions, Inc.",
+      "form": "424B4",
+      "filed": "2026-07-02",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2080126/000119312526294982/0001193125-26-294982-index.htm"
+    },
+    "0001193125-26-276096": {
+      "id": "0001193125-26-276096",
+      "cik": "0002123613",
+      "company": "Kardigan, Inc.",
+      "form": "424B4",
+      "filed": "2026-06-18",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 400000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2123613/000119312526276096/0001193125-26-276096-index.htm"
+    },
+    "0001140361-26-025790": {
+      "id": "0001140361-26-025790",
+      "cik": "0001531193",
+      "company": "First Carolina Financial Services, Inc.",
+      "form": "424B4",
+      "filed": "2026-06-18",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "Low",
+      "value": 68750000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1531193/000114036126025790/0001140361-26-025790-index.htm"
+    },
     "0001628280-26-042639": {
       "id": "0001628280-26-042639",
       "cik": "0001181412",
-      "company": "Space Exploration Technologies Corp.",
+      "company": "SPACE EXPLORATION TECHNOLOGIES CORP",
       "form": "424B4",
       "filed": "2026-06-12",
       "stage": "priced",
       "price_range": null,
       "priority": "High",
-      "value": 74999999925,
+      "value": 74999999925.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026042639/0001628280-26-042639-index.htm"
+    },
+    "0001213900-26-067558": {
+      "id": "0001213900-26-067558",
+      "cik": "0002104879",
+      "company": "RMG ML Sports Holdings",
+      "form": "424B4",
+      "filed": "2026-06-11",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2104879/000121390026067558/0001213900-26-067558-index.htm"
+    },
+    "0001628280-26-042580": {
+      "id": "0001628280-26-042580",
+      "cik": "0001925062",
+      "company": "Forbright, Inc.",
+      "form": "424B4",
+      "filed": "2026-06-11",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "Medium",
+      "value": 142200000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1925062/000162828026042580/0001628280-26-042580-index.htm"
+    },
+    "0001193125-26-265983": {
+      "id": "0001193125-26-265983",
+      "cik": "0001657677",
+      "company": "Parabilis Medicines, Inc.",
+      "form": "424B4",
+      "filed": "2026-06-10",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 670000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1657677/000119312526265983/0001193125-26-265983-index.htm"
+    },
+    "0001193125-26-265898": {
+      "id": "0001193125-26-265898",
+      "cik": "0002110029",
+      "company": "ERock, Inc.",
+      "form": "424B4",
+      "filed": "2026-06-10",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 600000005.5,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2110029/000119312526265898/0001193125-26-265898-index.htm"
+    },
+    "0001193125-26-264014": {
+      "id": "0001193125-26-264014",
+      "cik": "0001921603",
+      "company": "WhiteHawk Income Corp",
+      "form": "424B4",
+      "filed": "2026-06-09",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "Medium",
+      "value": 200200000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1921603/000119312526264014/0001193125-26-264014-index.htm"
+    },
+    "0001140361-26-024037": {
+      "id": "0001140361-26-024037",
+      "cik": "0002091017",
+      "company": "Sunshine Silver Mining & Refining Co",
+      "form": "424B4",
+      "filed": "2026-06-05",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 270000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2091017/000114036126024037/0001140361-26-024037-index.htm"
+    },
+    "0001628280-26-041003": {
+      "id": "0001628280-26-041003",
+      "cik": "0002110105",
+      "company": "Quantinuum Inc.",
+      "form": "424B4",
+      "filed": "2026-06-05",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 1680000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2110105/000162828026041003/0001628280-26-041003-index.htm"
+    },
+    "0001193125-26-258295": {
+      "id": "0001193125-26-258295",
+      "cik": "0002096300",
+      "company": "AEVEX Corp.",
+      "form": "424B4",
+      "filed": "2026-06-05",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 154606239.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2096300/000119312526258295/0001193125-26-258295-index.htm"
+    },
+    "0001193125-26-257410": {
+      "id": "0001193125-26-257410",
+      "cik": "0001850351",
+      "company": "Liftoff Mobile, Inc.",
+      "form": "424B4",
+      "filed": "2026-06-04",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 437000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1850351/000119312526257410/0001193125-26-257410-index.htm"
+    },
+    "0001193125-26-256356": {
+      "id": "0001193125-26-256356",
+      "cik": "0002118195",
+      "company": "Applied Aerospace & Defense, Inc.",
+      "form": "424B4",
+      "filed": "2026-06-04",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 650000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2118195/000119312526256356/0001193125-26-256356-index.htm"
+    },
+    "0001193125-26-249223": {
+      "id": "0001193125-26-249223",
+      "cik": "0002080126",
+      "company": "Forgent Power Solutions, Inc.",
+      "form": "424B4",
+      "filed": "2026-06-01",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2080126/000119312526249223/0001193125-26-249223-index.htm"
     }
   },
   "ciks": {
@@ -227,7 +443,7 @@
       "last_filed": "2026-08-17"
     },
     "0001181412": {
-      "company": "Space Exploration Technologies Corp.",
+      "company": "SPACE EXPLORATION TECHNOLOGIES CORP",
       "stage": "priced",
       "last_filing_id": "0001628280-26-042639",
       "last_filed": "2026-06-12"
@@ -243,6 +459,108 @@
       "stage": "priced",
       "last_filing_id": "0001193125-26-356916",
       "last_filed": "2026-08-19"
+    },
+    "0002086716": {
+      "company": "Standard Nuclear, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001213900-26-078747",
+      "last_filed": "2026-07-16"
+    },
+    "0002105398": {
+      "company": "Csquare, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001104659-26-084293",
+      "last_filed": "2026-07-16"
+    },
+    "0001699963": {
+      "company": "Neutron Holdings, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-046635",
+      "last_filed": "2026-07-02"
+    },
+    "0002110117": {
+      "company": "ITG, Inc./DE/",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-292853",
+      "last_filed": "2026-07-02"
+    },
+    "0002080126": {
+      "company": "Forgent Power Solutions, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-249223",
+      "last_filed": "2026-06-01"
+    },
+    "0002123613": {
+      "company": "Kardigan, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-276096",
+      "last_filed": "2026-06-18"
+    },
+    "0001531193": {
+      "company": "First Carolina Financial Services, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001140361-26-025790",
+      "last_filed": "2026-06-18"
+    },
+    "0002104879": {
+      "company": "RMG ML Sports Holdings",
+      "stage": "priced",
+      "last_filing_id": "0001213900-26-067558",
+      "last_filed": "2026-06-11"
+    },
+    "0001925062": {
+      "company": "Forbright, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-042580",
+      "last_filed": "2026-06-11"
+    },
+    "0001657677": {
+      "company": "Parabilis Medicines, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-265983",
+      "last_filed": "2026-06-10"
+    },
+    "0002110029": {
+      "company": "ERock, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-265898",
+      "last_filed": "2026-06-10"
+    },
+    "0001921603": {
+      "company": "WhiteHawk Income Corp",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-264014",
+      "last_filed": "2026-06-09"
+    },
+    "0002091017": {
+      "company": "Sunshine Silver Mining & Refining Co",
+      "stage": "priced",
+      "last_filing_id": "0001140361-26-024037",
+      "last_filed": "2026-06-05"
+    },
+    "0002110105": {
+      "company": "Quantinuum Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-041003",
+      "last_filed": "2026-06-05"
+    },
+    "0002096300": {
+      "company": "AEVEX Corp.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-258295",
+      "last_filed": "2026-06-05"
+    },
+    "0001850351": {
+      "company": "Liftoff Mobile, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-257410",
+      "last_filed": "2026-06-04"
+    },
+    "0002118195": {
+      "company": "Applied Aerospace & Defense, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-256356",
+      "last_filed": "2026-06-04"
     }
   }
 }
