@@ -20,6 +20,8 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
+from ownership_parser import extract_rich_stockholders
+
 REQUEST_DELAY_SECONDS = 0.15
 
 # Section headings vary by filer. List common variants, matched
@@ -470,7 +472,7 @@ def parse_filing(document_url: str, is_range_filing: bool = False) -> dict:
 
     result = {
         "cover_page": cover_page_data,
-        "principal_stockholders": extract_principal_stockholders(soup),
+        "principal_stockholders": extract_rich_stockholders(soup) or extract_principal_stockholders(soup),
         "management_bios": extract_management_bios(soup),
         "lockup_info": extract_lockup_info(soup),
         "diagnostics": {

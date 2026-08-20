@@ -1,0 +1,71 @@
+name: Refresh Prospect Ownership History
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/ownership_parser.py'
+      - 'src/filing_parser.py'
+      - 'src/main.py'
+      - 'src/dashboard_export.py'
+      - 'src/prospect_research.py'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-ipo-tracker
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run unit tests
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+      - name: Refresh recent IPO history with richer ownership parsing
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+          MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          BRAVE_SEARCH_API_KEY: ${{ secrets.BRAVE_SEARCH_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+        run: |
+          START=$(date -u -d '80 days ago' +%F)
+          END=$(date -u +%F)
+          echo "Refreshing ownership-rich IPO history from $START through $END"
+          python main.py --backfill-start "$START" --backfill-end "$END"
+      - name: Validate public feed
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          feed=json.loads(Path('docs/data/filings.json').read_text())
+          assert isinstance(feed.get('filings'), list)
+          for filing in feed['filings']:
+              assert isinstance(filing.get('people', []), list)
+          print(f"Validated {len(feed['filings'])} filings")
+          PY
+      - name: Publish refreshed ownership data
+        run: |
+          if [ -z "$(git status --short -- docs/data/filings.json docs/data/filings.csv)" ]; then
+            echo "Ownership data unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/filings.json docs/data/filings.csv
+          git commit -m "Refresh Prospect Research ownership history"
+          git pull --rebase origin main
+          git push origin HEAD:main

@@ -1,0 +1,17 @@
+import unittest
+from bs4 import BeautifulSoup
+from ownership_parser import parse_ownership_table
+
+class OwnershipParserTests(unittest.TestCase):
+    def test_wide_before_sold_after_grid(self):
+        html="""<table><tr><th>Name of beneficial owner</th><th colspan='2'>Beneficially owned before offering</th><th>Shares offered</th><th colspan='2'>Beneficially owned after offering</th></tr><tr><th></th><th>Number</th><th>Percent</th><th></th><th>Number</th><th>Percent</th></tr><tr><td>Jane Smith</td><td>1,000,000</td><td>10.0%</td><td>100,000</td><td>900,000</td><td>8.2%</td></tr></table>"""
+        rows=parse_ownership_table(BeautifulSoup(html,'lxml').find('table'))
+        self.assertEqual(len(rows),1)
+        r=rows[0]
+        self.assertEqual(r['shares_before'],1000000)
+        self.assertEqual(r['shares_sold'],100000)
+        self.assertEqual(r['shares_after'],900000)
+        self.assertEqual(r['percent_before'],10.0)
+        self.assertEqual(r['percent_after'],8.2)
+
+if __name__=='__main__': unittest.main()
