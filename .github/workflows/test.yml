@@ -19,7 +19,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: Apply calibration
-        run: python scripts/apply_spacex_calibration.py
+        run: |
+          python scripts/fix_spacex_calibration.py
+          python scripts/apply_spacex_calibration.py
       - name: Commit calibration
         run: |
           git config user.name "github-actions[bot]"
