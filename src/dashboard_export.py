@@ -218,28 +218,61 @@ def _role_matches_scope(role, tags, shares_sold=None):
 
 
 def _applicable_lockup(lockup, name, metadata, row):
+    """Return only lock-up terms defensibly applicable to this holder."""
     name_key = _holder_identity_key(name)
+    all_terms = lockup.get("terms") or []
     special = []
-    for term in lockup.get("terms") or []:
+    for term in all_terms:
         holder = term.get("special_holder")
-        if holder and _holder_identity_key(holder) in {name_key, _holder_identity_key(name).replace("entities affiliated with ", "")}:
+        if not holder:
+            continue
+        holder_key = _holder_identity_key(holder)
+        if holder_key in {name_key, name_key.replace("entities affiliated with ", "")}:
             special.append(term)
-        elif holder and name_key and (_holder_identity_key(holder) in name_key or name_key in _holder_identity_key(holder)):
+        elif holder_key and name_key and (holder_key in name_key or name_key in holder_key):
             special.append(term)
     if special:
         return {"terms": special, "special": True}
-    if _role_matches_scope(metadata.get("role"), lockup.get("scope_tags"), row.get("Shares Sold in IPO")):
+
+    matched = [
+        term for term in all_terms
+        if not term.get("special_holder")
+        and _role_matches_scope(
+            metadata.get("role"),
+            term.get("scope_tags") or [],
+            row.get("Shares Sold in IPO"),
+        )
+    ]
+    if matched:
+        return {"terms": matched, "special": False}
+
+    # Legacy structured records may have only a filing-level primary term. Preserve
+    # the schedule as evidence, but never invent holder coverage.
+    if not all_terms and _role_matches_scope(
+        metadata.get("role"), lockup.get("scope_tags"), row.get("Shares Sold in IPO")
+    ) and lockup.get("value"):
         primary = {
             "duration_value": lockup.get("value"), "duration_unit": lockup.get("unit"),
             "duration_days": lockup.get("days"), "end_date": lockup.get("end"),
             "scope": lockup.get("scope"), "scope_tags": lockup.get("scope_tags"),
             "source_text": lockup.get("text"), "has_staggered_releases": False,
+            "tranche_percent": None, "covers_full_position": False,
         }
-        return {"terms": [primary] if lockup.get("value") else [], "special": False}
+        return {"terms": [primary], "special": False}
     return {"terms": [], "special": False}
 
 
-def _person_liquidity(shares, current_value, ipo_price, lockup, name, metadata, row):
+def _as_of_date(value=None):
+    if value:
+        try:
+            return datetime.fromisoformat(str(value)[:10]).date()
+        except ValueError:
+            pass
+    return datetime.now(timezone.utc).date()
+
+
+def _person_liquidity(shares, current_value, ipo_price, lockup, name, metadata, row, as_of_date=None):
+    """Classify liquidity only when the filing supplies defensible quantities."""
     shares = _number(shares); current_value = _number(current_value); ipo_price = _number(ipo_price)
     ipo_value = shares * ipo_price if shares is not None and ipo_price else None
     base = {"ipo_value": ipo_value, "cash_realized_ipo": None}
@@ -249,7 +282,11 @@ def _person_liquidity(shares, current_value, ipo_price, lockup, name, metadata, 
     applicable = _applicable_lockup(lockup, name, metadata, row)
     terms = applicable.get("terms") or []
     schedule = [
-        {k: term.get(k) for k in ("duration_value", "duration_unit", "end_date", "scope", "special_holder", "source_text", "has_staggered_releases")}
+        {k: term.get(k) for k in (
+            "duration_value", "duration_unit", "end_date", "scope", "special_holder",
+            "source_text", "has_staggered_releases", "tranche_percent",
+            "tranche_label", "covers_full_position",
+        )}
         for term in terms if term.get("duration_value")
     ]
     if not schedule:
@@ -257,25 +294,66 @@ def _person_liquidity(shares, current_value, ipo_price, lockup, name, metadata, 
 
     end_dates = [item.get("end_date") for item in schedule if item.get("end_date")]
     final_end = max(end_dates) if end_dates else None
+    today = _as_of_date(as_of_date or row.get("Last Updated"))
+
+    # Explicit percentages are the gold-standard case: they let us translate the
+    # prospectus schedule into currently locked/liquid shares without guessing.
+    percentages = []
+    for item in schedule:
+        pct = _number(item.get("tranche_percent"))
+        if pct is None:
+            percentages = []
+            break
+        percentages.append(pct)
+    pct_total = sum(percentages) if percentages else None
+    if percentages and abs(pct_total - 100.0) <= 0.05 and all(item.get("end_date") for item in schedule):
+        active_pct = 0.0
+        for item, pct in zip(schedule, percentages):
+            try:
+                end_date = datetime.fromisoformat(str(item.get("end_date"))[:10]).date()
+            except ValueError:
+                percentages = []
+                break
+            if end_date > today:
+                active_pct += pct
+        if percentages:
+            active_pct = max(0.0, min(100.0, active_pct))
+            locked_shares = round(shares * active_pct / 100.0)
+            liquid_shares = shares - locked_shares
+            locked_value = current_value * active_pct / 100.0 if current_value is not None else None
+            liquid_value = current_value - locked_value if current_value is not None else None
+            if active_pct <= 0.05:
+                status = "Staggered lock-up expired"
+            elif active_pct >= 99.95:
+                status = "Staggered lock-up — 100% currently restricted"
+            else:
+                status = f"Staggered lock-up — {active_pct:g}% currently restricted"
+            return {**base, "liquid_shares": liquid_shares, "liquid_value": liquid_value, "locked_shares": locked_shares, "locked_value": locked_value, "liquidity_status": status, "liquidity_confidence": "High — current restricted percentage derived from explicit prospectus tranches; disclosed exceptions or underwriter waivers may apply", "lockup_schedule": schedule, "lockup_end_date": final_end}
+
+    # A single term can support a whole-position classification only when the source
+    # explicitly says it covers the full disclosed position. Role membership alone is
+    # not enough: Rule 701/award-specific clauses often cover only a subset of shares.
+    if len(schedule) == 1 and schedule[0].get("covers_full_position") and schedule[0].get("end_date"):
+        try:
+            end_date = datetime.fromisoformat(str(schedule[0]["end_date"])[:10]).date()
+            active = end_date > today
+        except ValueError:
+            active = None
+        if active is not None:
+            return {**base, "liquid_shares": 0 if active else shares, "liquid_value": 0 if active else current_value, "locked_shares": shares if active else 0, "locked_value": current_value if active else 0, "liquidity_status": "Locked" if active else "Lock-up expired", "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply", "lockup_schedule": schedule, "lockup_end_date": final_end}
+
     staged = len(schedule) > 1 or any(item.get("has_staggered_releases") for item in schedule)
     if staged:
-        return {**base, "liquid_shares": None, "liquid_value": None, "locked_shares": None, "locked_value": None, "liquidity_status": "Staggered lock-up — tranche mapping pending", "liquidity_confidence": "High-confidence lock-up schedule found; tranche quantities are not inferred", "lockup_schedule": schedule, "lockup_end_date": final_end}
+        return {**base, "liquid_shares": None, "liquid_value": None, "locked_shares": None, "locked_value": None, "liquidity_status": "Staggered lock-up — tranche quantities unresolved", "liquidity_confidence": "Lock-up schedule found, but the filing does not support a complete quantitative allocation", "lockup_schedule": schedule, "lockup_end_date": final_end}
 
-    end = final_end
-    try:
-        active = bool(end) and datetime.fromisoformat(end).date() > datetime.now(timezone.utc).date()
-    except ValueError:
-        active = False
-    if end:
-        return {**base, "liquid_shares": 0 if active else shares, "liquid_value": 0 if active else current_value, "locked_shares": shares if active else 0, "locked_value": current_value if active else 0, "liquidity_status": "Locked" if active else "Lock-up expired", "liquidity_confidence": "High-confidence holder class mapping from final prospectus; disclosed exceptions may still apply", "lockup_schedule": schedule, "lockup_end_date": end}
-    return {**base, "liquid_shares": None, "liquid_value": None, "locked_shares": None, "locked_value": None, "liquidity_status": "Lock-up terms found; date unresolved", "liquidity_confidence": "Lock-up coverage found but release date could not be calculated", "lockup_schedule": schedule}
+    return {**base, "liquid_shares": None, "liquid_value": None, "locked_shares": None, "locked_value": None, "liquidity_status": "Lock-up applies — covered quantity unresolved", "liquidity_confidence": "Holder class is supported, but the filing does not establish that the entire disclosed position is covered", "lockup_schedule": schedule, "lockup_end_date": final_end}
 
 
 def _signals(rows, people):
     signals = []
     amount = max((_number(row.get("Amount Raised")) or 0 for row in rows), default=0)
     largest_holding = max((person.get("cash_value") or 0 for person in people), default=0)
-    lockup = next((row.get("Lock-Up Expiry") for row in rows if row.get("Lock-Up Expiry")), None)
+    lockup = next((row.get("Lock-Up Text") for row in rows if row.get("Lock-Up Text")), None) or next((row.get("Lock-Up Terms JSON") for row in rows if row.get("Lock-Up Terms JSON") not in (None, "", "[]")), None)
 
     if people:
         signals.append(
