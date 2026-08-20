@@ -110,3 +110,14 @@ class LookbackTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# QA arithmetic behavior is covered deterministically without live SEC calls.
+class ProspectQaArithmeticTests(unittest.TestCase):
+    def test_qc_flags_cross_field_inconsistencies(self):
+        import qc_review
+        row={"Company Name":"X","Ticker":"X","Date of Pricing":"2026-01-01","Actual Price":10,"Current Price":12,"Holder Name":"Jane Doe","Shares Before IPO":1000,"Shares Sold in IPO":100,"Shares After IPO":800,"Shares":800,"Cash Realized IPO":900,"Cash Value":9000,"IPO Size (Shares)":10000,"Amount Raised":None}
+        issues=qc_review.check_prospect_integrity(row)
+        self.assertTrue(any("reconcile" in x for x in issues))
+        self.assertTrue(any("cash proceeds" in x for x in issues))
+        self.assertTrue(any("Offering value" in x for x in issues))

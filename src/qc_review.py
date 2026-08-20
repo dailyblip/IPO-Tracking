@@ -77,6 +77,51 @@ def check_numeric_plausibility(row: dict) -> list:
     return issues
 
 
+def check_prospect_integrity(row: dict) -> list:
+    """Cross-field checks for researcher-facing ownership/liquidity consistency."""
+    issues = []
+    price = _to_float(row.get("Actual Price"))
+    current = _to_float(row.get("Current Price"))
+    before = _to_int(row.get("Shares Before IPO"))
+    sold = _to_int(row.get("Shares Sold in IPO"))
+    after = _to_int(row.get("Shares After IPO"))
+    shares = _to_int(row.get("Shares"))
+    realized = _to_float(row.get("Cash Realized IPO"))
+    cash_value = _to_float(row.get("Cash Value"))
+    amount = _to_float(row.get("Amount Raised"))
+    offering_shares = _to_int(row.get("IPO Size (Shares)"))
+
+    if price is None and str(row.get("Date of Pricing") or "").strip():
+        issues.append("Priced filing is missing final IPO price")
+    if amount is None and price is not None and offering_shares is not None:
+        issues.append("Offering value missing despite known IPO shares and final price")
+    if before is not None and sold is not None:
+        expected_after = before - sold
+        if expected_after < 0:
+            issues.append("Shares sold exceed shares held before IPO")
+        elif after is None:
+            issues.append("Post-IPO shares missing despite known before/sold values")
+        elif after != expected_after:
+            issues.append(f"Post-IPO shares do not reconcile: {before:,} - {sold:,} != {after:,}")
+    if sold is not None and price is not None:
+        expected_realized = sold * price
+        if realized is None:
+            issues.append("IPO cash proceeds missing despite known shares sold and final price")
+        elif expected_realized and abs(expected_realized-realized)/expected_realized > 0.01:
+            issues.append("IPO cash proceeds do not match shares sold x final price")
+    if current is not None and (after is not None or shares is not None):
+        held = after if after is not None else shares
+        expected_value = held * current
+        if cash_value is None:
+            issues.append("Current holding value missing despite known shares and current price")
+        elif expected_value and abs(expected_value-cash_value)/expected_value > 0.01:
+            issues.append("Current holding value does not match post-IPO shares x current price")
+    if row.get("Stanford Affiliation Confirmed") and not row.get("Stanford Justification"):
+        issues.append("Stanford affiliation confirmed without supporting source/justification")
+    return issues
+
+
+
 def check_ticker_resolved(row: dict) -> list:
     if row.get("Current Price") in (None, "", "None"):
         return ["Current price could not be resolved for this ticker"]
@@ -135,6 +180,7 @@ def run_deterministic_checks(row: dict, previous_row: dict = None, ipo_date: str
     issues = []
     issues.extend(check_completeness(row))
     issues.extend(check_numeric_plausibility(row))
+    issues.extend(check_prospect_integrity(row))
     issues.extend(check_ticker_resolved(row))
     issues.extend(check_lockup_date(row, ipo_date))
     issues.extend(check_against_previous(row, previous_row))
