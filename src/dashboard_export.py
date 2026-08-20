@@ -84,7 +84,14 @@ def _clean_holder_name(value):
         if unicodedata.category(character) != "Cf"
     )
     name = " ".join(raw.split())
-    return re.sub(r"(?:\s*\(\d+\))+$", "", name).strip()
+    name = re.sub(r"\s*\.{3,}\s*$", "", name)
+    name = re.sub(r"(?:\s*\(\d+[a-z]?\))+$", "", name, flags=re.I)
+    name = re.sub(r"[†‡*]+$", "", name).strip()
+    return name
+
+
+def _holder_identity_key(value):
+    return " ".join(_clean_holder_name(value).lower().split())
 
 
 def _is_aggregate_holder(name):
@@ -185,9 +192,10 @@ def build_payload(rows, generated_at=None):
         seen = set()
         for row in group:
             name = _clean_holder_name(row.get("Holder Name", ""))
-            if not name or _is_aggregate_holder(name) or name.lower() in seen:
+            identity_key = _holder_identity_key(name)
+            if not name or _is_aggregate_holder(name) or identity_key in seen:
                 continue
-            seen.add(name.lower())
+            seen.add(identity_key)
             shares = _number(row.get("Shares")); cash_value = _number(row.get("Cash Value"))
             liquidity = _person_liquidity(shares, cash_value, _number(first.get("Actual Price")), lockup)
             metadata = prospect_person_metadata(row, name)

@@ -16,7 +16,20 @@ OWNERSHIP_WORDS = (
 
 
 def _clean(text):
-    return " ".join(str(text or "").replace("\xa0", " ").split())
+    value = " ".join(str(text or "").replace("\xa0", " ").split())
+    # SEC tables often use dot leaders between holder labels and numeric columns.
+    # They are presentation artifacts, never part of a person's/entity's name.
+    value = re.sub(r"\s*\.{3,}\s*$", "", value)
+    return value.strip()
+
+
+def canonical_holder_name(value):
+    """Canonical identity key for holder deduplication, without guessing identity."""
+    value = _clean(value)
+    value = re.sub(r"(?:\s*\(\d+[a-z]?\))+$", "", value, flags=re.I)
+    value = re.sub(r"[†‡*]+$", "", value).strip()
+    value = re.sub(r"\s*\.{2,}\s*", " ", value)
+    return " ".join(value.lower().split())
 
 
 def _expand_row(row):
@@ -174,7 +187,7 @@ def extract_rich_stockholders(soup):
         if not _looks_like_ownership(table):
             continue
         for holder in parse_ownership_table(table):
-            key = " ".join(holder["name"].lower().split())
+            key = canonical_holder_name(holder["name"])
             if key not in merged:
                 merged[key] = holder
                 order.append(key)
