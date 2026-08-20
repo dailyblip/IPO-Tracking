@@ -171,3 +171,14 @@ class ProspectQaParserTests(unittest.TestCase):
         import filing_parser
         soup=BeautifulSoup("<html><body>Our principal executive offices are located at 123 Main Street, Falls Church, VA 22042.</body></html>", "html.parser")
         self.assertEqual(filing_parser.extract_principal_office_location(soup), "Falls Church, VA")
+
+
+class LyntrisFinalTermsQaTests(unittest.TestCase):
+    def test_lyntris_style_final_terms(self):
+        from bs4 import BeautifulSoup
+        import filing_parser
+        html="""<html><body>Lyntris Inc. 3130 Fairview Park Dr., Suite 230 Falls Church, VA 22042 (Address, including zip code, and telephone number, including area code, of registrant's principal executive offices) We are offering 5,714,286 shares of common stock and the selling stockholders are offering an additional 11,285,714 shares of common stock. The initial public offering price of $17.50 per share.</body></html>"""
+        soup=BeautifulSoup(html, "html.parser")
+        self.assertEqual(filing_parser.extract_cover_page_data(soup)["offering_price"], 17.50)
+        self.assertEqual(filing_parser.extract_offering_size(soup), 17_000_000)
+        self.assertEqual(filing_parser.extract_principal_office_location(soup), "Falls Church, VA")
