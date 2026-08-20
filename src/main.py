@@ -216,11 +216,13 @@ def process_filing(filing_meta: dict) -> list:
                 # price rather than losing this filing's rows entirely.
         lockup = parsed.get("lockup_info", {})
         bios = parsed.get("management_bios", {})
-        try:
-            business_location = edgar_client.get_business_location(cik)
-        except Exception as error:
-            print(f"[main] Warning: could not resolve issuer location for {company_name}: {error}")
-            business_location = ""
+        business_location = filing_parser.extract_principal_office_location(full_text_soup)
+        if not business_location:
+            try:
+                business_location = edgar_client.get_business_location(cik)
+            except Exception as error:
+                print(f"[main] Warning: could not resolve issuer location for {company_name}: {error}")
+                business_location = ""
 
         rows = []
         holders = parsed.get("principal_stockholders", [])
@@ -235,6 +237,10 @@ def process_filing(filing_meta: dict) -> list:
             shares_before = holder.get("shares_before")
             shares_sold = holder.get("shares_sold")
             shares_after = holder.get("shares_after")
+            if shares_after is None and shares_before is not None and shares_sold is not None:
+                derived_after = shares_before - shares_sold
+                if derived_after >= 0:
+                    shares_after = derived_after
             shares = shares_after if shares_after is not None else holder.get("shares")
             percent_before = holder.get("percent_before")
             percent_after = holder.get("percent_after") if holder.get("percent_after") is not None else holder.get("percent")
@@ -294,6 +300,7 @@ def process_filing(filing_meta: dict) -> list:
                 "Stanford Grade": stanford_result["grade"],
                 "Stanford Justification": stanford_result["justification"],
                 "Stanford University in Bio": stanford_university_in_bio,
+                "Stanford Affiliation Confirmed": bool(stanford_university_in_bio or stanford_result.get("grade") in (1, "1", "Confirmed", "confirmed", True)),
                 "Lock-Up Expiry": lockup.get("raw_text", "")[:200] if lockup.get("raw_text") else "",
                 "Last Updated": date.today().isoformat(),
                 "_source_excerpt": bio_text[:500],  # consumed by qc_review, stripped before writing
