@@ -182,3 +182,42 @@ class LyntrisFinalTermsQaTests(unittest.TestCase):
         self.assertEqual(filing_parser.extract_cover_page_data(soup)["offering_price"], 17.50)
         self.assertEqual(filing_parser.extract_offering_size(soup), 17_000_000)
         self.assertEqual(filing_parser.extract_principal_office_location(soup), "Falls Church, VA")
+
+
+class ResearchGradeOfferingTermsTests(unittest.TestCase):
+    def test_lyntris_does_not_mistake_shares_outstanding_for_ipo_size(self):
+        import filing_parser
+        html = """<html><body>
+        PROSPECTUS 17,000,000 Shares Common Stock
+        This is Lyntris Inc.'s initial public offering of our common stock.
+        We are offering 5,714,286 shares of common stock and the selling stockholders identified in this prospectus are offering an additional 11,285,714 shares of common stock.
+        Common stock to be outstanding immediately after this offering 115,949,384 shares of common stock.
+        The initial public offering price is $17.50 per share.
+        </body></html>"""
+        soup = _soup(html)
+        terms = filing_parser.extract_offering_terms(soup)
+        self.assertEqual(terms["total_shares"], 17_000_000)
+        self.assertEqual(terms["primary_shares"], 5_714_286)
+        self.assertEqual(terms["secondary_shares"], 11_285_714)
+        self.assertEqual(terms["confidence"], "High")
+        self.assertFalse(terms["conflict"])
+
+    def test_offering_table_primary_secondary_rows_are_summed(self):
+        import filing_parser
+        soup = _soup("""<html><body>This is our initial public offering. THE OFFERING
+        Common stock offered by us | 4,878,049 shares of common stock.
+        Common stock offered by the selling stockholders | 19,121,951 shares of common stock.
+        Common stock to be outstanding immediately after this offering | 115,113,147 shares.
+        </body></html>""")
+        terms = filing_parser.extract_offering_terms(soup)
+        self.assertEqual(terms["total_shares"], 24_000_000)
+        self.assertEqual(terms["primary_shares"], 4_878_049)
+        self.assertEqual(terms["secondary_shares"], 19_121_951)
+
+    def test_parse_filing_exposes_principal_office_location(self):
+        import filing_parser
+        soup = _soup("""<html><body>Brian Morrison Chief Executive Officer Lyntris Inc.
+        3130 Fairview Park Dr., Suite 230 Falls Church, VA 22042
+        (Address, including zip code, and telephone number, including area code, of registrant's principal executive offices)
+        </body></html>""")
+        self.assertEqual(filing_parser.extract_principal_office_location(soup), "Falls Church, VA")

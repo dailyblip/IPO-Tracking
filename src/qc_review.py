@@ -91,6 +91,20 @@ def check_prospect_integrity(row: dict) -> list:
     cash_value = _to_float(row.get("Cash Value"))
     amount = _to_float(row.get("Amount Raised"))
     offering_shares = _to_int(row.get("IPO Size (Shares)"))
+    primary_offering = _to_int(row.get("Primary Offering Shares"))
+    secondary_offering = _to_int(row.get("Secondary Offering Shares"))
+    offering_confidence = str(row.get("Offering Size Confidence") or "")
+
+    if row.get("Offering Size Conflict"):
+        issues.append("Conflicting base-offering share counts found on prospectus cover")
+    if offering_confidence.lower() == "medium":
+        issues.append("IPO share count came from medium-confidence fallback and needs review")
+    if primary_offering is not None and secondary_offering is not None:
+        expected_total = primary_offering + secondary_offering
+        if offering_shares is None:
+            issues.append("Total IPO shares missing despite known primary and secondary blocks")
+        elif offering_shares != expected_total:
+            issues.append(f"IPO shares do not reconcile: {primary_offering:,} + {secondary_offering:,} != {offering_shares:,}")
 
     if price is None and str(row.get("Date of Pricing") or "").strip():
         issues.append("Priced filing is missing final IPO price")
@@ -303,6 +317,21 @@ def review_rows(rows: list, previous_rows_by_key: dict = None,
     ipo_dates_by_ticker = ipo_dates_by_ticker or {}
     source_excerpts_by_key = source_excerpts_by_key or {}
 
+    # Filing-level secondary-share QA: when the cover discloses a base secondary
+    # block and the beneficial-ownership table gives holder sale counts, they should
+    # reconcile. Do not silently publish a partial or duplicated selling grid.
+    secondary_totals = {}
+    secondary_expected = {}
+    for row in rows:
+        filing_key = (str(row.get("Ticker", "")).upper(), str(row.get("Date of Pricing") or row.get("Date of Filing") or ""))
+        expected = _to_int(row.get("Secondary Offering Shares"))
+        if expected is not None:
+            secondary_expected[filing_key] = expected
+        name = str(row.get("Holder Name") or "").lower()
+        sold = _to_int(row.get("Shares Sold in IPO"))
+        if sold is not None and "as a group" not in name:
+            secondary_totals[filing_key] = secondary_totals.get(filing_key, 0) + sold
+
     # Batch-level identity QA: two presentation variants of the same holder in
     # one filing are a structural data error, not merely a cosmetic issue.
     identity_counts = {}
@@ -330,6 +359,15 @@ def review_rows(rows: list, previous_rows_by_key: dict = None,
             notes = reviewed_row.get("QC Notes", "")
             reviewed_row["QC Status"] = "Needs Review"
             reviewed_row["QC Notes"] = "; ".join(x for x in (notes, issue) if x)
+        expected_secondary = secondary_expected.get(filing_key)
+        observed_secondary = secondary_totals.get(filing_key)
+        if expected_secondary is not None and observed_secondary is not None:
+            tolerance = max(10, int(expected_secondary * 0.001))
+            if abs(expected_secondary - observed_secondary) > tolerance:
+                issue = f"Selling-holder shares do not reconcile to cover: {observed_secondary:,} parsed vs {expected_secondary:,} offered"
+                notes = reviewed_row.get("QC Notes", "")
+                reviewed_row["QC Status"] = "Needs Review"
+                reviewed_row["QC Notes"] = "; ".join(x for x in (notes, issue) if x)
         reviewed.append(reviewed_row)
 
     return reviewed
