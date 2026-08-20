@@ -309,39 +309,140 @@ def extract_price_range(soup: BeautifulSoup) -> dict:
     return {"range_low": None, "range_high": None}
 
 
-def extract_offering_size(soup: BeautifulSoup) -> int:
-    """
-    Extract the number of shares being offered from the cover page,
-    e.g. "We are offering 5,000,000 shares of our common stock."
-    Returns None if no confident match is found - cover page phrasing
-    varies enough between filers that this is a best-effort extraction,
-    not a guarantee.
-    """
-    full_text = soup.get_text(" ", strip=True)
-    cover_text = full_text[:100000]
+def _share_int(value):
+    try:
+        return int(str(value).replace(",", "").strip())
+    except (TypeError, ValueError):
+        return None
 
-    # When both issuer and selling stockholders participate, total IPO size is
-    # the sum of both blocks. This is the relevant gross liquidity-event size.
-    combined = re.search(
-        r"we are offering\s+([\d,]{4,})\s+shares[^.]{0,1000}?selling stockholders?[^.]{0,500}?offering(?: an additional)?\s+([\d,]{4,})\s+shares",
-        cover_text, re.I
-    )
-    if combined:
-        return int(combined.group(1).replace(",", "")) + int(combined.group(2).replace(",", ""))
 
-    patterns = [
-        r"offering\s+([\d,]{4,})\s+shares",
-        r"([\d,]{4,})\s+shares\s+of\s+(?:our\s+)?common\s+stock",
-        r"sale\s+of\s+([\d,]{4,})\s+shares",
+def extract_offering_terms(soup: BeautifulSoup) -> dict:
+    """Extract base IPO share count with source/confidence and primary/secondary split.
+
+    A prospectus contains many share counts (shares outstanding, equity-plan reserves,
+    beneficial ownership, greenshoes). Research-grade extraction must never choose a
+    generic later share count merely because it matches ``N shares of common stock``.
+    We rank only cover/title and explicit offering constructions, and exclude the
+    underwriters' option from base IPO size.
+    """
+    text = soup.get_text(" ", strip=True)
+    cover = text[:50000]
+
+    primary = secondary = total = None
+    sources = []
+    confidence = "Unresolved"
+    conflict = False
+
+    # Most explicit construction: issuer block + selling-stockholder block.
+    combined_patterns = [
+        r"we\s+(?:are|will\s+be)\s+offering\s+([\d,]{4,})\s+shares[^.]{0,1600}?"
+        r"selling\s+stockholders?[^.]{0,900}?(?:are\s+offering|are\s+selling|will\s+sell|offer)"
+        r"(?:\s+an\s+additional)?\s+([\d,]{4,})\s+shares",
+        r"we\s+(?:are|will\s+be)\s+offering\s+([\d,]{4,})\s+shares[^.]{0,1600}?"
+        r"selling\s+shareholders?[^.]{0,900}?(?:are\s+offering|are\s+selling|will\s+sell|offer)"
+        r"(?:\s+an\s+additional)?\s+([\d,]{4,})\s+shares",
     ]
-    for pattern in patterns:
-        match = re.search(pattern, cover_text, re.IGNORECASE)
+    for pattern in combined_patterns:
+        match = re.search(pattern, cover, re.I)
         if match:
-            try:
-                return int(match.group(1).replace(",", ""))
-            except ValueError:
-                continue
-    return None
+            primary = _share_int(match.group(1))
+            secondary = _share_int(match.group(2))
+            if primary is not None and secondary is not None:
+                total = primary + secondary
+                sources.append("explicit issuer + selling-holder cover blocks")
+                confidence = "High"
+                break
+
+    # Common THE OFFERING table construction. Use only explicit 'offered by' labels.
+    if primary is None:
+        m = re.search(
+            r"(?:common\s+stock|shares?)\s+offered\s+by\s+(?:us|the\s+company)\s*[:|]?\s*([\d,]{4,})\s+shares",
+            cover, re.I,
+        )
+        if m:
+            primary = _share_int(m.group(1))
+    if secondary is None:
+        m = re.search(
+            r"(?:common\s+stock|shares?)\s+offered\s+by\s+(?:the\s+)?selling\s+(?:stockholders|shareholders)\s*[:|]?\s*([\d,]{4,})\s+shares",
+            cover, re.I,
+        )
+        if m:
+            secondary = _share_int(m.group(1))
+    if total is None and primary is not None and secondary is not None:
+        total = primary + secondary
+        sources.append("THE OFFERING primary + secondary rows")
+        confidence = "High"
+
+    # Explicit total statement/title. These are much safer than a generic share-count match.
+    total_candidates = []
+    explicit_patterns = [
+        (r"initial\s+public\s+offering\s+of\s+([\d,]{4,})\s+shares", "explicit initial-public-offering total"),
+        (r"(?:preliminary\s+)?prospectus\s+([\d,]{4,})\s+shares\s+(?:of\s+)?(?:class\s+[a-z]\s+)?common\s+stock", "prospectus cover title"),
+        (r"\b([\d,]{4,})\s+shares\s+(?:of\s+)?(?:class\s+[a-z]\s+)?common\s+stock\s+this\s+is\b", "cover share title"),
+    ]
+    for pattern, label in explicit_patterns:
+        for match in re.finditer(pattern, cover, re.I):
+            value = _share_int(match.group(1))
+            if value:
+                total_candidates.append((match.start(), value, label))
+
+    # Some EDGAR covers render title and narrative as separate blocks:
+    # "17,000,000 Shares Common Stock This is ... initial public offering ..."
+    for match in re.finditer(r"\b([\d,]{4,})\s+shares\s+(?:of\s+)?(?:class\s+[a-z]\s+)?common\s+stock\b", cover[:20000], re.I):
+        nearby = cover[max(0, match.start()-250):min(len(cover), match.end()+650)].lower()
+        if "initial public offering" in nearby and "outstanding" not in nearby:
+            value = _share_int(match.group(1))
+            if value:
+                total_candidates.append((match.start(), value, "cover title adjacent to IPO statement"))
+
+    if total_candidates:
+        total_candidates.sort(key=lambda item: item[0])
+        _, explicit_total, label = total_candidates[0]
+        if total is None:
+            total = explicit_total
+            sources.append(label)
+            confidence = "High"
+        elif total != explicit_total:
+            conflict = True
+            sources.append(f"conflict with {label} ({explicit_total:,} shares)")
+        else:
+            sources.append(label)
+
+    # Issuer-only offering. Safe only when the cover does not identify selling holders
+    # participating in the base offering.
+    if total is None:
+        issuer_only = re.search(r"\bwe\s+(?:are|will\s+be)\s+offering\s+([\d,]{4,})\s+shares\b", cover[:25000], re.I)
+        selling_language = re.search(r"selling\s+(?:stockholders|shareholders)[^.]{0,900}?(?:offering|selling|sell)\s+(?:an\s+additional\s+)?[\d,]{4,}\s+shares", cover[:30000], re.I)
+        if issuer_only and not selling_language:
+            primary = _share_int(issuer_only.group(1))
+            total = primary
+            sources.append("explicit issuer-only cover statement")
+            confidence = "High"
+
+    # Last-resort pattern is deliberately restricted to the first 15k and requires
+    # nearby IPO language. It is flagged Medium so QC can surface it for review.
+    if total is None:
+        for match in re.finditer(r"\boffering\s+([\d,]{4,})\s+shares\b", cover[:15000], re.I):
+            nearby = cover[max(0, match.start()-500):min(len(cover), match.end()+500)].lower()
+            if "initial public offering" in nearby and "outstanding" not in nearby:
+                total = _share_int(match.group(1))
+                sources.append("context-limited offering-share fallback")
+                confidence = "Medium"
+                break
+
+    return {
+        "total_shares": total,
+        "primary_shares": primary,
+        "secondary_shares": secondary,
+        "source": "; ".join(sources) if sources else None,
+        "confidence": confidence,
+        "conflict": conflict,
+    }
+
+
+def extract_offering_size(soup: BeautifulSoup) -> int:
+    """Backward-compatible base-offering share count."""
+    return extract_offering_terms(soup).get("total_shares")
 
 
 OWNERSHIP_TABLE_HEADER_KEYWORDS = [
@@ -499,10 +600,17 @@ def parse_filing(document_url: str, is_range_filing: bool = False) -> dict:
     soup = fetch_document(document_url)
 
     cover_page_data = extract_cover_page_data(soup)
-    cover_page_data["offering_size_shares"] = extract_offering_size(soup)
+    offering_terms = extract_offering_terms(soup)
+    cover_page_data["offering_size_shares"] = offering_terms.get("total_shares")
+    cover_page_data["primary_offering_shares"] = offering_terms.get("primary_shares")
+    cover_page_data["secondary_offering_shares"] = offering_terms.get("secondary_shares")
+    cover_page_data["offering_size_source"] = offering_terms.get("source")
+    cover_page_data["offering_size_confidence"] = offering_terms.get("confidence")
+    cover_page_data["offering_size_conflict"] = offering_terms.get("conflict", False)
 
     result = {
         "cover_page": cover_page_data,
+        "principal_office_location": extract_principal_office_location(soup),
         "principal_stockholders": extract_rich_stockholders(soup) or extract_principal_stockholders(soup),
         "management_bios": extract_management_bios(soup),
         "lockup_info": extract_lockup_info(soup),

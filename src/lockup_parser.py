@@ -1,8 +1,9 @@
 """Research-grade extraction of holder lock-up terms from SEC prospectus text.
 
 The goal is conservative structure, not aggressive inference. We identify holder-facing
-transfer restrictions, separate them from registration-rights timing and issuer-only
-restrictions, and preserve multiple schedules when a prospectus has special holder terms.
+transfer restrictions, separate them from registration-rights/Rule 144/greenshoe timing
+and issuer-only restrictions, and preserve multiple schedules when a prospectus has
+special holder terms.
 """
 from __future__ import annotations
 
@@ -49,12 +50,7 @@ def _duration_matches(text: str):
 
 
 def _clause_context(text: str, start: int, end: int) -> str:
-    """Keep scope language tied to the same clause/sentence as the duration.
-
-    Wide +/- windows caused issuer lock-ups and the following officer lock-up to bleed
-    together. SEC prospectuses frequently separate classes with semicolons, so use the
-    nearest sentence/semicolon boundaries while allowing enough room for long clauses.
-    """
+    """Keep scope language tied to the same sentence/semicolon clause."""
     left_floor = max(0, start - 1200)
     right_cap = min(len(text), end + 1200)
     before = text[left_floor:start]
@@ -88,21 +84,58 @@ def _scope_tags(context: str):
 
 
 def _special_holder(context: str, duration_text: str):
-    # Most reliable named-holder form: "366-day lock-up for Elon Musk".
     after = re.search(
         re.escape(duration_text) + r"\s+for\s+([A-Z][A-Za-z0-9.&' -]{1,50}?)(?:[;,.)]|\s+and\b|\s+with\b|$)",
         context,
     )
     if after:
         return _norm(after.group(1)).strip(" ,.-")
-
-    # Named agreement headings such as "Uber Lock-Up". Avoid generic fragments like
-    # "day Lock-Up" or "Period Lock-Up" by requiring a plausible proper-noun token.
     for match in re.finditer(r"\b([A-Z][A-Za-z0-9.&'-]{2,30}(?:\s+[A-Z][A-Za-z0-9.&'-]{2,30}){0,3})\s+Lock-?Up\b", context):
         value = _norm(match.group(1)).strip(" ,.-")
         if value.lower() not in {"lock up", "market standoff", "day", "days", "period", "the company"}:
             return value
     return None
+
+
+def _direct_lockup_relation(context: str, duration_text: str) -> bool:
+    """Require the duration itself to govern a holder transfer restriction.
+
+    Prospectuses mention dozens of unrelated periods near lock-up discussions: 30-day
+    greenshoes, 90-day Rule 144 windows, 180-day registration-rights triggers and
+    three-year DGCL business-combination restrictions. These are not holder lock-ups.
+    """
+    lowered = context.lower()
+    matched = duration_text.lower()
+    # Strongest signal: the matched duration literally includes lock-up language.
+    if "lock-up" in matched or "lockup" in matched:
+        return True
+
+    unrelated = (
+        "underwriters’ option", "underwriters' option", "over-allotment", "overallotment",
+        "rule 144", "registration rights", "demand registration", "form s-1",
+        "section 203", "business combination", "interested stockholder",
+    )
+    if any(term in lowered for term in unrelated):
+        return False
+
+    # A generic period can still be a real lock-up when the same clause expressly
+    # says the covered holders agreed not to transfer/dispose/sell for that period.
+    has_holder_restriction = bool(re.search(
+        r"(?:agreed|agree|subject to)[^.;]{0,240}?(?:not to|will not|may not)[^.;]{0,160}?"
+        r"(?:sell|transfer|dispose|offer|pledge|hedge)|"
+        r"(?:will not|may not)[^.;]{0,160}?(?:sell|transfer|dispose|offer|pledge|hedge)",
+        lowered,
+        re.I,
+    ))
+    has_lockup_label = "lock-up" in lowered or "lockup" in lowered or "market standoff" in lowered
+    # Explicit holder agreements not to sell/transfer are lock-ups in substance even
+    # when the section heading is in the preceding sentence. Staggered-release clauses
+    # can describe the release schedule without repeating "will not sell."
+    if has_holder_restriction:
+        return True
+    if has_lockup_label and re.search(r"staggered|early\s+lock-?up\s+release|lock-?up\s+release", lowered):
+        return True
+    return False
 
 
 def _score(context: str, scope_tags, special_holder: str | None):
@@ -124,7 +157,6 @@ def _score(context: str, scope_tags, special_holder: str | None):
         score -= 10
     if "form s-1" in lowered and not scope_tags and not special_holder:
         score -= 5
-    # Issuer issuance restrictions are not prospect-holder liquidity restrictions.
     issuer_only = (
         ("we have agreed" in lowered or "the company" in lowered)
         and not scope_tags and not special_holder
@@ -152,6 +184,8 @@ def _candidate_terms(text: str):
     terms = []
     for start, end, value, unit, matched in _duration_matches(text):
         context = _clause_context(text, start, end)
+        if not _direct_lockup_relation(context, matched):
+            continue
         tags = _scope_tags(context)
         special = _special_holder(context, matched)
         score = _score(context, tags, special)

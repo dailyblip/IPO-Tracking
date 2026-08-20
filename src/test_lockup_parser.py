@@ -39,6 +39,22 @@ class LockupParserResearchGradeTests(unittest.TestCase):
         self.assertEqual(info["duration_unit"], "months")
         self.assertIn("directors", info["scope_tags"])
 
+    def test_lyntris_discards_greenshoe_rule144_and_dgcl_periods(self):
+        text = """
+        However, any shares issued under Rule 701 to our executive officers and directors are subject to lock-up agreements
+        and will only become eligible for sale when the 180-day lock-up agreements expire.
+        Underwriters' option to purchase additional shares. The selling stockholders have granted the underwriters an option
+        to purchase additional shares for 30 days after the date of this prospectus.
+        In general, under Rule 144, affiliates may sell after expiration of the lock-up agreements, within any three-month period
+        beginning 90 days after the date of this prospectus.
+        Business Combinations. Section 203 prohibits certain business combinations with an interested stockholder for a period
+        of three years following the time such stockholder became interested.
+        """
+        info = extract_holder_lockup_info(text)
+        self.assertEqual(info["duration_value"], 180)
+        self.assertEqual(info["duration_unit"], "days")
+        self.assertEqual([(t["duration_value"], t["duration_unit"]) for t in info["terms"]], [(180, "days")])
+
     def test_no_lockup_language_stays_unresolved(self):
         info = extract_holder_lockup_info("This prospectus discusses revenue and customers only.")
         self.assertIsNone(info["duration_value"])
