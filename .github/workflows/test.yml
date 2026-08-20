@@ -5,14 +5,39 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
+  apply-ownership-v3:
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'feature/ownership-grid-v3'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/ownership-grid-v3
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply ownership integration patch
+        run: python scripts/apply_ownership_v3.py
+      - name: Commit integration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src docs/prospect-research/index.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Preserve rich beneficial ownership details for prospect research"
+          git push origin HEAD:feature/ownership-grid-v3
+
   test:
+    needs: [apply-ownership-v3]
+    if: always() && (needs.apply-ownership-v3.result == 'success' || needs.apply-ownership-v3.result == 'skipped')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
