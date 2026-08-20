@@ -1,0 +1,29 @@
+name: Apply Identity QA Fix
+on:
+  pull_request:
+permissions:
+  contents: write
+jobs:
+  apply:
+    if: github.event.pull_request.head.ref == 'fix/identity-affiliation-qa'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/identity-affiliation-qa
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply QA fix
+        run: python scripts/apply_identity_qa_fix.py
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+      - name: Commit QA fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src docs/prospect-research
+          git commit -m "Normalize holder identities and restore Neutron Stanford evidence" || exit 0
+          git push origin HEAD:fix/identity-affiliation-qa
