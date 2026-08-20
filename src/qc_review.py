@@ -21,6 +21,7 @@ the LLM consistency check.
 """
 
 import os
+import re
 import json
 from datetime import datetime
 import requests
@@ -299,17 +300,34 @@ def review_rows(rows: list, previous_rows_by_key: dict = None,
     ipo_dates_by_ticker = ipo_dates_by_ticker or {}
     source_excerpts_by_key = source_excerpts_by_key or {}
 
+    # Batch-level identity QA: two presentation variants of the same holder in
+    # one filing are a structural data error, not merely a cosmetic issue.
+    identity_counts = {}
+    for row in rows:
+        filing_key = (str(row.get("Ticker", "")).upper(), str(row.get("Date of Pricing") or row.get("Date of Filing") or ""))
+        identity = canonical_holder_identity(row.get("Holder Name"))
+        if identity:
+            identity_counts[(filing_key, identity)] = identity_counts.get((filing_key, identity), 0) + 1
+
     reviewed = []
     for row in rows:
         ticker = row.get("Ticker", "").upper()
-        key = (ticker, row.get("Holder Name", "").strip().lower())
+        holder_key = canonical_holder_identity(row.get("Holder Name"))
+        key = (ticker, holder_key)
 
-        reviewed.append(review_row(
+        reviewed_row = review_row(
             row,
             previous_row=previous_rows_by_key.get(key),
             ipo_date=ipo_dates_by_ticker.get(ticker),
             source_excerpt=source_excerpts_by_key.get(key, ""),
-        ))
+        )
+        filing_key = (ticker, str(row.get("Date of Pricing") or row.get("Date of Filing") or ""))
+        if holder_key and identity_counts.get((filing_key, holder_key), 0) > 1:
+            issue = f"Duplicate holder identity after normalization: {row.get('Holder Name', '')}"
+            notes = reviewed_row.get("QC Notes", "")
+            reviewed_row["QC Status"] = "Needs Review"
+            reviewed_row["QC Notes"] = "; ".join(x for x in (notes, issue) if x)
+        reviewed.append(reviewed_row)
 
     return reviewed
 
