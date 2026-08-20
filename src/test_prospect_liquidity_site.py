@@ -107,6 +107,18 @@ class ProspectLiquiditySiteTests(unittest.TestCase):
             self.assertIn(token, self.html)
         self.assertNotIn('dateLabel(p.lockup_end_date||selectedCompany.lockup_end_date)', self.html)
 
+    def test_calibration_backfill_preserves_fresh_live_fields(self):
+        self.assertIn('function mergeKnown', self.html)
+        self.assertIn('function mergePeople', self.html)
+        companies = {row["company"]: row for row in self.backfill["filings"]}
+        spacex = companies["Space Exploration Technologies Corp."]
+        self.assertEqual(spacex["ipo_size"], 74_999_999_925)
+        people = {p["name"]: p for p in spacex["people"]}
+        self.assertEqual(people["Elon Musk"]["lockup_end_date"], "2027-06-12")
+        self.assertEqual(people["Elon Musk"]["liquid_shares"], 0)
+        self.assertTrue(people["Ira Ehrenpreis"]["stanford_university_bio"])
+        self.assertEqual(people["Steve Jurvetson"]["shares"], 0)
+
     def test_researcher_workflow_fields_and_filters(self):
         for label in ("Stanford-linked IPOs", "Lock-ups ≤90 days", "$500M+ IPO", "Selling shareholders", "Type", "Role", "% Before", "% After", "Ownership transition", "Estimated IPO liquidity event", "Current valuation date not available"):
             self.assertIn(label, self.html)
