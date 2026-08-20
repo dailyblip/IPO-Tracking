@@ -92,6 +92,21 @@ class ProspectLiquiditySiteTests(unittest.TestCase):
         self.assertIn("p.shares_sold_ipo", self.html)
         self.assertIn("p.cash_realized_ipo", self.html)
 
+    def test_research_integrity_hardening(self):
+        for token in (
+            'Search company, ticker, person, role, or signal',
+            'function percentLabel',
+            'return "Not disclosed"',
+            'personText=people.flatMap',
+            'Number(p.shares_sold_ipo)>0',
+            'Research snapshot',
+            'Lock-up terms from filing',
+            'p.stanford_source||',
+            '<th>Location</th>',
+        ):
+            self.assertIn(token, self.html)
+        self.assertNotIn('dateLabel(p.lockup_end_date||selectedCompany.lockup_end_date)', self.html)
+
     def test_researcher_workflow_fields_and_filters(self):
         for label in ("Stanford-linked IPOs", "Lock-ups ≤90 days", "$500M+ IPO", "Selling shareholders", "Type", "Role", "% Before", "% After", "Ownership transition", "Estimated IPO liquidity event", "Current valuation date not available"):
             self.assertIn(label, self.html)
