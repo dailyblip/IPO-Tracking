@@ -1,0 +1,20 @@
+name: Cleanup Prospect Research branch
+on:
+  push:
+    branches: [feature/prospect-research-hardening]
+permissions:
+  contents: write
+jobs:
+  cleanup:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove generated Python cache and cleanup workflow
+        run: |
+          git rm -r --ignore-unmatch src/__pycache__
+          git rm .github/workflows/cleanup-prospect-branch.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Remove generated Python cache files"
+          git push
