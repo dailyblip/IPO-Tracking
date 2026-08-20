@@ -15,7 +15,18 @@ jobs:
         with:
           python-version: '3.12'
       - name: Apply QA migration
-        run: python scripts/apply_prospect_qa.py
+        run: |
+          python scripts/apply_prospect_qa.py
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('src/test_filing_parser.py')
+          s=p.read_text(encoding='utf-8')
+          marker='class ProspectQaParserTests(unittest.TestCase):\n'
+          if marker in s and 'class ProspectQaParserTests(unittest.TestCase):\n    def test_cover_price_parses_price_to_public(self):\n        from bs4 import BeautifulSoup\n        import filing_parser\n' not in s:
+              s=s.replace('class ProspectQaParserTests(unittest.TestCase):\n    def test_cover_price_parses_price_to_public(self):\n        from bs4 import BeautifulSoup\n', 'class ProspectQaParserTests(unittest.TestCase):\n    def test_cover_price_parses_price_to_public(self):\n        from bs4 import BeautifulSoup\n        import filing_parser\n', 1)
+              s=s.replace('    def test_principal_office_location_prefers_cover_disclosure(self):\n        from bs4 import BeautifulSoup\n', '    def test_principal_office_location_prefers_cover_disclosure(self):\n        from bs4 import BeautifulSoup\n        import filing_parser\n', 1)
+          p.write_text(s,encoding='utf-8')
+          PY
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run tests
