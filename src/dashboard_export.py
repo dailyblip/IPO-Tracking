@@ -194,6 +194,9 @@ def build_payload(rows, generated_at=None):
             realized = _number(row.get("Cash Realized IPO"))
             if realized is not None:
                 liquidity["cash_realized_ipo"] = realized
+            realized = _number(row.get("Cash Realized IPO"))
+            if realized is not None:
+                liquidity["cash_realized_ipo"] = realized
             people.append({"name": name, "shares": shares, "cash_value": cash_value, "stanford_university_bio": _boolean(row.get("Stanford University in Bio")), "lockup_end_date": lockup.get("end"), "lockup_scope": "filing-level" if lockup.get("text") else None, "valuation_as_of": first.get("Last Updated") or None, **metadata, **liquidity})
 
         filings.append({
