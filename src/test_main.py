@@ -121,3 +121,11 @@ class ProspectQaArithmeticTests(unittest.TestCase):
         self.assertTrue(any("reconcile" in x for x in issues))
         self.assertTrue(any("cash proceeds" in x for x in issues))
         self.assertTrue(any("Offering value" in x for x in issues))
+
+
+class StanfordConfirmationThresholdTests(unittest.TestCase):
+    def test_stanford_confirmation_requires_grade_five(self):
+        from pathlib import Path
+        source=Path(__file__).with_name("main.py").read_text(encoding="utf-8")
+        self.assertIn('stanford_result.get("grade") in (5, "5")', source)
+        self.assertNotIn('stanford_result.get("grade") in (1, "1"', source)
