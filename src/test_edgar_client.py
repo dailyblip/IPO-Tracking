@@ -109,5 +109,11 @@ class EdgarDiscoveryTests(unittest.TestCase):
         )
 
 
+    def test_business_location_formats_domestic_and_foreign(self):
+        with patch.object(edgar_client, "_request_json", return_value={"addresses":{"business":{"city":"Palo Alto","stateOrCountry":"CA","country":"US"}}}):
+            self.assertEqual(edgar_client.get_business_location("1"), "Palo Alto, CA")
+        with patch.object(edgar_client, "_request_json", return_value={"addresses":{"business":{"city":"Milan","stateOrCountry":"","country":"IT"}}}):
+            self.assertEqual(edgar_client.get_business_location("1"), "IT")
+
 if __name__ == "__main__":
     unittest.main()

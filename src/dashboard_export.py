@@ -17,7 +17,7 @@ PUBLIC_FILING_FIELDS = {
     "id", "company", "ticker", "cik", "accession_no", "form", "filed",
     "priority", "status", "value", "value_label", "people_count", "signals",
     "people", "sec_url", "stage", "price_range", "filing_price",
-    "offering_price", "current_price", "price_updated", "lockup_end_date",
+    "offering_price", "current_price", "price_updated", "location", "lockup_end_date",
     "lockup_duration_days", "lockup_text",
 }
 PUBLIC_PERSON_FIELDS = {
@@ -31,7 +31,7 @@ PUBLIC_PERSON_FIELDS = {
 CSV_FIELDS = (
     "company", "ticker", "cik", "accession_no", "form", "stage", "filed",
     "priority", "status", "offering_value", "filing_price", "offering_price",
-    "current_price", "price_updated", "lockup_end_date", "holder_name", "shares",
+    "current_price", "price_updated", "location", "lockup_end_date", "holder_name", "shares",
     "cash_value", "ipo_value", "liquid_shares", "liquid_value", "locked_shares",
     "locked_value", "cash_realized_ipo", "liquidity_status", "liquidity_confidence",
     "stanford_university_bio", "holder_type", "role", "ownership_percent", "ownership_percent_before", "ownership_percent_after",
@@ -194,9 +194,6 @@ def build_payload(rows, generated_at=None):
             realized = _number(row.get("Cash Realized IPO"))
             if realized is not None:
                 liquidity["cash_realized_ipo"] = realized
-            realized = _number(row.get("Cash Realized IPO"))
-            if realized is not None:
-                liquidity["cash_realized_ipo"] = realized
             people.append({"name": name, "shares": shares, "cash_value": cash_value, "stanford_university_bio": _boolean(row.get("Stanford University in Bio")), "lockup_end_date": lockup.get("end"), "lockup_scope": "filing-level" if lockup.get("text") else None, "valuation_as_of": first.get("Last Updated") or None, **metadata, **liquidity})
 
         filings.append({
@@ -216,6 +213,7 @@ def build_payload(rows, generated_at=None):
             "offering_price": _number(first.get("Actual Price")),
             "current_price": _number(first.get("Current Price")),
             "price_updated": first.get("Last Updated") or None,
+            "location": first.get("Location") or None,
             "lockup_end_date": lockup.get("end"),
             "lockup_duration_days": lockup.get("days"),
             "lockup_text": lockup.get("text"),
@@ -255,6 +253,7 @@ def _csv_rows(filings):
                 "offering_price": filing.get("offering_price"),
                 "current_price": filing.get("current_price"),
                 "price_updated": filing.get("price_updated"),
+                "location": filing.get("location"),
                 "lockup_end_date": filing.get("lockup_end_date"),
                 "holder_name": person.get("name", ""),
                 "shares": person.get("shares"), "cash_value": person.get("cash_value"),
