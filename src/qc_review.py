@@ -122,6 +122,30 @@ def check_prospect_integrity(row: dict) -> list:
 
 
 
+def canonical_holder_identity(value):
+    value = " ".join(str(value or "").split())
+    value = re.sub(r"\s*\.{3,}\s*$", "", value)
+    value = re.sub(r"(?:\s*\(\d+[a-z]?\))+$", "", value, flags=re.I)
+    value = re.sub(r"[†‡*]+$", "", value).strip()
+    return value.lower()
+
+
+def check_duplicate_holder_identities(rows: list) -> list:
+    """Flag duplicate people/entities after removing SEC presentation artifacts."""
+    seen = {}
+    issues = []
+    for row in rows or []:
+        name = row.get("Holder Name") or row.get("name")
+        key = canonical_holder_identity(name)
+        if not key:
+            continue
+        if key in seen:
+            issues.append(f"Duplicate holder identity after normalization: {seen[key]} / {name}")
+        else:
+            seen[key] = name
+    return issues
+
+
 def check_ticker_resolved(row: dict) -> list:
     if row.get("Current Price") in (None, "", "None"):
         return ["Current price could not be resolved for this ticker"]

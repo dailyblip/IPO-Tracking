@@ -17,7 +17,8 @@
         "6,956,522 shares offered at $25.00 per share",
         "276,731 shares sold by selling stockholders",
         "Beneficial ownership table disclosed in the final prospectus",
-        "Uber is subject to separate underwriter and company lock-up restrictions, including staggered releases"
+        "Uber is subject to separate underwriter and company lock-up restrictions, including staggered releases",
+        "Stanford affiliation confirmed for former President Joseph Kraus from the final prospectus bio"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1699963/000162828026046635/0001628280-26-046635-index.htm",
       "people": [
@@ -51,7 +52,9 @@
           "locked_value": null,
           "cash_realized_ipo": null,
           "liquidity_confidence": "Ownership confirmed from final prospectus; holder-specific lock-up classification pending",
-          "stanford_university_bio": false
+          "stanford_university_bio": true,
+          "stanford_affiliation_confirmed": true,
+          "stanford_source": "Neutron Holdings final 424B4 bio states that Joseph Kraus holds a B.A. in Political Science from Stanford University."
         },
         {
           "name": "Ann Gugino",

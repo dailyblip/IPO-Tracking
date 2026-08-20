@@ -129,3 +129,20 @@ class ProspectLiquiditySiteTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ProspectIdentityQaTests(unittest.TestCase):
+    def test_neutron_stanford_connection_is_explicit(self):
+        import json
+        from pathlib import Path
+        data=json.loads((Path(__file__).parents[1]/"docs/prospect-research/backfill.json").read_text(encoding="utf-8"))
+        neutron=next(f for f in data["filings"] if f.get("cik")=="0001699963")
+        kraus=next(p for p in neutron["people"] if p.get("name")=="Joseph Kraus")
+        self.assertTrue(kraus.get("stanford_university_bio"))
+        self.assertTrue(kraus.get("stanford_affiliation_confirmed"))
+        self.assertIn("Stanford University", kraus.get("stanford_source", ""))
+
+    def test_ui_identity_key_strips_sec_dot_leaders(self):
+        from pathlib import Path
+        html=(Path(__file__).parents[1]/"docs/prospect-research/index.html").read_text(encoding="utf-8")
+        self.assertIn('replace(/\\s*\\.{3,}\\s*$/g', html)
