@@ -143,3 +143,17 @@ class BatchDuplicateIdentityQaTests(unittest.TestCase):
             reviewed=qc_review.review_rows(rows)
         self.assertTrue(all(r["QC Status"]=="Needs Review" for r in reviewed))
         self.assertTrue(all("Duplicate holder identity" in r["QC Notes"] for r in reviewed))
+
+
+class OfferingIntegrityQaTests(unittest.TestCase):
+    def test_secondary_offering_must_reconcile_to_selling_holder_rows(self):
+        import qc_review
+        from unittest.mock import patch
+        rows = [
+            {"Ticker":"LYNX","Date of Pricing":"2026-08-19","Company Name":"Lyntris Inc.","Actual Price":17.5,"Current Price":15.2,"Holder Name":"Seller A","Shares":100,"Secondary Offering Shares":300,"Shares Sold in IPO":100},
+            {"Ticker":"LYNX","Date of Pricing":"2026-08-19","Company Name":"Lyntris Inc.","Actual Price":17.5,"Current Price":15.2,"Holder Name":"Seller B","Shares":100,"Secondary Offering Shares":300,"Shares Sold in IPO":100},
+        ]
+        with patch.object(qc_review, "llm_consistency_check", return_value=[]):
+            reviewed = qc_review.review_rows(rows)
+        self.assertTrue(all(r["QC Status"] == "Needs Review" for r in reviewed))
+        self.assertTrue(all("Selling-holder shares do not reconcile" in r["QC Notes"] for r in reviewed))
