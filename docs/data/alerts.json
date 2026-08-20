@@ -1,8 +1,24 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-20T13:13:35.877426+00:00",
-  "count": 25,
+  "generated_at": "2026-08-20T16:57:04.919628+00:00",
+  "count": 26,
   "alerts": [
+    {
+      "type": "priority_escalation",
+      "company": "Lyntris Inc.",
+      "cik": "0002132582",
+      "filing_id": "0001193125-26-356916",
+      "form": "424B4",
+      "filed": "2026-08-19",
+      "stage": "priced",
+      "priority": "High",
+      "summary": "Research priority increased from Medium to High.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm",
+      "detected_at": "2026-08-20T16:57:04.919515+00:00",
+      "old_value": "Medium",
+      "new_value": "High",
+      "key": "priority_escalation|0001193125-26-356916|0002132582|2026-08-19|High"
+    },
     {
       "type": "new_prepricing",
       "company": "Canary Staked TRX ETF",
