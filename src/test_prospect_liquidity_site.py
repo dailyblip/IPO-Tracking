@@ -85,6 +85,13 @@ class ProspectLiquiditySiteTests(unittest.TestCase):
         self.assertEqual(companies["Bending Spoons S.p.A."]["ipo_size"], 1_681_159_435)
         self.assertGreater(companies["Neutron Holdings, Inc."]["people"][0]["shares"], 0)
 
+    def test_researcher_workflow_fields_and_filters(self):
+        for label in ("Stanford-linked IPOs", "Lock-ups ≤90 days", "$500M+ IPO", "Selling shareholders", "Type", "Role", "% ownership", "Ownership transition", "Estimated IPO liquidity event", "Current valuation date not available"):
+            self.assertIn(label, self.html)
+        self.assertIn('id="researchFilter"', self.html)
+        self.assertIn('p.holder_type||"Unknown"', self.html)
+        self.assertIn('Entity record — no individual prospect profile', self.html)
+
 
 if __name__ == "__main__":
     unittest.main()
