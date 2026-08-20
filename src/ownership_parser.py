@@ -46,7 +46,6 @@ def _numeric(text):
     value = _clean(text)
     if not value or value in {"—", "-", "*", "**"}:
         return None
-    # Strip common SEC footnote markers while refusing prose-containing cells.
     value = re.sub(r"\(\d+[a-z]?\)", "", value, flags=re.I).strip()
     value = re.sub(r"[†‡*]+$", "", value).strip()
     match = re.fullmatch(r"\$?\s*([\d,]+(?:\.\d+)?)\s*%?", value)
@@ -67,11 +66,8 @@ def _percent(text):
 
 
 def _composite_headers(matrix):
-    # Ownership grids commonly use 2-5 stacked header rows. Stop once a row
-    # looks like a holder record (alphabetic name plus a numeric field).
     header_rows = []
     for row in matrix[:10]:
-        joined = " ".join(row)
         has_number = any(_numeric(c) is not None or _percent(c) is not None for c in row[1:])
         first = next((c for c in row if c), "")
         looks_holder = bool(first and has_number and not re.search(
@@ -157,7 +153,6 @@ def parse_ownership_table(table):
                 value = _numeric(cell)
             if value is not None and data.get(kind) is None:
                 data[kind] = value
-        # Conservative fallback for simple two-column grids only.
         if all(data[k] is None for k in ("shares_before", "shares_sold", "shares_after", "shares")):
             numeric = [_numeric(c) for c in row[1:] if _numeric(c) is not None]
             if len(numeric) == 1:
@@ -188,3 +183,5 @@ def extract_rich_stockholders(soup):
                     if field != "name" and merged[key].get(field) is None and value is not None:
                         merged[key][field] = value
     return [merged[key] for key in order]
+
+# Integration workflow trigger marker.
