@@ -246,6 +246,26 @@ def is_us_based(cik: str) -> bool:
     return country in ("", "US")
 
 
+def get_business_location(cik: str) -> str:
+    """Return researcher-friendly issuer location from the SEC submissions profile.
+
+    Domestic issuers are rendered as City, ST. Foreign issuers are rendered as
+    country because that is the more useful prospect-research grouping.
+    """
+    headers = _get_headers()
+    padded_cik = str(cik).zfill(10)
+    url = EDGAR_SUBMISSIONS_URL.format(cik=padded_cik)
+    data = _request_json(url, headers)
+    address = data.get("addresses", {}).get("business", {}) or {}
+    country = str(address.get("countryOfIncorporation") or address.get("country") or "").strip()
+    city = str(address.get("city") or "").strip()
+    state = str(address.get("stateOrCountry") or address.get("state") or "").strip()
+    if country in ("", "US"):
+        parts = [part for part in (city, state) if part]
+        return ", ".join(parts)
+    return country
+
+
 def get_primary_ticker(cik: str):
     """Return the issuer's first SEC-reported exchange ticker, if present."""
     headers = _get_headers()
