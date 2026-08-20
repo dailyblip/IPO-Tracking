@@ -184,6 +184,7 @@ def process_filing(filing_meta: dict) -> list:
         # Pull the matching S-1 for the original range price and the
         # original filing date.
         filing_price = None
+        s1_location = None
         date_of_filing = s1_meta.get("filing_date") if s1_meta else None
         if s1_meta:
             try:
@@ -192,6 +193,7 @@ def process_filing(filing_meta: dict) -> list:
                     s1_index_url, expected_form_types=["S-1", "S-1/A"]
                 )
                 s1_parsed = filing_parser.parse_filing(s1_document_url, is_range_filing=True)
+                s1_location = s1_parsed.get("principal_office_location")
                 price_range = s1_parsed.get("price_range", {})
                 if price_range.get("range_low") and price_range.get("range_high"):
                     filing_price = f"{price_range['range_low']}-{price_range['range_high']}"
@@ -203,6 +205,11 @@ def process_filing(filing_meta: dict) -> list:
         date_of_pricing = filing_meta.get("filing_date")
 
         offering_size = cover.get("offering_size_shares")
+        primary_offering_shares = cover.get("primary_offering_shares")
+        secondary_offering_shares = cover.get("secondary_offering_shares")
+        offering_size_source = cover.get("offering_size_source")
+        offering_size_confidence = cover.get("offering_size_confidence")
+        offering_size_conflict = bool(cover.get("offering_size_conflict"))
         amount_raised = (
             offering_size * actual_price if (offering_size and actual_price) else None
         )
@@ -217,13 +224,19 @@ def process_filing(filing_meta: dict) -> list:
                 # price rather than losing this filing's rows entirely.
         lockup = parsed.get("lockup_info", {})
         bios = parsed.get("management_bios", {})
-        business_location = filing_parser.extract_principal_office_location(full_text_soup)
+        business_location = parsed.get("principal_office_location") or s1_location
+        location_source = (
+            "424B4 principal executive office" if parsed.get("principal_office_location")
+            else ("S-1 principal executive office" if s1_location else None)
+        )
         if not business_location:
             try:
                 business_location = edgar_client.get_business_location(cik)
+                location_source = "SEC submissions metadata" if business_location else None
             except Exception as error:
                 print(f"[main] Warning: could not resolve issuer location for {company_name}: {error}")
                 business_location = ""
+                location_source = None
 
         rows = []
         holders = parsed.get("principal_stockholders", [])
@@ -285,9 +298,15 @@ def process_filing(filing_meta: dict) -> list:
                 "Filing Price": filing_price,
                 "Actual Price": actual_price,
                 "IPO Size (Shares)": offering_size,
+                "Primary Offering Shares": primary_offering_shares,
+                "Secondary Offering Shares": secondary_offering_shares,
+                "Offering Size Source": offering_size_source,
+                "Offering Size Confidence": offering_size_confidence,
+                "Offering Size Conflict": offering_size_conflict,
                 "Amount Raised": amount_raised,
                 "Current Price": current_price,
                 "Location": business_location,
+                "Location Source": location_source,
                 "Holder Name": holder_name,
                 "Role": _role_from_bio(person_bio_text),
                 "Shares": shares,
