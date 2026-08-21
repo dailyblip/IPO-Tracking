@@ -2,9 +2,9 @@
 edgar_client.py
 
 Discovers newly filed 424B4 (final IPO prospectus) filings on SEC EDGAR,
-filters out non-US filers and SPACs, and locates the matching S-1/S-1A
-for the same company so the original filing-range price can be captured
-alongside the final offering price.
+filters out non-US filers, SPACs, and reverse-SPAC/de-SPAC transactions, and
+locates the matching S-1/S-1A for the same company so the original filing-range
+price can be captured alongside the final offering price.
 
 Requires SEC_EDGAR_USER_AGENT to be set as an environment variable -
 SEC requires a descriptive User-Agent with a real contact email on
@@ -42,6 +42,39 @@ SPAC_SELF_DESCRIPTION_PATTERNS = [
         r"\bformed (?:for|with) the (?:sole )?purpose of (?:effecting|entering into) "
         r"(?:an? )?(?:initial )?business combination\b",
         re.IGNORECASE,
+    ),
+]
+
+# Reverse-SPAC/de-SPAC registrations often use the operating company's post-merger
+# name, so issuer-name filtering alone is not enough. These patterns are deliberately
+# tied to transaction-completion language near the front of the filing to avoid
+# excluding ordinary IPOs that merely discuss SPACs in risk factors or market context.
+REVERSE_SPAC_PATTERNS = [
+    re.compile(
+        r"\b(?:following|upon|after) (?:the )?(?:consummation|completion|closing) "
+        r"of (?:the|our) business combination\b.{0,800}\b"
+        r"(?:special purpose acquisition company|blank check company|SPAC)\b",
+        re.IGNORECASE | re.DOTALL,
+    ),
+    re.compile(
+        r"\b(?:special purpose acquisition company|blank check company|SPAC)\b.{0,800}\b"
+        r"(?:following|upon|after) (?:the )?(?:consummation|completion|closing) "
+        r"of (?:the|our) business combination\b",
+        re.IGNORECASE | re.DOTALL,
+    ),
+    re.compile(
+        r"\b(?:formerly known as|previously known as)\b.{0,300}\b"
+        r"(?:acquisition (?:corp(?:oration)?|company)|blank check company|SPAC)\b",
+        re.IGNORECASE | re.DOTALL,
+    ),
+    re.compile(
+        r"\b(?:de[- ]?spac|de[- ]?spac transaction)\b",
+        re.IGNORECASE,
+    ),
+    re.compile(
+        r"\bdomestication\b.{0,1200}\bbusiness combination\b.{0,1200}\b"
+        r"(?:SPAC|special purpose acquisition company|blank check company)\b",
+        re.IGNORECASE | re.DOTALL,
     ),
 ]
 
@@ -281,17 +314,18 @@ def get_primary_ticker(cik: str):
 
 def check_spac_indicators(filing_text: str, company_name: str = "") -> bool:
     """
-    Identify a SPAC from its issuer name or an issuer self-description near
-    the front of the prospectus. References to SPACs elsewhere in an
-    operating company's filing are not exclusion evidence.
+    Identify SPACs and reverse-SPAC/de-SPAC registrations from issuer names or
+    transaction language near the front of the prospectus. Generic references
+    to SPACs elsewhere in an operating company's filing are not exclusion evidence.
     """
     if SPAC_NAME_PATTERN.search(str(company_name or "")):
         return True
 
-    cover_and_summary = str(filing_text or "")[:75000]
-    return any(pattern.search(cover_and_summary) for pattern in SPAC_SELF_DESCRIPTION_PATTERNS)
-
-
+    cover_and_summary = str(filing_text or "")[:125000]
+    return any(pattern.search(cover_and_summary) for pattern in (
+        *SPAC_SELF_DESCRIPTION_PATTERNS,
+        *REVERSE_SPAC_PATTERNS,
+    ))
 
 
 def check_direct_listing_indicators(filing_text: str) -> bool:
