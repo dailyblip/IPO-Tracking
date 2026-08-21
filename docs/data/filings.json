@@ -1,8 +1,32 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T12:23:44.170815+00:00",
+  "generated_at": "2026-08-21T13:13:25.162848+00:00",
   "source": "SEC EDGAR",
   "filings": [
+    {
+      "id": "s1:0002124472",
+      "company": "Orion180 Insurance Group Inc.",
+      "ticker": "",
+      "cik": "0002124472",
+      "accession_no": "0001628280-26-058231",
+      "form": "S-1",
+      "filed": "2026-08-20",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "priority": "Medium",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 0,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026058231/0001628280-26-058231-index.htm"
+    },
     {
       "id": "0001193125-26-356916",
       "company": "Lyntris Inc.",
@@ -2030,6 +2054,7 @@
       "stage": "Pre-pricing",
       "price_range": null,
       "filing_price": null,
+      "ipo_size": null,
       "priority": "Medium",
       "status": "New",
       "value": null,
@@ -2043,6 +2068,31 @@
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2064768/000199937126018236/0001999371-26-018236-index.htm"
     },
     {
+      "id": "s1:0002112634",
+      "company": "Sensei Harbor Corp.",
+      "ticker": "",
+      "cik": "0002112634",
+      "accession_no": "0001683168-26-006561",
+      "form": "S-1/A",
+      "filed": "2026-08-18",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": "$0.02",
+      "ipo_size": 120000,
+      "priority": "High",
+      "status": "New",
+      "value": 120000,
+      "value_label": "$120,000",
+      "people_count": 0,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "Fixed offering price disclosed at $0.02 per share",
+        "IPO size disclosed or derived at approximately $120,000"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2112634/000168316826006561/0001683168-26-006561-index.htm"
+    },
+    {
       "id": "s1:0002109801",
       "company": "VARSAL TECH, INC.",
       "ticker": "VAT",
@@ -2053,15 +2103,16 @@
       "stage": "Pre-pricing",
       "price_range": null,
       "filing_price": "$5.50",
+      "ipo_size": 11143,
       "priority": "High",
       "status": "New",
-      "value": 126500000,
-      "value_label": "$126,500,000",
+      "value": 11143,
+      "value_label": "$11,143",
       "people_count": 0,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
         "Fixed offering price disclosed at $5.50 per share",
-        "IPO size disclosed or derived at approximately $126,500,000"
+        "IPO size disclosed or derived at approximately $11,143"
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2109801/000149315226038800/0001493152-26-038800-index.htm"
@@ -2076,7 +2127,8 @@
       "filed": "2026-08-17",
       "stage": "Pre-pricing",
       "price_range": "$10.00–$12.00",
-      "filing_price": "$12.00",
+      "filing_price": "$11.00",
+      "ipo_size": 33000000,
       "priority": "High",
       "status": "New",
       "value": 33000000,
