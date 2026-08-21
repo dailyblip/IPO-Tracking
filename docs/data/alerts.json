@@ -1,8 +1,36 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-21T12:24:11.650610+00:00",
-  "count": 27,
+  "generated_at": "2026-08-21T13:13:47.188430+00:00",
+  "count": 29,
   "alerts": [
+    {
+      "type": "new_prepricing",
+      "company": "Orion180 Insurance Group Inc.",
+      "cik": "0002124472",
+      "filing_id": "s1:0002124472",
+      "form": "S-1",
+      "filed": "2026-08-20",
+      "stage": "pre-pricing",
+      "priority": "Medium",
+      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026058231/0001628280-26-058231-index.htm",
+      "detected_at": "2026-08-21T13:13:47.188289+00:00",
+      "key": "new_prepricing|s1:0002124472|0002124472|2026-08-20|"
+    },
+    {
+      "type": "new_prepricing",
+      "company": "Sensei Harbor Corp.",
+      "cik": "0002112634",
+      "filing_id": "s1:0002112634",
+      "form": "S-1/A",
+      "filed": "2026-08-18",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "New pre-pricing S-1/A candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2112634/000168316826006561/0001683168-26-006561-index.htm",
+      "detected_at": "2026-08-21T13:13:47.188330+00:00",
+      "key": "new_prepricing|s1:0002112634|0002112634|2026-08-18|"
+    },
     {
       "type": "priority_escalation",
       "company": "Apnimed, Inc.",
