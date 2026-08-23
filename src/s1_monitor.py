@@ -233,11 +233,16 @@ def enrich_record(meta: dict) -> dict | None:
             print(f"[s1_monitor] Skipping {company}: micro self-underwritten/best-efforts registration without exchange listing")
             return None
 
-        ticker = None
-        try:
-            ticker = edgar_client.get_primary_ticker(cik)
-        except Exception as error:
-            print(f"[s1_monitor] Ticker lookup failed for {company}: {error}")
+        # Prefer the ticker explicitly disclosed in the SEC filing itself. Newly
+        # registering issuers often do not yet have a ticker in SEC submissions
+        # metadata, which previously produced avoidable blanks in the pre-pricing
+        # monitor. The cover parser only accepts a conservative 1-6 letter symbol.
+        ticker = str(cover.get("ticker") or "").strip().upper() or None
+        if not ticker:
+            try:
+                ticker = edgar_client.get_primary_ticker(cik)
+            except Exception as error:
+                print(f"[s1_monitor] Ticker lookup failed for {company}: {error}")
 
         signals = []
         if form == "S-1":
