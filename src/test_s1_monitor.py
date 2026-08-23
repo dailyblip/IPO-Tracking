@@ -45,6 +45,14 @@ class S1MonitorTests(unittest.TestCase):
         )
         self.assertEqual(value, 120_000)
 
+    def test_does_not_derive_size_from_ambiguous_sale_of_shares_prose(self):
+        value = s1_monitor._extract_ipo_size(
+            "This prospectus also relates to the sale of 2,026 shares by a selling stockholder.",
+            {"cover_page": {"offering_price": 5.50}},
+            {},
+        )
+        self.assertIsNone(value)
+
     def test_micro_self_underwritten_registration_without_exchange_is_rejected(self):
         self.assertTrue(s1_monitor._is_micro_self_underwritten_offering(
             "The offering is being conducted on a self-underwritten, best-efforts basis.",
