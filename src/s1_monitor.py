@@ -152,7 +152,14 @@ def _format_range(low, high) -> str | None:
 
 
 def _extract_ipo_size(filing_text: str, parsed: dict, price_range: dict) -> int | None:
-    """Extract the stated aggregate offering amount, or derive a best-effort size."""
+    """Extract a stated aggregate amount or derive size from a parsed cover share count.
+
+    Do not infer the IPO share count from a generic prose phrase such as "sale of
+    2,026 shares". S-1s frequently contain secondary-sale, option, warrant, or
+    historical share references that are unrelated to the registered offering.
+    A derived value is published only when the filing parser has identified the
+    cover-page offering share count.
+    """
     text = " ".join(str(filing_text or "").split())[:80000]
     patterns = [
         r"(?:proposed\s+maximum\s+aggregate\s+offering\s+price|maximum\s+aggregate\s+offering\s+price|aggregate\s+offering\s+price)[^$]{0,180}\$\s*([\d,]+(?:\.\d+)?)",
@@ -174,13 +181,6 @@ def _extract_ipo_size(filing_text: str, parsed: dict, price_range: dict) -> int 
         shares = int(cover.get("offering_size_shares") or 0)
     except (TypeError, ValueError):
         shares = 0
-    if not shares:
-        share_match = re.search(r"(?:offering|sale\s+of)\s+([\d,]{4,})\s+shares", text, re.IGNORECASE)
-        if share_match:
-            try:
-                shares = int(share_match.group(1).replace(",", ""))
-            except ValueError:
-                shares = 0
     if not shares:
         return None
 
