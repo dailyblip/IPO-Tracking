@@ -40,8 +40,9 @@ class DashboardUiTests(unittest.TestCase):
 
     def test_main_table_uses_requested_default_column_order(self):
         expected_labels = (
-            "Company Name", "Ticker", "IPO Size / Offering Value", "Form", "Stage",
-            "Filed", "Filing Price", "Current Price", "Final IPO Price", "Public Signals",
+            "Company Name", "Ticker", "Form", "Stage", "Filed",
+            "IPO Size / Offering Value", "Filing Price", "Final IPO Price",
+            "Current Price", "Public Signals",
         )
         positions = [self.html.index(f'>{label}</th>') for label in expected_labels]
         self.assertEqual(positions, sorted(positions))
