@@ -13,6 +13,13 @@ on:
       - 'src/s1_monitor.py'
       - 'src/test_s1_monitor.py'
       - '.github/workflows/s1-watch.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/s1_monitor.py'
+      - 'src/test_s1_monitor.py'
+      - '.github/workflows/s1-watch.yml'
   schedule:
     # Run shortly after the primary IPO tracker on weekdays.
     - cron: '20 12 * * 1-5'
