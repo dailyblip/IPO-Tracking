@@ -1,7 +1,55 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-23T21:57:22.708181+00:00",
+  "updated_at": "2026-08-23T22:50:14.695952+00:00",
   "items": {
+    "s1:0002065821": {
+      "id": "s1:0002065821",
+      "cik": "0002065821",
+      "company": "Little West Holdings Inc.",
+      "form": "S-1/A",
+      "filed": "2026-08-21",
+      "stage": "pre-pricing",
+      "price_range": "$4.00–$6.00",
+      "priority": "High",
+      "value": 18750000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026092565/0001213900-26-092565-index.htm"
+    },
+    "s1:0002111846": {
+      "id": "s1:0002111846",
+      "cik": "0002111846",
+      "company": "Game Your Game Inc.",
+      "form": "S-1",
+      "filed": "2026-08-21",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026092695/0001213900-26-092695-index.htm"
+    },
+    "s1:0002131613": {
+      "id": "s1:0002131613",
+      "cik": "0002131613",
+      "company": "CoVolt Power, Inc.",
+      "form": "S-1",
+      "filed": "2026-08-21",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2131613/000119312526361190/0001193125-26-361190-index.htm"
+    },
+    "s1:0002091680": {
+      "id": "s1:0002091680",
+      "cik": "0002091680",
+      "company": "Bitari Inc",
+      "form": "S-1",
+      "filed": "2026-08-21",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "High",
+      "value": 30000005,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526003678/0001185185-26-003678-index.htm"
+    },
     "s1:0002124472": {
       "id": "s1:0002124472",
       "cik": "0002124472",
@@ -609,6 +657,30 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002124472",
       "last_filed": "2026-08-20"
+    },
+    "0002065821": {
+      "company": "Little West Holdings Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002065821",
+      "last_filed": "2026-08-21"
+    },
+    "0002111846": {
+      "company": "Game Your Game Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002111846",
+      "last_filed": "2026-08-21"
+    },
+    "0002131613": {
+      "company": "CoVolt Power, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002131613",
+      "last_filed": "2026-08-21"
+    },
+    "0002091680": {
+      "company": "Bitari Inc",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002091680",
+      "last_filed": "2026-08-21"
     }
   }
 }
