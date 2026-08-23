@@ -5,6 +5,7 @@ Fetches current market price for a given ticker using the Finnhub API.
 Requires MARKET_DATA_API_KEY to be set as an environment variable.
 """
 
+import math
 import os
 import time
 import requests
@@ -12,6 +13,8 @@ import requests
 FINNHUB_BASE_URL = "https://finnhub.io/api/v1"
 MAX_RETRIES = 3
 RETRY_BACKOFF_SECONDS = 2
+MAX_QUOTE_AGE_SECONDS = 7 * 24 * 60 * 60
+MAX_FUTURE_SKEW_SECONDS = 5 * 60
 
 
 class PriceLookupError(Exception):
@@ -28,11 +31,57 @@ def _get_api_key() -> str:
     return api_key
 
 
+def _validate_quote(ticker: str, data: dict, now: float = None) -> float:
+    """Return a usable current price only when the provider quote is valid and fresh."""
+    current_price = data.get("c")
+    try:
+        price = float(current_price)
+    except (TypeError, ValueError):
+        raise PriceLookupError(f"Invalid current price returned for ticker '{ticker}'.")
+
+    if not math.isfinite(price) or price <= 0:
+        raise PriceLookupError(
+            f"No valid price data returned for ticker '{ticker}'. It may be "
+            f"delisted, mistyped, too newly listed for this data provider to "
+            f"have indexed yet, or not yet trading."
+        )
+
+    quote_timestamp = data.get("t")
+    try:
+        quote_timestamp = float(quote_timestamp)
+    except (TypeError, ValueError):
+        raise PriceLookupError(
+            f"Finnhub quote for '{ticker}' is missing a valid timestamp; "
+            "refusing to publish an unverifiable current price."
+        )
+
+    if not math.isfinite(quote_timestamp) or quote_timestamp <= 0:
+        raise PriceLookupError(
+            f"Finnhub quote for '{ticker}' has an invalid timestamp; "
+            "refusing to publish an unverifiable current price."
+        )
+
+    now = time.time() if now is None else now
+    age = now - quote_timestamp
+    if age > MAX_QUOTE_AGE_SECONDS:
+        raise PriceLookupError(
+            f"Finnhub quote for '{ticker}' is {age / 86400:.1f} days old; "
+            "refusing to publish stale data as Current Price."
+        )
+    if age < -MAX_FUTURE_SKEW_SECONDS:
+        raise PriceLookupError(
+            f"Finnhub quote for '{ticker}' has a timestamp in the future; "
+            "refusing to publish it as Current Price."
+        )
+
+    return price
+
+
 def get_current_price(ticker: str) -> float:
     """
     Return the current price for a given ticker symbol.
 
-    Raises PriceLookupError if the ticker is invalid, not found, or the
+    Raises PriceLookupError if the ticker is invalid, not found, stale, or the
     API call fails after retries.
     """
     api_key = _get_api_key()
@@ -55,16 +104,7 @@ def get_current_price(ticker: str) -> float:
                     f"(HTTP {response.status_code}). Raw body: {response.text[:200]!r}"
                 )
 
-            # Finnhub returns all zeros for an unrecognized symbol rather
-            # than an HTTP error, so we need to check explicitly.
-            current_price = data.get("c")
-            if current_price is None or current_price == 0:
-                raise PriceLookupError(
-                    f"No price data returned for ticker '{ticker}'. It may be "
-                    f"delisted, mistyped, too newly listed for this data "
-                    f"provider to have indexed yet, or not yet trading."
-                )
-            return float(current_price)
+            return _validate_quote(ticker, data)
 
         except PriceLookupError:
             # Not retryable - these mean we got a real response with no
