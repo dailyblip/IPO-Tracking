@@ -152,36 +152,26 @@ def _format_range(low, high) -> str | None:
 
 
 def _extract_ipo_size(filing_text: str, parsed: dict, price_range: dict) -> int | None:
-    """Extract a stated aggregate amount or derive size from a parsed cover share count.
+    """Derive IPO size only from high-confidence cover-page offering terms.
 
-    Do not infer the IPO share count from a generic prose phrase such as "sale of
-    2,026 shares". S-1s frequently contain secondary-sale, option, warrant, or
-    historical share references that are unrelated to the registered offering.
-    A derived value is published only when the filing parser has identified the
-    cover-page offering share count.
+    Do not use generic ``maximum aggregate offering price`` text from the filing.
+    SEC registration-fee tables use that same label and can otherwise be mistaken
+    for the actual deal size. A value is published only when the filing parser has
+    a conflict-free, high-confidence base-offering share count from the prospectus
+    cover/Offering section, multiplied by an explicit price range midpoint or fixed
+    offering price. Greenshoe shares are excluded by the upstream terms parser.
     """
-    text = " ".join(str(filing_text or "").split())[:80000]
-    patterns = [
-        r"(?:proposed\s+maximum\s+aggregate\s+offering\s+price|maximum\s+aggregate\s+offering\s+price|aggregate\s+offering\s+price)[^$]{0,180}\$\s*([\d,]+(?:\.\d+)?)",
-        r"\$\s*([\d,]+(?:\.\d+)?)\s+(?:aggregate\s+offering|maximum\s+aggregate\s+offering)",
-    ]
-    for pattern in patterns:
-        match = re.search(pattern, text, re.IGNORECASE)
-        if not match:
-            continue
-        try:
-            amount = float(match.group(1).replace(",", ""))
-        except ValueError:
-            continue
-        if amount > 0:
-            return int(round(amount))
-
     cover = parsed.get("cover_page", {}) if isinstance(parsed, dict) else {}
+    if cover.get("offering_size_conflict"):
+        return None
+    if str(cover.get("offering_size_confidence") or "").strip().lower() != "high":
+        return None
+
     try:
         shares = int(cover.get("offering_size_shares") or 0)
     except (TypeError, ValueError):
         shares = 0
-    if not shares:
+    if shares <= 0:
         return None
 
     try:
@@ -191,6 +181,7 @@ def _extract_ipo_size(filing_text: str, parsed: dict, price_range: dict) -> int 
         low = high = 0
     if low > 0 and high > 0:
         return int(round(shares * ((low + high) / 2)))
+
     try:
         fixed_price = float(cover.get("offering_price") or 0)
     except (TypeError, ValueError):
@@ -233,10 +224,6 @@ def enrich_record(meta: dict) -> dict | None:
             print(f"[s1_monitor] Skipping {company}: micro self-underwritten/best-efforts registration without exchange listing")
             return None
 
-        # Prefer the ticker explicitly disclosed in the SEC filing itself. Newly
-        # registering issuers often do not yet have a ticker in SEC submissions
-        # metadata, which previously produced avoidable blanks in the pre-pricing
-        # monitor. The cover parser only accepts a conservative 1-6 letter symbol.
         ticker = str(cover.get("ticker") or "").strip().upper() or None
         if not ticker:
             try:
