@@ -5,21 +5,27 @@ import s1_monitor
 
 
 class IpoSizeTests(unittest.TestCase):
-    def test_extracts_stated_aggregate_ipo_size(self):
+    def test_rejects_registration_fee_aggregate_as_ipo_size(self):
         value = s1_monitor._extract_ipo_size(
             "Proposed Maximum Aggregate Offering Price $100,000,000",
             {},
             {},
         )
-        self.assertEqual(value, 100_000_000)
+        self.assertIsNone(value)
 
-    def test_derives_size_from_shares_and_preliminary_range(self):
+    def test_derives_size_from_high_confidence_cover_terms(self):
         value = s1_monitor._extract_ipo_size(
             "Initial public offering",
-            {"cover_page": {"offering_size_shares": 5_000_000}},
+            {
+                "cover_page": {
+                    "offering_size_shares": 6_000_000,
+                    "offering_size_confidence": "High",
+                    "offering_size_conflict": False,
+                }
+            },
             {"range_low": 18, "range_high": 20},
         )
-        self.assertEqual(value, 95_000_000)
+        self.assertEqual(value, 114_000_000)
 
     def test_queue_uses_ipo_size_as_dashboard_value(self):
         queued = s1_monitor._queue_record({
