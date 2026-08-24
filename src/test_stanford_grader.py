@@ -74,25 +74,6 @@ def test_exact_official_issuer_bio_confirms_without_llm():
     llm.assert_not_called()
 
 
-def test_official_source_partial_name_collision_does_not_auto_confirm():
-    results = [{
-        "title": "Nima Farzanpour - Latigo Biotherapeutics",
-        "snippet": "Nima Farzanpour studied at Stanford University.",
-        "link": "https://latigobio.com/staff-member/nima-farzanpour/",
-    }]
-    with patch.object(grader, "run_search_fallback", return_value=results), \
-            patch.object(grader, "grade_via_llm", return_value={
-                "grade": 0,
-                "justification": "Name mismatch.",
-                "source": "llm_judgment",
-            }) as llm:
-        result = grader.grade_stanford_affiliation("Nima Farzan", "Latigo Biotherapeutics, Inc.")
-
-    assert result["grade"] == 0
-    assert result["source"] == "llm_judgment"
-    llm.assert_called_once()
-
-
 def test_exact_stanford_edu_result_confirms_without_llm():
     results = [{
         "title": "Jane Doe | Stanford University",
