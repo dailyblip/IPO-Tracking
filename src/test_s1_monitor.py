@@ -31,16 +31,23 @@ class S1MonitorTests(unittest.TestCase):
         self.assertEqual(s1_monitor._normalize_filing_date("20260818"), "2026-08-18")
         self.assertEqual(s1_monitor._normalize_filing_date("2026-08-18"), "2026-08-18")
 
-    def test_extracts_sub_million_aggregate_offering_size(self):
+    def test_does_not_use_registration_fee_aggregate_as_ipo_size(self):
         value = s1_monitor._extract_ipo_size(
             "Proposed Maximum Aggregate Offering Price $120,000", {}, {}
         )
-        self.assertEqual(value, 120_000)
+        self.assertIsNone(value)
 
-    def test_derives_fixed_price_offering_size(self):
+    def test_derives_fixed_price_offering_size_from_high_confidence_cover_terms(self):
         value = s1_monitor._extract_ipo_size(
             "Initial public offering",
-            {"cover_page": {"offering_size_shares": 6_000_000, "offering_price": 0.02}},
+            {
+                "cover_page": {
+                    "offering_size_shares": 6_000_000,
+                    "offering_size_confidence": "High",
+                    "offering_size_conflict": False,
+                    "offering_price": 0.02,
+                }
+            },
             {},
         )
         self.assertEqual(value, 120_000)
