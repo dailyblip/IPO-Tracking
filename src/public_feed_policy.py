@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import math
+from datetime import date
 from pathlib import Path
 
 from dashboard_export import write_dashboard_csv
@@ -38,6 +39,18 @@ def _money(value):
     if value >= 1_000:
         return f"${value / 1_000:.0f}K"
     return f"${value:,.0f}"
+
+
+def _has_valid_filing_date(filing):
+    """Require a canonical, non-future SEC filing date for every public row."""
+    filed = str((filing or {}).get("filed") or "").strip()
+    if len(filed) != 10:
+        return False
+    try:
+        parsed = date.fromisoformat(filed)
+    except ValueError:
+        return False
+    return parsed.isoformat() == filed and parsed <= date.today()
 
 
 def _has_supported_ipo_form(filing):
@@ -235,6 +248,8 @@ def _normalize_market_value_consistency(filing):
 def qualifies_for_public_feed(filing):
     """Return True only for qualifying operating-company IPOs established at >= $100M."""
     if not isinstance(filing, dict):
+        return False
+    if not _has_valid_filing_date(filing):
         return False
     if not _has_supported_ipo_form(filing):
         return False
