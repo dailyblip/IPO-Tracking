@@ -249,8 +249,6 @@ def qualifies_for_public_feed(filing):
     """Return True only for qualifying operating-company IPOs established at >= $100M."""
     if not isinstance(filing, dict):
         return False
-    if not _has_valid_filing_date(filing):
-        return False
     if not _has_supported_ipo_form(filing):
         return False
     if _has_excluded_issuer_name(filing):
@@ -274,7 +272,7 @@ def enforce_public_feed_policy(output_path):
     qualifying = [
         _normalize_market_value_consistency(_normalize_people_types(filing))
         for filing in filings
-        if qualifies_for_public_feed(filing)
+        if _has_valid_filing_date(filing) and qualifies_for_public_feed(filing)
     ]
     removed = len(filings) - len(qualifying)
     changed = qualifying != filings
