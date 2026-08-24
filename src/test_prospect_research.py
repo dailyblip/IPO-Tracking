@@ -7,6 +7,12 @@ class ProspectResearchTests(unittest.TestCase):
         self.assertEqual(holder_type("Example Ventures LP"), "Fund")
         self.assertEqual(holder_type("Smith Family Trust"), "Trust")
 
+    def test_affiliate_owner_rows_are_not_misclassified_as_people(self):
+        self.assertEqual(holder_type("Entities affiliated with Westlake BioPartners"), "Entity")
+        self.assertEqual(holder_type("Entities affiliated with Foresite Capital"), "Entity")
+        self.assertEqual(holder_type("Funds affiliated with Example Ventures"), "Entity")
+        self.assertEqual(holder_type("Affiliates of Example Holdings LLC"), "Entity")
+
     def test_metadata_preserves_only_available_research_facts(self):
         row={"Title":"CEO", "Percent Ownership":"12.4%", "Shares":"100", "Stanford Justification":"Stanford bio"}
         m=prospect_person_metadata(row,"Jane Smith")
