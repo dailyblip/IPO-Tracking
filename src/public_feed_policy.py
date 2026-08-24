@@ -39,11 +39,35 @@ def _has_excluded_issuer_name(filing):
     )
 
 
+def _has_safe_s1_size_provenance(filing):
+    """Reject S-1 sizes that can be resale/reference-price arithmetic in disguise.
+
+    A preliminary range is inherently offering-specific. For fixed-price S-1 rows,
+    require explicit offering-size provenance before the release gate will trust the
+    numeric value. This deliberately fails closed: a real IPO may be temporarily
+    omitted, but a resale registration must never be promoted as a qualifying IPO.
+    """
+    form = str((filing or {}).get("form") or "").strip().upper()
+    if form not in {"S-1", "S-1/A"}:
+        return True
+
+    price_range = str((filing or {}).get("price_range") or "").strip()
+    if price_range:
+        return True
+
+    source = str((filing or {}).get("offering_size_source") or "").strip().lower()
+    confidence = str((filing or {}).get("offering_size_confidence") or "").strip().lower()
+    issuer_markers = ("issuer", "company offering", "primary offering", "cover statement")
+    return confidence == "high" and any(marker in source for marker in issuer_markers)
+
+
 def qualifies_for_public_feed(filing):
     """Return True only for qualifying operating-company IPOs established at >= $100M."""
     if not isinstance(filing, dict):
         return False
     if _has_excluded_issuer_name(filing):
+        return False
+    if not _has_safe_s1_size_provenance(filing):
         return False
     value = _number(filing.get("value"))
     return value is not None and value >= MINIMUM_IPO_VALUE
