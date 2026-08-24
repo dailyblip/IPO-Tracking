@@ -57,6 +57,19 @@ jobs:
       - name: Normalize issuer display names
         working-directory: src
         run: python company_name_normalizer.py ../docs/data/filings.json
+      - name: Start activity chart at June 2026
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('docs/index.html')
+          text = path.read_text(encoding='utf-8')
+          old = 'start=new Date(Date.UTC(2026,7,1))'
+          new = 'start=new Date(Date.UTC(2026,5,1))'
+          if old in text:
+              path.write_text(text.replace(old, new), encoding='utf-8')
+          elif new not in text:
+              raise SystemExit('Monthly activity start marker not found')
+          PY
       - name: Enforce public-feed eligibility policy
         working-directory: src
         run: python public_feed_policy.py ../docs/data/filings.json
@@ -72,12 +85,14 @@ jobs:
               assert float(filing.get('value') or 0) >= 100_000_000
               for person in filing.get('people', []):
                   assert isinstance(person.get('stanford_university_bio', False), bool)
+          html = Path('docs/index.html').read_text(encoding='utf-8')
+          assert 'start=new Date(Date.UTC(2026,5,1))' in html
           print(f"Validated {len(feed['filings'])} filings")
           PY
       - name: Publish refreshed ownership data
         run: |
-          if [ -z "$(git status --short -- docs/data/filings.json docs/data/filings.csv)" ]; then
-            echo "Ownership data unchanged."
+          if [ -z "$(git status --short -- docs/data/filings.json docs/data/filings.csv docs/index.html)" ]; then
+            echo "Ownership and dashboard data unchanged."
             exit 0
           fi
 
@@ -89,6 +104,6 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/filings.json docs/data/filings.csv
+          git add docs/data/filings.json docs/data/filings.csv docs/index.html
           git commit -m "Refresh Prospect Research ownership history"
           git push origin HEAD:main
