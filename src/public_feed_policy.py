@@ -89,18 +89,26 @@ def _normalize_people_types(filing):
     from the published beneficial-owner label itself, using the same conservative
     helper as the main pipeline. This does not infer identity or affiliation; it
     prevents obvious organization/aggregate rows from being shown as individuals.
+    Return copies rather than mutating the input so persistence changes remain
+    detectable by the release gate.
     """
+    normalized = dict(filing)
     people = filing.get("people")
     if not isinstance(people, list):
-        return filing
+        return normalized
+
+    normalized_people = []
     for person in people:
         if not isinstance(person, dict):
+            normalized_people.append(person)
             continue
+        normalized_person = dict(person)
         name = str(person.get("name") or "").strip()
-        if not name:
-            continue
-        person["holder_type"] = holder_type(name)
-    return filing
+        if name:
+            normalized_person["holder_type"] = holder_type(name)
+        normalized_people.append(normalized_person)
+    normalized["people"] = normalized_people
+    return normalized
 
 
 def qualifies_for_public_feed(filing):
