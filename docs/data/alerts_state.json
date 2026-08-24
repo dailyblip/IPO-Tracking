@@ -1,19 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-24T11:53:27.196061+00:00",
+  "updated_at": "2026-08-24T12:24:12.238793+00:00",
   "items": {
-    "s1:0002055301": {
-      "id": "s1:0002055301",
-      "cik": "0002055301",
-      "company": "Aura Consolidated Group, Inc.",
-      "form": "S-1",
-      "filed": "2026-08-11",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "High",
-      "value": 478548213,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2055301/000162828026055463/0001628280-26-055463-index.htm"
-    },
     "0001193125-26-340329": {
       "id": "0001193125-26-340329",
       "cik": "0002056611",
