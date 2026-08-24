@@ -11,6 +11,7 @@ from edgar_client import INVESTMENT_PRODUCT_NAME_PATTERN, SPAC_NAME_PATTERN
 from prospect_research import holder_type
 
 MINIMUM_IPO_VALUE = 100_000_000.0
+SUPPORTED_IPO_FORMS = {"S-1", "S-1/A", "424B4"}
 
 
 def _number(value):
@@ -37,6 +38,18 @@ def _money(value):
     if value >= 1_000:
         return f"${value / 1_000:.0f}K"
     return f"${value:,.0f}"
+
+
+def _has_supported_ipo_form(filing):
+    """Fail closed unless the record is a supported operating-company IPO form.
+
+    The monitor is intentionally limited to S-1/S-1/A registration statements and
+    final 424B4 prospectuses. Other Securities Act forms can represent follow-on,
+    resale, shelf, fund, or other non-IPO registrations and must not qualify solely
+    because they carry a large dollar value.
+    """
+    form = str((filing or {}).get("form") or "").strip().upper()
+    return form in SUPPORTED_IPO_FORMS
 
 
 def _has_excluded_issuer_name(filing):
@@ -222,6 +235,8 @@ def _normalize_market_value_consistency(filing):
 def qualifies_for_public_feed(filing):
     """Return True only for qualifying operating-company IPOs established at >= $100M."""
     if not isinstance(filing, dict):
+        return False
+    if not _has_supported_ipo_form(filing):
         return False
     if _has_excluded_issuer_name(filing):
         return False
