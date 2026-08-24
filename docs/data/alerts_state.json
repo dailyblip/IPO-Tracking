@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-24T00:55:54.303929+00:00",
+  "updated_at": "2026-08-24T01:56:31.218260+00:00",
   "items": {
     "s1:0002065821": {
       "id": "s1:0002065821",
@@ -133,6 +133,78 @@
       "priority": "Low",
       "value": 81250000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1903784/000118518526003448/0001185185-26-003448-index.htm"
+    },
+    "s1:0002109616": {
+      "id": "s1:0002109616",
+      "cik": "0002109616",
+      "company": "Fast Finance Pay Corp.",
+      "form": "S-1",
+      "filed": "2026-08-12",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "High",
+      "value": 15000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2109616/000149315226037415/0001493152-26-037415-index.htm"
+    },
+    "s1:0001670747": {
+      "id": "s1:0001670747",
+      "cik": "0001670747",
+      "company": "BirchBioMed Inc.",
+      "form": "S-1",
+      "filed": "2026-08-12",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "High",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1670747/000149315226037435/0001493152-26-037435-index.htm"
+    },
+    "s1:0002055301": {
+      "id": "s1:0002055301",
+      "cik": "0002055301",
+      "company": "Aura Consolidated Group, Inc.",
+      "form": "S-1",
+      "filed": "2026-08-11",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "High",
+      "value": 478548213,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2055301/000162828026055463/0001628280-26-055463-index.htm"
+    },
+    "s1:0002147267": {
+      "id": "s1:0002147267",
+      "cik": "0002147267",
+      "company": "Gores Holdings XII, Inc.",
+      "form": "S-1",
+      "filed": "2026-08-10",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2147267/000119312526342392/0001193125-26-342392-index.htm"
+    },
+    "s1:0002149294": {
+      "id": "s1:0002149294",
+      "cik": "0002149294",
+      "company": "GigCapital10 Corp.",
+      "form": "S-1",
+      "filed": "2026-08-10",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2149294/000119312526342742/0001193125-26-342742-index.htm"
+    },
+    "s1:0001838003": {
+      "id": "s1:0001838003",
+      "cik": "0001838003",
+      "company": "Encore Medical, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-08-10",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1838003/000110465926093252/0001104659-26-093252-index.htm"
     },
     "0001193125-26-340329": {
       "id": "0001193125-26-340329",
@@ -681,6 +753,42 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002091680",
       "last_filed": "2026-08-21"
+    },
+    "0002109616": {
+      "company": "Fast Finance Pay Corp.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002109616",
+      "last_filed": "2026-08-12"
+    },
+    "0001670747": {
+      "company": "BirchBioMed Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001670747",
+      "last_filed": "2026-08-12"
+    },
+    "0002055301": {
+      "company": "Aura Consolidated Group, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002055301",
+      "last_filed": "2026-08-11"
+    },
+    "0002147267": {
+      "company": "Gores Holdings XII, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002147267",
+      "last_filed": "2026-08-10"
+    },
+    "0002149294": {
+      "company": "GigCapital10 Corp.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002149294",
+      "last_filed": "2026-08-10"
+    },
+    "0001838003": {
+      "company": "Encore Medical, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001838003",
+      "last_filed": "2026-08-10"
     }
   }
 }
