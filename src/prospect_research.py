@@ -15,6 +15,12 @@ ENTITY_MARKERS = (
 )
 FUND_MARKERS = (" fund", " capital", " ventures", " partners", " partnership", " lp", " l.p.")
 TRUST_MARKERS = (" trust", " trustee")
+AGGREGATE_ENTITY_MARKERS = (
+    "entities affiliated with",
+    "affiliated entities",
+    "funds affiliated with",
+    "affiliates of",
+)
 
 
 def holder_type(name: str) -> str:
@@ -22,6 +28,11 @@ def holder_type(name: str) -> str:
     value = " ".join(str(name or "").split()).lower()
     if not value:
         return "Unknown"
+    # SEC ownership tables often aggregate several affiliated legal entities into
+    # one disclosure row. Treat those labels as entities regardless of whether
+    # the underlying sponsor name contains words such as Capital or Ventures.
+    if any(marker in value for marker in AGGREGATE_ENTITY_MARKERS):
+        return "Entity"
     if any(marker in value for marker in TRUST_MARKERS):
         return "Trust"
     if any(marker in value for marker in FUND_MARKERS):
