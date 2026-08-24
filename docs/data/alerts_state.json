@@ -1,151 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-24T04:01:41.655053+00:00",
+  "updated_at": "2026-08-24T04:54:38.748895+00:00",
   "items": {
-    "s1:0002065821": {
-      "id": "s1:0002065821",
-      "cik": "0002065821",
-      "company": "Little West Holdings Inc.",
-      "form": "S-1/A",
-      "filed": "2026-08-21",
-      "stage": "pre-pricing",
-      "price_range": "$4.00–$6.00",
-      "priority": "High",
-      "value": 18750000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026092565/0001213900-26-092565-index.htm"
-    },
-    "s1:0002111846": {
-      "id": "s1:0002111846",
-      "cik": "0002111846",
-      "company": "Game Your Game Inc.",
-      "form": "S-1",
-      "filed": "2026-08-21",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026092695/0001213900-26-092695-index.htm"
-    },
-    "s1:0002131613": {
-      "id": "s1:0002131613",
-      "cik": "0002131613",
-      "company": "CoVolt Power, Inc.",
-      "form": "S-1",
-      "filed": "2026-08-21",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2131613/000119312526361190/0001193125-26-361190-index.htm"
-    },
-    "s1:0002091680": {
-      "id": "s1:0002091680",
-      "cik": "0002091680",
-      "company": "Bitari Inc",
-      "form": "S-1",
-      "filed": "2026-08-21",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "High",
-      "value": 30000005,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526003678/0001185185-26-003678-index.htm"
-    },
-    "s1:0002124472": {
-      "id": "s1:0002124472",
-      "cik": "0002124472",
-      "company": "Orion180 Insurance Group Inc.",
-      "form": "S-1",
-      "filed": "2026-08-20",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026058231/0001628280-26-058231-index.htm"
-    },
-    "0001193125-26-356916": {
-      "id": "0001193125-26-356916",
-      "cik": "0002132582",
-      "company": "Lyntris Inc.",
-      "form": "424B4",
-      "filed": "2026-08-19",
-      "stage": "priced",
-      "price_range": null,
-      "priority": "High",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm"
-    },
-    "s1:0002112634": {
-      "id": "s1:0002112634",
-      "cik": "0002112634",
-      "company": "Sensei Harbor Corp.",
-      "form": "S-1/A",
-      "filed": "2026-08-18",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "High",
-      "value": 120000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2112634/000168316826006561/0001683168-26-006561-index.htm"
-    },
-    "s1:0002109801": {
-      "id": "s1:0002109801",
-      "cik": "0002109801",
-      "company": "VARSAL TECH, INC.",
-      "form": "S-1/A",
-      "filed": "2026-08-17",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "High",
-      "value": 11143,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2109801/000149315226038800/0001493152-26-038800-index.htm"
-    },
-    "s1:0001880995": {
-      "id": "s1:0001880995",
-      "cik": "0001880995",
-      "company": "Alopexx, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-08-17",
-      "stage": "pre-pricing",
-      "price_range": "$10.00–$12.00",
-      "priority": "High",
-      "value": 33000000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026090319/0001213900-26-090319-index.htm"
-    },
-    "0001185185-26-003448": {
-      "id": "0001185185-26-003448",
-      "cik": "0001903784",
-      "company": "Vogenx, Inc.",
-      "form": "424B4",
-      "filed": "2026-08-12",
-      "stage": "priced",
-      "price_range": null,
-      "priority": "Low",
-      "value": 81250000.0,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1903784/000118518526003448/0001185185-26-003448-index.htm"
-    },
-    "s1:0002109616": {
-      "id": "s1:0002109616",
-      "cik": "0002109616",
-      "company": "Fast Finance Pay Corp.",
-      "form": "S-1",
-      "filed": "2026-08-12",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "High",
-      "value": 15000000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2109616/000149315226037415/0001493152-26-037415-index.htm"
-    },
-    "s1:0001670747": {
-      "id": "s1:0001670747",
-      "cik": "0001670747",
-      "company": "BirchBioMed Inc.",
-      "form": "S-1",
-      "filed": "2026-08-12",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "High",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1670747/000149315226037435/0001493152-26-037435-index.htm"
-    },
     "s1:0002055301": {
       "id": "s1:0002055301",
       "cik": "0002055301",
@@ -157,18 +13,6 @@
       "priority": "High",
       "value": 478548213,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2055301/000162828026055463/0001628280-26-055463-index.htm"
-    },
-    "s1:0001838003": {
-      "id": "s1:0001838003",
-      "cik": "0001838003",
-      "company": "Encore Medical, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-08-10",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1838003/000110465926093252/0001104659-26-093252-index.htm"
     },
     "0001193125-26-340329": {
       "id": "0001193125-26-340329",
@@ -217,18 +61,6 @@
       "priority": "Medium",
       "value": 289000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2058707/000119312526334997/0001193125-26-334997-index.htm"
-    },
-    "0001193125-26-326453": {
-      "id": "0001193125-26-326453",
-      "cik": "0002127043",
-      "company": "Jersey Mike's Subs Inc.",
-      "form": "424B4",
-      "filed": "2026-07-31",
-      "stage": "priced",
-      "price_range": null,
-      "priority": "High",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2127043/000119312526326453/0001193125-26-326453-index.htm"
     },
     "0001193125-26-328422": {
       "id": "0001193125-26-328422",
@@ -338,18 +170,6 @@
       "value": 400000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2123613/000119312526276096/0001193125-26-276096-index.htm"
     },
-    "0001140361-26-025790": {
-      "id": "0001140361-26-025790",
-      "cik": "0001531193",
-      "company": "First Carolina Financial Services, Inc.",
-      "form": "424B4",
-      "filed": "2026-06-18",
-      "stage": "priced",
-      "price_range": null,
-      "priority": "Low",
-      "value": 68750000.0,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1531193/000114036126025790/0001140361-26-025790-index.htm"
-    },
     "0001628280-26-042639": {
       "id": "0001628280-26-042639",
       "cik": "0001181412",
@@ -361,18 +181,6 @@
       "priority": "High",
       "value": 74999999925.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026042639/0001628280-26-042639-index.htm"
-    },
-    "0001213900-26-067558": {
-      "id": "0001213900-26-067558",
-      "cik": "0002104879",
-      "company": "RMG ML Sports Holdings",
-      "form": "424B4",
-      "filed": "2026-06-11",
-      "stage": "priced",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2104879/000121390026067558/0001213900-26-067558-index.htm"
     },
     "0001628280-26-042580": {
       "id": "0001628280-26-042580",
@@ -457,30 +265,6 @@
       "priority": "High",
       "value": 154606239.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2096300/000119312526258295/0001193125-26-258295-index.htm"
-    },
-    "0001193125-26-257410": {
-      "id": "0001193125-26-257410",
-      "cik": "0001850351",
-      "company": "Liftoff Mobile, Inc.",
-      "form": "424B4",
-      "filed": "2026-06-04",
-      "stage": "priced",
-      "price_range": null,
-      "priority": "High",
-      "value": 65550000.0,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1850351/000119312526257410/0001193125-26-257410-index.htm"
-    },
-    "0001193125-26-256356": {
-      "id": "0001193125-26-256356",
-      "cik": "0002118195",
-      "company": "Applied Aerospace & Defense, Inc.",
-      "form": "424B4",
-      "filed": "2026-06-04",
-      "stage": "priced",
-      "price_range": null,
-      "priority": "High",
-      "value": 97500000.0,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2118195/000119312526256356/0001193125-26-256356-index.htm"
     },
     "0001193125-26-249223": {
       "id": "0001193125-26-249223",
