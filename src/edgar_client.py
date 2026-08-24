@@ -27,9 +27,14 @@ REQUEST_DELAY_SECONDS = 0.15  # keeps us under SEC's ~10 req/sec limit
 
 # SPAC detection must be anchored to the issuer or its cover-page self-description.
 # Generic SPAC phrases can appear deep in an operating company's risk factors and
-# must not disqualify a legitimate IPO.
+# must not disqualify a legitimate IPO. Include established SPAC franchise names
+# that do not contain a generic "acquisition" token (for example Gores Holdings
+# and GigCapital), while deliberately avoiding a blanket "Holdings" exclusion.
 SPAC_NAME_PATTERN = re.compile(
-    r"\b(?:acquisition|blank check)\b|\bcapital\s+(?:corp|partners?)\b",
+    r"\b(?:acquisition|blank check)\b|"
+    r"\bcapital\s+(?:corp|partners?)\b|"
+    r"\bgores\s+holdings\b|"
+    r"\bgigcapital\d*\b",
     re.IGNORECASE,
 )
 SPAC_SELF_DESCRIPTION_PATTERNS = [
