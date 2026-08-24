@@ -73,6 +73,41 @@ class PublicFeedPolicyTests(unittest.TestCase):
         self.assertFalse(qualifies_for_public_feed(resale))
         self.assertFalse(qualifies_for_public_feed(generic_cover))
 
+    def test_release_policy_corrects_aggregate_affiliate_owner_type(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "filings.json"
+            payload = {
+                "schema_version": 1,
+                "filings": [
+                    {
+                        "id": "latigo",
+                        "company": "Latigo Biotherapeutics, Inc.",
+                        "form": "424B4",
+                        "value": 345_600_000,
+                        "people": [
+                            {
+                                "name": "Entities affiliated with Westlake BioPartners",
+                                "holder_type": "Individual",
+                            },
+                            {
+                                "name": "Jane Example",
+                                "holder_type": "Individual",
+                            },
+                        ],
+                    }
+                ],
+            }
+            output.write_text(json.dumps(payload), encoding="utf-8")
+
+            filtered, removed = enforce_public_feed_policy(output)
+
+            self.assertEqual(removed, 0)
+            people = filtered["filings"][0]["people"]
+            self.assertEqual(people[0]["holder_type"], "Entity")
+            self.assertEqual(people[1]["holder_type"], "Individual")
+            persisted = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(persisted["filings"][0]["people"][0]["holder_type"], "Entity")
+
     def test_policy_removes_non_qualifying_records_and_keeps_csv_in_sync(self):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "filings.json"
