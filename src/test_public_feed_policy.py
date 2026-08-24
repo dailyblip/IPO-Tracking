@@ -132,6 +132,7 @@ class PublicFeedPolicyTests(unittest.TestCase):
                         "id": "latigo",
                         "company": "Latigo Biotherapeutics, Inc.",
                         "form": "424B4",
+                        "filed": "2026-08-24",
                         "value": 345_600_000,
                         "people": [
                             {
@@ -167,6 +168,7 @@ class PublicFeedPolicyTests(unittest.TestCase):
                         "id": "acme",
                         "company": "Acme Robotics, Inc.",
                         "form": "424B4",
+                        "filed": "2026-08-24",
                         "value": 250_000_000,
                         "current_price": 32.0,
                         "price_updated": "2026-08-24T15:05:14+00:00",
@@ -230,7 +232,7 @@ class PublicFeedPolicyTests(unittest.TestCase):
                 "generated_at": "2026-08-24T00:00:00+00:00",
                 "source": "SEC EDGAR",
                 "filings": [
-                    {"id": "keep", "company": "Large IPO", "form": "424B4", "value": 125_000_000, "people": []},
+                    {"id": "keep", "company": "Large IPO", "form": "424B4", "filed": "2026-08-24", "value": 125_000_000, "people": []},
                     {"id": "small", "company": "Small IPO", "form": "424B4", "value": 80_000_000, "people": []},
                     {"id": "unknown", "company": "Unknown IPO", "form": "424B4", "value": None, "people": []},
                     {"id": "unsupported", "company": "Large Follow-On", "form": "S-3", "value": 500_000_000, "people": []},
