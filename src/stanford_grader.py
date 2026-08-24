@@ -111,11 +111,18 @@ google_search = brave_search
 
 
 def run_search_fallback(person_name: str, company_name: str) -> list:
-    """Run at most two targeted public-web searches."""
+    """Run at most two targeted public-web searches.
+
+    Search recall matters here: issuer biographies often state education clearly,
+    but an exact company+Stanford query can miss those pages. Start with the
+    person's exact name plus Stanford University, then use company context as a
+    disambiguating second pass. The downstream grader still requires corroborating
+    evidence tying the Stanford reference to the specific person.
+    """
     all_results = []
     queries = [
-        f'"{person_name}" "{company_name}" Stanford',
-        f'"{person_name}" bio Stanford',
+        f'"{person_name}" "Stanford University"',
+        f'"{person_name}" Stanford "{company_name}"',
     ]
 
     for i, query in enumerate(queries[:MAX_SEARCH_ATTEMPTS]):
