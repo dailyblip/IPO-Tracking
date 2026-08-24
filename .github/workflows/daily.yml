@@ -55,6 +55,10 @@ jobs:
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
         run: python main.py
 
+      - name: Enforce public-feed eligibility policy
+        working-directory: src
+        run: python public_feed_policy.py ../docs/data/filings.json
+
       - name: Publish Research Monitor data
         run: |
           if git diff --quiet -- docs/data/filings.json docs/data/filings.csv; then
