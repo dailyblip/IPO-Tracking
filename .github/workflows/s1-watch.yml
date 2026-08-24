@@ -65,7 +65,17 @@ jobs:
         working-directory: src
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
-        run: python s1_monitor.py 4
+        run: |
+          # Routine scheduled runs only need the newest filings. When parser/test/
+          # workflow changes land on main, reprocess a wider window so previously
+          # published records are revalidated under the new extraction rules rather
+          # than leaving stale values in the historical feed.
+          if [ "${{ github.event_name }}" = "push" ]; then
+            DAYS_BACK=14
+          else
+            DAYS_BACK=4
+          fi
+          python s1_monitor.py "$DAYS_BACK"
 
       - name: Publish S-1 watch and researcher queue data
         run: |
