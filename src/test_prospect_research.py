@@ -25,7 +25,17 @@ class ProspectResearchTests(unittest.TestCase):
         for value in ("False", "No", "0"):
             m=prospect_person_metadata({"Stanford Affiliation Confirmed": value}, "Jane Smith")
             self.assertFalse(m["stanford_affiliation_confirmed"], value)
+            self.assertFalse(m["stanford_university_bio"], value)
         m=prospect_person_metadata({"Stanford Affiliation Confirmed": "Yes"}, "Jane Smith")
         self.assertTrue(m["stanford_affiliation_confirmed"])
+        self.assertTrue(m["stanford_university_bio"])
+
+    def test_confirmed_affiliation_overrides_legacy_bio_flag_for_ui(self):
+        m=prospect_person_metadata({
+            "Stanford Affiliation Confirmed": "No",
+            "Stanford University in Bio": "Yes",
+        }, "Jane Smith")
+        self.assertFalse(m["stanford_affiliation_confirmed"])
+        self.assertFalse(m["stanford_university_bio"])
 
 if __name__ == "__main__": unittest.main()
