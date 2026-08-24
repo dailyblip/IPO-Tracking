@@ -94,6 +94,8 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn('id="monthlyChart"', self.html)
         self.assertIn("function renderMonthlyActivity()", self.html)
         self.assertIn('String(filing.form).toUpperCase()!=="424B4"', self.html)
+        self.assertIn('start=new Date(Date.UTC(2026,7,1))', self.html)
+        self.assertNotIn('for(let i=11;i>=0;i--)', self.html)
         self.assertIn('.bar.current{background:var(--cardinal);animation:pulse', self.html)
         self.assertIn('@media(prefers-reduced-motion:reduce)', self.html)
         self.assertNotIn('id="newCount"', self.html)
