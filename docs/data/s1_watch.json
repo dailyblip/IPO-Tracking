@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-24T00:55:35.212978+00:00",
+  "generated_at": "2026-08-24T01:56:13.638996+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -162,7 +162,7 @@
     {
       "id": "0001213900-26-090319",
       "company": "Alopexx, Inc.",
-      "ticker": "",
+      "ticker": "ALPX",
       "cik": "0001880995",
       "accession_no": "0001213900-26-090319",
       "form": "S-1/A",
@@ -178,6 +178,181 @@
         "IPO size disclosed or derived at approximately $33,000,000"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026090319/0001213900-26-090319-index.htm"
+    },
+    {
+      "id": "0001193125-26-346328",
+      "company": "Lyntris Inc.",
+      "ticker": "LYNX",
+      "cik": "0002132582",
+      "accession_no": "0001193125-26-346328",
+      "form": "S-1/A",
+      "filed": "2026-08-12",
+      "stage": "Pre-pricing",
+      "priority": "High",
+      "price_range": null,
+      "filing_price": "$20.50",
+      "ipo_size": 492000000,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "Fixed offering price disclosed at $20.50 per share",
+        "IPO size disclosed or derived at approximately $492,000,000"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526346328/0001193125-26-346328-index.htm"
+    },
+    {
+      "id": "0001493152-26-037415",
+      "company": "Fast Finance Pay Corp.",
+      "ticker": "FFPP",
+      "cik": "0002109616",
+      "accession_no": "0001493152-26-037415",
+      "form": "S-1",
+      "filed": "2026-08-12",
+      "stage": "Pre-pricing",
+      "priority": "High",
+      "price_range": null,
+      "filing_price": "$4.00",
+      "ipo_size": 15000000,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "Fixed offering price disclosed at $4.00 per share",
+        "IPO size disclosed or derived at approximately $15,000,000"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2109616/000149315226037415/0001493152-26-037415-index.htm"
+    },
+    {
+      "id": "0001493152-26-037435",
+      "company": "BirchBioMed Inc.",
+      "ticker": "BRBM",
+      "cik": "0001670747",
+      "accession_no": "0001493152-26-037435",
+      "form": "S-1",
+      "filed": "2026-08-12",
+      "stage": "Pre-pricing",
+      "priority": "High",
+      "price_range": null,
+      "filing_price": "$8.00",
+      "ipo_size": null,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "Fixed offering price disclosed at $8.00 per share"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1670747/000149315226037435/0001493152-26-037435-index.htm"
+    },
+    {
+      "id": "0001628280-26-055463",
+      "company": "Aura Consolidated Group, Inc.",
+      "ticker": "AXQ",
+      "cik": "0002055301",
+      "accession_no": "0001628280-26-055463",
+      "form": "S-1",
+      "filed": "2026-08-11",
+      "stage": "Pre-pricing",
+      "priority": "High",
+      "price_range": null,
+      "filing_price": "$3.34",
+      "ipo_size": 478548213,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "Fixed offering price disclosed at $3.34 per share",
+        "IPO size disclosed or derived at approximately $478,548,213"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2055301/000162828026055463/0001628280-26-055463-index.htm"
+    },
+    {
+      "id": "0001185185-26-003353",
+      "company": "Vogenx, Inc.",
+      "ticker": "VOGX",
+      "cik": "0001903784",
+      "accession_no": "0001185185-26-003353",
+      "form": "S-1/A",
+      "filed": "2026-08-10",
+      "stage": "Pre-pricing",
+      "priority": "High",
+      "price_range": "$11.00–$13.00",
+      "filing_price": "$12.00",
+      "ipo_size": 75000000,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "Preliminary offering range disclosed at $11.00–$13.00",
+        "IPO size disclosed or derived at approximately $75,000,000"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1903784/000118518526003353/0001185185-26-003353-index.htm"
+    },
+    {
+      "id": "0001193125-26-341244",
+      "company": "Lyntris Inc.",
+      "ticker": "LYNX",
+      "cik": "0002132582",
+      "accession_no": "0001193125-26-341244",
+      "form": "S-1/A",
+      "filed": "2026-08-10",
+      "stage": "Pre-pricing",
+      "priority": "High",
+      "price_range": null,
+      "filing_price": "$20.50",
+      "ipo_size": null,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "Fixed offering price disclosed at $20.50 per share"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526341244/0001193125-26-341244-index.htm"
+    },
+    {
+      "id": "0001193125-26-342392",
+      "company": "Gores Holdings XII, Inc.",
+      "ticker": "",
+      "cik": "0002147267",
+      "accession_no": "0001193125-26-342392",
+      "form": "S-1",
+      "filed": "2026-08-10",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2147267/000119312526342392/0001193125-26-342392-index.htm"
+    },
+    {
+      "id": "0001193125-26-342742",
+      "company": "GigCapital10 Corp.",
+      "ticker": "",
+      "cik": "0002149294",
+      "accession_no": "0001193125-26-342742",
+      "form": "S-1",
+      "filed": "2026-08-10",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2149294/000119312526342742/0001193125-26-342742-index.htm"
+    },
+    {
+      "id": "0001104659-26-093252",
+      "company": "Encore Medical, Inc.",
+      "ticker": "EMI",
+      "cik": "0001838003",
+      "accession_no": "0001104659-26-093252",
+      "form": "S-1/A",
+      "filed": "2026-08-10",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1838003/000110465926093252/0001104659-26-093252-index.htm"
     }
   ]
 }
