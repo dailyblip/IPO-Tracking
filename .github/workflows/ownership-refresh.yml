@@ -13,6 +13,8 @@ on:
       - 'src/test_stanford_grader.py'
       - 'src/public_feed_policy.py'
       - 'src/test_public_feed_policy.py'
+      - '.github/workflows/ownership-refresh.yml'
+  workflow_dispatch: {}
 
 permissions:
   contents: write
@@ -24,7 +26,7 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,7 +38,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run unit tests
         run: python -m unittest discover -s src -p 'test_*.py' -v
-      - name: Refresh recent IPO history with richer ownership parsing
+      - name: Refresh qualifying IPO history and Stanford affiliations
         working-directory: src
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
@@ -46,9 +48,9 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
         run: |
-          START=$(date -u -d '80 days ago' +%F)
+          START=$(date -u -d '365 days ago' +%F)
           END=$(date -u +%F)
-          echo "Refreshing ownership-rich IPO history from $START through $END"
+          echo "Regrading ownership and Stanford affiliations from $START through $END"
           python main.py --backfill-start "$START" --backfill-end "$END"
       - name: Enforce public-feed eligibility policy
         working-directory: src
@@ -63,6 +65,8 @@ jobs:
           for filing in feed['filings']:
               assert isinstance(filing.get('people', []), list)
               assert float(filing.get('value') or 0) >= 100_000_000
+              for person in filing.get('people', []):
+                  assert isinstance(person.get('stanford_university_bio', False), bool)
           print(f"Validated {len(feed['filings'])} filings")
           PY
       - name: Publish refreshed ownership data
