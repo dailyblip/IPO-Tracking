@@ -8,6 +8,7 @@ from pathlib import Path
 
 from dashboard_export import write_dashboard_csv
 from edgar_client import INVESTMENT_PRODUCT_NAME_PATTERN, SPAC_NAME_PATTERN
+from prospect_research import holder_type
 
 MINIMUM_IPO_VALUE = 100_000_000.0
 
@@ -81,6 +82,27 @@ def _has_safe_s1_size_provenance(filing):
     return confidence == "high" and any(marker in source for marker in issuer_markers)
 
 
+def _normalize_people_types(filing):
+    """Correct deterministic owner-type mismatches before public release.
+
+    Generated feed files can temporarily lag parser improvements. Reclassify only
+    from the published beneficial-owner label itself, using the same conservative
+    helper as the main pipeline. This does not infer identity or affiliation; it
+    prevents obvious organization/aggregate rows from being shown as individuals.
+    """
+    people = filing.get("people")
+    if not isinstance(people, list):
+        return filing
+    for person in people:
+        if not isinstance(person, dict):
+            continue
+        name = str(person.get("name") or "").strip()
+        if not name:
+            continue
+        person["holder_type"] = holder_type(name)
+    return filing
+
+
 def qualifies_for_public_feed(filing):
     """Return True only for qualifying operating-company IPOs established at >= $100M."""
     if not isinstance(filing, dict):
@@ -94,16 +116,21 @@ def qualifies_for_public_feed(filing):
 
 
 def enforce_public_feed_policy(output_path):
-    """Remove non-qualifying records and keep the CSV companion in sync."""
+    """Remove non-qualifying records, normalize safe fields, and sync the CSV."""
     output_path = Path(output_path)
     payload = json.loads(output_path.read_text(encoding="utf-8"))
     filings = payload.get("filings")
     if not isinstance(filings, list):
         raise ValueError("Public feed must contain a filings list")
 
-    qualifying = [filing for filing in filings if qualifies_for_public_feed(filing)]
+    qualifying = [
+        _normalize_people_types(filing)
+        for filing in filings
+        if qualifies_for_public_feed(filing)
+    ]
     removed = len(filings) - len(qualifying)
-    if removed:
+    changed = qualifying != filings
+    if changed:
         payload["filings"] = qualifying
         temporary = output_path.with_suffix(output_path.suffix + ".tmp")
         temporary.write_text(
