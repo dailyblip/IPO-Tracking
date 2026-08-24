@@ -7,13 +7,12 @@ For each person on the beneficial ownership grid:
    for a direct Stanford mention -> grade 5, no search needed.
 3. If silent, run up to two web searches (Brave Search API) looking
    for a public Stanford connection.
-4. Only when search returns Stanford-related evidence, score 0-5 using
-   an LLM judgment call over the combined evidence. This avoids paid
-   grading calls when there is nothing public to evaluate.
+4. Confirm exact person + Stanford University matches from an official issuer
+   or Stanford source deterministically; use the LLM only for ambiguous evidence.
 
 Requires:
 - BRAVE_SEARCH_API_KEY
-- ANTHROPIC_API_KEY (only when public Stanford evidence exists)
+- ANTHROPIC_API_KEY (only for ambiguous public Stanford evidence)
 Optional:
 - ANTHROPIC_MODEL (defaults to the documented Claude Sonnet 4 API ID)
 """
@@ -22,6 +21,7 @@ import json
 import os
 import re
 import time
+from urllib.parse import urlparse
 
 import requests
 
@@ -33,12 +33,18 @@ MAX_SEARCH_ATTEMPTS = 2
 REQUEST_DELAY_SECONDS = 0.5
 
 DIRECT_MENTION_PATTERN = re.compile(r"\bstanford\b", re.IGNORECASE)
+STANFORD_UNIVERSITY_PATTERN = re.compile(r"\bstanford\s+university\b", re.IGNORECASE)
 ORGANIZATION_PATTERN = re.compile(
     r"\b(?:entities? affiliated|affiliates?|asset management|capital|ventures?|partners?|"
     r"funds?|holdings?|management|trust|foundation|company|corporation|corp\.?|inc\.?|"
     r"llc|l\.l\.c\.?|lp|l\.p\.?|ltd\.?|limited|master fund|biopartners)\b",
     re.IGNORECASE,
 )
+CORPORATE_NAME_WORDS = {
+    "inc", "incorporated", "corp", "corporation", "company", "co", "holdings",
+    "therapeutics", "biotherapeutics", "pharmaceuticals", "pharma", "biosciences",
+    "biotech", "technologies", "technology", "group", "limited", "ltd", "plc",
+}
 
 
 class StanfordGraderError(Exception):
@@ -111,14 +117,7 @@ google_search = brave_search
 
 
 def run_search_fallback(person_name: str, company_name: str) -> list:
-    """Run at most two targeted public-web searches.
-
-    Search recall matters here: issuer biographies often state education clearly,
-    but an exact company+Stanford query can miss those pages. Start with the
-    person's exact name plus Stanford University, then use company context as a
-    disambiguating second pass. The downstream grader still requires corroborating
-    evidence tying the Stanford reference to the specific person.
-    """
+    """Run at most two targeted public-web searches."""
     all_results = []
     queries = [
         f'"{person_name}" "Stanford University"',
@@ -132,6 +131,59 @@ def run_search_fallback(person_name: str, company_name: str) -> list:
             print(f"[stanford_grader] Search attempt {i + 1} failed: {e}")
 
     return all_results
+
+
+def _normalized_words(value: str) -> list[str]:
+    return re.findall(r"[a-z0-9]+", str(value or "").casefold())
+
+
+def _normalized_phrase(value: str) -> str:
+    return " ".join(_normalized_words(value))
+
+
+def _company_identity_tokens(company_name: str) -> list[str]:
+    return [
+        token for token in _normalized_words(company_name)
+        if len(token) >= 4 and token not in CORPORATE_NAME_WORDS
+    ]
+
+
+def _strong_official_search_match(person_name: str, company_name: str, search_results: list):
+    """Return an exact high-authority Stanford match that does not need LLM judgment.
+
+    Fail closed: the result must explicitly contain the full normalized person name and
+    'Stanford University', and it must come from stanford.edu or a hostname containing
+    a distinctive issuer-name token. This is intentionally stricter than the ambiguous
+    evidence path so a search snippet alone cannot create a false Cardinal-red signal.
+    """
+    person_phrase = _normalized_phrase(person_name)
+    company_tokens = _company_identity_tokens(company_name)
+    if not person_phrase:
+        return None
+
+    for result in search_results:
+        if not isinstance(result, dict):
+            continue
+        title = str(result.get("title") or "")
+        snippet = str(result.get("snippet") or "")
+        link = str(result.get("link") or "")
+        evidence = f"{title} {snippet}"
+        evidence_normalized = _normalized_phrase(evidence)
+        if person_phrase not in evidence_normalized:
+            continue
+        if not STANFORD_UNIVERSITY_PATTERN.search(evidence):
+            continue
+        try:
+            hostname = (urlparse(link).hostname or "").casefold()
+        except ValueError:
+            hostname = ""
+        authoritative = hostname == "stanford.edu" or hostname.endswith(".stanford.edu")
+        if not authoritative and company_tokens:
+            authoritative = any(token in hostname for token in company_tokens)
+        if not authoritative:
+            continue
+        return result
+    return None
 
 
 def _search_has_stanford_evidence(search_results: list) -> bool:
@@ -248,6 +300,16 @@ def grade_stanford_affiliation(person_name: str, company_name: str,
         return direct_result
 
     search_results = run_search_fallback(person_name, company_name)
+    strong_match = _strong_official_search_match(person_name, company_name, search_results)
+    if strong_match:
+        return {
+            "grade": 5,
+            "justification": (
+                "Exact person match with Stanford University affiliation on an official public source: "
+                f"{strong_match.get('link', '')}"
+            ),
+            "source": "official_public_bio",
+        }
     if not _search_has_stanford_evidence(search_results):
         return {
             "grade": 0,
