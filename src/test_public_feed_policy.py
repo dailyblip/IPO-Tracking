@@ -59,6 +59,15 @@ class PublicFeedPolicyTests(unittest.TestCase):
         for value in (None, "", "unknown", float("nan"), float("inf"), True):
             self.assertFalse(qualifies_for_public_feed({"company": "Operating Co", "form": "424B4", "value": value}))
 
+    def test_unsupported_forms_are_excluded_even_with_large_values(self):
+        for form in ("S-3", "S-3/A", "424B3", "F-1", "F-1/A", "20-F", "8-A12B", ""):
+            with self.subTest(form=form):
+                self.assertFalse(
+                    qualifies_for_public_feed(
+                        {"company": "Large Operating Co", "form": form, "value": 500_000_000}
+                    )
+                )
+
     def test_obvious_spac_and_investment_product_names_are_excluded_at_release(self):
         excluded = [
             "Gores Holdings XII, Inc.",
@@ -224,6 +233,7 @@ class PublicFeedPolicyTests(unittest.TestCase):
                     {"id": "keep", "company": "Large IPO", "form": "424B4", "value": 125_000_000, "people": []},
                     {"id": "small", "company": "Small IPO", "form": "424B4", "value": 80_000_000, "people": []},
                     {"id": "unknown", "company": "Unknown IPO", "form": "424B4", "value": None, "people": []},
+                    {"id": "unsupported", "company": "Large Follow-On", "form": "S-3", "value": 500_000_000, "people": []},
                     {"id": "spac", "company": "Gores Holdings XII, Inc.", "form": "424B4", "value": 600_000_000, "people": []},
                     {"id": "etf", "company": "Example ETF Trust", "form": "424B4", "value": 300_000_000, "people": []},
                     {"id": "resale", "company": "Aura Consolidated Group, Inc.", "form": "S-1", "value": 478_548_213, "filing_price": "$3.34", "people": []},
@@ -233,7 +243,7 @@ class PublicFeedPolicyTests(unittest.TestCase):
 
             filtered, removed = enforce_public_feed_policy(output)
 
-            self.assertEqual(removed, 5)
+            self.assertEqual(removed, 6)
             self.assertEqual([filing["id"] for filing in filtered["filings"]], ["keep"])
             self.assertEqual(
                 [filing["id"] for filing in json.loads(output.read_text(encoding="utf-8"))["filings"]],
@@ -243,6 +253,7 @@ class PublicFeedPolicyTests(unittest.TestCase):
             self.assertIn("Large IPO", csv_text)
             self.assertNotIn("Small IPO", csv_text)
             self.assertNotIn("Unknown IPO", csv_text)
+            self.assertNotIn("Large Follow-On", csv_text)
             self.assertNotIn("Gores Holdings XII", csv_text)
             self.assertNotIn("Example ETF Trust", csv_text)
             self.assertNotIn("Aura Consolidated Group", csv_text)
