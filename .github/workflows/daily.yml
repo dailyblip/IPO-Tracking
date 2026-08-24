@@ -4,7 +4,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: daily-ipo-tracker
+  group: research-monitor-feed-writers
   cancel-in-progress: false
 
 on:
@@ -27,6 +27,8 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -63,4 +65,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/data/filings.json docs/data/filings.csv
           git commit -m "Update Research Monitor data"
-          git push
+          git pull --rebase origin main
+          git push origin HEAD:main
