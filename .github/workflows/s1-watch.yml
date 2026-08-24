@@ -4,7 +4,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: s1-pre-pricing-monitor
+  group: research-monitor-feed-writers
   cancel-in-progress: false
 
 on:
@@ -52,6 +52,8 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -66,10 +68,6 @@ jobs:
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: |
-          # Routine scheduled runs only need the newest filings. When parser/test/
-          # workflow changes land on main, reprocess a wider window so previously
-          # published records are revalidated under the new extraction rules rather
-          # than leaving stale values in the historical feed.
           if [ "${{ github.event_name }}" = "push" ]; then
             DAYS_BACK=14
           else
@@ -87,4 +85,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv
           git commit -m "Update S-1 pre-pricing watch data"
-          git push
+          git pull --rebase origin main
+          git push origin HEAD:main
