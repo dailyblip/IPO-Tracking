@@ -65,9 +65,19 @@ jobs:
             echo "Research Monitor data is unchanged."
             exit 0
           fi
+
+          # Generated feed files are not safe to auto-merge. If main advanced while
+          # this run was processing, discard this stale publication and let the next
+          # run regenerate from the newer repository state rather than risking a
+          # conflict resolution that could publish mixed or stale data.
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            echo "main advanced during this run; skipping stale feed publication."
+            exit 0
+          fi
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/data/filings.json docs/data/filings.csv
           git commit -m "Update Research Monitor data"
-          git pull --rebase origin main
           git push origin HEAD:main
