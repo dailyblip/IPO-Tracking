@@ -58,6 +58,9 @@ def confirmed_boolean(value) -> bool:
 
 def prospect_person_metadata(row: dict, name: str) -> dict:
     """Normalize fields useful to a prospect researcher when upstream provides them."""
+    stanford_confirmed = confirmed_boolean(
+        first_present(row, "Stanford Affiliation Confirmed", "Stanford University in Bio")
+    )
     return {
         "holder_type": holder_type(name),
         "role": first_present(row, "Role", "Title", "Position", "Relationship"),
@@ -68,7 +71,11 @@ def prospect_person_metadata(row: dict, name: str) -> dict:
         "shares_sold_ipo": first_present(row, "Shares Sold in IPO", "Shares Offered", "Secondary Shares"),
         "shares_after_ipo": first_present(row, "Shares After IPO", "Shares After Offering", "Shares"),
         "stanford_source": first_present(row, "Stanford Justification", "Stanford Source"),
-        "stanford_affiliation_confirmed": confirmed_boolean(first_present(row, "Stanford Affiliation Confirmed", "Stanford University in Bio")),
+        "stanford_affiliation_confirmed": stanford_confirmed,
+        # Backward-compatible public/UI field. Keep it derived from the confirmed
+        # affiliation gate so researcher-facing Stanford highlighting cannot be
+        # driven by an unconfirmed or false-like raw source value.
+        "stanford_university_bio": stanford_confirmed,
         "common_shares": first_present(row, "Common Shares"),
         "restricted_shares": first_present(row, "Restricted Shares", "Unvested Shares"),
         "options_shares": first_present(row, "Option Shares", "Options Exercisable"),
