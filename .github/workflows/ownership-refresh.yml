@@ -14,7 +14,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: daily-ipo-tracker
+  group: research-monitor-feed-writers
   cancel-in-progress: false
 
 jobs:
