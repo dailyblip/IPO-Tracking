@@ -73,6 +73,22 @@ def test_stanford_search_evidence_calls_llm():
     llm.assert_called_once()
 
 
+def test_search_fallback_prioritizes_exact_person_stanford_query():
+    calls = []
+
+    def fake_search(query):
+        calls.append(query)
+        return []
+
+    with patch.object(grader, "brave_search", side_effect=fake_search):
+        grader.run_search_fallback("Nima Farzan", "Latigo Biotherapeutics")
+
+    assert calls == [
+        '"Nima Farzan" "Stanford University"',
+        '"Nima Farzan" Stanford "Latigo Biotherapeutics"',
+    ]
+
+
 def test_model_can_be_overridden():
     with patch.dict(os.environ, {"ANTHROPIC_MODEL": "custom-model"}):
         assert grader._anthropic_model() == "custom-model"
