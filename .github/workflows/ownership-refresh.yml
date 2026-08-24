@@ -9,6 +9,8 @@ on:
       - 'src/main.py'
       - 'src/dashboard_export.py'
       - 'src/prospect_research.py'
+      - 'src/stanford_grader.py'
+      - 'src/test_stanford_grader.py'
       - 'src/public_feed_policy.py'
       - 'src/test_public_feed_policy.py'
 
