@@ -26,6 +26,19 @@ def _number(value):
     return number
 
 
+def _money(value):
+    value = _number(value)
+    if value is None or value <= 0:
+        return None
+    if value >= 1_000_000_000:
+        return f"${value / 1_000_000_000:.1f}B"
+    if value >= 1_000_000:
+        return f"${value / 1_000_000:.0f}M"
+    if value >= 1_000:
+        return f"${value / 1_000:.0f}K"
+    return f"${value:,.0f}"
+
+
 def _has_excluded_issuer_name(filing):
     """Fail closed for issuer names that independently identify excluded products.
 
@@ -111,6 +124,63 @@ def _normalize_people_types(filing):
     return normalized
 
 
+def _normalize_market_value_consistency(filing):
+    """Keep quote-derived owner values, dates, and public signals synchronized.
+
+    Market-price refreshes can legitimately change after a filing record is built.
+    Recompute only deterministic arithmetic from the already-published current quote
+    and disclosed share quantities. Never manufacture a quote or share count.
+    """
+    normalized = dict(filing)
+    current_price = _number(filing.get("current_price"))
+    if current_price is None or current_price <= 0:
+        return normalized
+
+    price_updated = str(filing.get("price_updated") or "").strip()
+    valuation_as_of = price_updated[:10] if len(price_updated) >= 10 else None
+    people = filing.get("people")
+    if not isinstance(people, list):
+        return normalized
+
+    normalized_people = []
+    largest_holding = 0.0
+    for person in people:
+        if not isinstance(person, dict):
+            normalized_people.append(person)
+            continue
+        normalized_person = dict(person)
+        shares = _number(person.get("shares"))
+        if shares is not None and shares >= 0:
+            normalized_person["cash_value"] = shares * current_price
+            if valuation_as_of:
+                normalized_person["valuation_as_of"] = valuation_as_of
+            liquid_shares = _number(person.get("liquid_shares"))
+            if liquid_shares is not None and liquid_shares >= 0:
+                normalized_person["liquid_value"] = liquid_shares * current_price
+            locked_shares = _number(person.get("locked_shares"))
+            if locked_shares is not None and locked_shares >= 0:
+                normalized_person["locked_value"] = locked_shares * current_price
+            largest_holding = max(largest_holding, normalized_person["cash_value"])
+        normalized_people.append(normalized_person)
+    normalized["people"] = normalized_people
+
+    signals = filing.get("signals")
+    if isinstance(signals, list):
+        prefix = "Largest named holding currently valued at approximately "
+        replacement = f"{prefix}{_money(largest_holding)}" if largest_holding > 0 else None
+        normalized_signals = []
+        replaced = False
+        for signal in signals:
+            if isinstance(signal, str) and signal.startswith(prefix):
+                if replacement and not replaced:
+                    normalized_signals.append(replacement)
+                    replaced = True
+                continue
+            normalized_signals.append(signal)
+        normalized["signals"] = normalized_signals
+    return normalized
+
+
 def qualifies_for_public_feed(filing):
     """Return True only for qualifying operating-company IPOs established at >= $100M."""
     if not isinstance(filing, dict):
@@ -132,7 +202,7 @@ def enforce_public_feed_policy(output_path):
         raise ValueError("Public feed must contain a filings list")
 
     qualifying = [
-        _normalize_people_types(filing)
+        _normalize_market_value_consistency(_normalize_people_types(filing))
         for filing in filings
         if qualifies_for_public_feed(filing)
     ]
