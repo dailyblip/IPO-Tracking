@@ -9,6 +9,8 @@ on:
       - 'src/main.py'
       - 'src/dashboard_export.py'
       - 'src/prospect_research.py'
+      - 'src/public_feed_policy.py'
+      - 'src/test_public_feed_policy.py'
 
 permissions:
   contents: write
@@ -46,6 +48,9 @@ jobs:
           END=$(date -u +%F)
           echo "Refreshing ownership-rich IPO history from $START through $END"
           python main.py --backfill-start "$START" --backfill-end "$END"
+      - name: Enforce public-feed eligibility policy
+        working-directory: src
+        run: python public_feed_policy.py ../docs/data/filings.json
       - name: Validate public feed
         run: |
           python - <<'PY'
@@ -55,6 +60,7 @@ jobs:
           assert isinstance(feed.get('filings'), list)
           for filing in feed['filings']:
               assert isinstance(filing.get('people', []), list)
+              assert float(filing.get('value') or 0) >= 100_000_000
           print(f"Validated {len(feed['filings'])} filings")
           PY
       - name: Publish refreshed ownership data
