@@ -108,6 +108,71 @@ class PublicFeedPolicyTests(unittest.TestCase):
             persisted = json.loads(output.read_text(encoding="utf-8"))
             self.assertEqual(persisted["filings"][0]["people"][0]["holder_type"], "Entity")
 
+    def test_release_policy_synchronizes_quote_derived_owner_values_and_signal(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "filings.json"
+            payload = {
+                "schema_version": 1,
+                "filings": [
+                    {
+                        "id": "acme",
+                        "company": "Acme Robotics, Inc.",
+                        "form": "424B4",
+                        "value": 250_000_000,
+                        "current_price": 32.0,
+                        "price_updated": "2026-08-24T15:05:14+00:00",
+                        "signals": [
+                            "2 named beneficial owners disclosed",
+                            "Largest named holding currently valued at approximately $50M",
+                        ],
+                        "people": [
+                            {
+                                "name": "Jane Founder",
+                                "holder_type": "Individual",
+                                "shares": 2_000_000,
+                                "cash_value": 50_000_000,
+                                "valuation_as_of": "2026-08-20",
+                                "liquid_shares": 500_000,
+                                "liquid_value": 12_500_000,
+                                "locked_shares": 1_500_000,
+                                "locked_value": 37_500_000,
+                            },
+                            {
+                                "name": "John Investor",
+                                "holder_type": "Individual",
+                                "shares": 1_000_000,
+                                "cash_value": 25_000_000,
+                                "valuation_as_of": "2026-08-20",
+                            },
+                        ],
+                    }
+                ],
+            }
+            output.write_text(json.dumps(payload), encoding="utf-8")
+
+            filtered, removed = enforce_public_feed_policy(output)
+
+            self.assertEqual(removed, 0)
+            filing = filtered["filings"][0]
+            jane = filing["people"][0]
+            john = filing["people"][1]
+            self.assertEqual(jane["cash_value"], 64_000_000)
+            self.assertEqual(jane["liquid_value"], 16_000_000)
+            self.assertEqual(jane["locked_value"], 48_000_000)
+            self.assertEqual(john["cash_value"], 32_000_000)
+            self.assertEqual(jane["valuation_as_of"], "2026-08-24")
+            self.assertEqual(john["valuation_as_of"], "2026-08-24")
+            self.assertIn(
+                "Largest named holding currently valued at approximately $64M",
+                filing["signals"],
+            )
+            self.assertNotIn(
+                "Largest named holding currently valued at approximately $50M",
+                filing["signals"],
+            )
+            persisted = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(persisted["filings"][0]["people"][0]["cash_value"], 64_000_000)
+
     def test_policy_removes_non_qualifying_records_and_keeps_csv_in_sync(self):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "filings.json"
