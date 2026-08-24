@@ -11,6 +11,46 @@ class PublicFeedPolicyTests(unittest.TestCase):
         self.assertTrue(qualifies_for_public_feed({"company": "Large Operating Co", "form": "424B4", "value": MINIMUM_IPO_VALUE}))
         self.assertTrue(qualifies_for_public_feed({"company": "Large Operating Co", "form": "424B4", "value": "$100,000,000"}))
 
+    def test_priced_ipo_exact_share_price_arithmetic_must_reconcile(self):
+        consistent = {
+            "company": "Acme Therapeutics, Inc.",
+            "form": "424B4",
+            "value": 345_600_000,
+            "offering_price": 18.0,
+            "primary_offering_shares": 19_200_000,
+            "secondary_offering_shares": None,
+            "offering_size_source": "explicit issuer-only cover statement",
+        }
+        conflicting = dict(consistent, value=360_000_000)
+        self.assertTrue(qualifies_for_public_feed(consistent))
+        self.assertFalse(qualifies_for_public_feed(conflicting))
+
+    def test_priced_ipo_combines_exact_primary_and_secondary_shares(self):
+        consistent = {
+            "company": "Acme Software, Inc.",
+            "form": "424B4",
+            "value": 120_000_000,
+            "offering_price": 20.0,
+            "primary_offering_shares": 5_000_000,
+            "secondary_offering_shares": 1_000_000,
+            "offering_size_source": "cover offering table",
+        }
+        primary_only_value = dict(consistent, value=100_000_000)
+        self.assertTrue(qualifies_for_public_feed(consistent))
+        self.assertFalse(qualifies_for_public_feed(primary_only_value))
+
+    def test_priced_ipo_does_not_infer_missing_secondary_shares(self):
+        filing = {
+            "company": "Acme Software, Inc.",
+            "form": "424B4",
+            "value": 150_000_000,
+            "offering_price": 20.0,
+            "primary_offering_shares": 5_000_000,
+            "secondary_offering_shares": None,
+            "offering_size_source": "cover offering table",
+        }
+        self.assertTrue(qualifies_for_public_feed(filing))
+
     def test_sub_100m_is_excluded(self):
         self.assertFalse(qualifies_for_public_feed({"company": "Small Operating Co", "form": "424B4", "value": 99_999_999}))
         self.assertFalse(qualifies_for_public_feed({"company": "Small Operating Co", "form": "424B4", "value": "99999999"}))
