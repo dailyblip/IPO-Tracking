@@ -3,8 +3,11 @@ name: Research Monitor Alerts
 permissions:
   contents: write
 
+# Alerts also commit to main. Serialize them with every workflow that writes
+# Research Monitor feed/state files so an alert commit cannot make a feed-writer
+# checkout stale in the middle of a data refresh.
 concurrency:
-  group: research-monitor-alerts
+  group: research-monitor-feed-writers
   cancel-in-progress: false
 
 on:
@@ -47,6 +50,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -66,4 +70,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/data/alerts.json docs/data/alerts_state.json
           git commit -m "Update Research Monitor alerts"
-          git push
+          # Alert files are independent generated state. Rebase before publishing in
+          # case a non-writer commit landed after checkout; the shared writer lock
+          # prevents concurrent Research Monitor generated-data commits.
+          git pull --rebase origin main
+          git push origin HEAD:main
