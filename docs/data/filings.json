@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-24T01:56:13.643057+00:00",
+  "generated_at": "2026-08-24T04:01:20.517716+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -2142,30 +2142,6 @@
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm"
     },
     {
-      "id": "s1:0002064768",
-      "company": "Canary Staked TRX ETF",
-      "ticker": "TRXS",
-      "cik": "0002064768",
-      "accession_no": "0001999371-26-018236",
-      "form": "S-1/A",
-      "filed": "2026-08-19",
-      "stage": "Pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "ipo_size": null,
-      "priority": "Medium",
-      "status": "New",
-      "value": null,
-      "value_label": "—",
-      "people_count": 0,
-      "signals": [
-        "Registration statement amended — IPO remains pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "people": [],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2064768/000199937126018236/0001999371-26-018236-index.htm"
-    },
-    {
       "id": "s1:0002112634",
       "company": "Sensei Harbor Corp.",
       "ticker": "",
@@ -2771,54 +2747,6 @@
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2055301/000162828026055463/0001628280-26-055463-index.htm"
-    },
-    {
-      "id": "s1:0002147267",
-      "company": "Gores Holdings XII, Inc.",
-      "ticker": "",
-      "cik": "0002147267",
-      "accession_no": "0001193125-26-342392",
-      "form": "S-1",
-      "filed": "2026-08-10",
-      "stage": "Pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "ipo_size": null,
-      "priority": "Medium",
-      "status": "New",
-      "value": null,
-      "value_label": "—",
-      "people_count": 0,
-      "signals": [
-        "Initial registration statement filed — IPO is pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "people": [],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2147267/000119312526342392/0001193125-26-342392-index.htm"
-    },
-    {
-      "id": "s1:0002149294",
-      "company": "GigCapital10 Corp.",
-      "ticker": "",
-      "cik": "0002149294",
-      "accession_no": "0001193125-26-342742",
-      "form": "S-1",
-      "filed": "2026-08-10",
-      "stage": "Pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "ipo_size": null,
-      "priority": "Medium",
-      "status": "New",
-      "value": null,
-      "value_label": "—",
-      "people_count": 0,
-      "signals": [
-        "Initial registration statement filed — IPO is pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "people": [],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2149294/000119312526342742/0001193125-26-342742-index.htm"
     },
     {
       "id": "s1:0001838003",
