@@ -95,6 +95,44 @@ def _has_safe_s1_size_provenance(filing):
     return confidence == "high" and any(marker in source for marker in issuer_markers)
 
 
+def _has_consistent_priced_offering_value(filing):
+    """Reject priced IPOs whose stored value conflicts with exact offering arithmetic.
+
+    When the feed already contains an explicit final IPO price and exact offering
+    share counts, those authoritative facts must reconcile with the published
+    offering value. We intentionally do not infer a missing secondary component.
+    A single known primary count is therefore cross-checked only when provenance
+    explicitly says the offering is issuer-only. If both primary and secondary
+    counts are present, the combined base offering is cross-checked. Greenshoe or
+    over-allotment shares are not part of this base calculation.
+    """
+    form = str((filing or {}).get("form") or "").strip().upper()
+    if form != "424B4":
+        return True
+
+    published_value = _number((filing or {}).get("value"))
+    final_price = _number((filing or {}).get("offering_price"))
+    primary = _number((filing or {}).get("primary_offering_shares"))
+    secondary = _number((filing or {}).get("secondary_offering_shares"))
+    if published_value is None or final_price is None or final_price <= 0 or primary is None or primary < 0:
+        return True
+
+    source = str((filing or {}).get("offering_size_source") or "").strip().lower()
+    if secondary is None:
+        issuer_only = "issuer-only" in source or "issuer only" in source
+        if not issuer_only:
+            return True
+        base_shares = primary
+    else:
+        if secondary < 0:
+            return False
+        base_shares = primary + secondary
+
+    derived_value = base_shares * final_price
+    tolerance = max(1.0, derived_value * 0.001)
+    return abs(published_value - derived_value) <= tolerance
+
+
 def _normalize_people_types(filing):
     """Correct deterministic owner-type mismatches before public release.
 
@@ -188,6 +226,8 @@ def qualifies_for_public_feed(filing):
     if _has_excluded_issuer_name(filing):
         return False
     if not _has_safe_s1_size_provenance(filing):
+        return False
+    if not _has_consistent_priced_offering_value(filing):
         return False
     value = _number(filing.get("value"))
     return value is not None and value >= MINIMUM_IPO_VALUE
