@@ -89,6 +89,17 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn("stanford-s", self.html)
         self.assertIn("Confirmed Stanford-affiliated beneficial owner", self.html)
 
+    def test_monthly_activity_replaces_summary_counters(self):
+        self.assertIn('id="monthCount"', self.html)
+        self.assertIn('id="monthlyChart"', self.html)
+        self.assertIn("function renderMonthlyActivity()", self.html)
+        self.assertIn('String(filing.form).toUpperCase()!=="424B4"', self.html)
+        self.assertIn('.bar.current{background:var(--cardinal);animation:pulse', self.html)
+        self.assertIn('@media(prefers-reduced-motion:reduce)', self.html)
+        self.assertNotIn('id="newCount"', self.html)
+        self.assertNotIn('id="peopleCount"', self.html)
+        self.assertNotIn('id="offeringTotal"', self.html)
+
     def test_has_no_fabricated_fallback_or_dead_navigation(self):
         self.assertNotIn("demoFilings", self.html)
         self.assertNotIn("Companies</button>", self.html)
