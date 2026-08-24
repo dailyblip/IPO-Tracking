@@ -72,11 +72,22 @@ class DashboardUiTests(unittest.TestCase):
 
     def test_highlights_exact_stanford_beneficial_owner_matches(self):
         self.assertIn("--cardinal:#8c1515", self.html)
-        self.assertIn("person.stanford_university_bio===true", self.html)
-        self.assertIn("function hasStanfordBeneficialOwner(filing)", self.html)
-        self.assertIn("stanford-company", self.html)
-        self.assertIn("stanford-person", self.html)
-        self.assertIn("Stanford University referenced in public bio", self.html)
+        self.assertIn(".stanford-company{color:var(--cardinal);font-weight:800}", self.html)
+        self.assertIn(".stanford-person{color:var(--cardinal);font-weight:800}", self.html)
+        self.assertIn(
+            "function hasStanfordBeneficialOwner(filing){return filing.people.some(person=>person.stanford_university_bio===true)}",
+            self.html,
+        )
+        self.assertIn(
+            'hasStanfordBeneficialOwner(filing)?"company stanford-company":"company"',
+            self.html,
+        )
+        self.assertIn(
+            'const matched=person.stanford_university_bio===true;const node=text(matched?"strong":"span",matched?"stanford-person":""',
+            self.html,
+        )
+        self.assertIn("stanford-s", self.html)
+        self.assertIn("Confirmed Stanford-affiliated beneficial owner", self.html)
 
     def test_has_no_fabricated_fallback_or_dead_navigation(self):
         self.assertNotIn("demoFilings", self.html)
