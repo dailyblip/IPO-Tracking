@@ -58,10 +58,41 @@ def test_no_public_evidence_skips_llm():
     llm.assert_not_called()
 
 
-def test_stanford_search_evidence_calls_llm():
+def test_exact_official_issuer_bio_confirms_without_llm():
     results = [{
-        "title": "Jane Doe",
-        "snippet": "Stanford alumna and Acme executive",
+        "title": "Nima Farzan - Latigo Biotherapeutics",
+        "snippet": "Nima Farzan holds a B.A. in human biology with honors from Stanford University.",
+        "link": "https://latigobio.com/staff-member/nima-farzan-mba/",
+    }]
+    with patch.object(grader, "run_search_fallback", return_value=results), \
+            patch.object(grader, "grade_via_llm") as llm:
+        result = grader.grade_stanford_affiliation("Nima Farzan", "Latigo Biotherapeutics, Inc.")
+
+    assert result["grade"] == 5
+    assert result["source"] == "official_public_bio"
+    assert "latigobio.com" in result["justification"]
+    llm.assert_not_called()
+
+
+def test_exact_stanford_edu_result_confirms_without_llm():
+    results = [{
+        "title": "Jane Doe | Stanford University",
+        "snippet": "Jane Doe is a Stanford University alumna and Acme executive.",
+        "link": "https://profiles.stanford.edu/jane-doe",
+    }]
+    with patch.object(grader, "run_search_fallback", return_value=results), \
+            patch.object(grader, "grade_via_llm") as llm:
+        result = grader.grade_stanford_affiliation("Jane Doe", "Acme")
+
+    assert result["grade"] == 5
+    assert result["source"] == "official_public_bio"
+    llm.assert_not_called()
+
+
+def test_unofficial_exact_search_result_still_requires_llm():
+    results = [{
+        "title": "Jane Doe - Acme",
+        "snippet": "Jane Doe graduated from Stanford University and works at Acme.",
         "link": "https://example.com/jane",
     }]
     expected = {"grade": 4, "justification": "Matched role and company.", "source": "llm_judgment"}
