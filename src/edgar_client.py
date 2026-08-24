@@ -2,9 +2,10 @@
 edgar_client.py
 
 Discovers newly filed 424B4 (final IPO prospectus) filings on SEC EDGAR,
-filters out non-US filers, SPACs, and reverse-SPAC/de-SPAC transactions, and
-locates the matching S-1/S-1A for the same company so the original filing-range
-price can be captured alongside the final offering price.
+filters out non-US filers, SPACs, reverse-SPAC/de-SPAC transactions, and
+non-operating-company investment products, and locates the matching S-1/S-1A
+for the same company so the original filing-range price can be captured
+alongside the final offering price.
 
 Requires SEC_EDGAR_USER_AGENT to be set as an environment variable -
 SEC requires a descriptive User-Agent with a real contact email on
@@ -81,6 +82,27 @@ REVERSE_SPAC_PATTERNS = [
         r"(?:SPAC|special purpose acquisition company|blank check company)\b",
         re.IGNORECASE | re.DOTALL,
     ),
+]
+
+# Research Monitor is for operating-company IPOs. These signals are intentionally
+# narrow and anchored to issuer names or front-of-prospectus self-descriptions so
+# ordinary operating companies are not excluded merely because they mention funds,
+# trusts, ETFs, or the Investment Company Act in risk factors.
+INVESTMENT_PRODUCT_NAME_PATTERN = re.compile(
+    r"\b(?:ETF|ETN)\b|"
+    r"\bexchange[- ]traded (?:fund|note)s?\b",
+    re.IGNORECASE,
+)
+INVESTMENT_PRODUCT_SELF_DESCRIPTION_PATTERNS = [
+    re.compile(r"\b(?:we are|the fund is|the trust is) an? exchange[- ]traded fund\b", re.IGNORECASE),
+    re.compile(r"\b(?:we are|the issuer is) an? exchange[- ]traded note\b", re.IGNORECASE),
+    re.compile(r"\b(?:we are|the fund is) an? (?:closed[- ]end|open[- ]end) management investment company\b", re.IGNORECASE),
+    re.compile(r"\b(?:we are|the trust is) an? unit investment trust\b", re.IGNORECASE),
+    re.compile(r"\b(?:we are|the fund is) an? interval fund\b", re.IGNORECASE),
+    re.compile(r"\b(?:we are|the fund is) an? mutual fund\b", re.IGNORECASE),
+    re.compile(r"\b(?:we are|the company is) an? business development company\b", re.IGNORECASE),
+    re.compile(r"\b(?:the trust|the fund) is (?:a|an) (?:grantor trust|commodity pool|pooled investment vehicle)\b", re.IGNORECASE),
+    re.compile(r"\bregistered (?:closed[- ]end|open[- ]end)?\s*investment company under the investment company act of 1940\b", re.IGNORECASE),
 ]
 
 DIRECT_LISTING_PATTERNS = [
@@ -317,12 +339,31 @@ def get_primary_ticker(cik: str):
     return tickers[0] if tickers else None
 
 
+def check_investment_product_indicators(filing_text: str, company_name: str = "") -> bool:
+    """Return True for ETFs, ETNs, funds, trusts, and similar pooled vehicles.
+
+    Detection is conservative: issuer-name matching is limited to explicit ETF/ETN
+    language, while broader fund/trust classifications require an affirmative
+    self-description near the front of the prospectus.
+    """
+    if INVESTMENT_PRODUCT_NAME_PATTERN.search(str(company_name or "")):
+        return True
+    cover_and_summary = str(filing_text or "")[:125000]
+    return any(
+        pattern.search(cover_and_summary)
+        for pattern in INVESTMENT_PRODUCT_SELF_DESCRIPTION_PATTERNS
+    )
+
+
 def check_spac_indicators(filing_text: str, company_name: str = "") -> bool:
     """
-    Identify SPACs and reverse-SPAC/de-SPAC registrations from issuer names or
-    transaction language near the front of the prospectus. Generic references
-    to SPACs elsewhere in an operating company's filing are not exclusion evidence.
+    Identify excluded non-operating issuer types handled by the shared IPO gate:
+    SPACs, reverse-SPAC/de-SPAC registrations, ETFs, ETNs, and pooled investment
+    vehicles. Generic references elsewhere in an operating company's filing are
+    not exclusion evidence.
     """
+    if check_investment_product_indicators(filing_text, company_name=company_name):
+        return True
     if SPAC_NAME_PATTERN.search(str(company_name or "")):
         return True
 
