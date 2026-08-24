@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-24T01:56:31.218260+00:00",
+  "updated_at": "2026-08-24T04:01:41.655053+00:00",
   "items": {
     "s1:0002065821": {
       "id": "s1:0002065821",
@@ -73,18 +73,6 @@
       "priority": "High",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm"
-    },
-    "s1:0002064768": {
-      "id": "s1:0002064768",
-      "cik": "0002064768",
-      "company": "Canary Staked TRX ETF",
-      "form": "S-1/A",
-      "filed": "2026-08-19",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2064768/000199937126018236/0001999371-26-018236-index.htm"
     },
     "s1:0002112634": {
       "id": "s1:0002112634",
@@ -169,30 +157,6 @@
       "priority": "High",
       "value": 478548213,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2055301/000162828026055463/0001628280-26-055463-index.htm"
-    },
-    "s1:0002147267": {
-      "id": "s1:0002147267",
-      "cik": "0002147267",
-      "company": "Gores Holdings XII, Inc.",
-      "form": "S-1",
-      "filed": "2026-08-10",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2147267/000119312526342392/0001193125-26-342392-index.htm"
-    },
-    "s1:0002149294": {
-      "id": "s1:0002149294",
-      "cik": "0002149294",
-      "company": "GigCapital10 Corp.",
-      "form": "S-1",
-      "filed": "2026-08-10",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2149294/000119312526342742/0001193125-26-342742-index.htm"
     },
     "s1:0001838003": {
       "id": "s1:0001838003",
