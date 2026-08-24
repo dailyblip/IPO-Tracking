@@ -12,6 +12,7 @@ on:
       - 'src/stanford_grader.py'
       - 'src/test_stanford_grader.py'
       - 'src/test_dashboard_ui.py'
+      - 'src/company_name_normalizer.py'
       - 'src/public_feed_policy.py'
       - 'src/test_public_feed_policy.py'
       - '.github/workflows/ownership-refresh.yml'
@@ -49,10 +50,13 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
         run: |
-          START=$(date -u -d '365 days ago' +%F)
+          START=2026-06-01
           END=$(date -u +%F)
           echo "Regrading ownership and Stanford affiliations from $START through $END"
           python main.py --backfill-start "$START" --backfill-end "$END"
+      - name: Normalize issuer display names
+        working-directory: src
+        run: python company_name_normalizer.py ../docs/data/filings.json
       - name: Enforce public-feed eligibility policy
         working-directory: src
         run: python public_feed_policy.py ../docs/data/filings.json
