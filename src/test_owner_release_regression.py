@@ -23,6 +23,7 @@ class OwnerReleaseRegressionTests(unittest.TestCase):
                         "id": "owner-release-regression",
                         "company": "Qualifying Operating Company, Inc.",
                         "form": "424B4",
+                        "filed": "2026-08-24",
                         "value": 150_000_000,
                         "people": [
                             {"name": label, "holder_type": "Individual"}
