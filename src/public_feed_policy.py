@@ -7,6 +7,7 @@ import math
 from pathlib import Path
 
 from dashboard_export import write_dashboard_csv
+from edgar_client import INVESTMENT_PRODUCT_NAME_PATTERN, SPAC_NAME_PATTERN
 
 MINIMUM_IPO_VALUE = 100_000_000.0
 
@@ -24,9 +25,25 @@ def _number(value):
     return number
 
 
+def _has_excluded_issuer_name(filing):
+    """Fail closed for issuer names that independently identify excluded products.
+
+    Full SPAC/reverse-SPAC/investment-product detection remains upstream because it
+    can inspect filing text. This release gate adds a final deterministic safeguard
+    for name patterns that are strong enough to classify without inference.
+    """
+    company = str((filing or {}).get("company") or "").strip()
+    return bool(
+        SPAC_NAME_PATTERN.search(company)
+        or INVESTMENT_PRODUCT_NAME_PATTERN.search(company)
+    )
+
+
 def qualifies_for_public_feed(filing):
-    """Return True only when authoritative pipeline data establishes >= $100M."""
+    """Return True only for qualifying operating-company IPOs established at >= $100M."""
     if not isinstance(filing, dict):
+        return False
+    if _has_excluded_issuer_name(filing):
         return False
     value = _number(filing.get("value"))
     return value is not None and value >= MINIMUM_IPO_VALUE
