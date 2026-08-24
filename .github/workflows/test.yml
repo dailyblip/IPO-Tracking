@@ -2,10 +2,22 @@ name: Test Research Monitor
 
 on:
   pull_request:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'docs/index.html'
+      - 'docs/data/**'
+      - 'requirements.txt'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: research-monitor-tests-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   test:
