@@ -67,9 +67,11 @@ class PublicFeedPolicyTests(unittest.TestCase):
         }
         weak = dict(safe, offering_size_confidence="Medium")
         resale = dict(safe, offering_size_source="selling stockholder cover statement")
+        generic_cover = dict(safe, offering_size_source="cover statement")
         self.assertTrue(qualifies_for_public_feed(safe))
         self.assertFalse(qualifies_for_public_feed(weak))
         self.assertFalse(qualifies_for_public_feed(resale))
+        self.assertFalse(qualifies_for_public_feed(generic_cover))
 
     def test_policy_removes_non_qualifying_records_and_keeps_csv_in_sync(self):
         with tempfile.TemporaryDirectory() as directory:
