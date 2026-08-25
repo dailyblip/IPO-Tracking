@@ -57,13 +57,14 @@ class PublishedResearchMonitorDataIntegrityTests(unittest.TestCase):
         # field names or export behavior change.
         self.assertGreater(checked, 0, "No filings had exact offering components to validate")
 
-    def test_public_stanford_sources_do_not_expose_grader_failures(self):
-        """Operational grader failures must never appear as public research evidence."""
+    def test_public_stanford_sources_do_not_expose_internal_processing_text(self):
+        """Operational failures and internal grader notes must never be public evidence."""
         forbidden_markers = (
             "grading failed to run",
             "research request failed",
             "insufficient_quota",
             "no credits remaining",
+            "person-level stanford grading skipped",
         )
         leaks = []
         for filing in self.filings:
@@ -82,7 +83,7 @@ class PublishedResearchMonitorDataIntegrityTests(unittest.TestCase):
         self.assertEqual(
             leaks,
             [],
-            "Public Stanford evidence contains grader/API failure text: " + "; ".join(leaks[:10]),
+            "Public Stanford evidence contains internal processing text: " + "; ".join(leaks[:10]),
         )
 
     def test_june_present_confirmed_stanford_signal_is_explainable_and_red_eligible(self):
