@@ -91,7 +91,7 @@ class DashboardUiTests(unittest.TestCase):
             'const matched=isStanfordBeneficialOwner(person);const node=text(matched?"strong":"span",matched?"stanford-person":""',
             self.html,
         )
-        self.assertIn("stanford-s", self.html)
+        self.assertNotIn("stanford-s", self.html)
         self.assertIn("Confirmed Stanford-affiliated beneficial owner", self.html)
         self.assertIn("Named people & beneficial owners", self.html)
 
@@ -126,9 +126,11 @@ class DashboardUiTests(unittest.TestCase):
     def test_prospect_liquidity_ui_and_front_page_flags(self):
         for value in ("personDetail", "personCurrentValue", "personIpoValue", "personCashRealized", "personLiquidValue", "personLockedValue", "personLockupEnd"):
             self.assertIn(f'id="{value}"', self.html)
+        for value in ("personStanford", "personStanfordConfidence", "personStanfordNote"):
+            self.assertIn(f'id="{value}"', self.html)
         self.assertIn("function ipoSizeBucket(value)", self.html)
         self.assertIn('"$500M+"', self.html)
-        self.assertIn("stanford-s", self.html)
+        self.assertNotIn("stanford-s", self.html)
         self.assertIn("showPerson(person,filing)", self.html)
 
     def test_published_feed_retains_confirmed_stanford_beneficial_owner(self):
