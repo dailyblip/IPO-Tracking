@@ -28,6 +28,8 @@ AFFILIATION_PATTERN = re.compile(
 STRONG_SENTENCE_BOUNDARY_PATTERN = re.compile(r"[.!?]\s+[A-Z]")
 SEC_FOOTNOTE_SUFFIX_PATTERN = re.compile(r"(?:\s*\(\d+[a-z]?\))+$", re.I)
 NON_PERSON_TYPES = {"entity", "fund", "trust"}
+CONFIDENCE_PREFIX = "Confidence 5/5 — "
+LEGACY_SEC_SOURCE_PREFIX = "SEC 424B4 management biography — "
 
 
 def _clean_name(value: str) -> str:
@@ -61,18 +63,52 @@ def _has_affiliation_language(context: str, stanford_start: int, stanford_end: i
     return bool(AFFILIATION_PATTERN.search(same_sentence_after))
 
 
-def find_sec_stanford_affiliation(full_text: str, person_name: str, peer_names=()) -> bool:
-    """Return True only for exact-person, explicit Stanford University evidence.
+def _same_sentence_around_stanford(context: str, stanford_start: int, stanford_end: int) -> str:
+    """Return conservative local prose around the Stanford reference."""
+    before = context[max(0, stanford_start - 450):stanford_start]
+    boundaries = list(STRONG_SENTENCE_BOUNDARY_PATTERN.finditer(before))
+    start = boundaries[-1].end() if boundaries else 0
 
-    A candidate is rejected when another disclosed person's full name appears
-    between the target person's name and the Stanford reference. This prevents
-    a management roster or one person's biography from incorrectly assigning a
-    neighboring person's Stanford credential to the target holder.
-    """
+    after = context[stanford_end:min(len(context), stanford_end + 250)]
+    boundary = STRONG_SENTENCE_BOUNDARY_PATTERN.search(after)
+    end = boundary.start() if boundary else len(after)
+    return " ".join((before[start:] + context[stanford_start:stanford_end] + after[:end]).split())
+
+
+def _connection_note(context: str, stanford_start: int, stanford_end: int) -> str:
+    """Summarize only the affiliation type explicitly supported by SEC prose."""
+    sentence = _same_sentence_around_stanford(context, stanford_start, stanford_end)
+    lowered = sentence.casefold()
+
+    if re.search(r"\bprofessor\b|\bteaches?\b", lowered):
+        return "SEC 424B4 management biography confirms a faculty or teaching role at Stanford University."
+    if re.search(r"\bfellow\b", lowered):
+        return "SEC 424B4 management biography confirms a fellowship connection to Stanford University."
+    if re.search(r"\battended\b", lowered):
+        return "SEC 424B4 management biography confirms attendance at Stanford University."
+    if re.search(r"\bstudied\b", lowered):
+        return "SEC 424B4 management biography confirms study at Stanford University."
+    if re.search(r"\bgraduat(?:e|ed)\b|\bgraduate\s+of\b", lowered):
+        return "SEC 424B4 management biography confirms graduation from Stanford University."
+
+    degree_signal = re.search(
+        r"\bdegree\b|\b(?:B\.?A\.?|B\.?S\.?|M\.?A\.?|M\.?S\.?|M\.?B\.?A\.?|J\.?D\.?|M\.?D\.?|Ph\.?D\.?)\b",
+        sentence,
+        re.I,
+    )
+    degree_verb = re.search(r"\bholds?\b|\bearned\b|\breceived\b", sentence, re.I)
+    if degree_signal and degree_verb:
+        return "SEC 424B4 management biography confirms a degree from Stanford University."
+
+    return "SEC 424B4 management biography explicitly confirms a Stanford University affiliation."
+
+
+def find_sec_stanford_evidence(full_text: str, person_name: str, peer_names=()) -> str | None:
+    """Return a concise SEC-supported connection note for an exact person match."""
     text = " ".join(str(full_text or "").split())
     target_pattern = _name_pattern(person_name)
     if not text or target_pattern is None or not STANFORD_PATTERN.search(text):
-        return False
+        return None
 
     peer_patterns = []
     target_clean = _clean_name(person_name).casefold()
@@ -100,9 +136,23 @@ def find_sec_stanford_affiliation(full_text: str, person_name: str, peer_names=(
                 break
         if contaminated:
             continue
-        return True
+        return _connection_note(window, stanford.start(), stanford.end())
 
-    return False
+    return None
+
+
+def find_sec_stanford_affiliation(full_text: str, person_name: str, peer_names=()) -> bool:
+    """Return True only for exact-person, explicit Stanford University evidence."""
+    return bool(find_sec_stanford_evidence(full_text, person_name, peer_names))
+
+
+def _needs_sec_note_upgrade(person: dict) -> bool:
+    source = str(person.get("stanford_source") or "").strip()
+    return bool(
+        person.get("stanford_university_bio")
+        and source.startswith(LEGACY_SEC_SOURCE_PREFIX)
+        and not source.startswith(CONFIDENCE_PREFIX)
+    )
 
 
 def _eligible_filing(filing: dict, start_date: str | None, end_date: str | None) -> bool:
@@ -136,7 +186,7 @@ def enrich_feed(feed_path, start_date=None, end_date=None) -> dict:
             if isinstance(person, dict)
             and person.get("name")
             and str(person.get("holder_type") or "").casefold() not in NON_PERSON_TYPES
-            and not person.get("stanford_university_bio")
+            and (not person.get("stanford_university_bio") or _needs_sec_note_upgrade(person))
         ]
         if not candidates:
             continue
@@ -165,14 +215,19 @@ def enrich_feed(feed_path, start_date=None, end_date=None) -> dict:
         ]
 
         for person in candidates:
-            if find_sec_stanford_affiliation(full_text, person["name"], peer_names):
-                person["stanford_university_bio"] = True
-                person["stanford_source"] = f"SEC 424B4 management biography — {document_url}"
-                changed_people += 1
-                print(
-                    f"[stanford_sec_backfill] confirmed {person['name']} "
-                    f"({filing.get('company')}) from SEC filing"
-                )
+            note = find_sec_stanford_evidence(full_text, person["name"], peer_names)
+            if not note:
+                continue
+            new_source = f"{CONFIDENCE_PREFIX}{note} Source: {document_url}"
+            if person.get("stanford_university_bio") is True and person.get("stanford_source") == new_source:
+                continue
+            person["stanford_university_bio"] = True
+            person["stanford_source"] = new_source
+            changed_people += 1
+            print(
+                f"[stanford_sec_backfill] confirmed {person['name']} "
+                f"({filing.get('company')}) from SEC filing"
+            )
 
     if changed_people:
         temporary = path.with_suffix(path.suffix + ".tmp")
