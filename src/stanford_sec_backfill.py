@@ -22,7 +22,7 @@ STANFORD_PATTERN = re.compile(r"\bstanford\s+university\b", re.I)
 AFFILIATION_PATTERN = re.compile(
     r"(?:\bholds?\b|\bearned\b|\breceived\b|\bgraduat(?:e|ed)\b|"
     r"\battended\b|\bstudied\b|\bdegree\b|\bprofessor\b|\bfellow\b|"
-    r"\bserved\b|\bteaches?\b|\bgraduate\s+of\b)",
+    r"\bteaches?\b|\bgraduate\s+of\b)",
     re.I,
 )
 SEC_FOOTNOTE_SUFFIX_PATTERN = re.compile(r"(?:\s*\(\d+[a-z]?\))+$", re.I)
