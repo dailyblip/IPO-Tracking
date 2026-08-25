@@ -13,6 +13,13 @@ from prospect_research import holder_type
 
 MINIMUM_IPO_VALUE = 100_000_000.0
 SUPPORTED_IPO_FORMS = {"S-1", "S-1/A", "424B4"}
+_STANFORD_OPERATIONAL_ERROR_MARKERS = (
+    "grading failed to run:",
+    "stanford research request failed",
+    "insufficient_quota",
+    "credit_balance_exhausted",
+    "no credits remaining",
+)
 
 
 def _number(value):
@@ -188,6 +195,35 @@ def _normalize_people_types(filing):
     return normalized
 
 
+def _scrub_stanford_operational_errors(filing):
+    """Keep internal Stanford-grading failures out of public person records.
+
+    Historical rows may retain an error string from an earlier grading attempt even
+    after the grader itself has been changed to fail closed. Such strings are not
+    public evidence and must never be rendered as a Stanford connection source.
+    Only deterministic operational-error text is removed; confirmed evidence notes
+    and affiliation flags are preserved unchanged.
+    """
+    normalized = dict(filing)
+    people = filing.get("people")
+    if not isinstance(people, list):
+        return normalized
+
+    normalized_people = []
+    for person in people:
+        if not isinstance(person, dict):
+            normalized_people.append(person)
+            continue
+        normalized_person = dict(person)
+        source = str(person.get("stanford_source") or "").strip()
+        folded = source.casefold()
+        if source and any(marker in folded for marker in _STANFORD_OPERATIONAL_ERROR_MARKERS):
+            normalized_person["stanford_source"] = ""
+        normalized_people.append(normalized_person)
+    normalized["people"] = normalized_people
+    return normalized
+
+
 def _normalize_market_value_consistency(filing):
     """Keep quote-derived owner values, dates, and public signals synchronized.
 
@@ -270,7 +306,9 @@ def enforce_public_feed_policy(output_path):
         raise ValueError("Public feed must contain a filings list")
 
     qualifying = [
-        _normalize_market_value_consistency(_normalize_people_types(filing))
+        _normalize_market_value_consistency(
+            _scrub_stanford_operational_errors(_normalize_people_types(filing))
+        )
         for filing in filings
         if _has_valid_filing_date(filing) and qualifies_for_public_feed(filing)
     ]
