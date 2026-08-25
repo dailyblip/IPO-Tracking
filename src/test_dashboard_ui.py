@@ -38,23 +38,31 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn('dateLabel(filing.filed)', self.html)
         self.assertIn('/^\\d{8}$/.test(raw)', self.html)
 
-    def test_main_table_uses_requested_default_column_order(self):
+    def test_main_table_uses_locked_column_order(self):
         expected_labels = (
             "Company Name", "Ticker", "Form", "Stage", "Filed",
             "IPO Size / Offering Value", "Filing Price", "Final IPO Price",
-            "Current Price", "Public Signals",
+            "Current Price",
         )
         positions = [self.html.index(f'>{label}</th>') for label in expected_labels]
         self.assertEqual(positions, sorted(positions))
-        self.assertIn("Public Signals</th>", self.html)
+        self.assertNotIn("Public Signals</th>", self.html)
         self.assertNotIn("<th>Priority</th>", self.html)
         self.assertNotIn("<th>Status</th>", self.html)
         self.assertIn("money(filing.ipo_size||filing.value)", self.html)
         self.assertIn('filing.ticker||"—"', self.html)
 
+    def test_public_signals_must_not_surface_in_main_queue(self):
+        self.assertNotIn('or signal', self.html)
+        self.assertNotIn('...f.signals', self.html)
+        self.assertNotIn('filing.signals.length', self.html)
+        self.assertNotIn('filing.signals[0]', self.html)
+        self.assertNotIn('data-col="9"', self.html)
+
     def test_columns_are_drag_reorderable_and_persistent(self):
-        for index in range(10):
+        for index in range(9):
             self.assertIn(f'draggable="true" data-col="{index}"', self.html)
+        self.assertNotIn('draggable="true" data-col="9"', self.html)
         self.assertIn('research-monitor:column-order', self.html)
         self.assertIn("function setupColumnDrag()", self.html)
         self.assertIn("function applyColumnOrder()", self.html)
@@ -94,12 +102,6 @@ class DashboardUiTests(unittest.TestCase):
         self.assertNotIn("stanford-s", self.html)
         self.assertIn("Confirmed Stanford-affiliated beneficial owner", self.html)
         self.assertIn("Named people & beneficial owners", self.html)
-
-    def test_public_signals_are_searchable_and_rendered(self):
-        self.assertIn('signals:Array.isArray(filing.signals)?filing.signals.map(String):[]', self.html)
-        self.assertIn('...f.signals', self.html)
-        self.assertIn('filing.signals.length', self.html)
-        self.assertIn('filing.signals[0]', self.html)
 
     def test_monthly_activity_replaces_summary_counters(self):
         self.assertIn('id="monthCount"', self.html)
