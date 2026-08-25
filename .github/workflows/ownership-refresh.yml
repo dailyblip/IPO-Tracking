@@ -11,6 +11,7 @@ on:
       - 'src/prospect_research.py'
       - 'src/stanford_grader.py'
       - 'src/test_stanford_grader.py'
+      - 'src/test_stanford_management_scope.py'
       - 'src/test_dashboard_ui.py'
       - 'src/company_name_normalizer.py'
       - 'src/public_feed_policy.py'
