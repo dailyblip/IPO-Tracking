@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-24T22:56:47.058621+00:00",
+  "updated_at": "2026-08-25T00:58:08.916861+00:00",
   "items": {
     "0001193125-26-340329": {
       "id": "0001193125-26-340329",
@@ -10,7 +10,7 @@
       "filed": "2026-08-07",
       "stage": "priced",
       "price_range": null,
-      "priority": "High",
+      "priority": "Medium",
       "value": 345600000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2056611/000119312526340329/0001193125-26-340329-index.htm"
     },
@@ -161,7 +161,7 @@
     "0001628280-26-042639": {
       "id": "0001628280-26-042639",
       "cik": "0001181412",
-      "company": "SPACE EXPLORATION TECHNOLOGIES CORP",
+      "company": "Space Exploration Technologies Corp",
       "form": "424B4",
       "filed": "2026-06-12",
       "stage": "priced",
@@ -335,7 +335,7 @@
       "last_filed": "2026-08-17"
     },
     "0001181412": {
-      "company": "SPACE EXPLORATION TECHNOLOGIES CORP",
+      "company": "Space Exploration Technologies Corp",
       "stage": "priced",
       "last_filing_id": "0001628280-26-042639",
       "last_filed": "2026-06-12"
