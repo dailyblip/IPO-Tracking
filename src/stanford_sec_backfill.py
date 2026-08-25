@@ -42,8 +42,17 @@ def _name_pattern(value: str):
 
 
 def _has_affiliation_language(context: str, stanford_start: int, stanford_end: int) -> bool:
-    nearby = context[max(0, stanford_start - 450): min(len(context), stanford_end + 250)]
-    return bool(AFFILIATION_PATTERN.search(nearby))
+    boundaries = list(re.finditer(r"[.!?]\s+(?=[A-Z])", context))
+    sentence_start = max(
+        (boundary.end() for boundary in boundaries if boundary.end() <= stanford_start),
+        default=0,
+    )
+    sentence_end = next(
+        (boundary.start() for boundary in boundaries if boundary.start() >= stanford_end),
+        len(context),
+    )
+    sentence = context[sentence_start:sentence_end]
+    return bool(AFFILIATION_PATTERN.search(sentence))
 
 
 def find_sec_stanford_affiliation(full_text: str, person_name: str, peer_names=()) -> bool:
