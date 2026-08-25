@@ -71,8 +71,9 @@ class ProspectLiquiditySiteTests(unittest.TestCase):
         self.assertIn('badge("IPO $500M+","major")', self.html)
 
     def test_restores_stanford_affiliation_signals(self):
-        self.assertIn('badge("Stanford","stanford")', self.html)
-        self.assertIn("Stanford affiliation", self.html)
+        self.assertNotIn('.badge.stanford', self.html)
+        self.assertIn("Stanford Connection", self.html)
+        self.assertIn('className=hasStanford(f)?"company cardinal":"company"', self.html)
         names = {row["name"] for row in self.backfill["stanford_overrides"]}
         self.assertIn("Steve Jurvetson", names)
         self.assertIn("Ira Ehrenpreis", names)
@@ -101,7 +102,7 @@ class ProspectLiquiditySiteTests(unittest.TestCase):
             'Number(p.shares_sold_ipo)>0',
             'Research snapshot',
             'Lock-up terms from filing',
-            'p.stanford_source||',
+            'p?.stanford_source||',
             '<th>Location</th>',
         ):
             self.assertIn(token, self.html)
@@ -155,7 +156,7 @@ class ProspectResearchGradeRegressionTests(unittest.TestCase):
         for required in (
             'id="clearFilters"', 'id="companySignals"', 'id="companySecSource"',
             'id="personResearchContext"', 'id="personLockupSchedule"',
-            'Stanford connection', '$500M+ IPO', 'Selling shareholders',
+            'Stanford Connection', '$500M+ IPO', 'Selling shareholders',
             'Before IPO', 'Sold in IPO', 'IPO Cash Proceeds', 'Current Value',
             'Liquid Now', 'Locked / Restricted', 'Classification confidence',
         ):
