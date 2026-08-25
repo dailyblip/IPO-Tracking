@@ -67,6 +67,23 @@ def confirmed_boolean(value) -> bool:
     return str(value).strip().lower() in {"true", "yes", "y", "1"}
 
 
+def _stanford_public_source(row: dict):
+    """Publish concise Stanford research context with the grader's 1-5 score.
+
+    The score is evidence confidence, not connection strength. Grade 5 is the
+    only confirmed state; 1-4 remain research leads and never drive red text.
+    """
+    note = first_present(row, "Stanford Justification", "Stanford Source")
+    grade = first_present(row, "Stanford Grade")
+    try:
+        grade = int(grade)
+    except (TypeError, ValueError):
+        grade = None
+    if note and grade in {1, 2, 3, 4, 5}:
+        return f"Confidence {grade}/5 — {str(note).strip()}"
+    return note
+
+
 def prospect_person_metadata(row: dict, name: str) -> dict:
     """Normalize fields useful to a prospect researcher when upstream provides them."""
     stanford_confirmed = confirmed_boolean(
@@ -81,7 +98,7 @@ def prospect_person_metadata(row: dict, name: str) -> dict:
         "shares_before_ipo": first_present(row, "Shares Before IPO", "Shares Before Offering"),
         "shares_sold_ipo": first_present(row, "Shares Sold in IPO", "Shares Offered", "Secondary Shares"),
         "shares_after_ipo": first_present(row, "Shares After IPO", "Shares After Offering", "Shares"),
-        "stanford_source": first_present(row, "Stanford Justification", "Stanford Source"),
+        "stanford_source": _stanford_public_source(row),
         "stanford_affiliation_confirmed": stanford_confirmed,
         # Backward-compatible public/UI field. Keep it derived from the confirmed
         # affiliation gate so researcher-facing Stanford highlighting cannot be
