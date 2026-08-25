@@ -49,7 +49,8 @@ DEFAULT_LOOKBACK_DAYS = _default_lookback_days()
 
 def _person_key(person_name):
     """Stable comparison key for person names extracted from different SEC sections."""
-    return " ".join(re.findall(r"[a-z0-9]+", str(person_name or "").casefold()))
+    name = re.sub(r"(?:\s*\(\d+[a-z]?\))+$", "", str(person_name or ""), flags=re.I)
+    return " ".join(re.findall(r"[a-z0-9]+", name.casefold()))
 
 
 def _person_bio(bios, person_name):
