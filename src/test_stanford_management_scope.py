@@ -15,10 +15,8 @@ class StanfordManagementScopeTests(unittest.TestCase):
             ("Jane Director", "Ms. Director serves on our board and attended Stanford University.")
         ])
 
-    def test_person_key_normalizes_sec_footnotes_and_punctuation(self):
-        self.assertEqual(main._person_key("Nima Farzan(6)"), "nima farzan 6")
-        # Prefix-compatible matching in _person_bio still lets the ownership row
-        # resolve to the management bio even when SEC footnotes are present.
+    def test_person_key_strips_sec_footnotes_and_punctuation(self):
+        self.assertEqual(main._person_key("Nima Farzan(6)"), "nima farzan")
         bios = {"Nima Farzan": "Stanford University", "_full_text": "ignored"}
         self.assertEqual(main._person_bio(bios, "Nima Farzan(6)"), "Stanford University")
 
