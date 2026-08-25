@@ -4,7 +4,7 @@ from unittest.mock import Mock, patch
 import stanford_grader as grader
 
 
-def test_organization_holder_skips_search_and_llm():
+def test_organization_holder_skips_openai():
     organization_names = [
         "Entities affiliated with Westlake BioPartners",
         "Foresite Capital",
@@ -12,15 +12,11 @@ def test_organization_holder_skips_search_and_llm():
         "OrbiMed Private Investments VIII, LP",
         "J. Jean Cui, Ph.D. and Y. Peter Li, Ph.D., MBA and related affiliates",
     ]
-
     for name in organization_names:
-        with patch.object(grader, "run_search_fallback") as search, \
-                patch.object(grader, "grade_via_llm") as llm:
+        with patch.object(grader, "grade_via_llm") as llm:
             result = grader.grade_stanford_affiliation(name, "Acme")
-
         assert result["grade"] == 0
         assert result["source"] == "non_person_holder"
-        search.assert_not_called()
         llm.assert_not_called()
 
 
@@ -30,127 +26,134 @@ def test_real_person_names_are_not_treated_as_organizations():
     assert grader.is_likely_organization("Jane Founder") is False
 
 
-def test_direct_bio_short_circuits_search():
-    with patch.object(grader, "run_search_fallback") as search:
+def test_direct_bio_short_circuits_openai():
+    with patch.object(grader, "grade_via_llm") as llm:
         result = grader.grade_stanford_affiliation(
             "Jane Doe",
             "Acme",
-            bio_text="Jane earned an MBA from Stanford University.",
+            bio_text="Jane Doe earned an MBA from Stanford University.",
+        )
+    assert result["grade"] == 5
+    assert result["source"] == "filing_bio"
+    llm.assert_not_called()
+
+
+def test_sec_footnote_suffix_is_removed():
+    assert grader._clean_person_name("Nima Farzan(6)") == "Nima Farzan"
+
+
+def test_openai_model_can_be_overridden():
+    with patch.dict(os.environ, {"OPENAI_STANFORD_MODEL": "custom-model"}):
+        assert grader._openai_model() == "custom-model"
+
+
+def test_openai_web_search_request_and_response():
+    response = Mock()
+    response.ok = True
+    response.json.return_value = {
+        "output": [{
+            "type": "message",
+            "content": [{
+                "type": "output_text",
+                "text": (
+                    '{"grade":5,"confirmed":true,'
+                    '"justification":"Official issuer biography confirms a Stanford University B.A.",'
+                    '"source_url":"https://latigobio.com/staff-member/nima-farzan-mba/"}'
+                ),
+            }],
+        }]
+    }
+
+    with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}), \
+            patch.object(grader.requests, "post", return_value=response) as post:
+        result = grader.grade_via_llm(
+            "Nima Farzan",
+            "Latigo Biotherapeutics, Inc.",
+            "CEO",
+            "",
+            [],
         )
 
     assert result["grade"] == 5
-    assert result["source"] == "filing_bio"
-    search.assert_not_called()
+    assert result["source"] == "openai_web_research"
+    assert "latigobio.com" in result["source_url"]
+    payload = post.call_args.kwargs["json"]
+    assert payload["tools"] == [{"type": "web_search"}]
+    assert payload["model"] == grader.DEFAULT_OPENAI_MODEL
+    assert post.call_args.kwargs["headers"]["Authorization"] == "Bearer test-key"
 
 
-def test_no_public_evidence_skips_llm():
-    results = [{
-        "title": "Jane Doe - Acme",
-        "snippet": "Executive biography",
-        "link": "https://example.com/jane",
-    }]
-    with patch.object(grader, "run_search_fallback", return_value=results), \
-            patch.object(grader, "grade_via_llm") as llm:
-        result = grader.grade_stanford_affiliation("Jane Doe", "Acme")
-
-    assert result["grade"] == 0
-    assert result["source"] == "no_public_evidence"
-    llm.assert_not_called()
-
-
-def test_exact_official_issuer_bio_confirms_without_llm():
-    results = [{
-        "title": "Nima Farzan - Latigo Biotherapeutics",
-        "snippet": "Nima Farzan holds a B.A. in human biology with honors from Stanford University.",
-        "link": "https://latigobio.com/staff-member/nima-farzan-mba/",
-    }]
-    with patch.object(grader, "run_search_fallback", return_value=results), \
-            patch.object(grader, "grade_via_llm") as llm:
-        result = grader.grade_stanford_affiliation("Nima Farzan", "Latigo Biotherapeutics, Inc.")
-
-    assert result["grade"] == 5
-    assert result["source"] == "official_public_bio"
-    assert "latigobio.com" in result["justification"]
-    llm.assert_not_called()
-
-
-def test_exact_stanford_edu_result_confirms_without_llm():
-    results = [{
-        "title": "Jane Doe | Stanford University",
-        "snippet": "Jane Doe is a Stanford University alumna and Acme executive.",
-        "link": "https://profiles.stanford.edu/jane-doe",
-    }]
-    with patch.object(grader, "run_search_fallback", return_value=results), \
-            patch.object(grader, "grade_via_llm") as llm:
-        result = grader.grade_stanford_affiliation("Jane Doe", "Acme")
-
-    assert result["grade"] == 5
-    assert result["source"] == "official_public_bio"
-    llm.assert_not_called()
-
-
-def test_unofficial_exact_search_result_still_requires_llm():
-    results = [{
-        "title": "Jane Doe - Acme",
-        "snippet": "Jane Doe graduated from Stanford University and works at Acme.",
-        "link": "https://example.com/jane",
-    }]
-    expected = {"grade": 4, "justification": "Matched role and company.", "source": "llm_judgment"}
-    with patch.object(grader, "run_search_fallback", return_value=results), \
-            patch.object(grader, "grade_via_llm", return_value=expected) as llm:
-        result = grader.grade_stanford_affiliation("Jane Doe", "Acme")
-
-    assert result == expected
-    llm.assert_called_once()
-
-
-def test_search_fallback_prioritizes_exact_person_stanford_query():
-    calls = []
-
-    def fake_search(query):
-        calls.append(query)
-        return []
-
-    with patch.object(grader, "brave_search", side_effect=fake_search):
-        grader.run_search_fallback("Nima Farzan", "Latigo Biotherapeutics")
-
-    assert calls == [
-        '"Nima Farzan" "Stanford University"',
-        '"Nima Farzan" Stanford "Latigo Biotherapeutics"',
-    ]
-
-
-def test_model_can_be_overridden():
-    with patch.dict(os.environ, {"ANTHROPIC_MODEL": "custom-model"}):
-        assert grader._anthropic_model() == "custom-model"
-
-
-def test_anthropic_error_includes_api_detail():
+def test_openai_error_includes_api_detail():
     response = Mock()
     response.ok = False
-    response.status_code = 400
-    response.text = '{"error":{"message":"invalid model"}}'
+    response.status_code = 401
+    response.text = '{"error":{"message":"invalid api key"}}'
 
-    with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}), \
+    with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}), \
             patch.object(grader.requests, "post", return_value=response):
         try:
             grader.grade_via_llm("Jane Doe", "Acme", "CEO", "", [])
             assert False, "expected StanfordGraderError"
         except grader.StanfordGraderError as exc:
-            assert "400" in str(exc)
-            assert "invalid model" in str(exc)
+            assert "401" in str(exc)
+            assert "invalid api key" in str(exc)
 
 
-def test_grade_range_is_validated():
+def test_unconfirmed_grade_five_is_downgraded():
     response = Mock()
     response.ok = True
     response.json.return_value = {
-        "content": [{"type": "text", "text": '{"grade": 9, "justification": "bad"}'}]
+        "output": [{
+            "type": "message",
+            "content": [{
+                "type": "output_text",
+                "text": (
+                    '{"grade":5,"confirmed":false,'
+                    '"justification":"Possible match but not definitive.",'
+                    '"source_url":"https://example.com"}'
+                ),
+            }],
+        }]
     }
 
-    with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}), \
+    with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}), \
+            patch.object(grader.requests, "post", return_value=response):
+        result = grader.grade_via_llm("Jane Doe", "Acme", "CEO", "", [])
+
+    assert result["grade"] == 4
+    assert result["source"] == "openai_web_research"
+
+
+def test_invalid_grade_payload_fails_closed():
+    response = Mock()
+    response.ok = True
+    response.json.return_value = {
+        "output": [{
+            "type": "message",
+            "content": [{
+                "type": "output_text",
+                "text": '{"grade":9,"confirmed":true,"justification":"bad","source_url":""}',
+            }],
+        }]
+    }
+
+    with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}), \
             patch.object(grader.requests, "post", return_value=response):
         result = grader.grade_via_llm("Jane Doe", "Acme", "CEO", "", [])
 
     assert result["grade"] == 0
     assert result["source"] == "parse_error"
+
+
+def test_top_level_uses_openai_when_filing_is_silent():
+    expected = {
+        "grade": 5,
+        "justification": "Confirmed.",
+        "source": "openai_web_research",
+        "source_url": "https://profiles.stanford.edu/jane-doe",
+    }
+    with patch.object(grader, "grade_via_llm", return_value=expected) as llm:
+        result = grader.grade_stanford_affiliation("Jane Doe(4)", "Acme", "CEO", "")
+
+    assert result == expected
+    llm.assert_called_once_with("Jane Doe", "Acme", "CEO", "", [])
