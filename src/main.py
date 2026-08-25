@@ -6,7 +6,7 @@ Orchestrates the full daily pipeline:
 2. Parse each filing: cover page, ownership grid, bios, lock-up info
 3. Pull the matching S-1 for the original filing-range price
 4. Look up current market prices and compute cash values per holder
-5. Grade each holder's Stanford affiliation
+5. Grade beneficial owners plus named executives/directors for Stanford affiliation
 6. Run QC checks against the assembled rows
 7. Upsert everything to the shared Google Sheet
 
@@ -47,15 +47,20 @@ def _default_lookback_days(today=None):
 DEFAULT_LOOKBACK_DAYS = _default_lookback_days()
 
 
+def _person_key(person_name):
+    """Stable comparison key for person names extracted from different SEC sections."""
+    return " ".join(re.findall(r"[a-z0-9]+", str(person_name or "").casefold()))
+
+
 def _person_bio(bios, person_name):
     """Return only the bio belonging to this named person, never the full-text fallback."""
-    target = " ".join(re.findall(r"\w+", str(person_name or "").casefold()))
+    target = _person_key(person_name)
     if not target:
         return ""
     for name, bio in (bios or {}).items():
         if name == "_full_text":
             continue
-        candidate = " ".join(re.findall(r"\w+", str(name or "").casefold()))
+        candidate = _person_key(name)
         if candidate and (
             candidate == target
             or candidate.startswith(f"{target} ")
@@ -63,6 +68,20 @@ def _person_bio(bios, person_name):
         ):
             return str(bio or "")
     return ""
+
+
+def _management_bio_candidates(bios, holder_names):
+    """Return named management/director bios not already represented by an owner row."""
+    holder_keys = {_person_key(name) for name in holder_names if _person_key(name)}
+    candidates = []
+    for name, bio in (bios or {}).items():
+        if name == "_full_text" or not str(name or "").strip():
+            continue
+        key = _person_key(name)
+        if not key or key in holder_keys:
+            continue
+        candidates.append((str(name).strip(), str(bio or "")))
+    return candidates
 
 
 def _mentions_stanford_university(bio_text):
@@ -111,8 +130,9 @@ def _get_spreadsheet_id() -> str:
 def process_filing(filing_meta: dict) -> list:
     """
     Process a single 424B4 filing end to end. Returns a list of row
-    dicts (one per beneficial owner), or an empty list if the filing
-    should be skipped (non-US, likely SPAC, or a parsing failure).
+    dicts (one per beneficial owner, plus confirmed Stanford-affiliated
+    management/director people), or an empty list if the filing should be
+    skipped (non-US, likely SPAC, or a parsing failure).
     Never raises - logs and returns [] on failure so one bad filing
     doesn't take down the whole run.
     """
@@ -181,8 +201,6 @@ def process_filing(filing_meta: dict) -> list:
             f"underwriting_keyword_present={diagnostics.get('underwriting_keyword_present')}"
         )
 
-        # Pull the matching S-1 for the original range price and the
-        # original filing date.
         filing_price = None
         s1_location = None
         date_of_filing = s1_meta.get("filing_date") if s1_meta else None
@@ -200,8 +218,6 @@ def process_filing(filing_meta: dict) -> list:
             except Exception as e:
                 print(f"[main] Warning: could not parse S-1 for {company_name}: {e}")
 
-        # The 424B4's own EDGAR filing date is effectively the pricing
-        # date - it's filed once the offering has priced.
         date_of_pricing = filing_meta.get("filing_date")
 
         offering_size = cover.get("offering_size_shares")
@@ -220,8 +236,6 @@ def process_filing(filing_meta: dict) -> list:
                 current_price = price_lookup.get_current_price(ticker)
             except price_lookup.PriceLookupError as e:
                 print(f"[main] Warning: could not get current price for {ticker}: {e}")
-                # Continue anyway - qc_review.py will flag the missing
-                # price rather than losing this filing's rows entirely.
         lockup = parsed.get("lockup_info", {})
         bios = parsed.get("management_bios", {})
         business_location = parsed.get("principal_office_location") or s1_location
@@ -240,10 +254,8 @@ def process_filing(filing_meta: dict) -> list:
 
         rows = []
         holders = parsed.get("principal_stockholders", [])
+        original_holder_names = [holder.get("name", "") for holder in holders]
         if not holders:
-            # A filing can qualify as a domestic IPO even when a filer-specific
-            # ownership table defeats the enrichment parser. Keep a filing-level
-            # row so the public monitor never silently drops the IPO.
             holders = [{"name": "", "shares": None}]
 
         for holder in holders:
@@ -259,14 +271,9 @@ def process_filing(filing_meta: dict) -> list:
             percent_before = holder.get("percent_before")
             percent_after = holder.get("percent_after") if holder.get("percent_after") is not None else holder.get("percent")
 
-            # Use the person-specific bio for exact Stanford highlighting.
-            # The broader full-text fallback remains available to the grader,
-            # but it must never cause every owner in a filing to be highlighted.
             person_bio_text = _person_bio(bios, holder_name)
             bio_text = person_bio_text or bios.get("_full_text", "")
-            stanford_university_in_bio = _mentions_stanford_university(
-                person_bio_text
-            )
+            stanford_university_in_bio = _mentions_stanford_university(person_bio_text)
 
             if holder_name:
                 try:
@@ -321,8 +328,6 @@ def process_filing(filing_meta: dict) -> list:
                 "Stanford Justification": stanford_result["justification"],
                 "Stanford University in Bio": stanford_university_in_bio,
                 "Stanford Affiliation Confirmed": bool(stanford_university_in_bio or stanford_result.get("grade") in (5, "5")),
-                # Keep legacy Lock-Up Expiry for Sheet compatibility, but structured
-                # fields below are authoritative for the Prospect Research product.
                 "Lock-Up Expiry": "",
                 "Lock-Up Text": lockup.get("raw_text") or "",
                 "Lock-Up Duration Days": lockup.get("duration_days"),
@@ -338,8 +343,60 @@ def process_filing(filing_meta: dict) -> list:
                     or parsed.get("diagnostics", {}).get("underwriting_keyword_present")
                 ),
                 "Last Updated": date.today().isoformat(),
-                "_source_excerpt": bio_text[:500],  # consumed by qc_review, stripped before writing
+                "_source_excerpt": bio_text[:500],
             })
+
+        # Stanford is a company-level research signal, not only an ownership-table
+        # signal. Grade each named management/director bio that was not already
+        # processed as a beneficial owner. To avoid polluting the ownership view,
+        # only confirmed Stanford-affiliated management people are added.
+        for person_name, person_bio_text in _management_bio_candidates(
+            bios, original_holder_names
+        ):
+            try:
+                stanford_result = stanford_grader.grade_stanford_affiliation(
+                    person_name=person_name,
+                    company_name=company_name,
+                    title=_role_from_bio(person_bio_text) or "",
+                    bio_text=person_bio_text,
+                )
+            except Exception as e:
+                print(
+                    f"[main] Warning: Stanford grading failed for management person "
+                    f"{person_name} ({company_name}): {e}"
+                )
+                continue
+
+            direct_stanford = _mentions_stanford_university(person_bio_text)
+            confirmed = bool(
+                direct_stanford or stanford_result.get("grade") in (5, "5")
+            )
+            if not confirmed:
+                continue
+
+            template = dict(rows[0])
+            template.update({
+                "Holder Name": person_name,
+                "Role": _role_from_bio(person_bio_text),
+                "Shares": None,
+                "Shares Before IPO": None,
+                "Shares Sold in IPO": None,
+                "Shares After IPO": None,
+                "Ownership % Before IPO": None,
+                "Ownership % After IPO": None,
+                "Cash Realized IPO": None,
+                "Cash Value": None,
+                "Stanford Grade": stanford_result.get("grade", 5),
+                "Stanford Justification": stanford_result.get("justification", "Confirmed Stanford affiliation."),
+                "Stanford University in Bio": direct_stanford,
+                "Stanford Affiliation Confirmed": True,
+                "_source_excerpt": person_bio_text[:500],
+            })
+            rows.append(template)
+            print(
+                f"[main] Stanford connection confirmed for management/director "
+                f"{person_name} ({company_name})"
+            )
 
         return rows
 
