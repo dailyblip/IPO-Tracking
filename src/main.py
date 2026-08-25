@@ -52,6 +52,15 @@ def _person_key(person_name):
     return " ".join(re.findall(r"[a-z0-9]+", str(person_name or "").casefold()))
 
 
+def _person_keys_match(left, right):
+    """Match normalized names when one includes trailing SEC footnote tokens."""
+    return bool(left and right and (
+        left == right
+        or left.startswith(f"{right} ")
+        or right.startswith(f"{left} ")
+    ))
+
+
 def _person_bio(bios, person_name):
     """Return only the bio belonging to this named person, never the full-text fallback."""
     target = _person_key(person_name)
@@ -61,11 +70,7 @@ def _person_bio(bios, person_name):
         if name == "_full_text":
             continue
         candidate = _person_key(name)
-        if candidate and (
-            candidate == target
-            or candidate.startswith(f"{target} ")
-            or target.startswith(f"{candidate} ")
-        ):
+        if _person_keys_match(candidate, target):
             return str(bio or "")
     return ""
 
@@ -78,7 +83,7 @@ def _management_bio_candidates(bios, holder_names):
         if name == "_full_text" or not str(name or "").strip():
             continue
         key = _person_key(name)
-        if not key or key in holder_keys:
+        if not key or any(_person_keys_match(key, holder_key) for holder_key in holder_keys):
             continue
         candidates.append((str(name).strip(), str(bio or "")))
     return candidates
