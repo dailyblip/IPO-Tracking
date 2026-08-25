@@ -3,7 +3,7 @@ stanford_grader.py
 
 For each person on the beneficial ownership grid:
 1. Skip legal entities / combined affiliate rows that are not people.
-2. Check the bio text extracted from the filing's Management section for a direct Stanford mention.
+2. Check person-specific SEC filing context for an explicit Stanford University mention.
 3. Run targeted public-web searches when the filing is silent.
 4. For official issuer or Stanford results, inspect the actual public page rather than relying only on a search snippet.
 5. Confirm only exact-person + Stanford University matches; use the LLM only for ambiguous evidence.
@@ -26,6 +26,7 @@ REQUEST_DELAY_SECONDS = 0.5
 
 DIRECT_MENTION_PATTERN = re.compile(r"\bstanford\b", re.IGNORECASE)
 STANFORD_UNIVERSITY_PATTERN = re.compile(r"\bstanford\s+university\b", re.IGNORECASE)
+SEC_FOOTNOTE_SUFFIX_PATTERN = re.compile(r"(?:\s*\(\d+[a-z]?\))+$", re.IGNORECASE)
 ORGANIZATION_PATTERN = re.compile(
     r"\b(?:entities? affiliated|affiliates?|asset management|capital|ventures?|partners?|"
     r"funds?|holdings?|management|trust|foundation|company|corporation|corp\.?|inc\.?|"
@@ -54,8 +55,15 @@ def _anthropic_model() -> str:
     return os.environ.get("ANTHROPIC_MODEL", DEFAULT_ANTHROPIC_MODEL).strip() or DEFAULT_ANTHROPIC_MODEL
 
 
-def is_likely_organization(person_name: str) -> bool:
+def _clean_person_name(person_name: str) -> str:
+    """Remove SEC table footnote markers without changing the person's identity."""
     name = " ".join(str(person_name or "").split())
+    name = SEC_FOOTNOTE_SUFFIX_PATTERN.sub("", name).strip()
+    return name
+
+
+def is_likely_organization(person_name: str) -> bool:
+    name = _clean_person_name(person_name)
     if not name:
         return False
     if ORGANIZATION_PATTERN.search(name):
@@ -63,14 +71,60 @@ def is_likely_organization(person_name: str) -> bool:
     return bool(re.search(r"\band\s+(?:related\s+)?affiliates?\b", name, re.IGNORECASE))
 
 
-def check_bio_for_stanford(bio_text: str) -> dict | None:
-    if not bio_text or not DIRECT_MENTION_PATTERN.search(bio_text):
+def _normalized_words(value: str) -> list[str]:
+    return re.findall(r"[a-z0-9]+", str(value or "").casefold())
+
+
+def _normalized_phrase(value: str) -> str:
+    return " ".join(_normalized_words(value))
+
+
+def _person_specific_filing_context(person_name: str, bio_text: str, radius: int = 2500) -> str:
+    """Return filing text near the exact holder only when it also says Stanford University.
+
+    ``main.py`` may pass a broad Management-section fallback when filer-specific bio
+    splitting fails. We must never let a Stanford mention belonging to one executive
+    highlight every beneficial owner. For long text, require the cleaned exact holder
+    name and Stanford University to occur in the same bounded context window.
+    """
+    text = " ".join(str(bio_text or "").split())
+    if not text or not STANFORD_UNIVERSITY_PATTERN.search(text):
+        return ""
+    if len(text) <= 4000:
+        return text
+
+    person_phrase = _normalized_phrase(_clean_person_name(person_name))
+    if not person_phrase:
+        return ""
+    normalized_text = _normalized_phrase(text)
+    if person_phrase not in normalized_text:
+        return ""
+
+    # Search the original text using flexible whitespace/punctuation between the
+    # person's normalized name tokens so SEC footnotes and inline HTML artifacts
+    # do not break identity matching.
+    tokens = _normalized_words(_clean_person_name(person_name))
+    if not tokens:
+        return ""
+    pattern = re.compile(r"\b" + r"\W+".join(re.escape(token) for token in tokens) + r"\b", re.I)
+    for match in pattern.finditer(text):
+        start = max(0, match.start() - radius)
+        end = min(len(text), match.end() + radius)
+        window = text[start:end]
+        if STANFORD_UNIVERSITY_PATTERN.search(window):
+            return window
+    return ""
+
+
+def check_bio_for_stanford(bio_text: str, person_name: str = "") -> dict | None:
+    context = _person_specific_filing_context(person_name, bio_text) if person_name else str(bio_text or "")
+    if not context or not DIRECT_MENTION_PATTERN.search(context):
         return None
-    sentences = re.split(r"(?<=[.])\s+", bio_text)
-    matching_sentence = next((s for s in sentences if DIRECT_MENTION_PATTERN.search(s)), bio_text[:300])
+    sentences = re.split(r"(?<=[.])\s+", context)
+    matching_sentence = next((s for s in sentences if DIRECT_MENTION_PATTERN.search(s)), context[:300])
     return {
         "grade": 5,
-        "justification": f'Directly stated in filing bio: "{matching_sentence.strip()}"',
+        "justification": f'Directly stated in SEC filing context for {_clean_person_name(person_name) or "holder"}: "{matching_sentence.strip()}"',
         "source": "filing_bio",
     }
 
@@ -97,9 +151,10 @@ google_search = brave_search
 
 def run_search_fallback(person_name: str, company_name: str) -> list:
     all_results = []
+    clean_name = _clean_person_name(person_name)
     queries = [
-        f'"{person_name}" "Stanford University"',
-        f'"{person_name}" Stanford "{company_name}"',
+        f'"{clean_name}" "Stanford University"',
+        f'"{clean_name}" Stanford "{company_name}"',
     ]
     for i, query in enumerate(queries[:MAX_SEARCH_ATTEMPTS]):
         try:
@@ -107,14 +162,6 @@ def run_search_fallback(person_name: str, company_name: str) -> list:
         except requests.exceptions.RequestException as exc:
             print(f"[stanford_grader] Search attempt {i + 1} failed: {exc}")
     return all_results
-
-
-def _normalized_words(value: str) -> list[str]:
-    return re.findall(r"[a-z0-9]+", str(value or "").casefold())
-
-
-def _normalized_phrase(value: str) -> str:
-    return " ".join(_normalized_words(value))
 
 
 def _company_identity_tokens(company_name: str) -> list[str]:
@@ -140,7 +187,7 @@ def _authoritative_hostname(link: str, company_name: str) -> str | None:
 
 
 def _strong_official_search_match(person_name: str, company_name: str, search_results: list):
-    person_phrase = _normalized_phrase(person_name)
+    person_phrase = _normalized_phrase(_clean_person_name(person_name))
     if not person_phrase:
         return None
     for result in search_results:
@@ -164,13 +211,8 @@ def _html_to_text(value: str) -> str:
 
 
 def _official_page_match(person_name: str, company_name: str, search_results: list):
-    """Inspect authoritative result pages when snippets omit the affiliation.
-
-    A page may confirm only when it is HTTPS, is on Stanford's domain or a hostname
-    tied to the issuer name, and the fetched page contains both the exact normalized
-    person name and the phrase 'Stanford University'. This deliberately fails closed.
-    """
-    person_phrase = _normalized_phrase(person_name)
+    """Inspect authoritative result pages when snippets omit the affiliation."""
+    person_phrase = _normalized_phrase(_clean_person_name(person_name))
     if not person_phrase:
         return None
 
@@ -217,7 +259,7 @@ def _build_grading_prompt(person_name: str, company_name: str, title: str, bio_t
     ) or "(no search results found)"
     return f"""You are assessing whether there is public evidence that a specific individual has a Stanford University affiliation (student, alumnus, faculty, researcher, or similar).
 
-Person: {person_name}
+Person: {_clean_person_name(person_name)}
 Role/context: {title or "unknown"} at {company_name}
 
 Filing bio text (may be empty):
@@ -277,7 +319,7 @@ def grade_stanford_affiliation(person_name: str, company_name: str, title: str =
             "source": "non_person_holder",
         }
 
-    direct_result = check_bio_for_stanford(bio_text)
+    direct_result = check_bio_for_stanford(bio_text, person_name=person_name)
     if direct_result:
         return direct_result
 
@@ -301,10 +343,10 @@ def grade_stanford_affiliation(person_name: str, company_name: str, title: str =
     if not _search_has_stanford_evidence(search_results):
         return {
             "grade": 0,
-            "justification": "No public Stanford-affiliation evidence found in the filing bio, search results, or authoritative result pages.",
+            "justification": "No public Stanford-affiliation evidence found in the person-specific SEC filing context, search results, or authoritative result pages.",
             "source": "no_public_evidence",
         }
-    return grade_via_llm(person_name, company_name, title, bio_text, search_results)
+    return grade_via_llm(_clean_person_name(person_name), company_name, title, bio_text, search_results)
 
 
 if __name__ == "__main__":
