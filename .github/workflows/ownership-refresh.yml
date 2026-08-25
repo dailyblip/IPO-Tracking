@@ -10,8 +10,10 @@ on:
       - 'src/dashboard_export.py'
       - 'src/prospect_research.py'
       - 'src/stanford_grader.py'
+      - 'src/stanford_sec_backfill.py'
       - 'src/test_stanford_grader.py'
       - 'src/test_stanford_management_scope.py'
+      - 'src/test_stanford_sec_backfill.py'
       - 'src/test_dashboard_ui.py'
       - 'src/company_name_normalizer.py'
       - 'src/public_feed_policy.py'
@@ -29,7 +31,7 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
         with:
@@ -54,6 +56,13 @@ jobs:
           END=$(date -u +%F)
           echo "Regrading ownership and Stanford affiliations from $START through $END"
           python main.py --backfill-start "$START" --backfill-end "$END"
+      - name: Recover SEC-confirmed Stanford beneficial-owner affiliations
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: |
+          python stanford_sec_backfill.py ../docs/data/filings.json \
+            --start 2026-06-01 --end "$(date -u +%F)"
       - name: Normalize issuer display names
         working-directory: src
         run: python company_name_normalizer.py ../docs/data/filings.json
@@ -80,14 +89,19 @@ jobs:
           from pathlib import Path
           feed=json.loads(Path('docs/data/filings.json').read_text())
           assert isinstance(feed.get('filings'), list)
+          stanford_people=[]
           for filing in feed['filings']:
               assert isinstance(filing.get('people', []), list)
               assert float(filing.get('value') or 0) >= 100_000_000
               for person in filing.get('people', []):
                   assert isinstance(person.get('stanford_university_bio', False), bool)
+                  if person.get('stanford_university_bio'):
+                      stanford_people.append((filing.get('company'), person.get('name')))
+          if not stanford_people:
+              raise SystemExit('Historical refresh produced zero confirmed Stanford beneficial owners')
           html = Path('docs/index.html').read_text(encoding='utf-8')
           assert 'start=new Date(Date.UTC(2026,5,1))' in html
-          print(f"Validated {len(feed['filings'])} filings")
+          print(f"Validated {len(feed['filings'])} filings; Stanford matches: {stanford_people}")
           PY
       - name: Publish refreshed ownership data
         run: |
