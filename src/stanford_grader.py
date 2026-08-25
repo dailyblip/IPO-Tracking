@@ -264,8 +264,18 @@ def grade_stanford_affiliation(
     if direct_result:
         return direct_result
 
-    # No Brave dependency: one OpenAI Responses request performs both public search and grading.
-    return grade_via_llm(_clean_person_name(person_name), company_name, title, bio_text, [])
+    # Research failures are operational state, not public evidence. Fail closed here
+    # so the dashboard never publishes API/quota/credential details as a person's
+    # Stanford connection note. The caller may log the underlying exception separately.
+    try:
+        return grade_via_llm(_clean_person_name(person_name), company_name, title, bio_text, [])
+    except StanfordGraderError:
+        return {
+            "grade": 0,
+            "justification": "",
+            "source": "research_unavailable",
+            "source_url": "",
+        }
 
 
 if __name__ == "__main__":
