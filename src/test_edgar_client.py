@@ -54,7 +54,6 @@ class EdgarDiscoveryTests(unittest.TestCase):
         self.assertEqual(results[0]["company_name"], "Fallback Co")
         daily_indexes.assert_called_once()
 
-
     def test_cleans_ticker_suffix_and_keeps_ticker_hint(self):
         label = "Apnimed, Inc.  (APMD)"
         self.assertEqual(edgar_client._clean_company_name(label), "Apnimed, Inc.")
@@ -82,6 +81,40 @@ class EdgarDiscoveryTests(unittest.TestCase):
             )
         )
 
+    def test_investment_product_detection_covers_pooled_non_operating_vehicles(self):
+        excluded_descriptions = [
+            "We are a closed-end management investment company.",
+            "The fund is an open-end management investment company.",
+            "The trust is a unit investment trust.",
+            "The fund is an interval fund.",
+            "The fund is a mutual fund.",
+            "The company is a business development company.",
+            "The trust is a grantor trust.",
+            "The fund is a commodity pool.",
+            "The fund is a pooled investment vehicle.",
+            "We are a registered closed-end investment company under the Investment Company Act of 1940.",
+        ]
+        for description in excluded_descriptions:
+            with self.subTest(description=description):
+                self.assertTrue(
+                    edgar_client.check_investment_product_indicators(
+                        description,
+                        company_name="Example Holdings, Inc.",
+                    )
+                )
+
+    def test_investment_product_detection_does_not_exclude_generic_operating_company_mentions(self):
+        operating_text = (
+            "We are a commercial-stage medical technology company. "
+            "Our shareholders may include mutual funds, trusts, and other investment companies."
+        )
+        self.assertFalse(
+            edgar_client.check_investment_product_indicators(
+                operating_text,
+                company_name="Example Holdings, Inc.",
+            )
+        )
+
     @patch("edgar_client.requests.get")
     def test_primary_ticker_uses_sec_submission_profile(self, get):
         response = Mock()
@@ -89,7 +122,6 @@ class EdgarDiscoveryTests(unittest.TestCase):
         response.raise_for_status.return_value = None
         get.return_value = response
         self.assertEqual(edgar_client.get_primary_ticker("1234567"), "ACME")
-
 
     def test_direct_listing_is_not_a_qualifying_primary_ipo(self):
         self.assertTrue(
@@ -108,12 +140,12 @@ class EdgarDiscoveryTests(unittest.TestCase):
             )
         )
 
-
     def test_business_location_formats_domestic_and_foreign(self):
         with patch.object(edgar_client, "_request_json", return_value={"addresses":{"business":{"city":"Palo Alto","stateOrCountry":"CA","country":"US"}}}):
             self.assertEqual(edgar_client.get_business_location("1"), "Palo Alto, CA")
         with patch.object(edgar_client, "_request_json", return_value={"addresses":{"business":{"city":"Milan","stateOrCountry":"","country":"IT"}}}):
             self.assertEqual(edgar_client.get_business_location("1"), "IT")
+
 
 if __name__ == "__main__":
     unittest.main()
