@@ -1,6 +1,10 @@
 import unittest
 
-from stanford_sec_backfill import find_sec_stanford_affiliation
+from stanford_sec_backfill import (
+    _needs_sec_note_upgrade,
+    find_sec_stanford_affiliation,
+    find_sec_stanford_evidence,
+)
 
 
 class StanfordSecBackfillTests(unittest.TestCase):
@@ -19,6 +23,14 @@ class StanfordSecBackfillTests(unittest.TestCase):
                 "Joseph Kraus(2)",
                 ["Wayne Ting", "Joseph Kraus(2)", "Ann Gugino"],
             )
+        )
+        self.assertEqual(
+            find_sec_stanford_evidence(
+                text,
+                "Joseph Kraus(2)",
+                ["Wayne Ting", "Joseph Kraus(2)", "Ann Gugino"],
+            ),
+            "SEC 424B4 management biography confirms a degree from Stanford University.",
         )
 
     def test_does_not_assign_neighboring_persons_stanford_credential(self):
@@ -45,6 +57,16 @@ class StanfordSecBackfillTests(unittest.TestCase):
     def test_requires_full_person_name(self):
         text = "Mr. Kraus holds a B.A. in Political Science from Stanford University."
         self.assertFalse(find_sec_stanford_affiliation(text, "Joseph Kraus", ["Joseph Kraus"]))
+
+    def test_existing_sec_confirmation_is_rechecked_for_confidence_note_upgrade(self):
+        self.assertTrue(_needs_sec_note_upgrade({
+            "stanford_university_bio": True,
+            "stanford_source": "SEC 424B4 management biography — https://www.sec.gov/example",
+        }))
+        self.assertFalse(_needs_sec_note_upgrade({
+            "stanford_university_bio": True,
+            "stanford_source": "Confidence 5/5 — SEC 424B4 management biography confirms a degree from Stanford University.",
+        }))
 
 
 if __name__ == "__main__":
