@@ -57,16 +57,17 @@ class PublishedResearchMonitorDataIntegrityTests(unittest.TestCase):
         # field names or export behavior change.
         self.assertGreater(checked, 0, "No filings had exact offering components to validate")
 
-    def test_june_present_confirmed_stanford_owners_are_publishable_and_explainable(self):
-        """Keep the required historical Stanford signal verifiable in the live feed.
+    def test_june_present_confirmed_stanford_signal_is_explainable_and_red_eligible(self):
+        """Keep the required June-present Stanford signal verifiable in the live feed.
 
-        Cardinal red is reserved for confirmed Stanford-affiliated beneficial owners.
-        A published confirmed owner therefore must be a natural person with a disclosed
-        positive share position and the current Confidence 5/5 evidence note format.
-        The final assertion prevents the June 1 historical backfill from silently
-        disappearing while UI-only tests continue to pass.
+        Confirmed affiliation and red-text eligibility are deliberately separate:
+        every confirmed Stanford person needs a 5/5 evidence note, while Cardinal red
+        additionally requires a disclosed positive beneficial-owner share position.
+        At least one June-present record must satisfy the full red-text gate so the
+        historical Stanford signal cannot silently disappear from the public feed.
         """
         confirmed = []
+        red_eligible = []
         for filing in self.filings:
             filed = str(filing.get("filed") or "")
             if not filed or filed < HISTORICAL_STANFORD_START:
@@ -76,19 +77,15 @@ class PublishedResearchMonitorDataIntegrityTests(unittest.TestCase):
                     continue
 
                 label = f"{filing.get('company') or filing.get('id')} / {person.get('name')}"
-                shares = _number(person.get("shares"))
                 source = str(person.get("stanford_source") or "").strip()
-
                 self.assertEqual(
                     str(person.get("holder_type") or "").casefold(),
                     "individual",
                     msg=f"{label}: confirmed Stanford record is not an individual",
                 )
-                self.assertIsNotNone(shares, msg=f"{label}: confirmed Stanford owner has no disclosed shares")
-                self.assertGreater(shares, 0, msg=f"{label}: confirmed Stanford owner has no positive share position")
                 self.assertTrue(
                     source.startswith("Confidence 5/5 — "),
-                    msg=f"{label}: confirmed Stanford owner lacks a Confidence 5/5 connection note",
+                    msg=f"{label}: confirmed Stanford person lacks a Confidence 5/5 connection note",
                 )
                 self.assertIn(
                     "Stanford University",
@@ -97,10 +94,19 @@ class PublishedResearchMonitorDataIntegrityTests(unittest.TestCase):
                 )
                 confirmed.append(label)
 
+                shares = _number(person.get("shares"))
+                if shares is not None and shares > 0:
+                    red_eligible.append(label)
+
         self.assertGreater(
             len(confirmed),
             0,
-            "No confirmed Stanford beneficial owner is published for the June 1, 2026-present backfill window",
+            "No confirmed Stanford affiliation is published for the June 1, 2026-present backfill window",
+        )
+        self.assertGreater(
+            len(red_eligible),
+            0,
+            "No confirmed Stanford beneficial owner with disclosed shares is published for Cardinal-red highlighting",
         )
 
 
