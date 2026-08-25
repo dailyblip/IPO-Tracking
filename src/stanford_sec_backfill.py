@@ -25,6 +25,7 @@ AFFILIATION_PATTERN = re.compile(
     r"\bserved\b|\bteaches?\b|\bgraduate\s+of\b)",
     re.I,
 )
+STRONG_SENTENCE_BOUNDARY_PATTERN = re.compile(r"[.!?]\s+[A-Z]")
 SEC_FOOTNOTE_SUFFIX_PATTERN = re.compile(r"(?:\s*\(\d+[a-z]?\))+$", re.I)
 NON_PERSON_TYPES = {"entity", "fund", "trust"}
 
@@ -42,8 +43,22 @@ def _name_pattern(value: str):
 
 
 def _has_affiliation_language(context: str, stanford_start: int, stanford_end: int) -> bool:
-    nearby = context[max(0, stanford_start - 450): min(len(context), stanford_end + 250)]
-    return bool(AFFILIATION_PATTERN.search(nearby))
+    """Require affiliation language in the same prose sentence as Stanford.
+
+    SEC biographies frequently contain abbreviations such as ``B.A.`` so a
+    literal period cannot be treated as a sentence boundary. A period/question
+    mark/exclamation point followed by whitespace and an uppercase letter is a
+    conservative boundary signal for this purpose.
+    """
+    before = context[max(0, stanford_start - 450):stanford_start]
+    for match in reversed(list(AFFILIATION_PATTERN.finditer(before))):
+        if not STRONG_SENTENCE_BOUNDARY_PATTERN.search(before[match.end():]):
+            return True
+
+    after = context[stanford_end:min(len(context), stanford_end + 250)]
+    boundary = STRONG_SENTENCE_BOUNDARY_PATTERN.search(after)
+    same_sentence_after = after[:boundary.start()] if boundary else after
+    return bool(AFFILIATION_PATTERN.search(same_sentence_after))
 
 
 def find_sec_stanford_affiliation(full_text: str, person_name: str, peer_names=()) -> bool:
