@@ -42,20 +42,19 @@ class DashboardUiTests(unittest.TestCase):
         expected_labels = (
             "Company Name", "Ticker", "Form", "Stage", "Filed",
             "IPO Size / Offering Value", "Filing Price", "Final IPO Price",
-            "Current Price",
+            "Current Price", "Public Signals",
         )
         positions = [self.html.index(f'>{label}</th>') for label in expected_labels]
         self.assertEqual(positions, sorted(positions))
-        self.assertNotIn("Public Signals</th>", self.html)
+        self.assertIn("Public Signals</th>", self.html)
         self.assertNotIn("<th>Priority</th>", self.html)
         self.assertNotIn("<th>Status</th>", self.html)
         self.assertIn("money(filing.ipo_size||filing.value)", self.html)
         self.assertIn('filing.ticker||"—"', self.html)
 
     def test_columns_are_drag_reorderable_and_persistent(self):
-        for index in range(9):
+        for index in range(10):
             self.assertIn(f'draggable="true" data-col="{index}"', self.html)
-        self.assertNotIn('draggable="true" data-col="9"', self.html)
         self.assertIn('research-monitor:column-order', self.html)
         self.assertIn("function setupColumnDrag()", self.html)
         self.assertIn("function applyColumnOrder()", self.html)
@@ -72,25 +71,35 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn("filing.current_price", self.html)
         self.assertIn("Delayed quote", self.html)
 
-    def test_highlights_exact_stanford_company_people(self):
+    def test_highlights_only_confirmed_stanford_beneficial_owners(self):
         self.assertIn("--cardinal:#8c1515", self.html)
         self.assertIn(".stanford-company{color:var(--cardinal);font-weight:800}", self.html)
         self.assertIn(".stanford-person{color:var(--cardinal);font-weight:800}", self.html)
         self.assertIn(
-            "function hasStanfordConnection(filing){return filing.people.some(person=>person.stanford_university_bio===true)}",
+            "function isStanfordBeneficialOwner(person){const shares=Number(person.shares);return person.stanford_university_bio===true&&Number.isFinite(shares)&&shares>0}",
             self.html,
         )
         self.assertIn(
-            'hasStanfordConnection(filing)?"company stanford-company":"company"',
+            "function hasStanfordBeneficialOwner(filing){return filing.people.some(isStanfordBeneficialOwner)}",
             self.html,
         )
         self.assertIn(
-            'const matched=person.stanford_university_bio===true;const node=text(matched?"strong":"span",matched?"stanford-person":""',
+            'hasStanfordBeneficialOwner(filing)?"company stanford-company":"company"',
+            self.html,
+        )
+        self.assertIn(
+            'const matched=isStanfordBeneficialOwner(person);const node=text(matched?"strong":"span",matched?"stanford-person":""',
             self.html,
         )
         self.assertIn("stanford-s", self.html)
-        self.assertIn("Confirmed Stanford-affiliated person", self.html)
+        self.assertIn("Confirmed Stanford-affiliated beneficial owner", self.html)
         self.assertIn("Named people & beneficial owners", self.html)
+
+    def test_public_signals_are_searchable_and_rendered(self):
+        self.assertIn('signals:Array.isArray(filing.signals)?filing.signals.map(String):[]', self.html)
+        self.assertIn('...f.signals', self.html)
+        self.assertIn('filing.signals.length', self.html)
+        self.assertIn('filing.signals[0]', self.html)
 
     def test_monthly_activity_replaces_summary_counters(self):
         self.assertIn('id="monthCount"', self.html)
@@ -121,6 +130,20 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn('"$500M+"', self.html)
         self.assertIn("stanford-s", self.html)
         self.assertIn("showPerson(person,filing)", self.html)
+
+    def test_published_feed_retains_confirmed_stanford_beneficial_owner(self):
+        matches = [
+            person
+            for filing in self.feed.get("filings", [])
+            for person in filing.get("people", [])
+            if person.get("stanford_university_bio") is True
+            and isinstance(person.get("shares"), (int, float))
+            and person.get("shares", 0) > 0
+        ]
+        self.assertTrue(
+            matches,
+            "Historical feed must retain at least one confirmed Stanford beneficial-owner holding.",
+        )
 
     def test_sample_feed_matches_public_schema(self):
         self.assertEqual(self.feed["schema_version"], 1)
