@@ -17,7 +17,7 @@ class DashboardUiTests(unittest.TestCase):
     def test_has_functional_workflow_controls(self):
         for element_id in (
             "queueView", "savedView", "search", "formFilter",
-            "statusFilter", "dateFilter", "sortBy", "clearFilters", "resultCount",
+            "statusFilter", "dateFilter", "sizeFilter", "sortBy", "clearFilters", "resultCount",
             "detailFilingPrice", "detailIpoPrice", "detailCurrentPrice",
             "detailPriceUpdated", "startReview", "markReview", "toggleSaved",
             "openSec", "reload", "resetColumns",
@@ -32,6 +32,22 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn('sort==="owners-desc"', self.html)
         self.assertIn("function clearFilters()", self.html)
         self.assertIn("Last 30 days", self.html)
+
+    def test_minimum_ipo_size_filter_is_numeric_and_resets_to_floor(self):
+        expected_options = (
+            ('100000000', '$100M+'),
+            ('250000000', '$250M+'),
+            ('500000000', '$500M+'),
+            ('1000000000', '$1B+'),
+            ('5000000000', '$5B+'),
+        )
+        for value, label in expected_options:
+            self.assertIn(f'<option value="{value}">{label}</option>', self.html)
+        self.assertIn('minSize=Number($("sizeFilter").value)||100000000', self.html)
+        self.assertIn('offeringValue=Number(f.ipo_size||f.value)||0', self.html)
+        self.assertIn('offeringValue>=minSize', self.html)
+        self.assertIn('$("sizeFilter").value="100000000"', self.html)
+        self.assertIn('["formFilter","statusFilter","dateFilter","sizeFilter","sortBy"]', self.html)
 
     def test_filed_date_uses_friendly_format(self):
         self.assertIn('month:"short",day:"numeric",year:"numeric"', self.html)
