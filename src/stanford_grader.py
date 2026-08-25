@@ -84,20 +84,23 @@ def _person_pattern(person_name: str):
     return re.compile(r"\b" + r"\W+".join(re.escape(token) for token in tokens) + r"\b", re.I)
 
 
-def _person_specific_filing_context(person_name: str, bio_text: str, radius: int = 2500) -> str:
-    """Return only a window where this exact holder and Stanford University co-occur."""
+def _person_specific_filing_context(person_name: str, bio_text: str) -> str:
+    """Return only a sentence explicitly tying this exact holder to Stanford University.
+
+    main.py can pass a broad Management-section fallback when a person-specific bio was
+    not split successfully. Requiring the exact full holder name and Stanford University
+    in the same sentence prevents a nearby executive's education from confirming the
+    wrong beneficial owner. Person-specific parsed bios are separately flagged by main.py.
+    """
     text = " ".join(str(bio_text or "").split())
     if not text or not STANFORD_UNIVERSITY_PATTERN.search(text):
         return ""
     pattern = _person_pattern(person_name)
     if pattern is None:
         return ""
-    for match in pattern.finditer(text):
-        start = max(0, match.start() - radius)
-        end = min(len(text), match.end() + radius)
-        window = text[start:end]
-        if STANFORD_UNIVERSITY_PATTERN.search(window):
-            return window
+    for sentence in re.split(r"(?<=[.!?])\s+", text):
+        if pattern.search(sentence) and STANFORD_UNIVERSITY_PATTERN.search(sentence):
+            return sentence
     return ""
 
 
@@ -105,16 +108,11 @@ def check_bio_for_stanford(bio_text: str, person_name: str = "") -> dict | None:
     context = _person_specific_filing_context(person_name, bio_text)
     if not context:
         return None
-    sentences = re.split(r"(?<=[.!?])\s+", context)
-    matching_sentence = next(
-        (sentence for sentence in sentences if STANFORD_UNIVERSITY_PATTERN.search(sentence)),
-        context[:400],
-    )
     return {
         "grade": 5,
         "justification": (
             f'Directly stated in SEC filing context for {_clean_person_name(person_name)}: '
-            f'"{matching_sentence.strip()}"'
+            f'"{context.strip()}"'
         ),
         "source": "filing_bio",
         "source_url": "",
