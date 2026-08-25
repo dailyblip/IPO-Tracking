@@ -42,18 +42,20 @@ class DashboardUiTests(unittest.TestCase):
         expected_labels = (
             "Company Name", "Ticker", "Form", "Stage", "Filed",
             "IPO Size / Offering Value", "Filing Price", "Final IPO Price",
-            "Current Price", "Public Signals",
+            "Current Price",
         )
         positions = [self.html.index(f'>{label}</th>') for label in expected_labels]
         self.assertEqual(positions, sorted(positions))
+        self.assertNotIn("Public Signals</th>", self.html)
         self.assertNotIn("<th>Priority</th>", self.html)
         self.assertNotIn("<th>Status</th>", self.html)
         self.assertIn("money(filing.ipo_size||filing.value)", self.html)
         self.assertIn('filing.ticker||"—"', self.html)
 
     def test_columns_are_drag_reorderable_and_persistent(self):
-        for index in range(10):
+        for index in range(9):
             self.assertIn(f'draggable="true" data-col="{index}"', self.html)
+        self.assertNotIn('draggable="true" data-col="9"', self.html)
         self.assertIn('research-monitor:column-order', self.html)
         self.assertIn("function setupColumnDrag()", self.html)
         self.assertIn("function applyColumnOrder()", self.html)
@@ -70,16 +72,16 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn("filing.current_price", self.html)
         self.assertIn("Delayed quote", self.html)
 
-    def test_highlights_exact_stanford_beneficial_owner_matches(self):
+    def test_highlights_exact_stanford_company_people(self):
         self.assertIn("--cardinal:#8c1515", self.html)
         self.assertIn(".stanford-company{color:var(--cardinal);font-weight:800}", self.html)
         self.assertIn(".stanford-person{color:var(--cardinal);font-weight:800}", self.html)
         self.assertIn(
-            "function hasStanfordBeneficialOwner(filing){return filing.people.some(person=>person.stanford_university_bio===true)}",
+            "function hasStanfordConnection(filing){return filing.people.some(person=>person.stanford_university_bio===true)}",
             self.html,
         )
         self.assertIn(
-            'hasStanfordBeneficialOwner(filing)?"company stanford-company":"company"',
+            'hasStanfordConnection(filing)?"company stanford-company":"company"',
             self.html,
         )
         self.assertIn(
@@ -87,7 +89,8 @@ class DashboardUiTests(unittest.TestCase):
             self.html,
         )
         self.assertIn("stanford-s", self.html)
-        self.assertIn("Confirmed Stanford-affiliated beneficial owner", self.html)
+        self.assertIn("Confirmed Stanford-affiliated person", self.html)
+        self.assertIn("Named people & beneficial owners", self.html)
 
     def test_monthly_activity_replaces_summary_counters(self):
         self.assertIn('id="monthCount"', self.html)
