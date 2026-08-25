@@ -19,6 +19,7 @@ _STANFORD_OPERATIONAL_ERROR_MARKERS = (
     "insufficient_quota",
     "credit_balance_exhausted",
     "no credits remaining",
+    "person-level stanford grading skipped",
 )
 
 
@@ -196,13 +197,12 @@ def _normalize_people_types(filing):
 
 
 def _scrub_stanford_operational_errors(filing):
-    """Keep internal Stanford-grading failures out of public person records.
+    """Keep internal Stanford-processing text out of public person records.
 
-    Historical rows may retain an error string from an earlier grading attempt even
-    after the grader itself has been changed to fail closed. Such strings are not
-    public evidence and must never be rendered as a Stanford connection source.
-    Only deterministic operational-error text is removed; confirmed evidence notes
-    and affiliation flags are preserved unchanged.
+    Historical rows may retain an error or deterministic processing note from an
+    earlier grading attempt. Such strings are not public evidence and must never be
+    rendered as a Stanford connection source. Confirmed evidence notes and affiliation
+    flags are preserved unchanged.
     """
     normalized = dict(filing)
     people = filing.get("people")
