@@ -1,8 +1,24 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-25T00:58:08.916892+00:00",
-  "count": 39,
+  "generated_at": "2026-08-25T03:08:56.652327+00:00",
+  "count": 40,
   "alerts": [
+    {
+      "type": "priority_escalation",
+      "company": "Latigo Biotherapeutics, Inc.",
+      "cik": "0002056611",
+      "filing_id": "0001193125-26-340329",
+      "form": "424B4",
+      "filed": "2026-08-07",
+      "stage": "priced",
+      "priority": "High",
+      "summary": "Research priority increased from Medium to High.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2056611/000119312526340329/0001193125-26-340329-index.htm",
+      "detected_at": "2026-08-25T03:08:56.652225+00:00",
+      "old_value": "Medium",
+      "new_value": "High",
+      "key": "priority_escalation|0001193125-26-340329|0002056611|2026-08-07|High"
+    },
     {
       "type": "new_prepricing",
       "company": "Fast Finance Pay Corp.",
