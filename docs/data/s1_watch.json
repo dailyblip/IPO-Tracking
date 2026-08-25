@@ -1,8 +1,27 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-24T18:06:26.942673+00:00",
+  "generated_at": "2026-08-25T13:13:54.465409+00:00",
   "source": "SEC EDGAR",
   "filings": [
+    {
+      "id": "0001193125-26-361496",
+      "company": "Holtec Nuclear Corp",
+      "ticker": "HNUC",
+      "cik": "0002104277",
+      "accession_no": "0001193125-26-361496",
+      "form": "S-1/A",
+      "filed": "2026-08-24",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526361496/0001193125-26-361496-index.htm"
+    },
     {
       "id": "0001213900-26-092565",
       "company": "Little West Holdings Inc.",
