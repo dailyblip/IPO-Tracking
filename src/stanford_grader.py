@@ -1,30 +1,27 @@
 """
-stanford_grader.py
+Stanford affiliation grading for beneficial owners.
 
-For each person on the beneficial ownership grid:
-1. Skip legal entities / combined affiliate rows that are not people.
-2. Check person-specific SEC filing context for an explicit Stanford University mention.
-3. Run targeted public-web searches when the filing is silent.
-4. For official issuer or Stanford results, inspect the actual public page rather than relying only on a search snippet.
-5. Confirm only exact-person + Stanford University matches; use the LLM only for ambiguous evidence.
+Release rule: a holder is confirmed only when an exact-person Stanford University
+connection is stated in person-specific SEC filing context or independently verified
+on an authoritative public Stanford, issuer, SEC, or official exchange page.
+
+When filing evidence is silent, OpenAI Responses API web search is used for discovery
+and identity assessment. A model result never becomes grade 5 by itself: the returned
+source URL must pass deterministic page verification before the dashboard may apply
+Cardinal-red highlighting.
 """
 
 from html import unescape
 import json
 import os
 import re
-import time
 from urllib.parse import urlparse
 
 import requests
 
-SEARCH_API_URL = "https://api.search.brave.com/res/v1/web/search"
-ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages"
-DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-4-20250514"
-MAX_SEARCH_ATTEMPTS = 2
-REQUEST_DELAY_SECONDS = 0.5
+OPENAI_RESPONSES_API_URL = "https://api.openai.com/v1/responses"
+DEFAULT_OPENAI_MODEL = "gpt-5.4-mini"
 
-DIRECT_MENTION_PATTERN = re.compile(r"\bstanford\b", re.IGNORECASE)
 STANFORD_UNIVERSITY_PATTERN = re.compile(r"\bstanford\s+university\b", re.IGNORECASE)
 SEC_FOOTNOTE_SUFFIX_PATTERN = re.compile(r"(?:\s*\(\d+[a-z]?\))+$", re.IGNORECASE)
 ORGANIZATION_PATTERN = re.compile(
@@ -37,6 +34,9 @@ CORPORATE_NAME_WORDS = {
     "inc", "incorporated", "corp", "corporation", "company", "co", "holdings",
     "therapeutics", "biotherapeutics", "pharmaceuticals", "pharma", "biosciences",
     "biotech", "technologies", "technology", "group", "limited", "ltd", "plc",
+}
+OFFICIAL_PUBLIC_HOSTS = {
+    "sec.gov", "www.sec.gov", "nasdaq.com", "www.nasdaq.com", "nyse.com", "www.nyse.com",
 }
 
 
@@ -51,15 +51,13 @@ def _get_env(name: str) -> str:
     return value
 
 
-def _anthropic_model() -> str:
-    return os.environ.get("ANTHROPIC_MODEL", DEFAULT_ANTHROPIC_MODEL).strip() or DEFAULT_ANTHROPIC_MODEL
+def _openai_model() -> str:
+    return os.environ.get("OPENAI_MODEL", DEFAULT_OPENAI_MODEL).strip() or DEFAULT_OPENAI_MODEL
 
 
 def _clean_person_name(person_name: str) -> str:
-    """Remove SEC table footnote markers without changing the person's identity."""
     name = " ".join(str(person_name or "").split())
-    name = SEC_FOOTNOTE_SUFFIX_PATTERN.sub("", name).strip()
-    return name
+    return SEC_FOOTNOTE_SUFFIX_PATTERN.sub("", name).strip()
 
 
 def is_likely_organization(person_name: str) -> bool:
@@ -79,34 +77,21 @@ def _normalized_phrase(value: str) -> str:
     return " ".join(_normalized_words(value))
 
 
-def _person_specific_filing_context(person_name: str, bio_text: str, radius: int = 2500) -> str:
-    """Return filing text near the exact holder only when it also says Stanford University.
+def _person_pattern(person_name: str):
+    tokens = _normalized_words(_clean_person_name(person_name))
+    if not tokens:
+        return None
+    return re.compile(r"\b" + r"\W+".join(re.escape(token) for token in tokens) + r"\b", re.I)
 
-    ``main.py`` may pass a broad Management-section fallback when filer-specific bio
-    splitting fails. We must never let a Stanford mention belonging to one executive
-    highlight every beneficial owner. For long text, require the cleaned exact holder
-    name and Stanford University to occur in the same bounded context window.
-    """
+
+def _person_specific_filing_context(person_name: str, bio_text: str, radius: int = 2500) -> str:
+    """Return only a window where this exact holder and Stanford University co-occur."""
     text = " ".join(str(bio_text or "").split())
     if not text or not STANFORD_UNIVERSITY_PATTERN.search(text):
         return ""
-    if len(text) <= 4000:
-        return text
-
-    person_phrase = _normalized_phrase(_clean_person_name(person_name))
-    if not person_phrase:
+    pattern = _person_pattern(person_name)
+    if pattern is None:
         return ""
-    normalized_text = _normalized_phrase(text)
-    if person_phrase not in normalized_text:
-        return ""
-
-    # Search the original text using flexible whitespace/punctuation between the
-    # person's normalized name tokens so SEC footnotes and inline HTML artifacts
-    # do not break identity matching.
-    tokens = _normalized_words(_clean_person_name(person_name))
-    if not tokens:
-        return ""
-    pattern = re.compile(r"\b" + r"\W+".join(re.escape(token) for token in tokens) + r"\b", re.I)
     for match in pattern.finditer(text):
         start = max(0, match.start() - radius)
         end = min(len(text), match.end() + radius)
@@ -117,55 +102,30 @@ def _person_specific_filing_context(person_name: str, bio_text: str, radius: int
 
 
 def check_bio_for_stanford(bio_text: str, person_name: str = "") -> dict | None:
-    context = _person_specific_filing_context(person_name, bio_text) if person_name else str(bio_text or "")
-    if not context or not DIRECT_MENTION_PATTERN.search(context):
+    context = _person_specific_filing_context(person_name, bio_text)
+    if not context:
         return None
-    sentences = re.split(r"(?<=[.])\s+", context)
-    matching_sentence = next((s for s in sentences if DIRECT_MENTION_PATTERN.search(s)), context[:300])
+    sentences = re.split(r"(?<=[.!?])\s+", context)
+    matching_sentence = next(
+        (sentence for sentence in sentences if STANFORD_UNIVERSITY_PATTERN.search(sentence)),
+        context[:400],
+    )
     return {
         "grade": 5,
-        "justification": f'Directly stated in SEC filing context for {_clean_person_name(person_name) or "holder"}: "{matching_sentence.strip()}"',
+        "justification": (
+            f'Directly stated in SEC filing context for {_clean_person_name(person_name)}: '
+            f'"{matching_sentence.strip()}"'
+        ),
         "source": "filing_bio",
+        "source_url": "",
     }
 
 
-def brave_search(query: str) -> list:
-    api_key = _get_env("BRAVE_SEARCH_API_KEY")
-    response = requests.get(
-        SEARCH_API_URL,
-        headers={"Accept": "application/json", "X-Subscription-Token": api_key},
-        params={"q": query, "count": 5},
-        timeout=15,
-    )
-    response.raise_for_status()
-    time.sleep(REQUEST_DELAY_SECONDS)
-    data = response.json()
-    return [
-        {"title": item.get("title", ""), "snippet": item.get("description", ""), "link": item.get("url", "")}
-        for item in data.get("web", {}).get("results", [])
-    ]
-
-
-google_search = brave_search
-
-
-def run_search_fallback(person_name: str, company_name: str) -> list:
-    all_results = []
-    clean_name = _clean_person_name(person_name)
-    queries = [
-        f'"{clean_name}" "Stanford University"',
-        f'"{clean_name}" Stanford "{company_name}"',
-    ]
-    for i, query in enumerate(queries[:MAX_SEARCH_ATTEMPTS]):
-        try:
-            all_results.extend(brave_search(query))
-        except requests.exceptions.RequestException as exc:
-            print(f"[stanford_grader] Search attempt {i + 1} failed: {exc}")
-    return all_results
-
-
 def _company_identity_tokens(company_name: str) -> list[str]:
-    return [token for token in _normalized_words(company_name) if len(token) >= 4 and token not in CORPORATE_NAME_WORDS]
+    return [
+        token for token in _normalized_words(company_name)
+        if len(token) >= 4 and token not in CORPORATE_NAME_WORDS
+    ]
 
 
 def _authoritative_hostname(link: str, company_name: str) -> str | None:
@@ -180,177 +140,209 @@ def _authoritative_hostname(link: str, company_name: str) -> str | None:
         return None
     if hostname == "stanford.edu" or hostname.endswith(".stanford.edu"):
         return hostname
+    if hostname in OFFICIAL_PUBLIC_HOSTS or hostname.endswith(".sec.gov"):
+        return hostname
     company_tokens = _company_identity_tokens(company_name)
     if company_tokens and any(token in hostname for token in company_tokens):
         return hostname
     return None
 
 
-def _strong_official_search_match(person_name: str, company_name: str, search_results: list):
-    person_phrase = _normalized_phrase(_clean_person_name(person_name))
-    if not person_phrase:
-        return None
-    for result in search_results:
-        if not isinstance(result, dict):
-            continue
-        evidence = f"{result.get('title') or ''} {result.get('snippet') or ''}"
-        if person_phrase not in _normalized_phrase(evidence):
-            continue
-        if not STANFORD_UNIVERSITY_PATTERN.search(evidence):
-            continue
-        if not _authoritative_hostname(result.get("link", ""), company_name):
-            continue
-        return result
-    return None
-
-
 def _html_to_text(value: str) -> str:
-    text = re.sub(r"(?is)<(?:script|style|noscript)\b.*?</(?:script|style|noscript)>", " ", str(value or ""))
+    text = re.sub(
+        r"(?is)<(?:script|style|noscript)\b.*?</(?:script|style|noscript)>",
+        " ",
+        str(value or ""),
+    )
     text = re.sub(r"(?s)<[^>]+>", " ", text)
     return " ".join(unescape(text).split())
 
 
-def _official_page_match(person_name: str, company_name: str, search_results: list):
-    """Inspect authoritative result pages when snippets omit the affiliation."""
-    person_phrase = _normalized_phrase(_clean_person_name(person_name))
-    if not person_phrase:
+def _verify_authoritative_source(person_name: str, company_name: str, link: str) -> dict | None:
+    """Fetch a claimed source and deterministically verify exact person + Stanford University."""
+    hostname = _authoritative_hostname(link, company_name)
+    if not hostname:
+        return None
+    try:
+        response = requests.get(
+            link,
+            headers={"User-Agent": "ResearchMonitor/1.0 public-affiliation-verification"},
+            timeout=20,
+        )
+        response.raise_for_status()
+    except requests.exceptions.RequestException as exc:
+        print(f"[stanford_grader] Authoritative source fetch failed for {link}: {exc}")
         return None
 
-    seen = set()
-    for result in search_results:
-        if not isinstance(result, dict):
-            continue
-        link = str(result.get("link") or "")
-        if not link or link in seen or not _authoritative_hostname(link, company_name):
-            continue
-        seen.add(link)
-        try:
-            response = requests.get(
-                link,
-                headers={"User-Agent": "ResearchMonitor/1.0 public-affiliation-verification"},
-                timeout=15,
-            )
-            response.raise_for_status()
-        except requests.exceptions.RequestException as exc:
-            print(f"[stanford_grader] Official page fetch failed for {link}: {exc}")
-            continue
-        page_text = _html_to_text(response.text)
-        if person_phrase not in _normalized_phrase(page_text):
-            continue
-        if not STANFORD_UNIVERSITY_PATTERN.search(page_text):
-            continue
-        return {"link": link, "title": result.get("title", ""), "snippet": result.get("snippet", "")}
-    return None
+    page_text = _html_to_text(response.text)
+    if not STANFORD_UNIVERSITY_PATTERN.search(page_text):
+        return None
+    person_phrase = _normalized_phrase(_clean_person_name(person_name))
+    if not person_phrase or person_phrase not in _normalized_phrase(page_text):
+        return None
+    return {"link": link, "hostname": hostname}
 
 
-def _search_has_stanford_evidence(search_results: list) -> bool:
-    for result in search_results:
-        if not isinstance(result, dict):
-            continue
-        evidence = " ".join(str(result.get(field, "")) for field in ("title", "snippet", "link"))
-        if DIRECT_MENTION_PATTERN.search(evidence):
-            return True
-    return False
-
-
-def _build_grading_prompt(person_name: str, company_name: str, title: str, bio_text: str, search_results: list) -> str:
-    search_block = "\n".join(
-        f'- "{r["title"]}" - {r["snippet"]} ({r["link"]})' for r in search_results
-    ) or "(no search results found)"
-    return f"""You are assessing whether there is public evidence that a specific individual has a Stanford University affiliation (student, alumnus, faculty, researcher, or similar).
+def _build_openai_prompt(person_name: str, company_name: str, title: str, bio_text: str) -> str:
+    filing_context = " ".join(str(bio_text or "").split())[:1800]
+    return f"""Research whether this specific beneficial owner has a confirmed Stanford University affiliation.
 
 Person: {_clean_person_name(person_name)}
-Role/context: {title or "unknown"} at {company_name}
+Company: {company_name}
+Role/context: {title or "unknown"}
+SEC filing context (identity corroboration only; may be empty): {filing_context or "(none)"}
 
-Filing bio text (may be empty):
-{bio_text or "(none available)"}
+Use public web search. Prefer, in order: Stanford University pages, the issuer's official site, SEC filings, and official exchange pages. Distinguish the exact person from namesakes using company, role, biography, or other corroborating identity facts.
 
-Web search results:
-{search_block}
+Scoring:
+- 5: explicit, unambiguous Stanford University affiliation for this exact person with a reliable source URL.
+- 3-4: plausible evidence but identity/source is not strong enough for confirmation.
+- 1-2: weak or name-only signal.
+- 0: no reliable relevant evidence.
 
-Score their Stanford affiliation confidence from 0-5:
-- 5 = Directly and unambiguously confirmed
-- 3-4 = Reasonably confident with corroboration beyond name alone
-- 1-2 = Weak or uncertain signal
-- 0 = No relevant evidence or likely name collision
-
-Do not give a score above 2 based on name matching alone. Require at least one corroborating detail tying the Stanford reference to this specific person.
-
-Respond with ONLY a JSON object:
-{{"grade": <integer 0-5>, "justification": "<one sentence>"}}"""
+Never score 5 from a name match alone. Never infer education or affiliation. If evidence conflicts or identity cannot be resolved, do not score 5. Return the strongest single source URL supporting the result, or an empty string if none."""
 
 
-def grade_via_llm(person_name: str, company_name: str, title: str, bio_text: str, search_results: list) -> dict:
-    api_key = _get_env("ANTHROPIC_API_KEY")
-    prompt = _build_grading_prompt(person_name, company_name, title, bio_text, search_results)
+def _response_output_text(data: dict) -> str:
+    chunks = []
+    for item in data.get("output", []):
+        if not isinstance(item, dict) or item.get("type") != "message":
+            continue
+        for content in item.get("content", []):
+            if isinstance(content, dict) and content.get("type") == "output_text":
+                chunks.append(str(content.get("text") or ""))
+    return "".join(chunks).strip()
+
+
+def research_via_openai(person_name: str, company_name: str, title: str = "", bio_text: str = "") -> dict:
+    """Use OpenAI Responses API + web search to discover public affiliation evidence."""
+    api_key = _get_env("OPENAI_API_KEY")
+    schema = {
+        "type": "object",
+        "additionalProperties": False,
+        "properties": {
+            "grade": {"type": "integer", "minimum": 0, "maximum": 5},
+            "justification": {"type": "string"},
+            "source_url": {"type": "string"},
+            "source_title": {"type": "string"},
+        },
+        "required": ["grade", "justification", "source_url", "source_title"],
+    }
     response = requests.post(
-        ANTHROPIC_API_URL,
-        headers={"x-api-key": api_key, "anthropic-version": "2023-06-01", "content-type": "application/json"},
-        json={"model": _anthropic_model(), "max_tokens": 300, "messages": [{"role": "user", "content": prompt}]},
-        timeout=30,
+        OPENAI_RESPONSES_API_URL,
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "model": _openai_model(),
+            "input": _build_openai_prompt(person_name, company_name, title, bio_text),
+            "tools": [{"type": "web_search"}],
+            "tool_choice": "required",
+            "include": ["web_search_call.action.sources"],
+            "store": False,
+            "text": {
+                "format": {
+                    "type": "json_schema",
+                    "name": "stanford_affiliation_research",
+                    "strict": True,
+                    "schema": schema,
+                }
+            },
+        },
+        timeout=60,
     )
     if not response.ok:
         detail = response.text[:500].strip()
         raise StanfordGraderError(
-            f"Anthropic grading request failed ({response.status_code})" + (f": {detail}" if detail else "")
+            f"OpenAI research request failed ({response.status_code})"
+            + (f": {detail}" if detail else "")
         )
-    data = response.json()
-    text = "".join(block.get("text", "") for block in data.get("content", []) if block.get("type") == "text")
-    cleaned = text.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+
+    text = _response_output_text(response.json())
     try:
-        parsed = json.loads(cleaned)
+        parsed = json.loads(text)
         grade = int(parsed["grade"])
         if not 0 <= grade <= 5:
             raise ValueError("grade outside 0-5")
-        return {"grade": grade, "justification": str(parsed["justification"]), "source": "llm_judgment"}
-    except (json.JSONDecodeError, KeyError, ValueError):
+        source_url = str(parsed.get("source_url") or "").strip()
+        return {
+            "grade": grade,
+            "justification": str(parsed.get("justification") or "").strip(),
+            "source_url": source_url,
+            "source_title": str(parsed.get("source_title") or "").strip(),
+            "source": "openai_web_research",
+        }
+    except (json.JSONDecodeError, KeyError, TypeError, ValueError):
         return {
             "grade": 0,
-            "justification": f"Grading call returned unparseable response; defaulted to 0. Raw: {text[:200]}",
+            "justification": f"OpenAI returned an invalid structured result; defaulted to 0. Raw: {text[:200]}",
+            "source_url": "",
             "source": "parse_error",
         }
 
 
-def grade_stanford_affiliation(person_name: str, company_name: str, title: str = "", bio_text: str = "") -> dict:
+def grade_via_llm(person_name: str, company_name: str, title: str, bio_text: str, search_results=None) -> dict:
+    """Backward-compatible wrapper for older callers/tests."""
+    return research_via_openai(person_name, company_name, title, bio_text)
+
+
+def grade_stanford_affiliation(
+    person_name: str,
+    company_name: str,
+    title: str = "",
+    bio_text: str = "",
+) -> dict:
     if is_likely_organization(person_name):
         return {
             "grade": 0,
-            "justification": "Beneficial-owner label appears to be an organization or combined affiliate row; person-level Stanford grading skipped.",
+            "justification": (
+                "Beneficial-owner label appears to be an organization or combined affiliate row; "
+                "person-level Stanford grading skipped."
+            ),
             "source": "non_person_holder",
+            "source_url": "",
         }
 
     direct_result = check_bio_for_stanford(bio_text, person_name=person_name)
     if direct_result:
         return direct_result
 
-    search_results = run_search_fallback(person_name, company_name)
-    strong_match = _strong_official_search_match(person_name, company_name, search_results)
-    if strong_match:
+    result = research_via_openai(
+        _clean_person_name(person_name),
+        company_name,
+        title=title,
+        bio_text=bio_text,
+    )
+    if result.get("grade") != 5:
+        return result
+
+    source_url = str(result.get("source_url") or "").strip()
+    verified = _verify_authoritative_source(person_name, company_name, source_url)
+    if verified:
         return {
             "grade": 5,
-            "justification": "Exact person match with Stanford University affiliation on an official public source: " + str(strong_match.get("link", "")),
-            "source": "official_public_bio",
+            "justification": (
+                f"Exact person and Stanford University affiliation verified on authoritative public source: {source_url}"
+            ),
+            "source": "openai_verified_official",
+            "source_url": source_url,
         }
 
-    page_match = _official_page_match(person_name, company_name, search_results)
-    if page_match:
-        return {
-            "grade": 5,
-            "justification": "Exact person and Stanford University affiliation verified on an authoritative public page: " + str(page_match.get("link", "")),
-            "source": "official_page_content",
-        }
-
-    if not _search_has_stanford_evidence(search_results):
-        return {
-            "grade": 0,
-            "justification": "No public Stanford-affiliation evidence found in the person-specific SEC filing context, search results, or authoritative result pages.",
-            "source": "no_public_evidence",
-        }
-    return grade_via_llm(_clean_person_name(person_name), company_name, title, bio_text, search_results)
+    return {
+        "grade": 4,
+        "justification": (
+            "OpenAI found a potential Stanford affiliation, but the cited source could not be "
+            "independently verified as an authoritative exact-person source; not confirmed."
+        ),
+        "source": "openai_unverified",
+        "source_url": source_url,
+    }
 
 
 if __name__ == "__main__":
     import sys
+
     name_arg = sys.argv[1] if len(sys.argv) > 1 else "Jane Smith"
     company_arg = sys.argv[2] if len(sys.argv) > 2 else "Example Corp"
     print(json.dumps(grade_stanford_affiliation(name_arg, company_arg), indent=2))
