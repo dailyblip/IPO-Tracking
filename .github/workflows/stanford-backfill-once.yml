@@ -1,0 +1,101 @@
+name: Stanford Historical Backfill (One-Time)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/stanford-backfill-once.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-monitor-feed-writers
+  cancel-in-progress: false
+
+jobs:
+  stanford-backfill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    env:
+      BACKFILL_START: '2026-06-01'
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run unit tests
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+
+      - name: Resolve backfill end date
+        run: echo "BACKFILL_END=$(date -u +%F)" >> "$GITHUB_ENV"
+
+      - name: Refresh current pre-pricing S-1 queue
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_monitor.py 4
+
+      - name: Run Stanford historical backfill
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+          MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+        run: >
+          python main.py
+          --backfill-start "$BACKFILL_START"
+          --backfill-end "$BACKFILL_END"
+
+      - name: Refresh stateful research alerts
+        run: python src/research_alerts.py
+
+      - name: Validate Stanford output
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          feed = json.loads(Path('docs/data/filings.json').read_text())
+          rows = feed.get('filings', [])
+          if not isinstance(rows, list):
+              raise SystemExit('docs/data/filings.json must contain a filings list')
+
+          stanford_people = []
+          for filing in rows:
+              for person in filing.get('people') or []:
+                  bio = person.get('stanford_university_bio')
+                  if bio:
+                      stanford_people.append((filing.get('company'), person.get('name'), bio))
+
+          print(f'Validated {len(rows)} filings; Stanford-affiliated people found: {len(stanford_people)}')
+          if not stanford_people:
+              raise SystemExit('Backfill produced zero Stanford-affiliated people; refusing to publish')
+          PY
+
+      - name: Publish Research Monitor data
+        run: |
+          if [ -z "$(git status --short -- docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv docs/data/alerts.json docs/data/alerts_state.json)" ]; then
+            echo "Research Monitor data is unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv docs/data/alerts.json docs/data/alerts_state.json
+          git commit -m "Backfill Stanford affiliations through $BACKFILL_END"
+          git pull --rebase origin main
+          git push origin HEAD:main
