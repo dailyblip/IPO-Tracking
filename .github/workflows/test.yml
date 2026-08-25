@@ -32,16 +32,55 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run unit tests
         run: python -m unittest discover -s src -p 'test_*.py' -v
-      - name: Validate dashboard assets
+      - name: Validate dashboard assets and public release policy
         run: |
           python - <<'PY'
           import json
+          import sys
           from html.parser import HTMLParser
           from pathlib import Path
 
           HTMLParser().feed(Path('docs/index.html').read_text(encoding='utf-8'))
           payload = json.loads(Path('docs/data/filings.json').read_text(encoding='utf-8'))
           assert payload['schema_version'] == 1
-          assert isinstance(payload['filings'], list)
-          print('Dashboard assets are valid')
+          filings = payload['filings']
+          assert isinstance(filings, list)
+
+          sys.path.insert(0, str(Path('src').resolve()))
+          from public_feed_policy import (
+              MINIMUM_IPO_VALUE,
+              _has_valid_filing_date,
+              _normalize_market_value_consistency,
+              _normalize_people_types,
+              qualifies_for_public_feed,
+          )
+
+          failures = []
+          normalization_drift = []
+          for filing in filings:
+              label = filing.get('company') or filing.get('id') or '<unknown>'
+              if not _has_valid_filing_date(filing):
+                  failures.append(f'{label}: invalid/future filing date')
+              if not qualifies_for_public_feed(filing):
+                  failures.append(f'{label}: violates public-feed qualification policy')
+              try:
+                  value = float(str(filing.get('value')).replace(',', '').replace('$', '').strip())
+              except (TypeError, ValueError):
+                  value = None
+              if value is None or value < MINIMUM_IPO_VALUE:
+                  failures.append(f'{label}: offering value is not authoritatively established at >= $100M')
+
+              normalized = _normalize_market_value_consistency(_normalize_people_types(filing))
+              if normalized != filing:
+                  normalization_drift.append(label)
+
+          if failures:
+              raise SystemExit('Public feed release-policy failure:\n- ' + '\n- '.join(failures))
+          if normalization_drift:
+              raise SystemExit(
+                  'Public feed contains stale deterministic normalization for: '
+                  + ', '.join(normalization_drift)
+              )
+
+          print(f'Dashboard assets and {len(filings)} qualifying public filings are valid')
           PY
