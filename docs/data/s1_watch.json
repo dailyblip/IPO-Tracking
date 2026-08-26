@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-25T13:13:54.465409+00:00",
+  "generated_at": "2026-08-26T04:22:44.576242+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -372,6 +372,26 @@
         "No preliminary price range or fixed offering price detected yet"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1838003/000110465926093252/0001104659-26-093252-index.htm"
+    },
+    {
+      "id": "0001713282-24-001181",
+      "company": "Thoughtful Media Group Inc.",
+      "ticker": "TMGX",
+      "cik": "0001991879",
+      "accession_no": "0001713282-24-001181",
+      "form": "S-1/A",
+      "filed": "2024-10-18",
+      "stage": "Pre-pricing",
+      "priority": "High",
+      "price_range": null,
+      "filing_price": "$4.50",
+      "ipo_size": 9000000,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "Fixed offering price disclosed at $4.50 per share",
+        "IPO size disclosed or derived at approximately $9,000,000"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1991879/000171328224001181/0001713282-24-001181-index.htm"
     }
   ]
 }
