@@ -29,14 +29,15 @@ class StanfordPersonDetailTests(unittest.TestCase):
         )
         self.assertTrue(metadata["stanford_university_bio"])
 
-    def test_ui_removes_s_badge_and_adds_person_connection_panel(self):
+    def test_ui_removes_s_badge_and_keeps_stanford_evidence_inside_person_accordion(self):
         html = (Path(__file__).resolve().parents[1] / "docs" / "index.html").read_text(encoding="utf-8")
         self.assertNotIn("stanfordBadge", html)
         self.assertNotIn("stanford-s", html)
-        self.assertIn('id="personStanford"', html)
-        self.assertIn('id="personStanfordConfidence"', html)
-        self.assertIn('id="personStanfordNote"', html)
+        self.assertNotIn('id="personDetail"', html)
+        self.assertIn("function buildPersonAccordion(person,filing)", html)
+        self.assertIn('stanford.className="stanford-connection"', html)
         self.assertIn("Confidence ${research.confidence}/5", html)
+        self.assertIn("stanfordResearch(person)", html)
         self.assertIn("person.stanford_university_bio===true&&Number.isFinite(shares)&&shares>0", html)
 
 
