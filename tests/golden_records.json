@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "label": "Recent pre-pricing record",
+      "cik": "0002132582",
+      "expected": {
+        "company": "Lyntris Inc.",
+        "ticker": "LYNX",
+        "form": "S-1/A",
+        "filed": "2026-08-12",
+        "stage": "Pre-pricing",
+        "filing_price": "$20.50",
+        "value": 492000000,
+        "primary_offering_shares": 4878049,
+        "secondary_offering_shares": 19121951,
+        "people_count": 0
+      }
+    },
+    {
+      "label": "Priced IPO with Stanford-affiliated owner and lock-up",
+      "cik": "0002056611",
+      "expected": {
+        "company": "Latigo Biotherapeutics, Inc.",
+        "ticker": "LTGO",
+        "form": "424B4",
+        "filing_date": "2026-08-04",
+        "pricing_date": "2026-08-07",
+        "stage": "Priced",
+        "value": 345600000.0,
+        "filing_price": "16.0-18.0",
+        "offering_price": 18.0,
+        "lockup_end_date": "2027-02-03",
+        "lockup_duration_days": 180,
+        "people_count": 12
+      },
+      "required_people": [
+        {
+          "name": "Nima Farzan",
+          "expected": {
+            "stanford_university_bio": true,
+            "shares_before_ipo": 2902419,
+            "shares_after_ipo": 2902419,
+            "lockup_end_date": "2027-02-03",
+            "lockup_duration_days": 180
+          },
+          "stanford_source_contains": "degree from Stanford University"
+        }
+      ]
+    },
+    {
+      "label": "Neutron/Lime Stanford regression case",
+      "cik": "0001699963",
+      "expected": {
+        "company": "Neutron Holdings, Inc.",
+        "ticker": "LIME",
+        "accession_no": "0001628280-26-046635",
+        "form": "424B4",
+        "filed": "2026-07-02",
+        "filing_date": "2026-06-22",
+        "pricing_date": "2026-07-02",
+        "stage": "Priced"
+      },
+      "required_people": [
+        {
+          "name": "Joseph Kraus",
+          "expected": {
+            "stanford_university_bio": true,
+            "shares_before_ipo": 554707,
+            "shares_after_ipo": 507570,
+            "lockup_duration_days": 160
+          },
+          "stanford_source_contains": "degree from Stanford University"
+        }
+      ]
+    },
+    {
+      "label": "Large offering with Stanford-affiliated owner",
+      "cik": "0001181412",
+      "expected": {
+        "company": "Space Exploration Technologies Corp",
+        "ticker": "SPCX",
+        "accession_no": "0001628280-26-042639",
+        "form": "424B4",
+        "filed": "2026-06-12",
+        "filing_date": "2026-06-03",
+        "pricing_date": "2026-06-12",
+        "stage": "Priced"
+      },
+      "required_people": [
+        {
+          "name": "Ira Ehrenpreis",
+          "expected": {
+            "stanford_university_bio": true,
+            "shares_before_ipo": 809050,
+            "shares_after_ipo": 809050,
+            "lockup_duration_days": 180
+          },
+          "stanford_source_contains": "degree from Stanford University"
+        }
+      ]
+    },
+    {
+      "label": "Priced record with exact 180-day lock-up",
+      "cik": "0001925062",
+      "expected": {
+        "company": "Forbright, Inc.",
+        "ticker": "FRBT",
+        "form": "424B4",
+        "filed": "2026-06-11",
+        "filing_date": "2026-06-08",
+        "pricing_date": "2026-06-11",
+        "stage": "Priced",
+        "value": 142200000.0,
+        "filing_price": "18.0-20.0",
+        "offering_price": 18.0,
+        "lockup_end_date": "2026-12-08",
+        "lockup_duration_days": 180
+      }
+    },
+    {
+      "label": "Large priced offering",
+      "cik": "0002110029",
+      "expected": {
+        "company": "ERock, Inc.",
+        "ticker": "EROC",
+        "form": "424B4",
+        "filed": "2026-06-10",
+        "filing_date": "2026-06-05",
+        "pricing_date": "2026-06-10",
+        "stage": "Priced",
+        "value": 600000005.5,
+        "offering_price": 21.5,
+        "lockup_end_date": "2026-12-07",
+        "lockup_duration_days": 180
+      }
+    }
+  ]
+}
