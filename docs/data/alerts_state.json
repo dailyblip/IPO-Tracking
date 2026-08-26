@@ -1,7 +1,19 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-26T16:33:23.410053+00:00",
+  "updated_at": "2026-08-26T17:21:54.484963+00:00",
   "items": {
+    "s1:0002132582": {
+      "id": "s1:0002132582",
+      "cik": "0002132582",
+      "company": "Lyntris Inc.",
+      "form": "S-1/A",
+      "filed": "2026-08-12",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "High",
+      "value": 492000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526346328/0001193125-26-346328-index.htm"
+    },
     "0001193125-26-340329": {
       "id": "0001193125-26-340329",
       "cik": "0002056611",
@@ -348,9 +360,9 @@
     },
     "0002132582": {
       "company": "Lyntris Inc.",
-      "stage": "priced",
-      "last_filing_id": "0001193125-26-356916",
-      "last_filed": "2026-08-19"
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002132582",
+      "last_filed": "2026-08-12"
     },
     "0002086716": {
       "company": "Standard Nuclear, Inc.",
