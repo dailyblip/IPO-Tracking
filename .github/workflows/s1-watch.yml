@@ -58,9 +58,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Check out repo
+      - name: Check out current main
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
       - name: Set up Python
         uses: actions/setup-python@v5
