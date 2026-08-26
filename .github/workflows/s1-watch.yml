@@ -88,6 +88,33 @@ jobs:
         working-directory: src
         run: python company_name_normalizer.py ../docs/data/filings.json
 
+      - name: Block weak offering-size provenance before publication
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          payload = json.loads(Path('docs/data/filings.json').read_text(encoding='utf-8'))
+          failures = []
+          for filing in payload.get('filings', []):
+              label = filing.get('company') or filing.get('id') or '<unknown>'
+              source = str(filing.get('offering_size_source') or '').strip()
+              confidence = str(filing.get('offering_size_confidence') or '').strip()
+              if not source:
+                  failures.append(f'{label}: missing offering-size source provenance')
+              if confidence.casefold() != 'high':
+                  failures.append(
+                      f'{label}: offering-size confidence must be High, got {confidence!r}'
+                  )
+
+          if failures:
+              raise SystemExit(
+                  'Refusing to publish S-1 feed with weak offering-size evidence:\n- '
+                  + '\n- '.join(failures)
+              )
+          print(f"Validated offering-size provenance for {len(payload.get('filings', []))} filing(s)")
+          PY
+
       - name: Publish S-1 watch and researcher queue data
         run: |
           if git diff --quiet -- docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv; then
