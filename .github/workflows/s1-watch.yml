@@ -16,6 +16,8 @@ on:
       - 'src/test_public_feed_policy.py'
       - 'src/company_name_normalizer.py'
       - 'src/test_company_name_normalizer.py'
+      - 'src/lifecycle_date_sanitizer.py'
+      - 'src/test_lifecycle_date_sanitizer.py'
       - '.github/workflows/s1-watch.yml'
   push:
     branches:
@@ -27,9 +29,10 @@ on:
       - 'src/test_public_feed_policy.py'
       - 'src/company_name_normalizer.py'
       - 'src/test_company_name_normalizer.py'
+      - 'src/lifecycle_date_sanitizer.py'
+      - 'src/test_lifecycle_date_sanitizer.py'
       - '.github/workflows/s1-watch.yml'
   schedule:
-    # Run shortly after the primary IPO tracker on weekdays.
     - cron: '20 12 * * 1-5'
   workflow_dispatch: {}
 
@@ -39,18 +42,15 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v4
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
       - name: Install dependencies
         run: pip install -r requirements.txt
-
       - name: Run S-1 monitor tests
         working-directory: src
-        run: python -m unittest test_s1_monitor.py test_public_feed_policy.py test_company_name_normalizer.py -v
+        run: python -m unittest test_s1_monitor.py test_public_feed_policy.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py -v
 
   update-feed:
     if: github.event_name != 'pull_request'
@@ -62,38 +62,31 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
       - name: Install dependencies
         run: pip install -r requirements.txt
-
       - name: Update pre-pricing S-1 feed
         working-directory: src
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
-        run: |
-          # Re-scan a two-week window on every run so transient SEC/index failures
-          # cannot become permanent gaps after a short scheduled lookback expires.
-          python s1_monitor.py 14
-
+        run: python s1_monitor.py 14
+      - name: Sanitize impossible lifecycle dates
+        working-directory: src
+        run: python lifecycle_date_sanitizer.py ../docs/data/filings.json
       - name: Enforce public-feed eligibility policy
         working-directory: src
         run: python public_feed_policy.py ../docs/data/filings.json
-
       - name: Normalize issuer display names
         working-directory: src
         run: python company_name_normalizer.py ../docs/data/filings.json
-
       - name: Block weak offering-size provenance before publication
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-
           payload = json.loads(Path('docs/data/filings.json').read_text(encoding='utf-8'))
           failures = []
           for filing in payload.get('filings', []):
@@ -103,32 +96,20 @@ jobs:
               if not source:
                   failures.append(f'{label}: missing offering-size source provenance')
               if confidence.casefold() != 'high':
-                  failures.append(
-                      f'{label}: offering-size confidence must be High, got {confidence!r}'
-                  )
-
+                  failures.append(f'{label}: offering-size confidence must be High, got {confidence!r}')
           if failures:
-              raise SystemExit(
-                  'Refusing to publish S-1 feed with weak offering-size evidence:\n- '
-                  + '\n- '.join(failures)
-              )
+              raise SystemExit('Refusing to publish S-1 feed with weak offering-size evidence:\n- ' + '\n- '.join(failures))
           print(f"Validated offering-size provenance for {len(payload.get('filings', []))} filing(s)")
           PY
-
       - name: Publish S-1 watch and researcher queue data
         run: |
           if git diff --quiet -- docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv; then
             echo "S-1 watch and researcher queue data are unchanged."
             exit 0
           fi
-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv
           git commit -m "Update S-1 pre-pricing watch data"
-
-          # Preserve a successful discovery even if another automation advanced main
-          # while this run was executing. Rebase onto the latest main and publish;
-          # any real data conflict now fails visibly instead of being discarded as success.
           git pull --rebase origin main
           git push origin HEAD:main
