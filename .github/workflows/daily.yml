@@ -56,6 +56,12 @@ jobs:
         # after parser/data-quality improvements instead of aging out permanently.
         run: python main.py 14
 
+      - name: Reconcile final 424B4 lifecycle transitions
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python lifecycle_reconciler.py ../docs/data/filings.json
+
       - name: Sanitize impossible lifecycle dates
         working-directory: src
         run: python lifecycle_date_sanitizer.py ../docs/data/filings.json
