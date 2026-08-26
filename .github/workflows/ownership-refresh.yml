@@ -43,6 +43,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run unit tests
         run: python -m unittest discover -s src -p 'test_*.py' -v
+      # Full June-present replay also refreshes lifecycle filing/pricing dates after export schema changes.
       - name: Refresh qualifying IPO history and Stanford affiliations
         working-directory: src
         env:
