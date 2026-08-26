@@ -21,156 +21,39 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Patch lifecycle fields, activity UI, and regressions
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Apply lifecycle patch from previous workflow revision
         run: |
           python - <<'PY'
           from pathlib import Path
+          import subprocess
 
-          def replace_once(path, old, new):
-              path = Path(path)
-              text = path.read_text(encoding='utf-8')
-              if old not in text:
-                  raise SystemExit(f'Patch anchor not found in {path}: {old[:120]!r}')
-              path.write_text(text.replace(old, new, 1), encoding='utf-8')
-
-          # Preserve both the original registration date and the final pricing date.
-          replace_once(
-              'src/dashboard_export.py',
-              '    "id", "company", "ticker", "cik", "accession_no", "form", "filed",\n',
-              '    "id", "company", "ticker", "cik", "accession_no", "form", "filed", "filing_date", "pricing_date",\n',
+          old = subprocess.check_output(
+              ['git', 'show', 'HEAD^:.github/workflows/ipo-lifecycle-once.yml'],
+              text=True,
           )
-          replace_once(
-              'src/dashboard_export.py',
-              '    "company", "ticker", "cik", "accession_no", "form", "stage", "filed",\n',
-              '    "company", "ticker", "cik", "accession_no", "form", "stage", "filed", "filing_date", "pricing_date",\n',
-          )
-          replace_once(
-              'src/dashboard_export.py',
-              '            "form": first.get("_form") or "424B4",\n            "filed": first.get("Date of Pricing") or first.get("Date of Filing") or "",\n            "stage": "Priced",\n',
-              '            "form": first.get("_form") or "424B4",\n            "filed": first.get("Date of Pricing") or first.get("Date of Filing") or "",\n            "filing_date": first.get("Date of Filing") or None,\n            "pricing_date": first.get("Date of Pricing") or None,\n            "stage": "Priced",\n',
-          )
-          replace_once(
-              'src/dashboard_export.py',
-              '                "stage": filing.get("stage", ""),\n                "filed": filing.get("filed", ""),\n                "priority": filing.get("priority", ""),\n',
-              '                "stage": filing.get("stage", ""),\n                "filed": filing.get("filed", ""),\n                "filing_date": filing.get("filing_date", ""),\n                "pricing_date": filing.get("pricing_date", ""),\n                "priority": filing.get("priority", ""),\n',
-          )
-
-          # Regression: the priced record must retain both lifecycle dates.
-          replace_once(
-              'src/test_dashboard_export.py',
-              '        self.assertEqual(filing["filing_price"], "18.00-20.00")\n        self.assertEqual(filing["offering_price"], 20.0)\n',
-              '        self.assertEqual(filing["filing_price"], "18.00-20.00")\n        self.assertEqual(filing["filing_date"], "2026-08-01")\n        self.assertEqual(filing["pricing_date"], "2026-08-15")\n        self.assertEqual(filing["offering_price"], 20.0)\n',
-          )
-
-          # Root monitor: compact dual lifecycle chart plus recent activity strip.
-          replace_once(
-              'docs/index.html',
-              '.activity{display:grid;grid-template-columns:170px 1fr;gap:14px;margin:20px 0;background:#fff;border:1px solid var(--line);border-radius:9px;padding:14px}.month-count span{display:block;color:var(--muted);font-size:12px}.month-count strong{display:block;font-size:30px;line-height:1.1}.month-count small{color:var(--muted)}.chart{height:92px;display:flex;align-items:flex-end;gap:7px;padding-top:8px}.bar-wrap{flex:1;min-width:18px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px}.bar{width:100%;max-width:34px;min-height:3px;background:#9ba8a0;border-radius:4px 4px 0 0;transition:height .25s ease}.bar.current{background:var(--cardinal);animation:pulse 2.6s ease-in-out infinite}.bar-label{font-size:10px;color:var(--muted);white-space:nowrap}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.48}}@media(prefers-reduced-motion:reduce){.bar.current{animation:none}}',
-              '.activity{display:grid;grid-template-columns:220px 1fr;gap:14px;margin:20px 0;background:#fff;border:1px solid var(--line);border-radius:9px;padding:14px}.month-count>span{display:block;color:var(--muted);font-size:12px}.month-stats{display:flex;gap:24px;margin-top:4px}.month-stat strong{display:block;font-size:28px;line-height:1.05}.month-stat small{color:var(--muted)}.activity-legend{display:flex;gap:12px;margin-top:9px;color:var(--muted);font-size:11px}.activity-legend span{display:flex;align-items:center;gap:5px}.legend-dot{display:inline-block;width:8px;height:8px;border-radius:2px}.legend-dot.filing{background:#9ba8a0}.legend-dot.pricing{background:var(--green)}.chart{height:92px;display:flex;align-items:flex-end;gap:7px;padding-top:8px}.bar-wrap{flex:1;min-width:22px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px}.bar-pair{width:100%;max-width:38px;height:68px;display:flex;align-items:flex-end;justify-content:center;gap:3px}.bar{width:15px;min-height:3px;border-radius:4px 4px 0 0;transition:height .25s ease}.bar.filing{background:#9ba8a0}.bar.pricing{background:var(--green)}.bar.current{animation:pulse 2.6s ease-in-out infinite}.bar-label{font-size:10px;color:var(--muted);white-space:nowrap}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.48}}@media(prefers-reduced-motion:reduce){.bar.current{animation:none}}.recent-activity{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;margin:-6px 0 20px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:11px 14px}.recent-title{font-size:12px;font-weight:750;color:var(--ink);padding-top:7px}.recent-list{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}.recent-item{flex:0 0 auto;max-width:330px;text-align:left;border:1px solid var(--line);background:#fafbfa;border-radius:7px;padding:7px 9px;color:var(--ink);cursor:pointer}.recent-item:hover{background:#f3f6f3}.recent-item strong,.recent-item span{display:block}.recent-item strong{font-size:11px}.recent-item span{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
-          )
-          replace_once(
-              'docs/index.html',
-              '.company-line{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.size-pill{display:inline-block;border:1px solid #b9c6be;background:#eef4f0;border-radius:999px;padding:2px 7px;font-size:10px;font-weight:750;color:#254b3b;white-space:nowrap}.sub{color:var(--muted);font-size:12px}',
-              '.company-line{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.sub{color:var(--muted);font-size:12px}',
-          )
-          replace_once(
-              'docs/index.html',
-              '@media(max-width:900px){.shell{display:block}.sidebar{padding:12px}.nav{display:flex}.activity{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr 1fr}.toolbar>div:first-child{grid-column:1/-1}.fact-grid{grid-template-columns:1fr 1fr}}',
-              '@media(max-width:900px){.shell{display:block}.sidebar{padding:12px}.nav{display:flex}.activity,.recent-activity{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr 1fr}.toolbar>div:first-child{grid-column:1/-1}.fact-grid{grid-template-columns:1fr 1fr}}',
-          )
-          replace_once(
-              'docs/index.html',
-              '<section class="activity"><div class="month-count"><span id="monthLabel">Current month IPOs</span><strong id="monthCount">0</strong><small>priced IPOs ≥ $100M</small></div><div id="monthlyChart" class="chart" aria-label="Monthly qualifying IPO counts"></div></section>\n',
-              '<section class="activity"><div class="month-count"><span id="monthLabel">Current month activity</span><div class="month-stats"><div class="month-stat"><strong id="filingCount">0</strong><small>filings</small></div><div class="month-stat"><strong id="pricingCount">0</strong><small>pricings</small></div></div><div class="activity-legend"><span><i class="legend-dot filing"></i>Filed</span><span><i class="legend-dot pricing"></i>Priced</span></div></div><div id="monthlyChart" class="chart" aria-label="Monthly qualifying IPO filings and pricings"></div></section>\n<section class="recent-activity"><div class="recent-title">Recent Activity</div><div id="recentActivityList" class="recent-list"></div></section>\n',
-          )
-          replace_once(
-              'docs/index.html',
-              '<option value="filed-desc">Newest filed</option>',
-              '<option value="filed-desc">Newest activity</option>',
-          )
-          replace_once(
-              'docs/index.html',
-              '<table><thead><tr><th draggable="true" data-col="0">Company Name</th><th draggable="true" data-col="1">Ticker</th><th draggable="true" data-col="2">Form</th><th draggable="true" data-col="3">Stage</th><th draggable="true" data-col="4">Filed</th><th draggable="true" data-col="5">IPO Size / Offering Value</th><th draggable="true" data-col="6">Filing Price</th><th draggable="true" data-col="7">Final IPO Price</th><th draggable="true" data-col="8">Current Price</th></tr></thead>',
-              '<table><thead><tr><th draggable="true" data-col="0">Company Name</th><th draggable="true" data-col="1">Ticker</th><th draggable="true" data-col="2">Form</th><th draggable="true" data-col="3">Stage</th><th draggable="true" data-col="4">Filed</th><th draggable="true" data-col="5">Priced</th><th draggable="true" data-col="6">IPO Size / Offering Value</th><th draggable="true" data-col="7">Filing Price</th><th draggable="true" data-col="8">Final IPO Price</th><th draggable="true" data-col="9">Current Price</th></tr></thead>',
-          )
-          replace_once(
-              'docs/index.html',
-              'function normalized(filing){return {...filing,company:String(filing.company||"Unknown company").trim(),ticker:String(filing.ticker||"").trim(),cik:String(filing.cik||"").trim(),form:String(filing.form||"424B4"),stage:String(filing.stage||((filing.form||"").toUpperCase()==="424B4"?"Priced":"Pre-pricing")),signals:Array.isArray(filing.signals)?filing.signals.map(String):[],people:Array.isArray(filing.people)?filing.people:[],status:statusFor(filing)}}\n',
-              'function normalized(filing){return {...filing,company:String(filing.company||"Unknown company").trim(),ticker:String(filing.ticker||"").trim(),cik:String(filing.cik||"").trim(),form:String(filing.form||"424B4"),stage:String(filing.stage||((filing.form||"").toUpperCase()==="424B4"?"Priced":"Pre-pricing")),filing_date:String(filing.filing_date||"").trim(),pricing_date:String(filing.pricing_date||"").trim(),signals:Array.isArray(filing.signals)?filing.signals.map(String):[],people:Array.isArray(filing.people)?filing.people:[],status:statusFor(filing)}}\nfunction filingDateValue(filing){return filing.filing_date||(String(filing.form).toUpperCase()==="424B4"?"":filing.filed)||""}\nfunction pricingDateValue(filing){return filing.pricing_date||(String(filing.form).toUpperCase()==="424B4"?filing.filed:"")||""}\nfunction activityDateValue(filing){return pricingDateValue(filing)||filingDateValue(filing)||filing.filed||""}\n',
-          )
-          replace_once(
-              'docs/index.html',
-              'function ipoSizeBucket(value){const n=Number(value);if(!Number.isFinite(n)||n<100000000)return "";const levels=[[5000000000,"$5B+"],[1000000000,"$1B+"],[500000000,"$500M+"],[250000000,"$250M+"],[100000000,"$100M+"]];return (levels.find(([floor])=>n>=floor)||[])[1]||""}\n',
-              '',
-          )
-          replace_once(
-              'docs/index.html',
-              'function renderMonthlyActivity(){const now=new Date(),start=new Date(Date.UTC(2026,5,1)),current=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),1)),months=[];for(let d=new Date(start);d<=current;d=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,1))){months.push({y:d.getUTCFullYear(),m:d.getUTCMonth(),label:new Intl.DateTimeFormat("en-US",{month:"short",timeZone:"UTC"}).format(d),count:0})}for(const filing of filings){if(String(filing.form).toUpperCase()!=="424B4")continue;if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(filing.filed||""))continue;const d=new Date(`${filing.filed}T00:00:00Z`),bucket=months.find(x=>x.y===d.getUTCFullYear()&&x.m===d.getUTCMonth());if(bucket)bucket.count++}const max=Math.max(1,...months.map(x=>x.count)),chart=$("monthlyChart");chart.replaceChildren();months.forEach((item,index)=>{const wrap=document.createElement("div");wrap.className="bar-wrap";wrap.title=`${item.label} ${item.y} · ${item.count} qualifying IPO${item.count===1?"":"s"}`;const bar=document.createElement("div");bar.className=`bar${index===months.length-1?" current":""}`;bar.style.height=`${Math.max(4,item.count/max*68)}px`;wrap.append(bar,text("span","bar-label",item.label));chart.append(wrap)});const active=months[months.length-1];$("monthLabel").textContent=`${active.label} ${active.y} IPOs`;$("monthCount").textContent=active.count}\n',
-              '''function validIsoDate(value){return /^\\d{4}-\\d{2}-\\d{2}$/.test(value||"")}\nfunction renderMonthlyActivity(){const now=new Date(),start=new Date(Date.UTC(2026,5,1)),current=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),1)),months=[];for(let d=new Date(start);d<=current;d=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,1))){months.push({y:d.getUTCFullYear(),m:d.getUTCMonth(),label:new Intl.DateTimeFormat("en-US",{month:"short",timeZone:"UTC"}).format(d),filings:0,pricings:0})}for(const filing of filings){for(const [field,value] of [["filings",filingDateValue(filing)],["pricings",pricingDateValue(filing)]]){if(!validIsoDate(value))continue;const d=new Date(`${value}T00:00:00Z`),bucket=months.find(x=>x.y===d.getUTCFullYear()&&x.m===d.getUTCMonth());if(bucket)bucket[field]++}}const max=Math.max(1,...months.flatMap(x=>[x.filings,x.pricings])),chart=$("monthlyChart");chart.replaceChildren();months.forEach((item,index)=>{const wrap=document.createElement("div");wrap.className="bar-wrap";wrap.title=`${item.label} ${item.y} · ${item.filings} filing${item.filings===1?"":"s"} · ${item.pricings} pricing${item.pricings===1?"":"s"}`;const pair=document.createElement("div");pair.className="bar-pair";for(const [kind,count] of [["filing",item.filings],["pricing",item.pricings]]){const bar=document.createElement("div");bar.className=`bar ${kind}${index===months.length-1?" current":""}`;bar.style.height=`${Math.max(4,count/max*68)}px`;pair.append(bar)}wrap.append(pair,text("span","bar-label",item.label));chart.append(wrap)});const active=months[months.length-1];$("monthLabel").textContent=`${active.label} ${active.y} activity`;$("filingCount").textContent=active.filings;$("pricingCount").textContent=active.pricings}\nfunction renderRecentActivity(){const events=[];for(const filing of filings){const filed=filingDateValue(filing),priced=pricingDateValue(filing);if(validIsoDate(filed))events.push({date:filed,kind:"Filed",filing});if(validIsoDate(priced))events.push({date:priced,kind:"Priced",filing})}events.sort((a,b)=>b.date.localeCompare(a.date)||(a.kind==="Priced"?-1:1));const list=$("recentActivityList");list.replaceChildren();if(!events.length){list.append(text("span","sub","No qualifying filing or pricing activity yet."));return}for(const event of events.slice(0,8)){const filing=event.filing,button=document.createElement("button");button.type="button";button.className="recent-item";const amount=money(filing.ipo_size||filing.value),ticker=filing.ticker?` (${filing.ticker})`:"",detail=event.kind==="Priced"?`${quotePrice(filing.offering_price)} · ${amount}`:`${filing.form} · ${amount}`;button.append(text("strong","",`${dateLabel(event.date)} · ${event.kind}`),text("span","",`${filing.company}${ticker} · ${detail}`));button.addEventListener("click",()=>show(filing));list.append(button)}}\n''',
-          )
-          replace_once(
-              'docs/index.html',
-              'function visibleFilings(){const q=$("search").value.trim().toLowerCase(),form=$("formFilter").value,status=$("statusFilter").value,days=$("dateFilter").value,minSize=Number($("sizeFilter").value)||100000000,sort=$("sortBy").value;const result=filings.filter(f=>{const hay=[f.company,f.ticker,f.cik,f.form,f.stage,...f.people.map(p=>`${p.name||""} ${p.role||""}`)].join(" ").toLowerCase(),offeringValue=Number(f.ipo_size||f.value)||0;return(!savedOnly||isSaved(f))&&(!q||hay.includes(q))&&(!form||f.form===form)&&(!status||f.status===status)&&dateWithin(f.filed,days)&&offeringValue>=minSize});return result.sort((a,b)=>{if(sort==="value-desc")return(Number(b.ipo_size||b.value)||0)-(Number(a.ipo_size||a.value)||0);if(sort==="owners-desc")return b.people.length-a.people.length;if(sort==="company")return a.company.localeCompare(b.company);return String(b.filed||"").localeCompare(String(a.filed||""))})}\nconst DEFAULT_COLUMN_ORDER=[0,1,2,3,4,5,6,7,8];\n',
-              'function visibleFilings(){const q=$("search").value.trim().toLowerCase(),form=$("formFilter").value,status=$("statusFilter").value,days=$("dateFilter").value,minSize=Number($("sizeFilter").value)||100000000,sort=$("sortBy").value;const result=filings.filter(f=>{const hay=[f.company,f.ticker,f.cik,f.form,f.stage,...f.people.map(p=>`${p.name||""} ${p.role||""}`)].join(" ").toLowerCase(),offeringValue=Number(f.ipo_size||f.value)||0;return(!savedOnly||isSaved(f))&&(!q||hay.includes(q))&&(!form||f.form===form)&&(!status||f.status===status)&&dateWithin(activityDateValue(f),days)&&offeringValue>=minSize});return result.sort((a,b)=>{if(sort==="value-desc")return(Number(b.ipo_size||b.value)||0)-(Number(a.ipo_size||a.value)||0);if(sort==="owners-desc")return b.people.length-a.people.length;if(sort==="company")return a.company.localeCompare(b.company);return activityDateValue(b).localeCompare(activityDateValue(a))})}\nconst DEFAULT_COLUMN_ORDER=[0,1,2,3,4,5,6,7,8,9];\n',
-          )
-          replace_once(
-              'docs/index.html',
-              'function render(){filings.forEach(f=>f.status=statusFor(f));const visible=visibleFilings();rows.replaceChildren();for(const filing of visible){const row=document.createElement("tr");row.dataset.id=filing.id;const company=document.createElement("div"),line=document.createElement("div");line.className="company-line";line.append(text("div",hasStanfordBeneficialOwner(filing)?"company stanford-company":"company",filing.company));company.append(line,text("div","sub",filing.cik?`CIK ${filing.cik}`:""));appendCell(row,company);appendCell(row,text("span","",filing.ticker||"—"));appendCell(row,text("span","",filing.form));appendCell(row,text("span","",filing.stage));appendCell(row,text("span","",dateLabel(filing.filed)));const size=document.createElement("div");size.append(text("span","quote",money(filing.ipo_size||filing.value)));const bucket=ipoSizeBucket(filing.ipo_size||filing.value);if(bucket)size.append(document.createTextNode(" "),text("span","size-pill",bucket));appendCell(row,size);appendCell(row,text("span","quote",filingPrice(filing.price_range||filing.filing_price)));appendCell(row,text("span","quote",quotePrice(filing.offering_price)));appendCell(row,text("span","quote",quotePrice(filing.current_price)));rows.append(row)}applyColumnOrder();$("resultCount").textContent=`${visible.length} of ${filings.length} filings`;$("savedCount").textContent=filings.filter(isSaved).length;renderMonthlyActivity();const empty=$("empty");empty.classList.toggle("hidden",visible.length>0);if(!visible.length)empty.textContent=loadError?"Live feed unavailable":filings.length?"No matching filings":"No qualifying domestic IPO filings"}\n',
-              'function render(){filings.forEach(f=>f.status=statusFor(f));const visible=visibleFilings();rows.replaceChildren();for(const filing of visible){const row=document.createElement("tr");row.dataset.id=filing.id;const company=document.createElement("div"),line=document.createElement("div");line.className="company-line";line.append(text("div",hasStanfordBeneficialOwner(filing)?"company stanford-company":"company",filing.company));company.append(line,text("div","sub",filing.cik?`CIK ${filing.cik}`:""));appendCell(row,company);appendCell(row,text("span","",filing.ticker||"—"));appendCell(row,text("span","",filing.form));appendCell(row,text("span","",filing.stage));appendCell(row,text("span","",dateLabel(filingDateValue(filing))));appendCell(row,text("span","",dateLabel(pricingDateValue(filing))));appendCell(row,text("span","quote",money(filing.ipo_size||filing.value)));appendCell(row,text("span","quote",filingPrice(filing.price_range||filing.filing_price)));appendCell(row,text("span","quote",quotePrice(filing.offering_price)));appendCell(row,text("span","quote",quotePrice(filing.current_price)));rows.append(row)}applyColumnOrder();$("resultCount").textContent=`${visible.length} of ${filings.length} filings`;$("savedCount").textContent=filings.filter(isSaved).length;renderMonthlyActivity();renderRecentActivity();const empty=$("empty");empty.classList.toggle("hidden",visible.length>0);if(!visible.length)empty.textContent=loadError?"Live feed unavailable":filings.length?"No matching filings":"No qualifying domestic IPO filings"}\n',
-          )
-          replace_once(
-              'docs/index.html',
-              '$("detailMeta").textContent=`${filing.form} · ${filing.stage} · filed ${dateLabel(filing.filed)}`;',
-              '$("detailMeta").textContent=`${filing.form} · ${filing.stage} · filed ${dateLabel(filingDateValue(filing))}${pricingDateValue(filing)?` · priced ${dateLabel(pricingDateValue(filing))}`:""}`;',
-          )
-
-          # Update UI contracts for the tenth lifecycle column and dual activity view.
-          replace_once(
-              'src/test_dashboard_ui.py',
-              '        self.assertIn(\'dateLabel(filing.filed)\', self.html)\n',
-              '        self.assertIn(\'dateLabel(filingDateValue(filing))\', self.html)\n        self.assertIn(\'dateLabel(pricingDateValue(filing))\', self.html)\n',
-          )
-          replace_once(
-              'src/test_dashboard_ui.py',
-              '            "Company Name", "Ticker", "Form", "Stage", "Filed",\n            "IPO Size / Offering Value", "Filing Price", "Final IPO Price",\n',
-              '            "Company Name", "Ticker", "Form", "Stage", "Filed", "Priced",\n            "IPO Size / Offering Value", "Filing Price", "Final IPO Price",\n',
-          )
-          replace_once(
-              'src/test_dashboard_ui.py',
-              '        self.assertNotIn(\'data-col="9"\', self.html)\n',
-              '        self.assertNotIn(\'data-col="10"\', self.html)\n',
-          )
-          replace_once(
-              'src/test_dashboard_ui.py',
-              '        for index in range(9):\n            self.assertIn(f\'draggable="true" data-col="{index}"\', self.html)\n        self.assertNotIn(\'draggable="true" data-col="9"\', self.html)\n',
-              '        for index in range(10):\n            self.assertIn(f\'draggable="true" data-col="{index}"\', self.html)\n        self.assertNotIn(\'draggable="true" data-col="10"\', self.html)\n',
-          )
-          replace_once(
-              'src/test_dashboard_ui.py',
-              '''    def test_monthly_activity_replaces_summary_counters(self):\n        self.assertIn('id="monthCount"', self.html)\n        self.assertIn('id="monthlyChart"', self.html)\n        self.assertIn("function renderMonthlyActivity()", self.html)\n        self.assertIn('String(filing.form).toUpperCase()!=="424B4"', self.html)\n        self.assertIn('start=new Date(Date.UTC(2026,5,1))', self.html)\n        self.assertNotIn('for(let i=11;i>=0;i--)', self.html)\n        self.assertIn('.bar.current{background:var(--cardinal);animation:pulse', self.html)\n        self.assertIn('@media(prefers-reduced-motion:reduce)', self.html)\n        self.assertNotIn('id="newCount"', self.html)\n        self.assertNotIn('id="peopleCount"', self.html)\n        self.assertNotIn('id="offeringTotal"', self.html)\n''',
-              '''    def test_monthly_activity_tracks_filings_and_pricings(self):\n        self.assertIn('id="filingCount"', self.html)\n        self.assertIn('id="pricingCount"', self.html)\n        self.assertIn('id="monthlyChart"', self.html)\n        self.assertIn("function renderMonthlyActivity()", self.html)\n        self.assertIn("filingDateValue(filing)", self.html)\n        self.assertIn("pricingDateValue(filing)", self.html)\n        self.assertIn('start=new Date(Date.UTC(2026,5,1))', self.html)\n        self.assertNotIn('for(let i=11;i>=0;i--)', self.html)\n        self.assertIn('.bar.filing{background:#9ba8a0}', self.html)\n        self.assertIn('.bar.pricing{background:var(--green)}', self.html)\n        self.assertIn('.bar.current{animation:pulse', self.html)\n        self.assertIn('@media(prefers-reduced-motion:reduce)', self.html)\n''',
-          )
-          replace_once(
-              'src/test_dashboard_ui.py',
-              '        self.assertIn("function ipoSizeBucket(value)", self.html)\n        self.assertIn(\'"$500M+"\', self.html)\n',
-              '        self.assertNotIn("function ipoSizeBucket(value)", self.html)\n        self.assertNotIn("size-pill", self.html)\n',
-          )
-          replace_once(
-              'src/test_dashboard_ui.py',
-              '    def test_has_no_fabricated_fallback_or_dead_navigation(self):\n',
-              '''    def test_recent_activity_surfaces_lifecycle_events(self):\n        self.assertIn('id="recentActivityList"', self.html)\n        self.assertIn("Recent Activity", self.html)\n        self.assertIn("function renderRecentActivity()", self.html)\n        self.assertIn('kind:"Filed"', self.html)\n        self.assertIn('kind:"Priced"', self.html)\n        self.assertIn('data-col="5">Priced</th>', self.html)\n        self.assertIn('Newest activity', self.html)\n\n    def test_has_no_fabricated_fallback_or_dead_navigation(self):\n''',
-          )
+          start_marker = "          python - <<'PY'\n"
+          start = old.index(start_marker) + len(start_marker)
+          end = old.index("\n          PY", start)
+          block = old[start:end]
+          lines = []
+          for line in block.splitlines():
+              lines.append(line[10:] if line.startswith('          ') else line)
+          patch = '\n'.join(lines) + '\n'
+          Path('/tmp/apply_lifecycle.py').write_text(patch, encoding='utf-8')
+          subprocess.check_call(['python', '/tmp/apply_lifecycle.py'])
           PY
 
       - name: Run Research Monitor test suite
-        run: |
-          python -m unittest discover -s src -p 'test_*.py' -v
+        run: python -m unittest discover -s src -p 'test_*.py' -v
 
       - name: Verify ownership refresh mutex before repository commit
         env:
