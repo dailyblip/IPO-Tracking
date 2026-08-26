@@ -22,8 +22,8 @@ class PublishedResearchMonitorDataIntegrityTests(unittest.TestCase):
         payload = json.loads(DATA_PATH.read_text(encoding="utf-8"))
         cls.filings = payload.get("filings", []) if isinstance(payload, dict) else payload
 
-    def test_every_published_offering_value_has_source_and_confidence(self):
-        """Every qualifying public IPO value must retain explicit provenance metadata."""
+    def test_every_published_offering_value_has_source_and_high_confidence(self):
+        """Every qualifying public IPO value must retain strong explicit provenance metadata."""
         failures = []
         for filing in self.filings:
             label = filing.get("company") or filing.get("id") or "unknown filing"
@@ -34,8 +34,10 @@ class PublishedResearchMonitorDataIntegrityTests(unittest.TestCase):
                 failures.append(f"{label}: published offering value is missing or invalid")
             if not source:
                 failures.append(f"{label}: published offering value lacks source provenance")
-            if not confidence:
-                failures.append(f"{label}: published offering value lacks confidence metadata")
+            if confidence.casefold() != "high":
+                failures.append(
+                    f"{label}: published offering value confidence is {confidence or 'missing'}, expected High"
+                )
 
         self.assertEqual(
             failures,
@@ -74,8 +76,6 @@ class PublishedResearchMonitorDataIntegrityTests(unittest.TestCase):
             )
             checked += 1
 
-        # This guard prevents the regression test from silently becoming vacuous if
-        # field names or export behavior change.
         self.assertGreater(checked, 0, "No filings had exact offering components to validate")
 
     def test_public_stanford_sources_do_not_expose_internal_processing_text(self):
