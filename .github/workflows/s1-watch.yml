@@ -72,12 +72,9 @@ jobs:
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
-            DAYS_BACK=14
-          else
-            DAYS_BACK=4
-          fi
-          python s1_monitor.py "$DAYS_BACK"
+          # Re-scan a two-week window on every run so transient SEC/index failures
+          # cannot become permanent gaps after a short scheduled lookback expires.
+          python s1_monitor.py 14
 
       - name: Enforce public-feed eligibility policy
         working-directory: src
