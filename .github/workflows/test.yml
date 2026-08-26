@@ -37,6 +37,7 @@ jobs:
           python - <<'PY'
           import json
           import sys
+          from datetime import date, datetime
           from html.parser import HTMLParser
           from pathlib import Path
 
@@ -47,6 +48,7 @@ jobs:
           assert isinstance(filings, list)
 
           sys.path.insert(0, str(Path('src').resolve()))
+          from company_name_normalizer import normalize_company_name
           from public_feed_policy import (
               MINIMUM_IPO_VALUE,
               _has_valid_filing_date,
@@ -59,6 +61,12 @@ jobs:
           normalization_drift = []
           for filing in filings:
               label = filing.get('company') or filing.get('id') or '<unknown>'
+              company = str(filing.get('company') or '').strip()
+              if not company:
+                  failures.append(f'{label}: missing company name')
+              elif normalize_company_name(company) != company:
+                  failures.append(f'{label}: issuer display name is not normalized')
+
               if not _has_valid_filing_date(filing):
                   failures.append(f'{label}: invalid/future filing date')
               if not qualifies_for_public_feed(filing):
@@ -80,6 +88,42 @@ jobs:
                   failures.append(
                       f'{label}: qualifying offering value confidence must be High, got {size_confidence!r}'
                   )
+
+              filing_date = str(filing.get('filing_date') or '').strip()
+              pricing_date = str(filing.get('pricing_date') or '').strip()
+              if filing_date and pricing_date:
+                  try:
+                      if date.fromisoformat(pricing_date) < date.fromisoformat(filing_date):
+                          failures.append(f'{label}: pricing date precedes initial filing date')
+                  except ValueError:
+                      failures.append(f'{label}: invalid filing/pricing date format')
+
+              if str(filing.get('stage') or '').strip().casefold() == 'priced':
+                  try:
+                      offering_price = float(filing.get('offering_price'))
+                  except (TypeError, ValueError):
+                      offering_price = None
+                  if offering_price is None or offering_price <= 0:
+                      failures.append(f'{label}: priced IPO lacks a valid final IPO price')
+                  if not pricing_date:
+                      failures.append(f'{label}: priced IPO lacks pricing date')
+
+              current_price = filing.get('current_price')
+              if current_price not in (None, ''):
+                  try:
+                      current_price_number = float(current_price)
+                  except (TypeError, ValueError):
+                      current_price_number = None
+                  if current_price_number is None or current_price_number <= 0:
+                      failures.append(f'{label}: current price is invalid')
+                  price_updated = str(filing.get('price_updated') or '').strip()
+                  if not price_updated:
+                      failures.append(f'{label}: current price lacks update timestamp')
+                  else:
+                      try:
+                          datetime.fromisoformat(price_updated.replace('Z', '+00:00'))
+                      except ValueError:
+                          failures.append(f'{label}: current-price timestamp is invalid')
 
               normalized = _normalize_market_value_consistency(_normalize_people_types(filing))
               if normalized != filing:
