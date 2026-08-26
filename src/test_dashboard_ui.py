@@ -57,7 +57,7 @@ class DashboardUiTests(unittest.TestCase):
 
     def test_main_table_uses_locked_column_order(self):
         expected_labels = (
-            "Company Name", "Ticker", "Form", "Stage", "Filed",
+            "Company Name", "Ticker", "Form", "Stage", "Filed", "Pricing Date",
             "IPO Size / Offering Value", "Filing Price", "Final IPO Price",
             "Current Price", "Public Signals",
         )
@@ -68,17 +68,18 @@ class DashboardUiTests(unittest.TestCase):
         self.assertNotIn("<th>Status</th>", self.html)
         self.assertIn("money(filing.ipo_size||filing.value)", self.html)
         self.assertIn('filing.ticker||"—"', self.html)
-        self.assertIn('data-col="9">Public Signals</th>', self.html)
+        self.assertIn('data-col="5">Pricing Date</th>', self.html)
+        self.assertIn('data-col="10">Public Signals</th>', self.html)
 
     def test_public_signals_surface_in_main_queue_without_html_injection(self):
         self.assertIn('filing.signals.length?filing.signals.join(" · "):"—"', self.html)
-        self.assertIn('data-col="9">Public Signals</th>', self.html)
+        self.assertIn('data-col="10">Public Signals</th>', self.html)
         self.assertNotIn(".innerHTML", self.html)
 
     def test_columns_are_drag_reorderable_and_persistent(self):
-        for index in range(10):
+        for index in range(11):
             self.assertIn(f'draggable="true" data-col="{index}"', self.html)
-        self.assertNotIn('draggable="true" data-col="10"', self.html)
+        self.assertNotIn('draggable="true" data-col="11"', self.html)
         self.assertIn('research-monitor:column-order', self.html)
         self.assertIn("function setupColumnDrag()", self.html)
         self.assertIn("function applyColumnOrder()", self.html)
