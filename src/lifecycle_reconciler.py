@@ -1,8 +1,9 @@
 """Reconcile qualifying S-1 queue records with authoritative final 424B4 filings.
 
 This is a narrow lifecycle handoff safety net for the public Research Monitor feed.
-It prevents a company from remaining visibly "Pre-pricing" after the SEC has filed a
-final 424B4, while failing closed when final offering size cannot be established.
+It prevents an issuer from remaining visibly pre-pricing after the SEC has filed a
+final 424B4, and repairs incomplete final records when exact final offering terms
+are present later in a long prospectus. Unresolved final size fails closed.
 """
 
 from __future__ import annotations
@@ -27,6 +28,13 @@ def _canonical_cik(value):
 def _share_int(value):
     try:
         return int(str(value).replace(",", "").strip())
+    except (TypeError, ValueError):
+        return None
+
+
+def _number(value):
+    try:
+        return float(str(value).replace(",", "").replace("$", "").strip())
     except (TypeError, ValueError):
         return None
 
@@ -121,17 +129,32 @@ def _is_prepricing(filing):
     )
 
 
+def _is_final_record(filing):
+    return str(filing.get("form") or "").upper() == "424B4"
+
+
 def _is_final_priced(filing):
     return (
-        str(filing.get("form") or "").upper() == "424B4"
+        _is_final_record(filing)
         and str(filing.get("stage") or "").strip().casefold() == "priced"
         and filing.get("offering_price") not in (None, "")
         and filing.get("pricing_date")
     )
 
 
-def _promote_prepricing_record(record, filing_meta, soup):
-    """Build a minimal final record from exact final-prospectus facts, or fail closed."""
+def _has_release_grade_final_size(filing):
+    value = _number(filing.get("value"))
+    return (
+        _is_final_priced(filing)
+        and value is not None
+        and value >= MINIMUM_IPO_VALUE
+        and str(filing.get("offering_size_confidence") or "").strip().casefold() == "high"
+        and bool(str(filing.get("offering_size_source") or "").strip())
+    )
+
+
+def _apply_final_terms(record, filing_meta, soup):
+    """Apply exact SEC final terms to a record without fabricating unavailable facts."""
     cover = filing_parser.extract_cover_page_data(soup)
     price = cover.get("offering_price")
     terms = extract_final_offering_terms(soup)
@@ -143,16 +166,16 @@ def _promote_prepricing_record(record, filing_meta, soup):
     if offering_value < MINIMUM_IPO_VALUE:
         return None
 
-    pricing_date = str(filing_meta.get("filing_date") or "").strip()
-    accession = str(filing_meta.get("accession_no") or "").strip()
+    pricing_date = str(filing_meta.get("filing_date") or record.get("pricing_date") or "").strip()
+    accession = str(filing_meta.get("accession_no") or record.get("accession_no") or "").strip()
     if not pricing_date or not accession:
         return None
 
-    promoted = dict(record)
+    updated = dict(record)
     old_ticker = str(record.get("ticker") or "").strip().upper()
     final_ticker = str(cover.get("ticker") or filing_meta.get("ticker") or old_ticker).strip().upper()
 
-    promoted.update({
+    updated.update({
         "id": accession,
         "accession_no": accession,
         "form": "424B4",
@@ -167,95 +190,222 @@ def _promote_prepricing_record(record, filing_meta, soup):
         "offering_size_source": terms.get("source"),
         "offering_size_confidence": terms.get("confidence"),
         "ticker": final_ticker,
-        "people": [],
-        "people_count": 0,
-        "signals": [
-            f"Offering priced at ${float(price):.2f} per share",
-            f"Offering raised approximately {_money(offering_value)}",
-            "Final 424B4 supersedes the pre-pricing registration record",
-        ],
         "sec_url": edgar_client.build_filing_index_url(
             _canonical_cik(filing_meta.get("cik") or record.get("cik")), accession
         ),
     })
 
-    # A quote captured for the pre-pricing row may be retained only after the final
-    # filing itself confirms the same ticker. Otherwise fail closed on market data.
+    # Existing market data is safe to carry across the lifecycle handoff only when
+    # the final SEC prospectus confirms the same ticker identity.
     if not final_ticker or final_ticker != old_ticker:
-        promoted.pop("current_price", None)
-        promoted.pop("price_updated", None)
+        updated.pop("current_price", None)
+        updated.pop("price_updated", None)
 
-    # A pre-pricing ownership view is not evidence of final post-IPO liquidity.
+    filing_date = str(updated.get("filing_date") or "").strip()
+    if filing_date and filing_date > pricing_date:
+        updated["filing_date"] = None
+    return updated
+
+
+def _final_signals(record, price, value):
+    keep = []
+    for signal in record.get("signals") or []:
+        text = str(signal or "").strip()
+        lowered = text.casefold()
+        if not text:
+            continue
+        if lowered.startswith("offering priced at"):
+            continue
+        if lowered.startswith("offering raised approximately"):
+            continue
+        if "remains pre-pricing" in lowered or "registration statement amended" in lowered:
+            continue
+        keep.append(text)
+    final = [
+        f"Offering priced at ${float(price):.2f} per share",
+        f"Offering raised approximately {_money(value)}",
+    ]
+    for signal in keep:
+        if signal not in final:
+            final.append(signal)
+    return final
+
+
+def _repair_final_record(record, filing_meta, soup):
+    """Repair an incomplete 424B4 row while preserving final-filing research details."""
+    repaired = _apply_final_terms(record, filing_meta, soup)
+    if repaired is None:
+        return None
+    repaired["signals"] = _final_signals(
+        repaired, repaired["offering_price"], repaired["value"]
+    )
+    return repaired
+
+
+def _promote_prepricing_record(record, filing_meta, soup):
+    """Build a minimal final record from exact final-prospectus facts, or fail closed."""
+    promoted = _apply_final_terms(record, filing_meta, soup)
+    if promoted is None:
+        return None
+
+    # A pre-pricing ownership snapshot is not evidence of final post-IPO ownership or
+    # liquidity. The fallback handoff deliberately removes those fields rather than
+    # carrying preliminary facts into a final record.
+    promoted["people"] = []
+    promoted["people_count"] = 0
     for key in (
         "lockup_end_date", "lockup_duration_days", "lockup_duration_value",
         "lockup_duration_unit", "lockup_text", "lockup_scope", "lockup_terms",
         "lockup_confidence",
     ):
         promoted.pop(key, None)
-
-    filing_date = str(promoted.get("filing_date") or "").strip()
-    if filing_date and filing_date > pricing_date:
-        promoted["filing_date"] = None
+    promoted["signals"] = _final_signals(
+        promoted, promoted["offering_price"], promoted["value"]
+    )
+    if "Final 424B4 supersedes the pre-pricing registration record" not in promoted["signals"]:
+        promoted["signals"].append("Final 424B4 supersedes the pre-pricing registration record")
     return promoted
 
 
+def _select_final_meta(candidates, existing_final=None, prepricing=None):
+    """Select the IPO final prospectus, avoiding a later follow-on 424B4 when possible."""
+    if not candidates:
+        return None
+    candidates = sorted(candidates, key=lambda item: str(item.get("filing_date") or ""))
+
+    accession = str((existing_final or {}).get("accession_no") or "").strip()
+    if accession:
+        for candidate in candidates:
+            if str(candidate.get("accession_no") or "").strip() == accession:
+                return candidate
+
+    prepricing_date = str(
+        (prepricing or {}).get("filed")
+        or (prepricing or {}).get("filing_date")
+        or ""
+    ).strip()
+    if prepricing_date:
+        eligible = [
+            candidate for candidate in candidates
+            if str(candidate.get("filing_date") or "") >= prepricing_date
+        ]
+        if eligible:
+            return eligible[0]
+
+    return candidates[0]
+
+
 def reconcile_payload(payload, final_filings, soup_loader):
-    """Reconcile stale S-1 records against final 424B4 metadata by SEC CIK."""
+    """Reconcile stale/incomplete lifecycle rows against SEC 424B4 metadata by CIK."""
     filings = payload.get("filings")
     if not isinstance(filings, list):
         raise ValueError("Public feed must contain a filings list")
 
-    final_by_cik = {}
+    finals_by_cik = {}
     for meta in final_filings:
         cik = _canonical_cik(meta.get("cik"))
+        if cik:
+            finals_by_cik.setdefault(cik, []).append(meta)
+
+    prepricing_by_cik = {}
+    final_record_by_cik = {}
+    for filing in filings:
+        if not isinstance(filing, dict):
+            continue
+        cik = _canonical_cik(filing.get("cik"))
         if not cik:
             continue
-        prior = final_by_cik.get(cik)
-        if prior is None or str(meta.get("filing_date") or "") > str(prior.get("filing_date") or ""):
-            final_by_cik[cik] = meta
+        if _is_prepricing(filing):
+            prepricing_by_cik.setdefault(cik, filing)
+        elif _is_final_record(filing):
+            final_record_by_cik.setdefault(cik, filing)
 
-    already_priced = {
-        _canonical_cik(filing.get("cik"))
-        for filing in filings
-        if isinstance(filing, dict) and _is_final_priced(filing)
-    }
+    states = {}
+    repaired_count = 0
+    for cik in set(prepricing_by_cik) | set(final_record_by_cik):
+        candidates = finals_by_cik.get(cik) or []
+        if not candidates:
+            continue
+        existing_final = final_record_by_cik.get(cik)
+        prepricing = prepricing_by_cik.get(cik)
+        final_meta = _select_final_meta(candidates, existing_final, prepricing)
+        if not final_meta:
+            continue
+
+        if existing_final is not None:
+            if _has_release_grade_final_size(existing_final):
+                states[cik] = {
+                    "meta": final_meta,
+                    "existing": existing_final,
+                    "replacement": existing_final,
+                }
+                continue
+            try:
+                soup = soup_loader(final_meta)
+                replacement = _repair_final_record(existing_final, final_meta, soup)
+            except Exception as error:
+                print(f"[lifecycle_reconciler] Could not repair final terms for CIK {cik}: {error}")
+                replacement = None
+            states[cik] = {
+                "meta": final_meta,
+                "existing": existing_final,
+                "replacement": replacement,
+            }
+            if replacement is not None:
+                repaired_count += 1
+            continue
+
+        if prepricing is not None:
+            try:
+                soup = soup_loader(final_meta)
+                replacement = _promote_prepricing_record(prepricing, final_meta, soup)
+            except Exception as error:
+                print(f"[lifecycle_reconciler] Could not verify final terms for CIK {cik}: {error}")
+                replacement = None
+            states[cik] = {
+                "meta": final_meta,
+                "existing": None,
+                "replacement": replacement,
+            }
+            if replacement is not None:
+                repaired_count += 1
 
     reconciled = []
-    promoted_count = removed_count = 0
+    removed_count = 0
+    inserted_promotions = set()
     for filing in filings:
-        if not isinstance(filing, dict) or not _is_prepricing(filing):
+        if not isinstance(filing, dict):
             reconciled.append(filing)
             continue
         cik = _canonical_cik(filing.get("cik"))
-        final_meta = final_by_cik.get(cik)
-        if not final_meta:
+        state = states.get(cik)
+        if state is None:
             reconciled.append(filing)
             continue
-        if cik in already_priced:
+
+        if _is_prepricing(filing):
             removed_count += 1
+            if state["existing"] is None and state["replacement"] is not None and cik not in inserted_promotions:
+                reconciled.append(state["replacement"])
+                inserted_promotions.add(cik)
             continue
 
-        try:
-            soup = soup_loader(final_meta)
-            promoted = _promote_prepricing_record(filing, final_meta, soup)
-        except Exception as error:
-            print(f"[lifecycle_reconciler] Could not verify final terms for CIK {cik}: {error}")
-            promoted = None
-
-        if promoted is None:
-            # A final 424B4 proves the issuer is no longer pre-pricing. If exact
-            # qualifying final size is unresolved, the contract requires omission
-            # rather than publication of a stale or guessed record.
-            removed_count += 1
+        if _is_final_record(filing) and filing is state["existing"]:
+            if state["replacement"] is not None:
+                reconciled.append(state["replacement"])
+            else:
+                # A final 424B4 proves the issuer is no longer pre-pricing. If exact
+                # qualifying final size remains unresolved, omit rather than guess.
+                removed_count += 1
             continue
-        reconciled.append(promoted)
-        promoted_count += 1
+
+        reconciled.append(filing)
 
     payload = dict(payload)
     payload["filings"] = reconciled
-    if promoted_count or removed_count:
+    if repaired_count or removed_count:
         payload["generated_at"] = datetime.now(timezone.utc).isoformat()
-    return payload, promoted_count, removed_count
+    return payload, repaired_count, removed_count
 
 
 def _load_final_soup(meta):
@@ -267,26 +417,32 @@ def _load_final_soup(meta):
 def reconcile_feed(output_path, days_back=60):
     output_path = Path(output_path)
     payload = json.loads(output_path.read_text(encoding="utf-8"))
-    if not any(_is_prepricing(f) for f in payload.get("filings", []) if isinstance(f, dict)):
+    filings = [f for f in payload.get("filings", []) if isinstance(f, dict)]
+    needs_reconciliation = any(
+        _is_prepricing(filing)
+        or (_is_final_record(filing) and not _has_release_grade_final_size(filing))
+        for filing in filings
+    )
+    if not needs_reconciliation:
         dashboard_export.write_dashboard_csv(payload.get("filings", []), output_path)
         return payload, 0, 0
 
     final_filings = edgar_client.find_recent_424b4_filings(days_back=days_back)
-    payload, promoted, removed = reconcile_payload(payload, final_filings, _load_final_soup)
-    if promoted or removed:
+    payload, repaired, removed = reconcile_payload(payload, final_filings, _load_final_soup)
+    if repaired or removed:
         temporary = output_path.with_suffix(output_path.suffix + ".tmp")
         temporary.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         temporary.replace(output_path)
     dashboard_export.write_dashboard_csv(payload.get("filings", []), output_path)
-    return payload, promoted, removed
+    return payload, repaired, removed
 
 
 if __name__ == "__main__":
     import sys
 
     target = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("../docs/data/filings.json")
-    _, promoted_count, removed_count = reconcile_feed(target)
+    _, repaired_count, removed_count = reconcile_feed(target)
     print(
-        f"Lifecycle reconciliation promoted {promoted_count} final 424B4 record(s) "
-        f"and removed {removed_count} stale pre-pricing record(s)."
+        f"Lifecycle reconciliation repaired/promoted {repaired_count} final 424B4 record(s) "
+        f"and removed {removed_count} stale/unresolved record(s)."
     )
