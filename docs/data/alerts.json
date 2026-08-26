@@ -1,8 +1,23 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T23:08:06.115022+00:00",
-  "count": 41,
+  "generated_at": "2026-08-26T23:15:28.879019+00:00",
+  "count": 42,
   "alerts": [
+    {
+      "type": "ipo_priced",
+      "company": "Lyntris Inc.",
+      "cik": "0002132582",
+      "filing_id": "0001193125-26-356916",
+      "form": "424B4",
+      "filed": "2026-08-19",
+      "stage": "priced",
+      "priority": "High",
+      "summary": "IPO advanced from pre-pricing monitoring to a filed 424B4.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm",
+      "detected_at": "2026-08-26T23:15:28.878911+00:00",
+      "new_value": "$298M",
+      "key": "ipo_priced|0001193125-26-356916|0002132582|2026-08-19|$298M"
+    },
     {
       "type": "new_prepricing",
       "company": "Lyntris Inc.",
