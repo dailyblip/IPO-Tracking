@@ -164,15 +164,23 @@ class DashboardUiTests(unittest.TestCase):
     def test_does_not_insert_feed_values_with_inner_html(self):
         self.assertNotIn(".innerHTML", self.html)
 
-    def test_prospect_liquidity_ui_and_front_page_flags(self):
-        for value in ("personDetail", "personCurrentValue", "personIpoValue", "personCashRealized", "personLiquidValue", "personLockedValue", "personLockupEnd"):
-            self.assertIn(f'id="{value}"', self.html)
-        for value in ("personStanford", "personStanfordConfidence", "personStanfordNote"):
-            self.assertIn(f'id="{value}"', self.html)
+    def test_person_details_use_single_open_accordion_without_nested_modal(self):
+        self.assertNotIn('id="personDetail"', self.html)
+        self.assertNotIn('id="closePerson"', self.html)
+        self.assertIn('className="owner-toggle"', self.html)
+        self.assertIn('className="owner-panel"', self.html)
+        self.assertIn('button.setAttribute("aria-expanded","false")', self.html)
+        self.assertIn("function closeExpandedOwner()", self.html)
+        self.assertIn("function buildPersonAccordion(person,filing)", self.html)
+        self.assertIn('expandedOwner={button,panel}', self.html)
+        self.assertIn('person.lockup_end_date', self.html)
+        self.assertIn('person.liquidity_status', self.html)
+        self.assertNotIn("Not applicable / unknown", self.html)
+        self.assertNotIn("Liquidity classification not yet available for this holding", self.html)
+        self.assertIn("No additional filing-supported liquidity details are available for this person.", self.html)
         self.assertNotIn("function ipoSizeBucket(value)", self.html)
         self.assertNotIn("size-pill", self.html)
         self.assertNotIn("stanford-s", self.html)
-        self.assertIn("showPerson(person,filing)", self.html)
 
     def test_published_feed_retains_confirmed_stanford_beneficial_owner(self):
         matches = [
