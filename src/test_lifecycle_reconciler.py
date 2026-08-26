@@ -49,6 +49,27 @@ def _final_meta(**overrides):
     return meta
 
 
+def _final_record(**overrides):
+    record = {
+        "id": "0001193125-26-356916",
+        "company": "Lyntris Inc.",
+        "ticker": "LYNX",
+        "cik": "0002132582",
+        "accession_no": "0001193125-26-356916",
+        "form": "424B4",
+        "filed": "2026-08-19",
+        "filing_date": "2026-07-01",
+        "stage": "Priced",
+        "pricing_date": "2026-08-19",
+        "offering_price": 17.5,
+        "people": [{"name": "Final Holder", "shares": 750_000}],
+        "people_count": 1,
+        "signals": ["Offering priced at $17.50 per share"],
+    }
+    record.update(overrides)
+    return record
+
+
 def _lyntris_final_soup(prefix=""):
     return _soup(
         prefix
@@ -90,39 +111,92 @@ class LifecycleReconcilerTests(unittest.TestCase):
         self.assertEqual(promoted["people_count"], 0)
         self.assertIn("0001193125-26-356916", promoted["sec_url"])
 
-    def test_existing_priced_record_replaces_same_cik_prepricing_record(self):
-        final = {
-            "id": "0001193125-26-356916",
-            "company": "Lyntris Inc.",
-            "ticker": "LYNX",
-            "cik": "0002132582",
-            "form": "424B4",
-            "stage": "Priced",
-            "pricing_date": "2026-08-19",
-            "offering_price": 17.5,
-        }
-        payload, promoted, removed = reconcile_payload(
+    def test_release_grade_priced_record_replaces_same_cik_prepricing_record(self):
+        final = _final_record(
+            value=297_500_000,
+            value_label="$298M",
+            primary_offering_shares=5_714_286,
+            secondary_offering_shares=11_285_714,
+            offering_size_source="final 424B4 THE OFFERING primary + secondary rows",
+            offering_size_confidence="High",
+        )
+        payload, repaired, removed = reconcile_payload(
             {"filings": [_stale_record(), final]},
             [_final_meta()],
-            lambda _: self.fail("final filing should not be refetched when priced record exists"),
+            lambda _: self.fail("release-grade final filing should not be refetched"),
         )
 
-        self.assertEqual(promoted, 0)
+        self.assertEqual(repaired, 0)
         self.assertEqual(removed, 1)
         self.assertEqual(payload["filings"], [final])
+
+    def test_repairs_incomplete_final_and_removes_stale_prepricing_duplicate(self):
+        final = _final_record(value=None, value_label=None)
+        payload, repaired, removed = reconcile_payload(
+            {"filings": [_stale_record(), final]},
+            [_final_meta()],
+            lambda _: _lyntris_final_soup(),
+        )
+
+        self.assertEqual(repaired, 1)
+        self.assertEqual(removed, 1)
+        self.assertEqual(len(payload["filings"]), 1)
+        result = payload["filings"][0]
+        self.assertEqual(result["form"], "424B4")
+        self.assertEqual(result["stage"], "Priced")
+        self.assertEqual(result["pricing_date"], "2026-08-19")
+        self.assertEqual(result["offering_price"], 17.5)
+        self.assertEqual(result["value"], 297_500_000.0)
+        self.assertEqual(result["primary_offering_shares"], 5_714_286)
+        self.assertEqual(result["secondary_offering_shares"], 11_285_714)
+        self.assertEqual(result["offering_size_confidence"], "High")
+        self.assertEqual(result["people"], [{"name": "Final Holder", "shares": 750_000}])
+        self.assertEqual(result["people_count"], 1)
+        self.assertNotIn("remains pre-pricing", " ".join(result["signals"]).casefold())
+
+    def test_repairs_incomplete_final_even_when_stale_s1_is_already_absent(self):
+        final = _final_record(value=None, value_label=None)
+        payload, repaired, removed = reconcile_payload(
+            {"filings": [final]},
+            [_final_meta()],
+            lambda _: _lyntris_final_soup(),
+        )
+
+        self.assertEqual(repaired, 1)
+        self.assertEqual(removed, 0)
+        self.assertEqual(len(payload["filings"]), 1)
+        result = payload["filings"][0]
+        self.assertEqual(result["value"], 297_500_000.0)
+        self.assertEqual(result["offering_size_source"], "final 424B4 THE OFFERING primary + secondary rows")
+        self.assertEqual(result["offering_size_confidence"], "High")
 
     def test_final_424b4_with_unresolved_exact_size_drops_stale_prepricing(self):
         unresolved = _soup(
             "symbol: LYNX. The initial public offering price is $17.50 per share. "
             "Final prospectus without an exact base-offering share disclosure in this fixture."
         )
-        payload, promoted, removed = reconcile_payload(
+        payload, repaired, removed = reconcile_payload(
             {"filings": [_stale_record()]},
             [_final_meta()],
             lambda _: unresolved,
         )
 
-        self.assertEqual(promoted, 0)
+        self.assertEqual(repaired, 0)
+        self.assertEqual(removed, 1)
+        self.assertEqual(payload["filings"], [])
+
+    def test_unresolved_incomplete_final_is_omitted_instead_of_guessing(self):
+        unresolved = _soup(
+            "symbol: LYNX. The initial public offering price is $17.50 per share. "
+            "No exact base-offering share disclosure in this fixture."
+        )
+        payload, repaired, removed = reconcile_payload(
+            {"filings": [_final_record(value=None, value_label=None)]},
+            [_final_meta()],
+            lambda _: unresolved,
+        )
+
+        self.assertEqual(repaired, 0)
         self.assertEqual(removed, 1)
         self.assertEqual(payload["filings"], [])
 
