@@ -155,6 +155,14 @@ class DashboardUiTests(unittest.TestCase):
         self.assertNotIn(">Priced</th>", self.html)
         self.assertIn('Newest activity', self.html)
 
+    def test_recent_activity_ticker_cannot_be_stranded_paused_by_focus(self):
+        self.assertIn('animation:recentTicker 34s linear infinite', self.html)
+        self.assertIn('animation-play-state:running', self.html)
+        self.assertNotIn('.recent-list:hover .recent-track', self.html)
+        self.assertNotIn('.recent-list:focus-within .recent-track', self.html)
+        self.assertIn('@media(prefers-reduced-motion:reduce)', self.html)
+        self.assertIn('.recent-track{animation:none}', self.html)
+
     def test_has_no_fabricated_fallback_or_dead_navigation(self):
         self.assertNotIn("demoFilings", self.html)
         self.assertNotIn("Companies</button>", self.html)
