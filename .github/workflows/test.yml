@@ -76,6 +76,10 @@ jobs:
                   failures.append(f'{label}: qualifying offering value lacks source provenance')
               if not size_confidence:
                   failures.append(f'{label}: qualifying offering value lacks confidence metadata')
+              elif size_confidence.casefold() != 'high':
+                  failures.append(
+                      f'{label}: qualifying offering value confidence must be High, got {size_confidence!r}'
+                  )
 
               normalized = _normalize_market_value_consistency(_normalize_people_types(filing))
               if normalized != filing:
