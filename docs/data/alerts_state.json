@@ -1,19 +1,7 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-26T21:57:09.029160+00:00",
+  "updated_at": "2026-08-26T23:07:47.295601+00:00",
   "items": {
-    "s1:0002132582": {
-      "id": "s1:0002132582",
-      "cik": "0002132582",
-      "company": "Lyntris Inc.",
-      "form": "S-1/A",
-      "filed": "2026-08-12",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "High",
-      "value": 492000000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526346328/0001193125-26-346328-index.htm"
-    },
     "0001193125-26-340329": {
       "id": "0001193125-26-340329",
       "cik": "0002056611",
