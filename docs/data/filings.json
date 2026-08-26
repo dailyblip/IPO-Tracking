@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T17:56:49.238164+00:00",
+  "generated_at": "2026-08-26T18:55:12.542575+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -14,6 +14,7 @@
       "stage": "Pre-pricing",
       "price_range": null,
       "filing_price": "$20.50",
+      "ipo_size": 492000000,
       "offering_size_source": "primary offering; explicit issuer + selling-holder cover blocks; prospectus cover title",
       "offering_size_confidence": "High",
       "primary_offering_shares": 4878049,
@@ -29,9 +30,7 @@
         "IPO size disclosed or derived at approximately $492,000,000"
       ],
       "people": [],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526346328/0001193125-26-346328-index.htm",
-      "current_price": 13.27,
-      "price_updated": "2026-08-26T17:56:49.238164+00:00"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526346328/0001193125-26-346328-index.htm"
     },
     {
       "id": "0001193125-26-340329",
@@ -11050,7 +11049,7 @@
       "accession_no": "0001193125-26-249223",
       "form": "424B4",
       "filed": "2026-06-01",
-      "filing_date": "2026-06-29",
+      "filing_date": null,
       "pricing_date": "2026-06-01",
       "stage": "Priced",
       "priority": "High",
