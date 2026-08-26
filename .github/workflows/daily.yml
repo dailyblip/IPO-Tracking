@@ -56,6 +56,10 @@ jobs:
         # after parser/data-quality improvements instead of aging out permanently.
         run: python main.py 14
 
+      - name: Sanitize impossible lifecycle dates
+        working-directory: src
+        run: python lifecycle_date_sanitizer.py ../docs/data/filings.json
+
       - name: Enforce public-feed eligibility policy
         working-directory: src
         run: python public_feed_policy.py ../docs/data/filings.json
