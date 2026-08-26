@@ -15,7 +15,7 @@ from prospect_research import prospect_person_metadata
 SCHEMA_VERSION = 1
 MAX_FILINGS = 250
 PUBLIC_FILING_FIELDS = {
-    "id", "company", "ticker", "cik", "accession_no", "form", "filed",
+    "id", "company", "ticker", "cik", "accession_no", "form", "filed", "filing_date", "pricing_date",
     "priority", "status", "value", "value_label", "people_count", "signals",
     "people", "sec_url", "stage", "price_range", "filing_price",
     "offering_price", "current_price", "price_updated", "location", "location_source",
@@ -34,7 +34,7 @@ PUBLIC_PERSON_FIELDS = {
     "lockup_duration_unit", "lockup_schedule", "lockup_text", "valuation_as_of",
 }
 CSV_FIELDS = (
-    "company", "ticker", "cik", "accession_no", "form", "stage", "filed",
+    "company", "ticker", "cik", "accession_no", "form", "stage", "filed", "filing_date", "pricing_date",
     "priority", "status", "offering_value", "primary_offering_shares", "secondary_offering_shares",
     "offering_size_source", "offering_size_confidence", "filing_price", "offering_price",
     "current_price", "price_updated", "location", "location_source", "lockup_end_date", "holder_name", "shares",
@@ -413,6 +413,8 @@ def build_payload(rows, generated_at=None):
             "accession_no": first.get("_accession_no", ""),
             "form": first.get("_form") or "424B4",
             "filed": first.get("Date of Pricing") or first.get("Date of Filing") or "",
+            "filing_date": first.get("Date of Filing") or None,
+            "pricing_date": first.get("Date of Pricing") or None,
             "stage": "Priced",
             "priority": _priority(group, people),
             "status": "New",
@@ -465,6 +467,8 @@ def _csv_rows(filings):
                 "form": filing.get("form", ""),
                 "stage": filing.get("stage", ""),
                 "filed": filing.get("filed", ""),
+                "filing_date": filing.get("filing_date", ""),
+                "pricing_date": filing.get("pricing_date", ""),
                 "priority": filing.get("priority", ""),
                 "status": filing.get("status", ""),
                 "offering_value": filing.get("value"),

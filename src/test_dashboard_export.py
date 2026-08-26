@@ -52,6 +52,8 @@ class DashboardExportTests(unittest.TestCase):
         self.assertEqual(filing["value_label"], "$600M")
         self.assertEqual(filing["cik"], "0001234567")
         self.assertEqual(filing["filing_price"], "18.00-20.00")
+        self.assertEqual(filing["filing_date"], "2026-08-01")
+        self.assertEqual(filing["pricing_date"], "2026-08-15")
         self.assertEqual(filing["offering_price"], 20.0)
         self.assertEqual(filing["current_price"], 24.5)
         self.assertEqual(filing["price_updated"], "2026-08-17")

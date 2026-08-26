@@ -51,12 +51,13 @@ class DashboardUiTests(unittest.TestCase):
 
     def test_filed_date_uses_friendly_format(self):
         self.assertIn('month:"short",day:"numeric",year:"numeric"', self.html)
-        self.assertIn('dateLabel(filing.filed)', self.html)
+        self.assertIn('dateLabel(filingDateValue(filing))', self.html)
+        self.assertIn('dateLabel(pricingDateValue(filing))', self.html)
         self.assertIn('/^\\d{8}$/.test(raw)', self.html)
 
     def test_main_table_uses_locked_column_order(self):
         expected_labels = (
-            "Company Name", "Ticker", "Form", "Stage", "Filed",
+            "Company Name", "Ticker", "Form", "Stage", "Filed", "Priced",
             "IPO Size / Offering Value", "Filing Price", "Final IPO Price",
             "Current Price",
         )
@@ -73,12 +74,12 @@ class DashboardUiTests(unittest.TestCase):
         self.assertNotIn('...f.signals', self.html)
         self.assertNotIn('filing.signals.length', self.html)
         self.assertNotIn('filing.signals[0]', self.html)
-        self.assertNotIn('data-col="9"', self.html)
+        self.assertNotIn('data-col="10"', self.html)
 
     def test_columns_are_drag_reorderable_and_persistent(self):
-        for index in range(9):
+        for index in range(10):
             self.assertIn(f'draggable="true" data-col="{index}"', self.html)
-        self.assertNotIn('draggable="true" data-col="9"', self.html)
+        self.assertNotIn('draggable="true" data-col="10"', self.html)
         self.assertIn('research-monitor:column-order', self.html)
         self.assertIn("function setupColumnDrag()", self.html)
         self.assertIn("function applyColumnOrder()", self.html)
@@ -119,18 +120,28 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn("Confirmed Stanford-affiliated beneficial owner", self.html)
         self.assertIn("Named people & beneficial owners", self.html)
 
-    def test_monthly_activity_replaces_summary_counters(self):
-        self.assertIn('id="monthCount"', self.html)
+    def test_monthly_activity_tracks_filings_and_pricings(self):
+        self.assertIn('id="filingCount"', self.html)
+        self.assertIn('id="pricingCount"', self.html)
         self.assertIn('id="monthlyChart"', self.html)
         self.assertIn("function renderMonthlyActivity()", self.html)
-        self.assertIn('String(filing.form).toUpperCase()!=="424B4"', self.html)
+        self.assertIn("filingDateValue(filing)", self.html)
+        self.assertIn("pricingDateValue(filing)", self.html)
         self.assertIn('start=new Date(Date.UTC(2026,5,1))', self.html)
         self.assertNotIn('for(let i=11;i>=0;i--)', self.html)
-        self.assertIn('.bar.current{background:var(--cardinal);animation:pulse', self.html)
+        self.assertIn('.bar.filing{background:#9ba8a0}', self.html)
+        self.assertIn('.bar.pricing{background:var(--green)}', self.html)
+        self.assertIn('.bar.current{animation:pulse', self.html)
         self.assertIn('@media(prefers-reduced-motion:reduce)', self.html)
-        self.assertNotIn('id="newCount"', self.html)
-        self.assertNotIn('id="peopleCount"', self.html)
-        self.assertNotIn('id="offeringTotal"', self.html)
+
+    def test_recent_activity_surfaces_lifecycle_events(self):
+        self.assertIn('id="recentActivityList"', self.html)
+        self.assertIn("Recent Activity", self.html)
+        self.assertIn("function renderRecentActivity()", self.html)
+        self.assertIn('kind:"Filed"', self.html)
+        self.assertIn('kind:"Priced"', self.html)
+        self.assertIn('data-col="5">Priced</th>', self.html)
+        self.assertIn('Newest activity', self.html)
 
     def test_has_no_fabricated_fallback_or_dead_navigation(self):
         self.assertNotIn("demoFilings", self.html)
@@ -146,8 +157,8 @@ class DashboardUiTests(unittest.TestCase):
             self.assertIn(f'id="{value}"', self.html)
         for value in ("personStanford", "personStanfordConfidence", "personStanfordNote"):
             self.assertIn(f'id="{value}"', self.html)
-        self.assertIn("function ipoSizeBucket(value)", self.html)
-        self.assertIn('"$500M+"', self.html)
+        self.assertNotIn("function ipoSizeBucket(value)", self.html)
+        self.assertNotIn("size-pill", self.html)
         self.assertNotIn("stanford-s", self.html)
         self.assertIn("showPerson(person,filing)", self.html)
 
