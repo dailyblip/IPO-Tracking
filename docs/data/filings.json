@@ -1,8 +1,37 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T16:17:46.354404+00:00",
+  "generated_at": "2026-08-26T17:18:23.834141+00:00",
   "source": "SEC EDGAR",
   "filings": [
+    {
+      "id": "s1:0002132582",
+      "company": "Lyntris Inc.",
+      "ticker": "LYNX",
+      "cik": "0002132582",
+      "accession_no": "0001193125-26-346328",
+      "form": "S-1/A",
+      "filed": "2026-08-12",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": "$20.50",
+      "ipo_size": 492000000,
+      "offering_size_source": "primary offering; explicit issuer + selling-holder cover blocks; prospectus cover title",
+      "offering_size_confidence": "High",
+      "primary_offering_shares": 4878049,
+      "secondary_offering_shares": 19121951,
+      "priority": "High",
+      "status": "New",
+      "value": 492000000,
+      "value_label": "$492,000,000",
+      "people_count": 0,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "Fixed offering price disclosed at $20.50 per share",
+        "IPO size disclosed or derived at approximately $492,000,000"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526346328/0001193125-26-346328-index.htm"
+    },
     {
       "id": "0001193125-26-340329",
       "company": "Latigo Biotherapeutics, Inc.",
