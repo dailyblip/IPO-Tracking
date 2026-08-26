@@ -187,6 +187,15 @@ class DashboardUiTests(unittest.TestCase):
             "Historical feed must retain at least one confirmed Stanford beneficial-owner holding.",
         )
 
+    def test_published_feed_rows_have_release_grade_ipo_size_provenance(self):
+        for filing in self.feed.get("filings", []):
+            with self.subTest(company=filing.get("company")):
+                self.assertIn(filing.get("form"), {"S-1", "S-1/A", "424B4"})
+                self.assertIsInstance(filing.get("value"), (int, float))
+                self.assertGreaterEqual(filing["value"], 100_000_000)
+                self.assertEqual(filing.get("offering_size_confidence"), "High")
+                self.assertTrue(str(filing.get("offering_size_source") or "").strip())
+
     def test_sample_feed_matches_public_schema(self):
         self.assertEqual(self.feed["schema_version"], 1)
         self.assertIsInstance(self.feed["filings"], list)
