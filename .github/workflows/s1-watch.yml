@@ -90,14 +90,13 @@ jobs:
             exit 0
           fi
 
-          git fetch origin main
-          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
-            echo "main advanced during this run; skipping stale S-1 feed publication."
-            exit 0
-          fi
-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv
           git commit -m "Update S-1 pre-pricing watch data"
+
+          # Preserve a successful discovery even if another automation advanced main
+          # while this run was executing. Rebase onto the latest main and publish;
+          # any real data conflict now fails visibly instead of being discarded as success.
+          git pull --rebase origin main
           git push origin HEAD:main
