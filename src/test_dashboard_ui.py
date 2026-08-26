@@ -57,24 +57,23 @@ class DashboardUiTests(unittest.TestCase):
 
     def test_main_table_uses_locked_column_order(self):
         expected_labels = (
-            "Company Name", "Ticker", "Form", "Stage", "Filed", "Priced",
+            "Company Name", "Ticker", "Form", "Stage", "Filed",
             "IPO Size / Offering Value", "Filing Price", "Final IPO Price",
-            "Current Price",
+            "Current Price", "Public Signals",
         )
         positions = [self.html.index(f'>{label}</th>') for label in expected_labels]
         self.assertEqual(positions, sorted(positions))
-        self.assertNotIn("Public Signals</th>", self.html)
+        self.assertNotIn(">Priced</th>", self.html)
         self.assertNotIn("<th>Priority</th>", self.html)
         self.assertNotIn("<th>Status</th>", self.html)
         self.assertIn("money(filing.ipo_size||filing.value)", self.html)
         self.assertIn('filing.ticker||"—"', self.html)
+        self.assertIn('data-col="9">Public Signals</th>', self.html)
 
-    def test_public_signals_must_not_surface_in_main_queue(self):
-        self.assertNotIn('or signal', self.html)
-        self.assertNotIn('...f.signals', self.html)
-        self.assertNotIn('filing.signals.length', self.html)
-        self.assertNotIn('filing.signals[0]', self.html)
-        self.assertNotIn('data-col="10"', self.html)
+    def test_public_signals_surface_in_main_queue_without_html_injection(self):
+        self.assertIn('filing.signals.length?filing.signals.join(" · "):"—"', self.html)
+        self.assertIn('data-col="9">Public Signals</th>', self.html)
+        self.assertNotIn(".innerHTML", self.html)
 
     def test_columns_are_drag_reorderable_and_persistent(self):
         for index in range(10):
@@ -140,7 +139,7 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn("function renderRecentActivity()", self.html)
         self.assertIn('kind:"Filed"', self.html)
         self.assertIn('kind:"Priced"', self.html)
-        self.assertIn('data-col="5">Priced</th>', self.html)
+        self.assertNotIn(">Priced</th>", self.html)
         self.assertIn('Newest activity', self.html)
 
     def test_has_no_fabricated_fallback_or_dead_navigation(self):
