@@ -70,6 +70,13 @@ jobs:
               if value is None or value < MINIMUM_IPO_VALUE:
                   failures.append(f'{label}: offering value is not authoritatively established at >= $100M')
 
+              size_source = str(filing.get('offering_size_source') or '').strip()
+              size_confidence = str(filing.get('offering_size_confidence') or '').strip()
+              if not size_source:
+                  failures.append(f'{label}: qualifying offering value lacks source provenance')
+              if not size_confidence:
+                  failures.append(f'{label}: qualifying offering value lacks confidence metadata')
+
               normalized = _normalize_market_value_consistency(_normalize_people_types(filing))
               if normalized != filing:
                   normalization_drift.append(label)
