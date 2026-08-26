@@ -14,6 +14,8 @@ on:
       - 'src/test_s1_monitor.py'
       - 'src/public_feed_policy.py'
       - 'src/test_public_feed_policy.py'
+      - 'src/company_name_normalizer.py'
+      - 'src/test_company_name_normalizer.py'
       - '.github/workflows/s1-watch.yml'
   push:
     branches:
@@ -23,6 +25,8 @@ on:
       - 'src/test_s1_monitor.py'
       - 'src/public_feed_policy.py'
       - 'src/test_public_feed_policy.py'
+      - 'src/company_name_normalizer.py'
+      - 'src/test_company_name_normalizer.py'
       - '.github/workflows/s1-watch.yml'
   schedule:
     # Run shortly after the primary IPO tracker on weekdays.
@@ -46,7 +50,7 @@ jobs:
 
       - name: Run S-1 monitor tests
         working-directory: src
-        run: python -m unittest test_s1_monitor.py test_public_feed_policy.py -v
+        run: python -m unittest test_s1_monitor.py test_public_feed_policy.py test_company_name_normalizer.py -v
 
   update-feed:
     if: github.event_name != 'pull_request'
@@ -79,6 +83,10 @@ jobs:
       - name: Enforce public-feed eligibility policy
         working-directory: src
         run: python public_feed_policy.py ../docs/data/filings.json
+
+      - name: Normalize issuer display names
+        working-directory: src
+        run: python company_name_normalizer.py ../docs/data/filings.json
 
       - name: Publish S-1 watch and researcher queue data
         run: |
