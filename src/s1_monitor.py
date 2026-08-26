@@ -191,6 +191,28 @@ def _extract_ipo_size(filing_text: str, parsed: dict, price_range: dict) -> int 
     return None
 
 
+def _size_provenance(cover: dict, ipo_size) -> tuple[str | None, str | None]:
+    """Preserve authoritative offering-size evidence for downstream release gates.
+
+    The parser already classifies the share-count evidence. Keep that provenance
+    attached to the S-1 record instead of dropping it at the queue handoff. When
+    the parser has an explicit primary-share count, add a canonical primary-offering
+    marker so fixed-price IPOs with both issuer and selling-holder shares remain
+    distinguishable from resale-only registrations without weakening the gate.
+    """
+    if not ipo_size:
+        return None, None
+    source = str(cover.get("offering_size_source") or "").strip()
+    confidence = str(cover.get("offering_size_confidence") or "").strip()
+    try:
+        primary_shares = int(cover.get("primary_offering_shares") or 0)
+    except (TypeError, ValueError):
+        primary_shares = 0
+    if primary_shares > 0 and source and "primary offering" not in source.casefold():
+        source = f"primary offering; {source}"
+    return source or None, confidence or None
+
+
 def enrich_record(meta: dict) -> dict | None:
     """Validate an S-1 candidate and capture lightweight IPO-stage signals."""
     cik = meta.get("cik")
@@ -220,6 +242,7 @@ def enrich_record(meta: dict) -> dict | None:
         cover = parsed.get("cover_page", {}) if isinstance(parsed, dict) else {}
         fixed_price_label = _format_fixed_price(cover.get("offering_price"))
         ipo_size = _extract_ipo_size(filing_text, parsed, price_range)
+        offering_size_source, offering_size_confidence = _size_provenance(cover, ipo_size)
         if _is_micro_self_underwritten_offering(filing_text, parsed, ipo_size):
             print(f"[s1_monitor] Skipping {company}: micro self-underwritten/best-efforts registration without exchange listing")
             return None
@@ -258,6 +281,10 @@ def enrich_record(meta: dict) -> dict | None:
             "price_range": range_label,
             "filing_price": fixed_price_label,
             "ipo_size": ipo_size,
+            "offering_size_source": offering_size_source,
+            "offering_size_confidence": offering_size_confidence,
+            "primary_offering_shares": cover.get("primary_offering_shares"),
+            "secondary_offering_shares": cover.get("secondary_offering_shares"),
             "signals": signals,
             "sec_url": index_url,
         }
@@ -321,6 +348,10 @@ def _queue_record(record: dict) -> dict:
         "price_range": record.get("price_range"),
         "filing_price": record.get("filing_price"),
         "ipo_size": ipo_size,
+        "offering_size_source": record.get("offering_size_source"),
+        "offering_size_confidence": record.get("offering_size_confidence"),
+        "primary_offering_shares": record.get("primary_offering_shares"),
+        "secondary_offering_shares": record.get("secondary_offering_shares"),
         "priority": record.get("priority") or "Medium",
         "status": "New",
         "value": ipo_size,
