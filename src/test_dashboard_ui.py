@@ -133,6 +133,18 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn('.bar.current{animation:pulse', self.html)
         self.assertIn('@media(prefers-reduced-motion:reduce)', self.html)
 
+    def test_monthly_activity_advances_through_current_month(self):
+        self.assertIn(
+            'current=new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),1))',
+            self.html,
+        )
+        self.assertIn(
+            'for(let d=new Date(start);d<=current;d=new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,1)))',
+            self.html,
+        )
+        self.assertIn('index===months.length-1?" current":""', self.html)
+        self.assertIn('const active=months[months.length-1]', self.html)
+
     def test_recent_activity_surfaces_lifecycle_events(self):
         self.assertIn('id="recentActivityList"', self.html)
         self.assertIn("Recent Activity", self.html)
