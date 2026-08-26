@@ -1,8 +1,22 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-26T16:33:23.410085+00:00",
-  "count": 40,
+  "generated_at": "2026-08-26T17:21:54.484981+00:00",
+  "count": 41,
   "alerts": [
+    {
+      "type": "new_prepricing",
+      "company": "Lyntris Inc.",
+      "cik": "0002132582",
+      "filing_id": "s1:0002132582",
+      "form": "S-1/A",
+      "filed": "2026-08-12",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "New pre-pricing S-1/A candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526346328/0001193125-26-346328-index.htm",
+      "detected_at": "2026-08-26T17:21:54.484886+00:00",
+      "key": "new_prepricing|s1:0002132582|0002132582|2026-08-12|"
+    },
     {
       "type": "priority_escalation",
       "company": "Latigo Biotherapeutics, Inc.",
