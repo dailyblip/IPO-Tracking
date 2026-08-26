@@ -22,6 +22,27 @@ class PublishedResearchMonitorDataIntegrityTests(unittest.TestCase):
         payload = json.loads(DATA_PATH.read_text(encoding="utf-8"))
         cls.filings = payload.get("filings", []) if isinstance(payload, dict) else payload
 
+    def test_every_published_offering_value_has_source_and_confidence(self):
+        """Every qualifying public IPO value must retain explicit provenance metadata."""
+        failures = []
+        for filing in self.filings:
+            label = filing.get("company") or filing.get("id") or "unknown filing"
+            value = _number(filing.get("value"))
+            source = str(filing.get("offering_size_source") or "").strip()
+            confidence = str(filing.get("offering_size_confidence") or "").strip()
+            if value is None:
+                failures.append(f"{label}: published offering value is missing or invalid")
+            if not source:
+                failures.append(f"{label}: published offering value lacks source provenance")
+            if not confidence:
+                failures.append(f"{label}: published offering value lacks confidence metadata")
+
+        self.assertEqual(
+            failures,
+            [],
+            "Published IPO-size provenance failures: " + "; ".join(failures[:10]),
+        )
+
     def test_exact_offering_components_reconcile_with_published_value(self):
         """Reject published offering values that contradict exact base-offering math.
 
