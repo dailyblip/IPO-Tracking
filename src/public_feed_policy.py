@@ -9,6 +9,7 @@ from pathlib import Path
 
 from dashboard_export import write_dashboard_csv
 from edgar_client import INVESTMENT_PRODUCT_NAME_PATTERN, SPAC_NAME_PATTERN
+from ownership_parser import looks_like_document_heading
 from prepricing_quote_sanitizer import sanitize_payload as sanitize_prepricing_quotes
 from prospect_research import holder_type, valid_ownership_percent, valid_share_count
 
@@ -201,6 +202,54 @@ def _has_consistent_priced_offering_value(filing):
     derived_value = base_shares * final_price
     tolerance = max(1.0, derived_value * 0.001)
     return abs(published_value - derived_value) <= tolerance
+
+
+def _remove_document_heading_people(filing):
+    """Remove stale prospectus section labels from retained owner lists.
+
+    Parser fixes only protect rows that are rebuilt. Rolling-window refreshes can
+    preserve older public records, so apply the same conservative heading detector
+    at the canonical release gate. Only explicit document headings are removed;
+    uppercase fund/corporate owner names remain eligible. Keep the deterministic
+    owner-count metadata and signal synchronized with the filtered list.
+    """
+    normalized = dict(filing)
+    people = filing.get("people")
+    if not isinstance(people, list):
+        return normalized
+
+    filtered = []
+    removed = 0
+    for person in people:
+        if isinstance(person, dict) and looks_like_document_heading(person.get("name")):
+            removed += 1
+            continue
+        filtered.append(person)
+
+    if not removed:
+        return normalized
+
+    normalized["people"] = filtered
+    normalized["people_count"] = len(filtered)
+
+    signals = filing.get("signals")
+    if isinstance(signals, list):
+        count_suffix = " named beneficial owners disclosed"
+        normalized_signals = []
+        count_replaced = False
+        for signal in signals:
+            if isinstance(signal, str) and signal.strip().endswith(count_suffix):
+                if filtered and not count_replaced:
+                    normalized_signals.append(f"{len(filtered)}{count_suffix}")
+                    count_replaced = True
+                continue
+            if not filtered and isinstance(signal, str) and signal.startswith(
+                "Largest named holding currently valued at approximately "
+            ):
+                continue
+            normalized_signals.append(signal)
+        normalized["signals"] = normalized_signals
+    return normalized
 
 
 def _normalize_people_types(filing):
@@ -410,6 +459,7 @@ def enforce_public_feed_policy(output_path):
         normalized = _sanitize_impossible_lifecycle_date(filing)
         if not _has_valid_filing_date(normalized) or not qualifies_for_public_feed(normalized):
             continue
+        normalized = _remove_document_heading_people(normalized)
         normalized = _normalize_people_types(normalized)
         normalized = _normalize_person_ownership_metrics(normalized)
         normalized = _scrub_stanford_operational_errors(normalized)
