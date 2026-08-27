@@ -14,6 +14,30 @@ OWNERSHIP_WORDS = (
     "name of beneficial owner", "principal stockholder", "principal shareholder",
 )
 
+# Common prospectus section labels that can appear inside or adjacent to ownership
+# tables. These are document structure, never beneficial-owner identities. Keep
+# this list deliberately explicit rather than rejecting all-uppercase names,
+# because legitimate fund and corporate owner names may be uppercase in SEC HTML.
+_DOCUMENT_SECTION_HEADINGS = {
+    "description of capital stock",
+    "shares eligible for future sale",
+    "material u.s. federal income tax considerations",
+    "material us federal income tax considerations",
+    "legal matters",
+    "risk factors",
+    "use of proceeds",
+    "dividend policy",
+    "capitalization",
+    "dilution",
+    "executive compensation",
+    "principal stockholders",
+    "principal shareholders",
+    "certain relationships and related party transactions",
+    "certain relationships and related transactions",
+    "experts",
+    "where you can find more information",
+}
+
 
 def _clean(text):
     value = " ".join(str(text or "").replace("\xa0", " ").split())
@@ -30,6 +54,20 @@ def canonical_holder_name(value):
     value = re.sub(r"[†‡*]+$", "", value).strip()
     value = re.sub(r"\s*\.{2,}\s*", " ", value)
     return " ".join(value.lower().split())
+
+
+def looks_like_document_heading(value):
+    """Return True only for strong prospectus-section labels, not uppercase generally."""
+    normalized = canonical_holder_name(value)
+    if not normalized:
+        return False
+    if normalized in _DOCUMENT_SECTION_HEADINGS:
+        return True
+    # SEC prospectuses frequently append a parenthetical to the Underwriting
+    # heading (for example, "UNDERWRITING (CONFLICTS OF INTEREST)"). Avoid a
+    # generic startswith check so an actual owner such as "Underwriting Capital
+    # Partners LLC" remains eligible.
+    return normalized == "underwriting" or normalized.startswith("underwriting (")
 
 
 def _expand_row(row):
@@ -125,6 +163,8 @@ def _name_from_row(row):
         if any(ch.isalpha() for ch in text) and not re.search(
             r"beneficial|before|after|offering|percent|percentage|number of|shares owned", text, re.I
         ):
+            if looks_like_document_heading(text):
+                return None
             return text
         if _numeric(text) is not None or _percent(text) is not None:
             break
@@ -187,6 +227,8 @@ def extract_rich_stockholders(soup):
         if not _looks_like_ownership(table):
             continue
         for holder in parse_ownership_table(table):
+            if looks_like_document_heading(holder.get("name")):
+                continue
             key = canonical_holder_name(holder["name"])
             if key not in merged:
                 merged[key] = holder
