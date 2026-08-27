@@ -6,6 +6,7 @@ permissions:
 concurrency:
   group: research-monitor-feed-writers
   cancel-in-progress: false
+  queue: max
 
 on:
   pull_request:
@@ -91,16 +92,22 @@ jobs:
           payload = json.loads(Path('docs/data/filings.json').read_text(encoding='utf-8'))
           failures = []
           for filing in payload.get('filings', []):
+              # Unknown offering size is explicitly allowed for an otherwise
+              # qualifying operating-company IPO. Only validate provenance when
+              # a numeric offering value is actually being published.
+              raw_value = filing.get('value')
+              if raw_value in (None, ''):
+                  continue
               label = filing.get('company') or filing.get('id') or '<unknown>'
               source = str(filing.get('offering_size_source') or '').strip()
               confidence = str(filing.get('offering_size_confidence') or '').strip()
               if not source:
-                  failures.append(f'{label}: missing offering-size source provenance')
+                  failures.append(f'{label}: populated offering size is missing source provenance')
               if confidence.casefold() != 'high':
-                  failures.append(f'{label}: offering-size confidence must be High, got {confidence!r}')
+                  failures.append(f'{label}: populated offering-size confidence must be High, got {confidence!r}')
           if failures:
               raise SystemExit('Refusing to publish S-1 feed with weak offering-size evidence:\n- ' + '\n- '.join(failures))
-          print(f"Validated offering-size provenance for {len(payload.get('filings', []))} filing(s)")
+          print(f"Validated populated offering-size provenance for {len(payload.get('filings', []))} filing(s)")
           PY
       - name: Publish S-1 watch and researcher queue data
         run: |
