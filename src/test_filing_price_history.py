@@ -90,17 +90,62 @@ class FilingPriceHistoryTests(unittest.TestCase):
                 registration_loader=lambda cik, metadata: (_ for _ in ()).throw(RuntimeError("SEC parse failed")),
             )
 
-    def test_existing_preliminary_price_skips_history_lookup(self):
+    def test_existing_preliminary_price_with_sec_source_skips_history_lookup(self):
         def should_not_run(*args, **kwargs):
-            raise AssertionError("history lookup should not run for populated filing price")
+            raise AssertionError("history lookup should not run for sourced filing price")
 
         payload, recovered, checked = filing_price_history.recover_payload_filing_prices(
-            {"filings": [self.priced_row(filing_price="15-17")]},
+            {"filings": [self.priced_row(
+                filing_price="15-17",
+                filing_price_source={
+                    "source": "SEC EDGAR",
+                    "form": "S-1/A",
+                    "filing_date": "2026-08-18",
+                    "accession_no": "amend",
+                    "sec_url": "https://www.sec.gov/amend",
+                },
+            )]},
             history_loader=should_not_run,
             registration_loader=should_not_run,
         )
         self.assertEqual(payload["filings"][0]["filing_price"], "15-17")
         self.assertEqual((recovered, checked), (0, 0))
+
+    def test_existing_preliminary_price_without_source_recovers_provenance(self):
+        history = [
+            {"form_type": "S-1/A", "accession_no": "amend", "filing_date": "2026-08-18"},
+            {"form_type": "S-1", "accession_no": "initial", "filing_date": "2026-08-01"},
+        ]
+
+        payload, recovered, checked = filing_price_history.recover_payload_filing_prices(
+            {"filings": [self.priced_row(filing_price="15-17")]},
+            history_loader=lambda cik, pricing_date: history,
+            registration_loader=lambda cik, metadata: (
+                {"price_range": {"range_low": 15, "range_high": 17}},
+                f"https://www.sec.gov/{metadata['accession_no']}",
+            ),
+        )
+
+        filing = payload["filings"][0]
+        self.assertEqual(filing["filing_price"], "15-17")
+        self.assertEqual(filing["filing_price_source"]["source"], "SEC EDGAR")
+        self.assertEqual(filing["filing_price_source"]["accession_no"], "amend")
+        self.assertEqual((recovered, checked), (1, 1))
+
+    def test_unprovenanced_existing_price_without_disclosed_range_fails_closed(self):
+        history = [
+            {"form_type": "S-1/A", "accession_no": "amend", "filing_date": "2026-08-18"},
+        ]
+
+        with self.assertRaises(filing_price_history.FilingPriceHistoryError):
+            filing_price_history.recover_payload_filing_prices(
+                {"filings": [self.priced_row(filing_price="15-17")]},
+                history_loader=lambda cik, pricing_date: history,
+                registration_loader=lambda cik, metadata: (
+                    {"price_range": {"range_low": None, "range_high": None}},
+                    "https://www.sec.gov/amend",
+                ),
+            )
 
     def test_prepricing_row_is_not_subject_to_final_history_gate(self):
         row = self.priced_row(
