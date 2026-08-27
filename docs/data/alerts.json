@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-27T19:05:24.535581+00:00",
-  "count": 33,
+  "generated_at": "2026-08-27T21:20:52.657853+00:00",
+  "count": 32,
   "alerts": [
     {
       "type": "new_prepricing",
@@ -31,20 +31,6 @@
       "detected_at": "2026-08-27T19:05:08.658124+00:00",
       "new_value": "$4.00–$6.00",
       "key": "new_prepricing|s1:0002065821|0002065821|2026-08-21|$4.00–$6.00"
-    },
-    {
-      "type": "new_prepricing",
-      "company": "Game Your Game Inc.",
-      "cik": "0002111846",
-      "filing_id": "s1:0002111846",
-      "form": "S-1",
-      "filed": "2026-08-21",
-      "stage": "pre-pricing",
-      "priority": "Medium",
-      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026092695/0001213900-26-092695-index.htm",
-      "detected_at": "2026-08-27T19:05:08.658136+00:00",
-      "key": "new_prepricing|s1:0002111846|0002111846|2026-08-21|"
     },
     {
       "type": "new_prepricing",
