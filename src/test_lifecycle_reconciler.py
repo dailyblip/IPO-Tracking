@@ -170,7 +170,7 @@ class LifecycleReconcilerTests(unittest.TestCase):
         self.assertEqual(result["offering_size_source"], "final 424B4 THE OFFERING primary + secondary rows")
         self.assertEqual(result["offering_size_confidence"], "High")
 
-    def test_final_424b4_with_unresolved_exact_size_drops_stale_prepricing(self):
+    def test_final_424b4_with_unresolved_exact_size_keeps_priced_ipo_and_drops_stale_prepricing(self):
         unresolved = _soup(
             "symbol: LYNX. The initial public offering price is $17.50 per share. "
             "Final prospectus without an exact base-offering share disclosure in this fixture."
@@ -181,11 +181,20 @@ class LifecycleReconcilerTests(unittest.TestCase):
             lambda _: unresolved,
         )
 
-        self.assertEqual(repaired, 0)
+        self.assertEqual(repaired, 1)
         self.assertEqual(removed, 1)
-        self.assertEqual(payload["filings"], [])
+        self.assertEqual(len(payload["filings"]), 1)
+        result = payload["filings"][0]
+        self.assertEqual(result["form"], "424B4")
+        self.assertEqual(result["stage"], "Priced")
+        self.assertEqual(result["pricing_date"], "2026-08-19")
+        self.assertEqual(result["offering_price"], 17.5)
+        self.assertIsNone(result["value"])
+        self.assertIsNone(result["value_label"])
+        self.assertEqual(result["offering_size_confidence"], "Unresolved")
+        self.assertEqual(result["people"], [])
 
-    def test_unresolved_incomplete_final_is_omitted_instead_of_guessing(self):
+    def test_unresolved_incomplete_final_is_kept_with_blank_size_instead_of_guessing(self):
         unresolved = _soup(
             "symbol: LYNX. The initial public offering price is $17.50 per share. "
             "No exact base-offering share disclosure in this fixture."
@@ -196,11 +205,17 @@ class LifecycleReconcilerTests(unittest.TestCase):
             lambda _: unresolved,
         )
 
-        self.assertEqual(repaired, 0)
-        self.assertEqual(removed, 1)
-        self.assertEqual(payload["filings"], [])
+        self.assertEqual(repaired, 1)
+        self.assertEqual(removed, 0)
+        self.assertEqual(len(payload["filings"]), 1)
+        result = payload["filings"][0]
+        self.assertEqual(result["stage"], "Priced")
+        self.assertEqual(result["offering_price"], 17.5)
+        self.assertIsNone(result["value"])
+        self.assertEqual(result["offering_size_confidence"], "Unresolved")
+        self.assertEqual(result["people"], [{"name": "Final Holder", "shares": 750_000}])
 
-    def test_sub_100m_final_offering_does_not_survive_100m_gate(self):
+    def test_sub_100m_final_offering_is_promoted_and_kept(self):
         small = _soup(
             "symbol: SMALL. The initial public offering price is $10.00 per share. "
             "THE OFFERING Common stock offered by us 5,000,000 shares."
@@ -208,7 +223,15 @@ class LifecycleReconcilerTests(unittest.TestCase):
         record = _stale_record(ticker="SMALL")
         meta = _final_meta(ticker="SMALL")
 
-        self.assertIsNone(_promote_prepricing_record(record, meta, small))
+        promoted = _promote_prepricing_record(record, meta, small)
+
+        self.assertIsNotNone(promoted)
+        self.assertEqual(promoted["form"], "424B4")
+        self.assertEqual(promoted["stage"], "Priced")
+        self.assertEqual(promoted["offering_price"], 10.0)
+        self.assertEqual(promoted["value"], 50_000_000.0)
+        self.assertEqual(promoted["primary_offering_shares"], 5_000_000)
+        self.assertEqual(promoted["offering_size_confidence"], "High")
 
     def test_ticker_mismatch_drops_stale_market_quote(self):
         record = _stale_record(
