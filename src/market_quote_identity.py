@@ -2,20 +2,25 @@
 
 The Research Monitor intentionally treats Current Price as secondary data. SEC
 filings establish the IPO identity; a market-data quote is publishable only when
-Finnhub's free Company Profile 2 endpoint resolves the quoted ticker back to the
-same issuer. This catches ticker reuse/provider collisions without guessing.
+Finnhub's Company Profile 2 endpoint resolves the quoted ticker back to the same
+issuer. Deterministic identity failures are sanitized before publication; transient
+provider failures still block the release so an outage cannot silently erase data.
 """
 
 import argparse
 import json
 import os
 import re
+import time
 from pathlib import Path
 
 import requests
 
 FINNHUB_BASE_URL = "https://finnhub.io/api/v1"
 PROFILE_TIMEOUT_SECONDS = 10
+PROFILE_MAX_RETRIES = 4
+PROFILE_RETRY_BACKOFF_SECONDS = 5
+PROFILE_MIN_INTERVAL_SECONDS = 1.1
 
 _CORPORATE_SUFFIXES = {
     "inc",
@@ -42,10 +47,18 @@ _GENERIC_NAME_TOKENS = {
     "international",
     "global",
 }
+_MARKET_VALUE_SIGNAL_MARKERS = (
+    "currently valued",
+    "current market value",
+)
 
 
 class QuoteIdentityError(RuntimeError):
     """Raised when a populated market quote cannot be tied to the SEC issuer."""
+
+
+class QuoteProviderError(QuoteIdentityError):
+    """Raised when the provider cannot complete an identity lookup reliably."""
 
 
 def _identity_tokens(name):
@@ -107,28 +120,120 @@ def _validate_profile(ticker, company_name, profile):
     return True
 
 
-def _fetch_profile(ticker, api_key):
+def _retry_delay(response, attempt):
+    raw = str((getattr(response, "headers", {}) or {}).get("Retry-After") or "").strip()
     try:
-        response = requests.get(
-            f"{FINNHUB_BASE_URL}/stock/profile2",
-            params={"symbol": ticker, "token": api_key},
-            timeout=PROFILE_TIMEOUT_SECONDS,
-        )
-        response.raise_for_status()
-        profile = response.json()
-    except (requests.RequestException, ValueError) as exc:
-        raise QuoteIdentityError(
-            f"Could not verify market-data identity for {ticker}: {exc}"
-        ) from exc
-    if not isinstance(profile, dict) or not profile:
-        raise QuoteIdentityError(
-            f"Could not verify market-data identity for {ticker}: empty company profile"
-        )
-    return profile
+        delay = float(raw)
+    except (TypeError, ValueError):
+        delay = PROFILE_RETRY_BACKOFF_SECONDS * attempt
+    return max(delay, PROFILE_MIN_INTERVAL_SECONDS)
+
+
+def _fetch_profile(ticker, api_key):
+    """Fetch one provider profile, retrying transient quota/server failures."""
+    last_error = None
+    for attempt in range(1, PROFILE_MAX_RETRIES + 1):
+        try:
+            response = requests.get(
+                f"{FINNHUB_BASE_URL}/stock/profile2",
+                params={"symbol": ticker, "token": api_key},
+                timeout=PROFILE_TIMEOUT_SECONDS,
+            )
+        except requests.RequestException as exc:
+            last_error = exc
+            if attempt < PROFILE_MAX_RETRIES:
+                time.sleep(PROFILE_RETRY_BACKOFF_SECONDS * attempt)
+                continue
+            raise QuoteProviderError(
+                f"Could not verify market-data identity for {ticker}: {exc}"
+            ) from exc
+
+        status = int(getattr(response, "status_code", 0) or 0)
+        if status == 429 or 500 <= status < 600:
+            last_error = RuntimeError(f"HTTP {status}")
+            if attempt < PROFILE_MAX_RETRIES:
+                time.sleep(_retry_delay(response, attempt))
+                continue
+            raise QuoteProviderError(
+                f"Could not verify market-data identity for {ticker}: "
+                f"provider returned HTTP {status} after {PROFILE_MAX_RETRIES} attempts"
+            )
+
+        try:
+            response.raise_for_status()
+            profile = response.json()
+        except requests.RequestException as exc:
+            raise QuoteProviderError(
+                f"Could not verify market-data identity for {ticker}: {exc}"
+            ) from exc
+        except ValueError as exc:
+            raise QuoteProviderError(
+                f"Could not verify market-data identity for {ticker}: invalid JSON response"
+            ) from exc
+
+        if not isinstance(profile, dict):
+            raise QuoteProviderError(
+                f"Could not verify market-data identity for {ticker}: invalid company profile"
+            )
+        # An empty profile is a deterministic provider non-match, not a transport
+        # failure. The release sanitizer will clear that ticker's market-derived
+        # fields rather than blocking unrelated IPOs.
+        return profile
+
+    raise QuoteProviderError(
+        f"Could not verify market-data identity for {ticker}: {last_error}"
+    )
+
+
+def _paced_profile_lookup(api_key):
+    """Keep identity lookups below Finnhub's free-tier request cadence."""
+    last_started = [None]
+
+    def lookup(ticker):
+        now = time.monotonic()
+        if last_started[0] is not None:
+            elapsed = now - last_started[0]
+            if elapsed < PROFILE_MIN_INTERVAL_SECONDS:
+                time.sleep(PROFILE_MIN_INTERVAL_SECONDS - elapsed)
+        last_started[0] = time.monotonic()
+        return _fetch_profile(ticker, api_key)
+
+    return lookup
+
+
+def _strip_quote_derived_fields(filing):
+    """Remove a quote and values that are calculated from that quote."""
+    touched = False
+    for field in ("current_price", "price_updated"):
+        if field in filing:
+            filing.pop(field, None)
+            touched = True
+
+    for person in filing.get("people", []):
+        if not isinstance(person, dict):
+            continue
+        for field in ("cash_value", "liquid_value", "locked_value", "valuation_as_of"):
+            if field in person:
+                person.pop(field, None)
+                touched = True
+
+    signals = filing.get("signals")
+    if isinstance(signals, list):
+        kept = []
+        for signal in signals:
+            text = str(signal or "").casefold()
+            if any(marker in text for marker in _MARKET_VALUE_SIGNAL_MARKERS):
+                touched = True
+                continue
+            kept.append(signal)
+        if len(kept) != len(signals):
+            filing["signals"] = kept
+
+    return touched
 
 
 def audit_payload(payload, lookup_profile):
-    """Validate every published Current Price against the provider issuer profile."""
+    """Strictly validate every published Current Price against provider identity."""
     filings = payload.get("filings", []) if isinstance(payload, dict) else []
     profiles = {}
     audited = 0
@@ -159,7 +264,63 @@ def audit_payload(payload, lookup_profile):
     return audited
 
 
+def sanitize_payload(payload, lookup_profile):
+    """Remove deterministic identity failures while preserving verified quotes.
+
+    Provider transport/quota failures are not deterministic and still raise, so a
+    temporary Finnhub outage cannot erase otherwise-valid market data.
+    """
+    filings = payload.get("filings", []) if isinstance(payload, dict) else []
+    profiles = {}
+    audited = 0
+    sanitized = []
+
+    for filing in filings:
+        if not isinstance(filing, dict) or filing.get("current_price") in (None, ""):
+            continue
+
+        company = str(filing.get("company") or "").strip()
+        ticker = str(filing.get("ticker") or "").strip().upper()
+        form = str(filing.get("form") or "").strip().upper()
+        stage = str(filing.get("stage") or "").strip().casefold()
+
+        # A quote surviving on a pre-pricing record means the earlier canonical
+        # sanitizer failed. Treat that as a release-blocking pipeline defect.
+        if form != "424B4" or stage != "priced":
+            raise QuoteIdentityError(
+                f"{company or 'Unknown issuer'} ({ticker or 'no ticker'}): Current Price "
+                "is populated before a final 424B4/Priced lifecycle state"
+            )
+
+        if not company or not ticker:
+            _strip_quote_derived_fields(filing)
+            sanitized.append(
+                (
+                    company or "Unknown issuer",
+                    ticker or "no ticker",
+                    "missing issuer/ticker provenance",
+                )
+            )
+            continue
+
+        if ticker not in profiles:
+            profiles[ticker] = lookup_profile(ticker)
+        profile = profiles[ticker]
+
+        try:
+            _validate_profile(ticker, company, profile)
+        except QuoteIdentityError as exc:
+            _strip_quote_derived_fields(filing)
+            sanitized.append((company, ticker, str(exc)))
+            continue
+
+        audited += 1
+
+    return payload, audited, sanitized
+
+
 def audit_feed(path, api_key=None):
+    """Strict feed audit retained for tests/manual validation."""
     path = Path(path)
     payload = json.loads(path.read_text(encoding="utf-8"))
     quoted = [
@@ -177,22 +338,73 @@ def audit_feed(path, api_key=None):
             "MARKET_DATA_API_KEY is required to verify populated Current Price values"
         )
 
-    audited = audit_payload(
-        payload,
-        lookup_profile=lambda ticker: _fetch_profile(ticker, api_key),
-    )
+    audited = audit_payload(payload, lookup_profile=_paced_profile_lookup(api_key))
     print(f"Market quote identity audit passed for {audited} quoted IPOs")
     return audited
 
 
+def sanitize_feed(path, api_key=None):
+    """Release gate: verify quotes and clear deterministic issuer/profile misses."""
+    path = Path(path)
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    quoted = [
+        filing
+        for filing in payload.get("filings", [])
+        if isinstance(filing, dict) and filing.get("current_price") not in (None, "")
+    ]
+    if not quoted:
+        print("Market quote identity audit: no populated Current Price values to verify")
+        return 0, 0
+
+    api_key = api_key or os.environ.get("MARKET_DATA_API_KEY")
+    if not api_key:
+        raise QuoteProviderError(
+            "MARKET_DATA_API_KEY is required to verify populated Current Price values"
+        )
+
+    payload, audited, sanitized = sanitize_payload(
+        payload,
+        lookup_profile=_paced_profile_lookup(api_key),
+    )
+
+    if sanitized:
+        temp = path.with_suffix(path.suffix + ".tmp")
+        temp.write_text(
+            json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        temp.replace(path)
+        try:
+            from dashboard_export import write_dashboard_csv
+
+            write_dashboard_csv(payload.get("filings", []), path)
+        except ImportError:
+            pass
+
+        for company, ticker, reason in sanitized:
+            print(
+                f"Market quote identity sanitizer: cleared Current Price for "
+                f"{company} ({ticker}): {reason}"
+            )
+
+    print(
+        f"Market quote identity gate: {audited} verified; "
+        f"{len(sanitized)} sanitized"
+    )
+    return audited, len(sanitized)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(
-        description="Verify that every published market quote resolves to the SEC IPO issuer."
+        description=(
+            "Verify market-quote issuer identity and clear deterministic "
+            "ticker/provider mismatches before release."
+        )
     )
     parser.add_argument("feed", help="Path to docs/data/filings.json")
     args = parser.parse_args(argv)
     try:
-        audit_feed(args.feed)
+        sanitize_feed(args.feed)
     except (OSError, json.JSONDecodeError, QuoteIdentityError) as exc:
         raise SystemExit(str(exc)) from exc
 
