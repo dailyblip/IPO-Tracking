@@ -16,6 +16,7 @@ on:
       - 'src/lifecycle_date_sanitizer.py'
       - 'src/followon_sanitizer.py'
       - 'src/prepricing_quote_sanitizer.py'
+      - 'src/market_quote_identity.py'
       - 'src/test_stanford_grader.py'
       - 'src/test_stanford_management_scope.py'
       - 'src/test_stanford_sec_backfill.py'
@@ -24,6 +25,7 @@ on:
       - 'src/test_lifecycle_date_sanitizer.py'
       - 'src/test_followon_sanitizer.py'
       - 'src/test_prepricing_quote_sanitizer.py'
+      - 'src/test_market_quote_identity.py'
       - 'src/test_dashboard_ui.py'
       - 'src/company_name_normalizer.py'
       - 'src/public_feed_policy.py'
@@ -116,6 +118,11 @@ jobs:
       - name: Remove market quotes from pre-pricing records
         working-directory: src
         run: python prepricing_quote_sanitizer.py ../docs/data/filings.json
+      - name: Verify market quote issuer identity
+        working-directory: src
+        env:
+          MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
+        run: python market_quote_identity.py ../docs/data/filings.json
       - name: Validate public feed
         run: |
           python - <<'PY'
