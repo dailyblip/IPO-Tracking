@@ -1,11 +1,15 @@
 import unittest
 from pathlib import Path
+from unittest.mock import Mock, patch
 
 from market_quote_identity import (
     QuoteIdentityError,
+    QuoteProviderError,
     _company_names_match,
+    _fetch_profile,
     _validate_profile,
     audit_payload,
+    sanitize_payload,
 )
 
 
@@ -77,6 +81,119 @@ class MarketQuoteIdentityTests(unittest.TestCase):
 
         self.assertEqual(audit_payload(payload, lookup_profile=lookup), 2)
         self.assertEqual(calls, ["LYNX"])
+
+    def test_release_sanitizer_clears_collided_quote_and_derived_market_values(self):
+        payload = {
+            "filings": [
+                {
+                    "company": "Lyntris Inc.",
+                    "ticker": "LYNX",
+                    "form": "424B4",
+                    "stage": "Priced",
+                    "offering_price": 17.5,
+                    "current_price": 13.87,
+                    "price_updated": "2026-08-27T19:01:25+00:00",
+                    "signals": [
+                        "Offering priced at $17.50 per share",
+                        "Largest named holding currently valued at approximately $341M",
+                    ],
+                    "people": [
+                        {
+                            "name": "Example Holder",
+                            "cash_value": 341000000,
+                            "valuation_as_of": "2026-08-27",
+                            "locked_value": 100000000,
+                            "liquid_value": 241000000,
+                            "shares_after_ipo": 1000,
+                        }
+                    ],
+                }
+            ]
+        }
+
+        payload, audited, sanitized = sanitize_payload(
+            payload,
+            lookup_profile=lambda ticker: {
+                "ticker": "LYNX",
+                "name": "Legacy Mining Holdings Inc.",
+            },
+        )
+
+        filing = payload["filings"][0]
+        person = filing["people"][0]
+        self.assertEqual(audited, 0)
+        self.assertEqual(len(sanitized), 1)
+        self.assertNotIn("current_price", filing)
+        self.assertNotIn("price_updated", filing)
+        self.assertEqual(filing["offering_price"], 17.5)
+        self.assertEqual(filing["signals"], ["Offering priced at $17.50 per share"])
+        for field in ("cash_value", "valuation_as_of", "locked_value", "liquid_value"):
+            self.assertNotIn(field, person)
+        self.assertEqual(person["shares_after_ipo"], 1000)
+
+    def test_release_sanitizer_clears_quote_when_provider_has_no_profile(self):
+        payload = {
+            "filings": [
+                {
+                    "company": "Newly Listed Inc.",
+                    "ticker": "NEWI",
+                    "form": "424B4",
+                    "stage": "Priced",
+                    "current_price": 10.25,
+                    "price_updated": "2026-08-27T19:01:25+00:00",
+                }
+            ]
+        }
+
+        payload, audited, sanitized = sanitize_payload(
+            payload,
+            lookup_profile=lambda ticker: {},
+        )
+
+        self.assertEqual(audited, 0)
+        self.assertEqual(len(sanitized), 1)
+        self.assertNotIn("current_price", payload["filings"][0])
+
+    def test_release_sanitizer_does_not_mask_provider_transport_failure(self):
+        payload = {
+            "filings": [
+                {
+                    "company": "Lyntris Inc.",
+                    "ticker": "LYNX",
+                    "form": "424B4",
+                    "stage": "Priced",
+                    "current_price": 13.87,
+                }
+            ]
+        }
+
+        def lookup(_ticker):
+            raise QuoteProviderError("HTTP 429 after retries")
+
+        with self.assertRaisesRegex(QuoteProviderError, "HTTP 429"):
+            sanitize_payload(payload, lookup_profile=lookup)
+        self.assertEqual(payload["filings"][0]["current_price"], 13.87)
+
+    def test_profile_fetch_retries_rate_limit_then_succeeds(self):
+        limited = Mock()
+        limited.status_code = 429
+        limited.headers = {"Retry-After": "2"}
+
+        success = Mock()
+        success.status_code = 200
+        success.headers = {}
+        success.raise_for_status.return_value = None
+        success.json.return_value = {"ticker": "LYNX", "name": "Lyntris Inc"}
+
+        with patch(
+            "market_quote_identity.requests.get",
+            side_effect=[limited, success],
+        ) as get_mock, patch("market_quote_identity.time.sleep") as sleep_mock:
+            profile = _fetch_profile("LYNX", "test-key")
+
+        self.assertEqual(profile["ticker"], "LYNX")
+        self.assertEqual(get_mock.call_count, 2)
+        sleep_mock.assert_called_once_with(2.0)
 
     def test_release_workflows_verify_quote_identity_before_publication(self):
         daily = (REPO_ROOT / ".github" / "workflows" / "daily.yml").read_text(encoding="utf-8")
