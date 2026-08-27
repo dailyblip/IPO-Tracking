@@ -11,6 +11,7 @@ from dashboard_export import write_dashboard_csv
 from edgar_client import INVESTMENT_PRODUCT_NAME_PATTERN, SPAC_NAME_PATTERN
 from prospect_research import holder_type
 
+# Retained as a reusable UI/filter threshold; it is no longer a publication gate.
 MINIMUM_IPO_VALUE = 100_000_000.0
 SUPPORTED_IPO_FORMS = {"S-1", "S-1/A", "424B4"}
 _STANFORD_OPERATIONAL_ERROR_MARKERS = (
@@ -88,26 +89,20 @@ def _has_excluded_issuer_name(filing):
 
 
 def _has_safe_s1_size_provenance(filing):
-    """Reject S-1 sizes that can be resale/reference-price arithmetic in disguise.
+    """Reject unsafe S-1 size arithmetic without making size a publication gate.
 
-    A preliminary range is inherently offering-specific. For fixed-price S-1 rows,
-    require explicit issuer-offering provenance before the release gate will trust
-    the numeric value. Selling-stockholder/resale language always wins over generic
-    cover-page wording. This deliberately fails closed: a real IPO may be
-    temporarily omitted, but a resale registration must never be promoted as a
-    qualifying IPO.
+    A preliminary range is inherently offering-specific. For fixed-price S-1 rows
+    with a populated offering value, require explicit issuer-offering provenance
+    before trusting that numeric value. Selling-stockholder/resale language always
+    wins over generic cover-page wording. If no numeric size is known, do not reject
+    an otherwise qualifying IPO merely for the missing size; upstream IPO/product
+    classification and the resale markers below remain the safeguards.
     """
     form = str((filing or {}).get("form") or "").strip().upper()
     if form not in {"S-1", "S-1/A"}:
         return True
 
-    price_range = str((filing or {}).get("price_range") or "").strip()
-    if price_range:
-        return True
-
     source = str((filing or {}).get("offering_size_source") or "").strip().lower()
-    confidence = str((filing or {}).get("offering_size_confidence") or "").strip().lower()
-
     resale_markers = (
         "selling stockholder",
         "selling shareholder",
@@ -119,6 +114,15 @@ def _has_safe_s1_size_provenance(filing):
     if any(marker in source for marker in resale_markers):
         return False
 
+    value = _number((filing or {}).get("value"))
+    if value is None:
+        return True
+
+    price_range = str((filing or {}).get("price_range") or "").strip()
+    if price_range:
+        return True
+
+    confidence = str((filing or {}).get("offering_size_confidence") or "").strip().lower()
     issuer_markers = (
         "issuer-only",
         "issuer only",
@@ -282,7 +286,7 @@ def _normalize_market_value_consistency(filing):
 
 
 def qualifies_for_public_feed(filing):
-    """Return True only for qualifying operating-company IPOs established at >= $100M."""
+    """Return True for qualifying operating-company IPOs regardless of offering size."""
     if not isinstance(filing, dict):
         return False
     if not _has_supported_ipo_form(filing):
@@ -293,8 +297,7 @@ def qualifies_for_public_feed(filing):
         return False
     if not _has_consistent_priced_offering_value(filing):
         return False
-    value = _number(filing.get("value"))
-    return value is not None and value >= MINIMUM_IPO_VALUE
+    return True
 
 
 def enforce_public_feed_policy(output_path):
