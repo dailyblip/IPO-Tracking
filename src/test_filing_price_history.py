@@ -1,4 +1,5 @@
 import unittest
+from unittest import mock
 
 import filing_price_history
 
@@ -166,6 +167,64 @@ class FilingPriceHistoryTests(unittest.TestCase):
         )
         self.assertEqual(payload["filings"][0], row)
         self.assertEqual((recovered, checked), (0, 0))
+
+    def test_lyntris_between_wording_is_recovered(self):
+        text = (
+            "It is currently estimated that the initial public offering price per share "
+            "will be between $19.00 and $22.00."
+        )
+        self.assertEqual(
+            filing_price_history._extract_explicit_price_range_from_text(text),
+            {"range_low": 19.0, "range_high": 22.0},
+        )
+
+    def test_fee_table_maximum_price_is_not_treated_as_preliminary_range(self):
+        text = (
+            "Proposed Maximum Offering Price Per Unit $22.00 Maximum Aggregate "
+            "Offering Price $507,200,012.00."
+        )
+        self.assertEqual(
+            filing_price_history._extract_explicit_price_range_from_text(text),
+            {"range_low": None, "range_high": None},
+        )
+
+    def test_parse_s1_history_entry_uses_fallback_when_legacy_parser_misses(self):
+        from bs4 import BeautifulSoup
+
+        soup = BeautifulSoup(
+            "It is currently estimated that the initial public offering price per share "
+            "will be between $19.00 and $22.00.",
+            "html.parser",
+        )
+        metadata = {"accession_no": "0001193125-26-346328"}
+        with (
+            mock.patch.object(
+                filing_price_history.edgar_client,
+                "build_filing_index_url",
+                return_value="https://www.sec.gov/index",
+            ),
+            mock.patch.object(
+                filing_price_history.filing_parser,
+                "find_primary_document_url",
+                return_value="https://www.sec.gov/document",
+            ),
+            mock.patch.object(
+                filing_price_history.filing_parser,
+                "fetch_document",
+                return_value=soup,
+            ),
+            mock.patch.object(
+                filing_price_history.filing_parser,
+                "extract_price_range",
+                return_value={"range_low": None, "range_high": None},
+            ),
+        ):
+            parsed, source_url = filing_price_history.parse_s1_history_entry(
+                "0002132582", metadata
+            )
+
+        self.assertEqual(parsed["price_range"], {"range_low": 19.0, "range_high": 22.0})
+        self.assertEqual(source_url, "https://www.sec.gov/index")
 
 
 if __name__ == "__main__":
