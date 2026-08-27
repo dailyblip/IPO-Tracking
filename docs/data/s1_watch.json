@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-27T22:23:31.064803+00:00",
+  "generated_at": "2026-08-27T23:07:04.120081+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -37,7 +37,7 @@
       "stage": "Pre-pricing",
       "priority": "High",
       "price_range": "$4.00–$6.00",
-      "filing_price": "$5.00",
+      "filing_price": "$4.00–$6.00",
       "ipo_size": 18750000,
       "offering_size_source": "cover share title",
       "offering_size_confidence": "High",
@@ -221,7 +221,7 @@
       "stage": "Pre-pricing",
       "priority": "High",
       "price_range": "$10.00–$12.00",
-      "filing_price": "$11.00",
+      "filing_price": "$10.00–$12.00",
       "ipo_size": 33000000,
       "offering_size_source": "primary offering; cover title adjacent to IPO statement",
       "offering_size_confidence": "High",
