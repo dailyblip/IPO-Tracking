@@ -17,6 +17,7 @@ on:
       - 'src/followon_sanitizer.py'
       - 'src/prepricing_quote_sanitizer.py'
       - 'src/market_quote_identity.py'
+      - 'src/location_quality.py'
       - 'src/test_stanford_grader.py'
       - 'src/test_stanford_management_scope.py'
       - 'src/test_stanford_sec_backfill.py'
@@ -26,6 +27,7 @@ on:
       - 'src/test_followon_sanitizer.py'
       - 'src/test_prepricing_quote_sanitizer.py'
       - 'src/test_market_quote_identity.py'
+      - 'src/test_location_quality.py'
       - 'src/test_dashboard_ui.py'
       - 'src/company_name_normalizer.py'
       - 'src/public_feed_policy.py'
@@ -110,6 +112,11 @@ jobs:
       - name: Enforce public-feed eligibility policy
         working-directory: src
         run: python public_feed_policy.py ../docs/data/filings.json
+      - name: Repair malformed issuer locations
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python location_quality.py ../docs/data/filings.json
       - name: Recover authoritative preliminary filing-price ranges
         working-directory: src
         env:
