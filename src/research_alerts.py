@@ -93,7 +93,10 @@ def detect_alerts(filings: list[dict], previous_state: dict | None) -> tuple[lis
     previous_ciks = previous_state.get("ciks", {})
     alerts: list[dict] = []
     current_items: dict[str, dict] = {}
-    current_ciks = dict(previous_ciks)
+    # The state mirrors the current qualifying public feed. Keeping CIKs for
+    # issuers that have been removed (for example after a SPAC/follow-on repair)
+    # can create false lifecycle transitions if that stale state is reused later.
+    current_ciks: dict[str, dict] = {}
 
     for filing in filings:
         filing_id = str(filing.get("id") or "")
@@ -162,11 +165,40 @@ def detect_alerts(filings: list[dict], previous_state: dict | None) -> tuple[lis
     return alerts, new_state
 
 
-def merge_alert_history(existing_payload: dict | None, new_alerts: list[dict], limit: int = MAX_ALERT_HISTORY) -> dict:
+def _alert_is_eligible(
+    alert: dict,
+    eligible_ciks: set[str] | None,
+    eligible_filing_ids: set[str] | None,
+) -> bool:
+    """Keep alert history only for issuers still represented in the qualifying feed."""
+    if eligible_ciks is None and eligible_filing_ids is None:
+        return True
+    cik = str(alert.get("cik") or "")
+    filing_id = str(alert.get("filing_id") or "")
+    return bool(
+        (cik and eligible_ciks is not None and cik in eligible_ciks)
+        or (
+            filing_id
+            and eligible_filing_ids is not None
+            and filing_id in eligible_filing_ids
+        )
+    )
+
+
+def merge_alert_history(
+    existing_payload: dict | None,
+    new_alerts: list[dict],
+    limit: int = MAX_ALERT_HISTORY,
+    *,
+    eligible_ciks: set[str] | None = None,
+    eligible_filing_ids: set[str] | None = None,
+) -> dict:
     existing = list((existing_payload or {}).get("alerts", []))
-    seen = {a.get("key") or _alert_key(a) for a in new_alerts}
-    merged = list(new_alerts)
-    for alert in existing:
+    seen: set[str] = set()
+    merged: list[dict] = []
+    for alert in [*new_alerts, *existing]:
+        if not _alert_is_eligible(alert, eligible_ciks, eligible_filing_ids):
+            continue
         key = alert.get("key") or _alert_key(alert)
         if key in seen:
             continue
@@ -207,7 +239,22 @@ def run(feed_path: Path, alerts_path: Path, state_path: Path) -> int:
     # entire existing queue as newly discovered. Subsequent runs emit deltas.
     if not state_exists:
         new_alerts = []
-    merged = merge_alert_history(existing_alerts, new_alerts)
+    eligible_ciks = {
+        str(filing.get("cik") or "")
+        for filing in filings
+        if str(filing.get("cik") or "")
+    }
+    eligible_filing_ids = {
+        str(filing.get("id") or "")
+        for filing in filings
+        if str(filing.get("id") or "")
+    }
+    merged = merge_alert_history(
+        existing_alerts,
+        new_alerts,
+        eligible_ciks=eligible_ciks,
+        eligible_filing_ids=eligible_filing_ids,
+    )
     _write_json_atomic(alerts_path, merged)
     _write_json_atomic(state_path, new_state)
     return len(new_alerts)
