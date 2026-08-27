@@ -86,7 +86,7 @@ class S1MonitorTests(unittest.TestCase):
         soup = Mock()
         soup.get_text.return_value = "This is the initial public offering of our common stock."
         fetch_doc.return_value = soup
-        parse_filing.return_value = {"price_range": {"range_low": 18, "range_high": 20}, "cover_page": {"exchange": "Nasdaq", "offering_price": None}}
+        parse_filing.return_value = {"price_range": {"range_low": 18, "range_high": 20}, "cover_page": {"exchange": "Nasdaq", "offering_price": 19}}
 
         record = s1_monitor.enrich_record({
             "company_name": "Acme Robotics, Inc.",
@@ -98,6 +98,7 @@ class S1MonitorTests(unittest.TestCase):
 
         self.assertEqual(record["ticker"], "ACME")
         self.assertEqual(record["price_range"], "$18.00–$20.00")
+        self.assertEqual(record["filing_price"], "$18.00–$20.00")
         self.assertEqual(record["priority"], "High")
         self.assertIn("Preliminary offering range disclosed", record["signals"][1])
 

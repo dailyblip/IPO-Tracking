@@ -241,6 +241,7 @@ def enrich_record(meta: dict) -> dict | None:
         range_label = _format_range(price_range.get("range_low"), price_range.get("range_high"))
         cover = parsed.get("cover_page", {}) if isinstance(parsed, dict) else {}
         fixed_price_label = _format_fixed_price(cover.get("offering_price"))
+        filing_price_label = range_label or fixed_price_label
         ipo_size = _extract_ipo_size(filing_text, parsed, price_range)
         offering_size_source, offering_size_confidence = _size_provenance(cover, ipo_size)
         if _is_micro_self_underwritten_offering(filing_text, parsed, ipo_size):
@@ -279,7 +280,7 @@ def enrich_record(meta: dict) -> dict | None:
             "stage": "Pre-pricing",
             "priority": "High" if (range_label or fixed_price_label) else "Medium",
             "price_range": range_label,
-            "filing_price": fixed_price_label,
+            "filing_price": filing_price_label,
             "ipo_size": ipo_size,
             "offering_size_source": offering_size_source,
             "offering_size_confidence": offering_size_confidence,
