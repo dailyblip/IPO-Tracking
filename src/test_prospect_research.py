@@ -21,6 +21,33 @@ class ProspectResearchTests(unittest.TestCase):
         self.assertEqual(m["shares_after_ipo"],"100")
         self.assertEqual(m["stanford_source"],"Stanford bio")
 
+    def test_metadata_fails_closed_on_impossible_ownership_metrics(self):
+        row = {
+            "Ownership % Before IPO": 25_313_314,
+            "Ownership % After IPO": 17.0,
+            "Shares Before IPO": 18.2,
+            "Shares After IPO": 25_313_314,
+            "Shares Sold in IPO": -1,
+        }
+        m = prospect_person_metadata(row, "Entities affiliated with Example Capital")
+        self.assertIsNone(m["ownership_percent_before"])
+        self.assertEqual(m["ownership_percent_after"], 17.0)
+        self.assertEqual(m["ownership_percent"], 17.0)
+        self.assertIsNone(m["shares_before_ipo"])
+        self.assertEqual(m["shares_after_ipo"], 25_313_314)
+        self.assertIsNone(m["shares_sold_ipo"])
+
+    def test_metadata_rejects_nonfinite_and_out_of_range_metrics(self):
+        for percent in (-0.1, 100.1, float("nan"), float("inf")):
+            with self.subTest(percent=percent):
+                m = prospect_person_metadata({"Ownership % After IPO": percent}, "Jane Smith")
+                self.assertIsNone(m["ownership_percent"])
+                self.assertIsNone(m["ownership_percent_after"])
+        for shares in (-1, 1.5, float("nan"), float("inf")):
+            with self.subTest(shares=shares):
+                m = prospect_person_metadata({"Shares After IPO": shares}, "Jane Smith")
+                self.assertIsNone(m["shares_after_ipo"])
+
     def test_confirmed_boolean_rejects_false_like_strings(self):
         for value in (False, None, "", "false", "False", "no", "0", 0):
             self.assertFalse(confirmed_boolean(value), value)
