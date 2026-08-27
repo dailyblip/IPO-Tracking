@@ -11,9 +11,11 @@ on:
       - 'src/prospect_research.py'
       - 'src/stanford_grader.py'
       - 'src/stanford_sec_backfill.py'
+      - 'src/filing_price_history.py'
       - 'src/test_stanford_grader.py'
       - 'src/test_stanford_management_scope.py'
       - 'src/test_stanford_sec_backfill.py'
+      - 'src/test_filing_price_history.py'
       - 'src/test_dashboard_ui.py'
       - 'src/company_name_normalizer.py'
       - 'src/public_feed_policy.py'
@@ -84,6 +86,11 @@ jobs:
       - name: Enforce public-feed eligibility policy
         working-directory: src
         run: python public_feed_policy.py ../docs/data/filings.json
+      - name: Recover authoritative preliminary filing-price ranges
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python filing_price_history.py ../docs/data/filings.json
       - name: Validate public feed
         run: |
           python - <<'PY'
