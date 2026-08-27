@@ -76,6 +76,12 @@ jobs:
         working-directory: src
         run: python public_feed_policy.py ../docs/data/filings.json
 
+      - name: Recover authoritative preliminary filing-price ranges
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python filing_price_history.py ../docs/data/filings.json
+
       - name: Remove market quotes from pre-pricing records
         working-directory: src
         run: python prepricing_quote_sanitizer.py ../docs/data/filings.json
