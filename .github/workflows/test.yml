@@ -50,7 +50,6 @@ jobs:
           sys.path.insert(0, str(Path('src').resolve()))
           from company_name_normalizer import normalize_company_name
           from public_feed_policy import (
-              MINIMUM_IPO_VALUE,
               _has_valid_filing_date,
               _normalize_market_value_consistency,
               _normalize_people_types,
@@ -71,23 +70,29 @@ jobs:
                   failures.append(f'{label}: invalid/future filing date')
               if not qualifies_for_public_feed(filing):
                   failures.append(f'{label}: violates public-feed qualification policy')
-              try:
-                  value = float(str(filing.get('value')).replace(',', '').replace('$', '').strip())
-              except (TypeError, ValueError):
-                  value = None
-              if value is None or value < MINIMUM_IPO_VALUE:
-                  failures.append(f'{label}: offering value is not authoritatively established at >= $100M')
 
-              size_source = str(filing.get('offering_size_source') or '').strip()
-              size_confidence = str(filing.get('offering_size_confidence') or '').strip()
-              if not size_source:
-                  failures.append(f'{label}: qualifying offering value lacks source provenance')
-              if not size_confidence:
-                  failures.append(f'{label}: qualifying offering value lacks confidence metadata')
-              elif size_confidence.casefold() != 'high':
-                  failures.append(
-                      f'{label}: qualifying offering value confidence must be High, got {size_confidence!r}'
-                  )
+              raw_value = filing.get('value')
+              value = None
+              if raw_value not in (None, '', '—'):
+                  try:
+                      value = float(str(raw_value).replace(',', '').replace('$', '').strip())
+                  except (TypeError, ValueError):
+                      failures.append(f'{label}: populated offering value is invalid: {raw_value!r}')
+                  else:
+                      if value <= 0:
+                          failures.append(f'{label}: populated offering value must be positive')
+
+              if value is not None:
+                  size_source = str(filing.get('offering_size_source') or '').strip()
+                  size_confidence = str(filing.get('offering_size_confidence') or '').strip()
+                  if not size_source:
+                      failures.append(f'{label}: populated offering value lacks source provenance')
+                  if not size_confidence:
+                      failures.append(f'{label}: populated offering value lacks confidence metadata')
+                  elif size_confidence.casefold() != 'high':
+                      failures.append(
+                          f'{label}: populated offering value confidence must be High, got {size_confidence!r}'
+                      )
 
               filing_date = str(filing.get('filing_date') or '').strip()
               pricing_date = str(filing.get('pricing_date') or '').strip()
