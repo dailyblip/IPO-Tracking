@@ -132,6 +132,8 @@ class DashboardUiTests(unittest.TestCase):
         self.assertNotIn('for(let i=11;i>=0;i--)', self.html)
         self.assertIn('.bar.filing{background:#9ba8a0}', self.html)
         self.assertIn('.bar.pricing{background:var(--green)}', self.html)
+        self.assertIn('.legend-dot.filing,.bar.filing{background:var(--cardinal)}', self.html)
+        self.assertIn('.legend-dot.pricing,.bar.pricing{background:var(--palo-alto)}', self.html)
         self.assertIn('.bar.current{animation:pulse', self.html)
         self.assertIn('@media(prefers-reduced-motion:reduce)', self.html)
 
