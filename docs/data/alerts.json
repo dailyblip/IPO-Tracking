@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-27T05:15:40.080428+00:00",
+  "generated_at": "2026-08-27T05:32:01.850313+00:00",
   "count": 43,
   "alerts": [
     {
@@ -14,7 +14,7 @@
       "priority": "High",
       "summary": "New 424B4 entered the researcher queue.",
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm",
-      "detected_at": "2026-08-27T00:57:35.483947+00:00",
+      "detected_at": "2026-08-27T05:32:01.850225+00:00",
       "new_value": "$298M",
       "key": "new_424b4|0001193125-26-356916|0002132582|2026-08-19|$298M"
     },
