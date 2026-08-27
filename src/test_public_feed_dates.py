@@ -51,6 +51,33 @@ class PublicFeedDatePolicyTests(unittest.TestCase):
             for excluded in ("missing", "blank", "malformed", "noncanonical", "future"):
                 self.assertNotIn(f"{excluded} Operating Co", csv_text)
 
+    def test_release_clears_impossible_initial_filing_date_and_persists_fix(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "filings.json"
+            row = self._record("priced", "2026-07-02")
+            row.update(
+                {
+                    "filing_date": "2026-07-15",
+                    "pricing_date": "2026-07-01",
+                    "stage": "Priced",
+                    "offering_price": 20.0,
+                }
+            )
+            output.write_text(
+                json.dumps({"schema_version": 1, "filings": [row]}),
+                encoding="utf-8",
+            )
+
+            filtered, removed = enforce_public_feed_policy(output)
+
+            self.assertEqual(removed, 0)
+            self.assertIsNone(filtered["filings"][0]["filing_date"])
+
+            persisted = json.loads(output.read_text(encoding="utf-8"))
+            self.assertIsNone(persisted["filings"][0]["filing_date"])
+            csv_text = output.with_suffix(".csv").read_text(encoding="utf-8")
+            self.assertIn("priced Operating Co", csv_text)
+
 
 if __name__ == "__main__":
     unittest.main()
