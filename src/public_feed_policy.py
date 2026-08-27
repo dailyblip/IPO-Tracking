@@ -10,7 +10,7 @@ from pathlib import Path
 from dashboard_export import write_dashboard_csv
 from edgar_client import INVESTMENT_PRODUCT_NAME_PATTERN, SPAC_NAME_PATTERN
 from prepricing_quote_sanitizer import sanitize_payload as sanitize_prepricing_quotes
-from prospect_research import holder_type
+from prospect_research import holder_type, valid_ownership_percent, valid_share_count
 
 # Retained as a reusable UI/filter threshold; it is no longer a publication gate.
 MINIMUM_IPO_VALUE = 100_000_000.0
@@ -232,6 +232,62 @@ def _normalize_people_types(filing):
     return normalized
 
 
+def _normalize_person_ownership_metrics(filing):
+    """Fail closed on impossible public ownership metrics across the entire feed.
+
+    The upstream row normalizer protects newly rebuilt records, but historical rows
+    can survive a rolling-window refresh without being reconstructed. Apply the same
+    conservative numeric checks at the canonical release gate so stale malformed
+    percentage/share fields cannot remain public indefinitely. No values are swapped,
+    inferred, or repaired by position; invalid metrics are cleared only.
+    """
+    normalized = dict(filing)
+    people = filing.get("people")
+    if not isinstance(people, list):
+        return normalized
+
+    percent_fields = (
+        "ownership_percent",
+        "ownership_percent_before",
+        "ownership_percent_after",
+    )
+    share_fields = (
+        "shares",
+        "shares_before_ipo",
+        "shares_sold_ipo",
+        "shares_after_ipo",
+        "liquid_shares",
+        "locked_shares",
+    )
+    derived_value_fields = {
+        "shares": ("cash_value",),
+        "liquid_shares": ("liquid_value",),
+        "locked_shares": ("locked_value",),
+    }
+
+    normalized_people = []
+    for person in people:
+        if not isinstance(person, dict):
+            normalized_people.append(person)
+            continue
+        normalized_person = dict(person)
+        for field in percent_fields:
+            if field in normalized_person:
+                normalized_person[field] = valid_ownership_percent(normalized_person.get(field))
+        for field in share_fields:
+            if field not in normalized_person:
+                continue
+            original = normalized_person.get(field)
+            sanitized = valid_share_count(original)
+            normalized_person[field] = sanitized
+            if original not in (None, "") and sanitized is None:
+                for value_field in derived_value_fields.get(field, ()):
+                    normalized_person[value_field] = None
+        normalized_people.append(normalized_person)
+    normalized["people"] = normalized_people
+    return normalized
+
+
 def _scrub_stanford_operational_errors(filing):
     """Keep internal Stanford-processing text out of public person records.
 
@@ -355,6 +411,7 @@ def enforce_public_feed_policy(output_path):
         if not _has_valid_filing_date(normalized) or not qualifies_for_public_feed(normalized):
             continue
         normalized = _normalize_people_types(normalized)
+        normalized = _normalize_person_ownership_metrics(normalized)
         normalized = _scrub_stanford_operational_errors(normalized)
         normalized = _normalize_market_value_consistency(normalized)
         qualifying.append(normalized)
