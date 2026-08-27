@@ -2,19 +2,22 @@
   "schema_version": 1,
   "records": [
     {
-      "label": "Recent pre-pricing record",
+      "label": "Priced IPO with recovered preliminary range and mixed primary/secondary shares",
       "cik": "0002132582",
       "expected": {
         "company": "Lyntris Inc.",
         "ticker": "LYNX",
-        "form": "S-1/A",
-        "filed": "2026-08-12",
-        "stage": "Pre-pricing",
-        "filing_price": "$20.50",
-        "value": 492000000,
-        "primary_offering_shares": 4878049,
-        "secondary_offering_shares": 19121951,
-        "people_count": 0
+        "form": "424B4",
+        "filed": "2026-08-19",
+        "filing_date": "2026-08-12",
+        "pricing_date": "2026-08-19",
+        "stage": "Priced",
+        "filing_price": "19-22",
+        "offering_price": 17.5,
+        "value": 297500000.0,
+        "primary_offering_shares": 5714286,
+        "secondary_offering_shares": 11285714,
+        "people_count": 44
       }
     },
     {
