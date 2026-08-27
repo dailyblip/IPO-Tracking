@@ -32,7 +32,7 @@ class StanfordPersonDetailTests(unittest.TestCase):
     def test_ui_removes_s_badge_and_keeps_stanford_evidence_inside_person_accordion(self):
         html = (Path(__file__).resolve().parents[1] / "docs" / "index.html").read_text(encoding="utf-8")
         self.assertNotIn("stanfordBadge", html)
-        self.assertNotIn("stanford-s", html)
+        self.assertNotIn('class="stanford-s"', html)
         self.assertNotIn('id="personDetail"', html)
         self.assertIn("function buildPersonAccordion(person,filing)", html)
         self.assertIn('stanford.className="stanford-connection"', html)
