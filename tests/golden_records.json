@@ -31,7 +31,7 @@
         "pricing_date": "2026-08-07",
         "stage": "Priced",
         "value": 345600000.0,
-        "filing_price": "16.0-18.0",
+        "filing_price": "16-18",
         "offering_price": 18.0,
         "lockup_end_date": "2027-02-03",
         "lockup_duration_days": 180,
@@ -115,7 +115,7 @@
         "pricing_date": "2026-06-11",
         "stage": "Priced",
         "value": 142200000.0,
-        "filing_price": "18.0-20.0",
+        "filing_price": "18-20",
         "offering_price": 18.0,
         "lockup_end_date": "2026-12-08",
         "lockup_duration_days": 180
