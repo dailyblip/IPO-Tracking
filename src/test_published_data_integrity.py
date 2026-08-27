@@ -22,21 +22,28 @@ class PublishedResearchMonitorDataIntegrityTests(unittest.TestCase):
         payload = json.loads(DATA_PATH.read_text(encoding="utf-8"))
         cls.filings = payload.get("filings", []) if isinstance(payload, dict) else payload
 
-    def test_every_published_offering_value_has_source_and_high_confidence(self):
-        """Every qualifying public IPO value must retain strong explicit provenance metadata."""
+    def test_populated_offering_values_have_source_and_high_confidence(self):
+        """Known IPO sizes need strong provenance; a genuinely unknown size may stay blank."""
         failures = []
         for filing in self.filings:
             label = filing.get("company") or filing.get("id") or "unknown filing"
-            value = _number(filing.get("value"))
+            raw_value = filing.get("value")
+            value = _number(raw_value)
             source = str(filing.get("offering_size_source") or "").strip()
             confidence = str(filing.get("offering_size_confidence") or "").strip()
+
+            if raw_value not in (None, "", "—") and value is None:
+                failures.append(f"{label}: offering value is populated but invalid: {raw_value!r}")
+                continue
             if value is None:
-                failures.append(f"{label}: published offering value is missing or invalid")
+                continue
+            if value <= 0:
+                failures.append(f"{label}: populated offering value must be positive")
             if not source:
-                failures.append(f"{label}: published offering value lacks source provenance")
+                failures.append(f"{label}: populated offering value lacks source provenance")
             if confidence.casefold() != "high":
                 failures.append(
-                    f"{label}: published offering value confidence is {confidence or 'missing'}, expected High"
+                    f"{label}: populated offering value confidence is {confidence or 'missing'}, expected High"
                 )
 
         self.assertEqual(
