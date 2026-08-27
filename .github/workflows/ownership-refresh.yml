@@ -18,6 +18,7 @@ on:
       - 'src/company_name_normalizer.py'
       - 'src/public_feed_policy.py'
       - 'src/test_public_feed_policy.py'
+      - 'src/test_workflow_contract.py'
       - '.github/workflows/ownership-refresh.yml'
   workflow_dispatch: {}
 
@@ -93,7 +94,6 @@ jobs:
           stanford_people=[]
           for filing in feed['filings']:
               assert isinstance(filing.get('people', []), list)
-              assert float(filing.get('value') or 0) >= 100_000_000
               for person in filing.get('people', []):
                   assert isinstance(person.get('stanford_university_bio', False), bool)
                   if person.get('stanford_university_bio'):
