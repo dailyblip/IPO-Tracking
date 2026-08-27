@@ -12,10 +12,18 @@ on:
       - 'src/stanford_grader.py'
       - 'src/stanford_sec_backfill.py'
       - 'src/filing_price_history.py'
+      - 'src/lifecycle_reconciler.py'
+      - 'src/lifecycle_date_sanitizer.py'
+      - 'src/followon_sanitizer.py'
+      - 'src/prepricing_quote_sanitizer.py'
       - 'src/test_stanford_grader.py'
       - 'src/test_stanford_management_scope.py'
       - 'src/test_stanford_sec_backfill.py'
       - 'src/test_filing_price_history.py'
+      - 'src/test_lifecycle_reconciler.py'
+      - 'src/test_lifecycle_date_sanitizer.py'
+      - 'src/test_followon_sanitizer.py'
+      - 'src/test_prepricing_quote_sanitizer.py'
       - 'src/test_dashboard_ui.py'
       - 'src/company_name_normalizer.py'
       - 'src/public_feed_policy.py'
@@ -60,6 +68,19 @@ jobs:
           END=$(date -u +%F)
           echo "Regrading ownership and Stanford affiliations from $START through $END"
           python main.py --backfill-start "$START" --backfill-end "$END"
+      - name: Reconcile final 424B4 lifecycle transitions
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python lifecycle_reconciler.py ../docs/data/filings.json
+      - name: Sanitize impossible lifecycle dates
+        working-directory: src
+        run: python lifecycle_date_sanitizer.py ../docs/data/filings.json
+      - name: Remove post-reporting follow-on/resale offerings
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python followon_sanitizer.py ../docs/data/filings.json
       - name: Recover SEC-confirmed Stanford beneficial-owner affiliations
         working-directory: src
         env:
@@ -91,6 +112,9 @@ jobs:
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python filing_price_history.py ../docs/data/filings.json
+      - name: Remove market quotes from pre-pricing records
+        working-directory: src
+        run: python prepricing_quote_sanitizer.py ../docs/data/filings.json
       - name: Validate public feed
         run: |
           python - <<'PY'
@@ -101,6 +125,19 @@ jobs:
           stanford_people=[]
           for filing in feed['filings']:
               assert isinstance(filing.get('people', []), list)
+              stage=str(filing.get('stage') or '').strip().lower()
+              if stage in {'pre-pricing', 'prepricing', 'filed'} and filing.get('current_price') not in (None, ''):
+                  raise SystemExit(
+                      f"Pre-pricing record has a live market quote: {filing.get('company')} "
+                      f"({filing.get('ticker')})"
+                  )
+              filing_date=filing.get('filing_date')
+              pricing_date=filing.get('pricing_date')
+              if filing_date and pricing_date and str(filing_date) > str(pricing_date):
+                  raise SystemExit(
+                      f"Impossible lifecycle chronology: {filing.get('company')} "
+                      f"filed {filing_date} after pricing {pricing_date}"
+                  )
               for person in filing.get('people', []):
                   assert isinstance(person.get('stanford_university_bio', False), bool)
                   if person.get('stanford_university_bio'):
