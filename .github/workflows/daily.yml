@@ -87,6 +87,12 @@ jobs:
         working-directory: src
         run: python prepricing_quote_sanitizer.py ../docs/data/filings.json
 
+      - name: Verify market quote issuer identity
+        working-directory: src
+        env:
+          MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
+        run: python market_quote_identity.py ../docs/data/filings.json
+
       - name: Publish Research Monitor data
         run: |
           if git diff --quiet -- docs/data/filings.json docs/data/filings.csv; then
