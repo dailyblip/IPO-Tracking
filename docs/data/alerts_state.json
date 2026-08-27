@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-27T06:11:15.487399+00:00",
+  "updated_at": "2026-08-27T07:22:59.641239+00:00",
   "items": {
     "0001193125-26-356916": {
       "id": "0001193125-26-356916",
@@ -11,7 +11,7 @@
       "stage": "priced",
       "price_range": null,
       "priority": "High",
-      "value": null,
+      "value": 297500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm"
     },
     "0001185185-26-003448": {
@@ -170,18 +170,6 @@
       "value": 312195136.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2110117/000119312526292853/0001193125-26-292853-index.htm"
     },
-    "0001193125-26-294982": {
-      "id": "0001193125-26-294982",
-      "cik": "0002080126",
-      "company": "Forgent Power Solutions, Inc.",
-      "form": "424B4",
-      "filed": "2026-07-02",
-      "stage": "priced",
-      "price_range": null,
-      "priority": "High",
-      "value": 1738800000.0,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2080126/000119312526294982/0001193125-26-294982-index.htm"
-    },
     "0001193125-26-276096": {
       "id": "0001193125-26-276096",
       "cik": "0002123613",
@@ -302,18 +290,6 @@
       "value": 252000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2110105/000162828026041003/0001628280-26-041003-index.htm"
     },
-    "0001193125-26-258295": {
-      "id": "0001193125-26-258295",
-      "cik": "0002096300",
-      "company": "AEVEX Corp.",
-      "form": "424B4",
-      "filed": "2026-06-05",
-      "stage": "priced",
-      "price_range": null,
-      "priority": "High",
-      "value": 154606239.0,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2096300/000119312526258295/0001193125-26-258295-index.htm"
-    },
     "0001193125-26-257410": {
       "id": "0001193125-26-257410",
       "cik": "0001850351",
@@ -337,18 +313,6 @@
       "priority": "High",
       "value": 97500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2118195/000119312526256356/0001193125-26-256356-index.htm"
-    },
-    "0001193125-26-249223": {
-      "id": "0001193125-26-249223",
-      "cik": "0002080126",
-      "company": "Forgent Power Solutions, Inc.",
-      "form": "424B4",
-      "filed": "2026-06-01",
-      "stage": "priced",
-      "price_range": null,
-      "priority": "High",
-      "value": 1738800000.0,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2080126/000119312526249223/0001193125-26-249223-index.htm"
     }
   },
   "ciks": {
