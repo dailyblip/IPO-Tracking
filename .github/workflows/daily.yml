@@ -77,6 +77,12 @@ jobs:
         working-directory: src
         run: python public_feed_policy.py ../docs/data/filings.json
 
+      - name: Repair malformed issuer locations
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python location_quality.py ../docs/data/filings.json
+
       - name: Recover authoritative preliminary filing-price ranges
         working-directory: src
         env:
