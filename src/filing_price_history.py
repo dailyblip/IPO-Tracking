@@ -44,6 +44,38 @@ def _format_range(low, high):
     return f"{compact(low)}-{compact(high)}"
 
 
+def _extract_explicit_price_range_from_text(text):
+    """Extract common SEC preliminary-range wording missed by the legacy parser.
+
+    Keep the fallback tightly anchored to IPO/public-offering price language so fee
+    tables and unrelated dollar ranges are not treated as preliminary pricing.
+    """
+    text = str(text or "")[:60000]
+    number = r"(\d{1,4}(?:\.\d{1,2})?)"
+    anchors = (
+        r"(?:initial\s+public\s+offering\s+price|"
+        r"public\s+offering\s+price|"
+        r"offering\s+price|"
+        r"price\s+range)"
+        r"(?:\s+per\s+share)?"
+    )
+    patterns = [
+        anchors
+        + rf"[^$]{{0,180}}?\bbetween\s+\$\s*{number}\s+and\s+\$\s*{number}(?:\s+per\s+share)?",
+        anchors
+        + rf"[^$]{{0,180}}?\$\s*{number}\s+(?:to|through|[-–—])\s+\$\s*{number}(?:\s+per\s+share)?",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if not match:
+            continue
+        low = _number(match.group(1))
+        high = _number(match.group(2))
+        if low is not None and high is not None and low <= high:
+            return {"range_low": low, "range_high": high}
+    return {"range_low": None, "range_high": None}
+
+
 def _is_priced_row(filing):
     return (
         str(filing.get("form") or "").strip().upper() == "424B4"
@@ -107,14 +139,21 @@ def sec_s1_history(cik, pricing_date):
 
 
 def parse_s1_history_entry(cik, metadata):
-    """Parse one SEC registration filing using the existing filing parser."""
+    """Parse one SEC registration filing for its authoritative preliminary range."""
     index_url = edgar_client.build_filing_index_url(cik, metadata["accession_no"])
     document_url = filing_parser.find_primary_document_url(
         index_url,
         expected_form_types=["S-1", "S-1/A"],
     )
-    parsed = filing_parser.parse_filing(document_url, is_range_filing=True)
-    return parsed, index_url
+    soup = filing_parser.fetch_document(document_url)
+    price_range = filing_parser.extract_price_range(soup)
+    low = _number((price_range or {}).get("range_low"))
+    high = _number((price_range or {}).get("range_high"))
+    if low is None or high is None or low > high:
+        price_range = _extract_explicit_price_range_from_text(
+            soup.get_text(" ", strip=True)
+        )
+    return {"price_range": price_range}, index_url
 
 
 def recover_payload_filing_prices(
