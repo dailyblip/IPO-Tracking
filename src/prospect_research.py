@@ -6,6 +6,7 @@ or liquidity.
 """
 from __future__ import annotations
 
+import math
 import re
 
 ENTITY_MARKERS = (
@@ -52,6 +53,36 @@ def first_present(row: dict, *keys):
     return None
 
 
+def _metric_number(value):
+    """Parse an explicit ownership metric without inferring a missing value."""
+    if value is None or isinstance(value, bool):
+        return None
+    raw = str(value).strip().replace(",", "").replace("%", "")
+    if not raw:
+        return None
+    try:
+        number = float(raw)
+    except (TypeError, ValueError):
+        return None
+    return number if math.isfinite(number) else None
+
+
+def valid_ownership_percent(value):
+    """Preserve a disclosed percent only when it is numerically possible."""
+    number = _metric_number(value)
+    if number is None or number < 0 or number > 100:
+        return None
+    return value
+
+
+def valid_share_count(value):
+    """Preserve a disclosed share count only when it is a non-negative whole number."""
+    number = _metric_number(value)
+    if number is None or number < 0 or not number.is_integer():
+        return None
+    return value
+
+
 def confirmed_boolean(value) -> bool:
     """Return True only for explicit affirmative values.
 
@@ -85,26 +116,42 @@ def _stanford_public_source(row: dict):
 
 
 def prospect_person_metadata(row: dict, name: str) -> dict:
-    """Normalize fields useful to a prospect researcher when upstream provides them."""
+    """Normalize fields useful to a prospect researcher when upstream provides them.
+
+    Ownership-table HTML can contain complex colspans and spacer columns. If an
+    upstream column alignment ever places a share count in a percentage field (or
+    a percentage in a share-count field), fail closed here rather than publishing
+    an impossible researcher-facing metric. We deliberately do not swap or infer
+    values; unverifiable fields stay blank until the SEC table is parsed correctly.
+    """
     stanford_confirmed = confirmed_boolean(
         first_present(row, "Stanford Affiliation Confirmed", "Stanford University in Bio")
+    )
+    ownership_percent = valid_ownership_percent(
+        first_present(row, "Ownership % After IPO", "Ownership %", "Percent Ownership", "Percent", "% Ownership")
+    )
+    ownership_percent_before = valid_ownership_percent(
+        first_present(row, "Ownership % Before IPO", "Percent Before IPO")
+    )
+    ownership_percent_after = valid_ownership_percent(
+        first_present(row, "Ownership % After IPO", "Percent After IPO", "Ownership %", "Percent Ownership")
     )
     return {
         "holder_type": holder_type(name),
         "role": first_present(row, "Role", "Title", "Position", "Relationship"),
-        "ownership_percent": first_present(row, "Ownership % After IPO", "Ownership %", "Percent Ownership", "Percent", "% Ownership"),
-        "ownership_percent_before": first_present(row, "Ownership % Before IPO", "Percent Before IPO"),
-        "ownership_percent_after": first_present(row, "Ownership % After IPO", "Percent After IPO", "Ownership %", "Percent Ownership"),
-        "shares_before_ipo": first_present(row, "Shares Before IPO", "Shares Before Offering"),
-        "shares_sold_ipo": first_present(row, "Shares Sold in IPO", "Shares Offered", "Secondary Shares"),
-        "shares_after_ipo": first_present(row, "Shares After IPO", "Shares After Offering", "Shares"),
+        "ownership_percent": ownership_percent,
+        "ownership_percent_before": ownership_percent_before,
+        "ownership_percent_after": ownership_percent_after,
+        "shares_before_ipo": valid_share_count(first_present(row, "Shares Before IPO", "Shares Before Offering")),
+        "shares_sold_ipo": valid_share_count(first_present(row, "Shares Sold in IPO", "Shares Offered", "Secondary Shares")),
+        "shares_after_ipo": valid_share_count(first_present(row, "Shares After IPO", "Shares After Offering", "Shares")),
         "stanford_source": _stanford_public_source(row),
         "stanford_affiliation_confirmed": stanford_confirmed,
         # Backward-compatible public/UI field. Keep it derived from the confirmed
         # affiliation gate so researcher-facing Stanford highlighting cannot be
         # driven by an unconfirmed or false-like raw source value.
         "stanford_university_bio": stanford_confirmed,
-        "common_shares": first_present(row, "Common Shares"),
-        "restricted_shares": first_present(row, "Restricted Shares", "Unvested Shares"),
-        "options_shares": first_present(row, "Option Shares", "Options Exercisable"),
+        "common_shares": valid_share_count(first_present(row, "Common Shares")),
+        "restricted_shares": valid_share_count(first_present(row, "Restricted Shares", "Unvested Shares")),
+        "options_shares": valid_share_count(first_present(row, "Option Shares", "Options Exercisable")),
     }
