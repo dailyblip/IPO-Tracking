@@ -3,7 +3,9 @@
 A final 424B4 can arrive after several S-1/S-1/A amendments. The latest
 registration statement is not guaranteed to be the amendment that disclosed the
 preliminary range, so a priced row with no filing price must inspect the preceding
-registration history before the blank is accepted.
+registration history before the blank is accepted. Populated filing prices also
+need SEC provenance; if that metadata was dropped by an intermediate export, the
+same history review restores it rather than silently carrying an unverified value.
 """
 
 from __future__ import annotations
@@ -51,8 +53,21 @@ def _is_priced_row(filing):
     )
 
 
-def _has_preliminary_price(filing):
-    return bool(str(filing.get("price_range") or filing.get("filing_price") or "").strip())
+def _preliminary_price_value(filing):
+    return str(filing.get("filing_price") or filing.get("price_range") or "").strip()
+
+
+def _has_authoritative_price_source(filing):
+    source = filing.get("filing_price_source")
+    if not isinstance(source, dict):
+        return False
+    return bool(
+        str(source.get("source") or "").strip().casefold() == "sec edgar"
+        and str(source.get("form") or "").strip().upper() in {"S-1", "S-1/A"}
+        and str(source.get("filing_date") or "").strip()
+        and str(source.get("accession_no") or "").strip()
+        and str(source.get("sec_url") or "").strip()
+    )
 
 
 def sec_s1_history(cik, pricing_date):
@@ -107,14 +122,17 @@ def recover_payload_filing_prices(
     history_loader=sec_s1_history,
     registration_loader=parse_s1_history_entry,
 ):
-    """Enrich priced rows with an authoritative preliminary range when available.
+    """Enrich priced rows with an authoritative preliminary range and provenance.
 
-    A priced row that is already populated is left untouched. For a blank priced row,
-    every relevant S-1/S-1A is inspected from newest to oldest until an explicit range
-    is found. If at least one registration statement is successfully inspected but no
-    reliable range exists, the blank is retained. If none of the required history can
-    be inspected, fail closed so the publisher does not silently accept an unverified
-    blank.
+    A priced row is complete only when an existing preliminary range has a complete
+    SEC source record. Otherwise every relevant S-1/S-1A is inspected from newest to
+    oldest until the latest explicit range is found. This repairs both blank Filing
+    Price values and provenance metadata lost during later lifecycle/export steps.
+
+    If at least one registration statement is successfully inspected but no reliable
+    range exists, a genuinely blank row remains blank. An already-populated but
+    unprovenanced value is release-blocking if SEC history cannot verify a range; it
+    is safer to stop publication than silently retain unsupported pricing metadata.
     """
     filings = payload.get("filings")
     if not isinstance(filings, list):
@@ -126,7 +144,12 @@ def recover_payload_filing_prices(
     checked = 0
 
     for filing in filings:
-        if not isinstance(filing, dict) or not _is_priced_row(filing) or _has_preliminary_price(filing):
+        if not isinstance(filing, dict) or not _is_priced_row(filing):
+            updated_filings.append(filing)
+            continue
+
+        existing_preliminary = _preliminary_price_value(filing)
+        if existing_preliminary and _has_authoritative_price_source(filing):
             updated_filings.append(filing)
             continue
 
@@ -179,6 +202,11 @@ def recover_payload_filing_prices(
                 "sec_url": source_url,
             }
             recovered += 1
+        elif existing_preliminary:
+            raise FilingPriceHistoryError(
+                f"Priced row {filing.get('company') or filing.get('id')} has preliminary price "
+                f"{existing_preliminary!r} without recoverable SEC S-1/S-1A provenance"
+            )
         updated_filings.append(normalized)
 
     updated_payload["filings"] = updated_filings
@@ -208,5 +236,5 @@ if __name__ == "__main__":
     _, recovered_count, checked_count = recover_filing_prices(target)
     print(
         f"Checked S-1/S-1A history for {checked_count} priced filing(s); "
-        f"recovered {recovered_count} preliminary price range(s)"
+        f"recovered {recovered_count} preliminary price range(s)/source record(s)"
     )
