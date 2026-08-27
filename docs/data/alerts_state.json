@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-27T12:03:57.089577+00:00",
+  "updated_at": "2026-08-27T13:05:59.941718+00:00",
   "items": {
     "0001193125-26-356916": {
       "id": "0001193125-26-356916",
@@ -316,6 +316,12 @@
     }
   },
   "ciks": {
+    "0002132582": {
+      "company": "Lyntris Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-356916",
+      "last_filed": "2026-08-19"
+    },
     "0001903784": {
       "company": "Vogenx, Inc.",
       "stage": "priced",
@@ -370,36 +376,6 @@
       "last_filing_id": "0001193125-26-316503",
       "last_filed": "2026-07-27"
     },
-    "0002109801": {
-      "company": "VARSAL TECH, INC.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002109801",
-      "last_filed": "2026-08-17"
-    },
-    "0001880995": {
-      "company": "Alopexx, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001880995",
-      "last_filed": "2026-08-17"
-    },
-    "0001181412": {
-      "company": "Space Exploration Technologies Corp",
-      "stage": "priced",
-      "last_filing_id": "0001628280-26-042639",
-      "last_filed": "2026-06-12"
-    },
-    "0002112634": {
-      "company": "Sensei Harbor Corp.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002112634",
-      "last_filed": "2026-08-18"
-    },
-    "0002132582": {
-      "company": "Lyntris Inc.",
-      "stage": "priced",
-      "last_filing_id": "0001193125-26-356916",
-      "last_filed": "2026-08-19"
-    },
     "0002086716": {
       "company": "Standard Nuclear, Inc.",
       "stage": "priced",
@@ -424,12 +400,6 @@
       "last_filing_id": "0001193125-26-292853",
       "last_filed": "2026-07-02"
     },
-    "0002080126": {
-      "company": "Forgent Power Solutions, Inc.",
-      "stage": "priced",
-      "last_filing_id": "0001193125-26-249223",
-      "last_filed": "2026-06-01"
-    },
     "0002123613": {
       "company": "Kardigan, Inc.",
       "stage": "priced",
@@ -441,6 +411,12 @@
       "stage": "priced",
       "last_filing_id": "0001140361-26-025790",
       "last_filed": "2026-06-18"
+    },
+    "0001181412": {
+      "company": "Space Exploration Technologies Corp",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-042639",
+      "last_filed": "2026-06-12"
     },
     "0002104879": {
       "company": "RMG ML Sports Holdings",
@@ -484,12 +460,6 @@
       "last_filing_id": "0001628280-26-041003",
       "last_filed": "2026-06-05"
     },
-    "0002096300": {
-      "company": "AEVEX Corp.",
-      "stage": "priced",
-      "last_filing_id": "0001193125-26-258295",
-      "last_filed": "2026-06-05"
-    },
     "0001850351": {
       "company": "Liftoff Mobile, Inc.",
       "stage": "priced",
@@ -501,78 +471,6 @@
       "stage": "priced",
       "last_filing_id": "0001193125-26-256356",
       "last_filed": "2026-06-04"
-    },
-    "0002064768": {
-      "company": "Canary Staked TRX ETF",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002064768",
-      "last_filed": "2026-08-19"
-    },
-    "0002124472": {
-      "company": "Orion180 Insurance Group Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002124472",
-      "last_filed": "2026-08-20"
-    },
-    "0002065821": {
-      "company": "Little West Holdings Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002065821",
-      "last_filed": "2026-08-21"
-    },
-    "0002111846": {
-      "company": "Game Your Game Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002111846",
-      "last_filed": "2026-08-21"
-    },
-    "0002131613": {
-      "company": "CoVolt Power, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002131613",
-      "last_filed": "2026-08-21"
-    },
-    "0002091680": {
-      "company": "Bitari Inc",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002091680",
-      "last_filed": "2026-08-21"
-    },
-    "0002109616": {
-      "company": "Fast Finance Pay Corp.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002109616",
-      "last_filed": "2026-08-12"
-    },
-    "0001670747": {
-      "company": "BirchBioMed Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001670747",
-      "last_filed": "2026-08-12"
-    },
-    "0002055301": {
-      "company": "Aura Consolidated Group, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002055301",
-      "last_filed": "2026-08-11"
-    },
-    "0002147267": {
-      "company": "Gores Holdings XII, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002147267",
-      "last_filed": "2026-08-10"
-    },
-    "0002149294": {
-      "company": "GigCapital10 Corp.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002149294",
-      "last_filed": "2026-08-10"
-    },
-    "0001838003": {
-      "company": "Encore Medical, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001838003",
-      "last_filed": "2026-08-10"
     }
   }
 }
