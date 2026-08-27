@@ -3,7 +3,8 @@
 This is a narrow lifecycle handoff safety net for the public Research Monitor feed.
 It prevents an issuer from remaining visibly pre-pricing after the SEC has filed a
 final 424B4, and repairs incomplete final records when exact final offering terms
-are present later in a long prospectus. Unresolved final size fails closed.
+are present later in a long prospectus. A confirmed priced operating-company IPO
+may remain visible with offering size blank when exact size cannot be established.
 """
 
 from __future__ import annotations
@@ -16,8 +17,6 @@ from pathlib import Path
 import dashboard_export
 import edgar_client
 import filing_parser
-
-MINIMUM_IPO_VALUE = 100_000_000.0
 
 
 def _canonical_cik(value):
@@ -143,29 +142,27 @@ def _is_final_priced(filing):
 
 
 def _has_release_grade_final_size(filing):
+    """Return True when an already-priced row has a verified populated size."""
     value = _number(filing.get("value"))
     return (
         _is_final_priced(filing)
         and value is not None
-        and value >= MINIMUM_IPO_VALUE
+        and value > 0
         and str(filing.get("offering_size_confidence") or "").strip().casefold() == "high"
         and bool(str(filing.get("offering_size_source") or "").strip())
     )
 
 
 def _apply_final_terms(record, filing_meta, soup):
-    """Apply exact SEC final terms to a record without fabricating unavailable facts."""
+    """Apply authoritative SEC final terms without fabricating unavailable size facts."""
     cover = filing_parser.extract_cover_page_data(soup)
     price = cover.get("offering_price")
     terms = extract_final_offering_terms(soup)
     total_shares = terms.get("total_shares")
-    if not price or not total_shares:
+    if not price:
         return None
 
-    offering_value = float(price) * int(total_shares)
-    if offering_value < MINIMUM_IPO_VALUE:
-        return None
-
+    offering_value = float(price) * int(total_shares) if total_shares else None
     pricing_date = str(filing_meta.get("filing_date") or record.get("pricing_date") or "").strip()
     accession = str(filing_meta.get("accession_no") or record.get("accession_no") or "").strip()
     if not pricing_date or not accession:
@@ -184,7 +181,7 @@ def _apply_final_terms(record, filing_meta, soup):
         "pricing_date": pricing_date,
         "offering_price": float(price),
         "value": offering_value,
-        "value_label": _money(offering_value),
+        "value_label": _money(offering_value) if offering_value is not None else None,
         "primary_offering_shares": terms.get("primary_shares"),
         "secondary_offering_shares": terms.get("secondary_shares"),
         "offering_size_source": terms.get("source"),
@@ -221,10 +218,9 @@ def _final_signals(record, price, value):
         if "remains pre-pricing" in lowered or "registration statement amended" in lowered:
             continue
         keep.append(text)
-    final = [
-        f"Offering priced at ${float(price):.2f} per share",
-        f"Offering raised approximately {_money(value)}",
-    ]
+    final = [f"Offering priced at ${float(price):.2f} per share"]
+    if value is not None:
+        final.append(f"Offering raised approximately {_money(value)}")
     for signal in keep:
         if signal not in final:
             final.append(signal)
@@ -243,7 +239,7 @@ def _repair_final_record(record, filing_meta, soup):
 
 
 def _promote_prepricing_record(record, filing_meta, soup):
-    """Build a minimal final record from exact final-prospectus facts, or fail closed."""
+    """Build a minimal final record from authoritative final-prospectus facts."""
     promoted = _apply_final_terms(record, filing_meta, soup)
     if promoted is None:
         return None
@@ -394,8 +390,8 @@ def reconcile_payload(payload, final_filings, soup_loader):
             if state["replacement"] is not None:
                 reconciled.append(state["replacement"])
             else:
-                # A final 424B4 proves the issuer is no longer pre-pricing. If exact
-                # qualifying final size remains unresolved, omit rather than guess.
+                # A final 424B4 proves the issuer is no longer pre-pricing. If the
+                # final price itself remains unresolved, omit rather than guess.
                 removed_count += 1
             continue
 
