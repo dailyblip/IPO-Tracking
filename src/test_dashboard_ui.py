@@ -33,7 +33,8 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn("function clearFilters()", self.html)
         self.assertIn("Last 30 days", self.html)
 
-    def test_minimum_ipo_size_filter_is_numeric_and_resets_to_floor(self):
+    def test_ipo_size_filter_defaults_to_any_size_and_keeps_thresholds(self):
+        self.assertIn('<option value="">Any size</option>', self.html)
         expected_options = (
             ('100000000', '$100M+'),
             ('250000000', '$250M+'),
@@ -43,10 +44,10 @@ class DashboardUiTests(unittest.TestCase):
         )
         for value, label in expected_options:
             self.assertIn(f'<option value="{value}">{label}</option>', self.html)
-        self.assertIn('minSize=Number($("sizeFilter").value)||100000000', self.html)
-        self.assertIn('offeringValue=Number(f.ipo_size||f.value)||0', self.html)
-        self.assertIn('offeringValue>=minSize', self.html)
-        self.assertIn('$("sizeFilter").value="100000000"', self.html)
+        self.assertIn('sizeValue=$("sizeFilter").value,minSize=sizeValue?Number(sizeValue):null', self.html)
+        self.assertIn('rawOfferingValue=f.ipo_size??f.value', self.html)
+        self.assertIn('minSize===null||(hasOfferingValue&&offeringValue>=minSize)', self.html)
+        self.assertIn('$("sizeFilter").value=""', self.html)
         self.assertIn('["formFilter","statusFilter","dateFilter","sizeFilter","sortBy"]', self.html)
 
     def test_filed_date_uses_friendly_format(self):
@@ -208,12 +209,15 @@ class DashboardUiTests(unittest.TestCase):
             "Historical feed must retain at least one confirmed Stanford beneficial-owner holding.",
         )
 
-    def test_published_feed_rows_have_release_grade_ipo_size_provenance(self):
+    def test_published_feed_populated_ipo_sizes_have_release_grade_provenance(self):
         for filing in self.feed.get("filings", []):
             with self.subTest(company=filing.get("company")):
                 self.assertIn(filing.get("form"), {"S-1", "S-1/A", "424B4"})
-                self.assertIsInstance(filing.get("value"), (int, float))
-                self.assertGreaterEqual(filing["value"], 100_000_000)
+                value = filing.get("value")
+                if value in (None, "", "—"):
+                    continue
+                self.assertIsInstance(value, (int, float))
+                self.assertGreater(value, 0)
                 self.assertEqual(filing.get("offering_size_confidence"), "High")
                 self.assertTrue(str(filing.get("offering_size_source") or "").strip())
 
