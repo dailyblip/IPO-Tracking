@@ -19,6 +19,7 @@ concurrency:
   # Shared with daily.yml so two feed publishers can never race.
   group: research-monitor-feed-writers
   cancel-in-progress: false
+  queue: max
 
 jobs:
   run-backfill:
