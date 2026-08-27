@@ -9,6 +9,7 @@ from pathlib import Path
 
 from dashboard_export import write_dashboard_csv
 from edgar_client import INVESTMENT_PRODUCT_NAME_PATTERN, SPAC_NAME_PATTERN
+from prepricing_quote_sanitizer import sanitize_payload as sanitize_prepricing_quotes
 from prospect_research import holder_type
 
 # Retained as a reusable UI/filter threshold; it is no longer a publication gate.
@@ -335,6 +336,13 @@ def enforce_public_feed_policy(output_path):
     """Remove non-qualifying records, normalize safe fields, and sync the CSV."""
     output_path = Path(output_path)
     payload = json.loads(output_path.read_text(encoding="utf-8"))
+
+    # Make the pre-pricing quote guard part of the canonical release gate. This
+    # protects every publisher that invokes public-feed policy even if a workflow
+    # forgets to run the standalone sanitizer first. The sanitizer only removes
+    # market-derived fields from non-424B4 rows; it never invents replacement data.
+    payload, _ = sanitize_prepricing_quotes(payload)
+
     filings = payload.get("filings")
     if not isinstance(filings, list):
         raise ValueError("Public feed must contain a filings list")
