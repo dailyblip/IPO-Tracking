@@ -47,8 +47,24 @@
             "lockup_end_date": "2027-02-03",
             "lockup_duration_days": 180
           },
-          "stanford_source_contains": "degree from Stanford University"
+          "stanford_source_contains": [
+            "Confidence 5/5",
+            "degree from Stanford University",
+            "sec.gov/Archives/edgar/data/2056611/"
+          ]
+        },
+        {
+          "name": "Timothy Lugo",
+          "expected": {
+            "stanford_university_bio": false,
+            "stanford_source": null
+          }
         }
+      ],
+      "expected_signals_contain": [
+        "12 named beneficial owners disclosed",
+        "Offering raised approximately $346M",
+        "Lock-up terms captured"
       ]
     },
     {
@@ -73,8 +89,24 @@
             "shares_after_ipo": 507570,
             "lockup_duration_days": 160
           },
-          "stanford_source_contains": "degree from Stanford University"
+          "stanford_source_contains": [
+            "Confidence 5/5",
+            "degree from Stanford University",
+            "sec.gov/Archives/edgar/data/1699963/"
+          ]
+        },
+        {
+          "name": "Wayne Ting",
+          "expected": {
+            "stanford_university_bio": false,
+            "stanford_source": null
+          }
         }
+      ],
+      "expected_signals_contain": [
+        "8 named beneficial owners disclosed",
+        "Offering raised approximately $174M",
+        "Lock-up terms captured"
       ]
     },
     {
@@ -99,8 +131,24 @@
             "shares_after_ipo": 809050,
             "lockup_duration_days": 180
           },
-          "stanford_source_contains": "degree from Stanford University"
+          "stanford_source_contains": [
+            "Confidence 5/5",
+            "degree from Stanford University",
+            "sec.gov/Archives/edgar/data/1181412/"
+          ]
+        },
+        {
+          "name": "Gwynne Shotwell",
+          "expected": {
+            "stanford_university_bio": false,
+            "stanford_source": null
+          }
         }
+      ],
+      "expected_signals_contain": [
+        "7 named beneficial owners disclosed",
+        "Offering raised approximately $75.0B",
+        "Lock-up terms captured"
       ]
     },
     {
@@ -137,6 +185,36 @@
         "lockup_end_date": "2026-12-07",
         "lockup_duration_days": 180
       }
+    },
+    {
+      "label": "Priced record with intentionally unresolved optional fields",
+      "cik": "0002118195",
+      "expected": {
+        "company": "Applied Aerospace & Defense, Inc.",
+        "ticker": "AADX",
+        "form": "424B4",
+        "filed": "2026-06-04",
+        "filing_date": "2026-05-26",
+        "pricing_date": "2026-06-04",
+        "stage": "Priced",
+        "value": 97500000.0,
+        "filing_price": "18-21",
+        "offering_price": 20.0,
+        "lockup_confidence": "Unresolved",
+        "people_count": 1
+      },
+      "expected_null_fields": [
+        "primary_offering_shares",
+        "secondary_offering_shares",
+        "lockup_end_date",
+        "lockup_duration_days",
+        "lockup_text",
+        "lockup_scope"
+      ],
+      "expected_signals_contain": [
+        "1 named beneficial owner disclosed",
+        "Offering raised approximately $98M"
+      ]
     }
   ]
 }
