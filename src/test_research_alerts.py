@@ -58,6 +58,18 @@ class ResearchAlertsTests(unittest.TestCase):
         self.assertEqual(state["ciks"]["0001234567"]["stage"], "priced")
 
     @patch("research_alerts._now_iso", return_value="2026-08-17T20:00:00+00:00")
+    def test_state_drops_ciks_no_longer_in_qualifying_feed(self, _):
+        old_state = {
+            "items": {},
+            "ciks": {
+                "0001234567": {"stage": "pre-pricing"},
+                "0009999999": {"stage": "pre-pricing"},
+            },
+        }
+        _, state = detect_alerts([self.filing()], old_state)
+        self.assertEqual(set(state["ciks"]), {"0001234567"})
+
+    @patch("research_alerts._now_iso", return_value="2026-08-17T20:00:00+00:00")
     def test_priority_escalation_only_moves_up(self, _):
         old = self.filing(priority="Low")
         old_state = {"items": {old["id"]: old}, "ciks": {}}
@@ -84,6 +96,32 @@ class ResearchAlertsTests(unittest.TestCase):
         self.assertEqual([a["key"] for a in payload["alerts"]], ["same", "other"])
 
     @patch("research_alerts._now_iso", return_value="2026-08-17T20:00:00+00:00")
+    def test_alert_history_prunes_disqualified_issuer_but_keeps_prior_lifecycle_alert(self, _):
+        old = {
+            "alerts": [
+                {
+                    "key": "valid-s1",
+                    "type": "new_prepricing",
+                    "filing_id": "s1:0001234567",
+                    "cik": "0001234567",
+                },
+                {
+                    "key": "stale-spac",
+                    "type": "new_prepricing",
+                    "filing_id": "s1:0009999999",
+                    "cik": "0009999999",
+                },
+            ]
+        }
+        payload = merge_alert_history(
+            old,
+            [],
+            eligible_ciks={"0001234567"},
+            eligible_filing_ids={"0001234567-26-000099"},
+        )
+        self.assertEqual([a["key"] for a in payload["alerts"]], ["valid-s1"])
+
+    @patch("research_alerts._now_iso", return_value="2026-08-17T20:00:00+00:00")
     def test_first_run_seeds_state_without_backfill_alerts(self, _):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
@@ -94,6 +132,27 @@ class ResearchAlertsTests(unittest.TestCase):
             self.assertEqual(run(feed, alerts, state), 0)
             self.assertEqual(json.loads(alerts.read_text())["alerts"], [])
             self.assertIn("s1:0001234567", json.loads(state.read_text())["items"])
+
+    @patch("research_alerts._now_iso", return_value="2026-08-17T20:00:00+00:00")
+    def test_run_removes_stale_alerts_for_issuers_not_in_public_feed(self, _):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            feed = root / "filings.json"
+            alerts = root / "alerts.json"
+            state = root / "alerts_state.json"
+            feed.write_text(json.dumps({"filings": [self.filing()]}))
+            alerts.write_text(json.dumps({
+                "alerts": [
+                    {"key": "keep", "cik": "0001234567", "filing_id": "older-s1"},
+                    {"key": "drop", "cik": "0009999999", "filing_id": "spac-s1"},
+                ]
+            }))
+            state.write_text(json.dumps({"items": {}, "ciks": {}}))
+
+            run(feed, alerts, state)
+            payload = json.loads(alerts.read_text())
+            self.assertNotIn("drop", [alert["key"] for alert in payload["alerts"]])
+            self.assertIn("keep", [alert["key"] for alert in payload["alerts"]])
 
 
 if __name__ == "__main__":
