@@ -50,6 +50,37 @@ def _money(value):
     return f"${value:,.0f}"
 
 
+def _iso_date(value):
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = date.fromisoformat(raw)
+    except ValueError:
+        return None
+    return parsed if parsed.isoformat() == raw else None
+
+
+def _sanitize_impossible_lifecycle_date(filing):
+    """Clear an impossible initial filing date without inventing a replacement.
+
+    ``filed`` is the canonical SEC date for the specific public row/form. The
+    separate ``filing_date`` field is the lifecycle's initial S-1 date carried
+    forward across amendments and 424B4 promotion. Historical merges can retain a
+    stale initial date from a later filing. If that carried date is after an
+    authoritative pricing date, clear only the impossible lifecycle field.
+
+    This normalization lives in the release gate so every publisher that invokes
+    public-feed policy gets the same protection, not only the daily workflow.
+    """
+    normalized = dict(filing)
+    pricing_date = _iso_date(filing.get("pricing_date"))
+    filing_date = _iso_date(filing.get("filing_date"))
+    if pricing_date and filing_date and filing_date > pricing_date:
+        normalized["filing_date"] = None
+    return normalized
+
+
 def _has_valid_filing_date(filing):
     """Require a canonical, non-future SEC filing date for every public row."""
     filed = str((filing or {}).get("filed") or "").strip()
@@ -308,13 +339,18 @@ def enforce_public_feed_policy(output_path):
     if not isinstance(filings, list):
         raise ValueError("Public feed must contain a filings list")
 
-    qualifying = [
-        _normalize_market_value_consistency(
-            _scrub_stanford_operational_errors(_normalize_people_types(filing))
-        )
-        for filing in filings
-        if _has_valid_filing_date(filing) and qualifies_for_public_feed(filing)
-    ]
+    qualifying = []
+    for filing in filings:
+        if not isinstance(filing, dict):
+            continue
+        normalized = _sanitize_impossible_lifecycle_date(filing)
+        if not _has_valid_filing_date(normalized) or not qualifies_for_public_feed(normalized):
+            continue
+        normalized = _normalize_people_types(normalized)
+        normalized = _scrub_stanford_operational_errors(normalized)
+        normalized = _normalize_market_value_consistency(normalized)
+        qualifying.append(normalized)
+
     removed = len(filings) - len(qualifying)
     changed = qualifying != filings
     if changed:
