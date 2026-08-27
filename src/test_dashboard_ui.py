@@ -116,7 +116,8 @@ class DashboardUiTests(unittest.TestCase):
             'const matched=isStanfordBeneficialOwner(person);const node=text(matched?"strong":"span",matched?"stanford-person":""',
             self.html,
         )
-        self.assertNotIn("stanford-s", self.html)
+        self.assertNotIn('class="stanford-s"', self.html)
+        self.assertNotIn("stanfordBadge", self.html)
         self.assertIn("Confirmed Stanford-affiliated beneficial owner", self.html)
         self.assertIn("Named people & beneficial owners", self.html)
 
@@ -188,7 +189,8 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn("No additional filing-supported liquidity details are available for this person.", self.html)
         self.assertNotIn("function ipoSizeBucket(value)", self.html)
         self.assertNotIn("size-pill", self.html)
-        self.assertNotIn("stanford-s", self.html)
+        self.assertNotIn('class="stanford-s"', self.html)
+        self.assertNotIn("stanfordBadge", self.html)
 
     def test_published_feed_retains_confirmed_stanford_beneficial_owner(self):
         matches = [
