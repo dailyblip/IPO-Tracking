@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-27T09:18:42.816591+00:00",
+  "generated_at": "2026-08-27T10:08:24.510648+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -22,10 +22,10 @@
       "secondary_offering_shares": 11285714,
       "offering_size_source": "final 424B4 THE OFFERING primary + secondary rows",
       "offering_size_confidence": "High",
-      "filing_price": null,
+      "filing_price": "19-22",
       "offering_price": 17.5,
       "current_price": 13.65,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "Falls Church, VA",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2027-02-15",
@@ -2021,7 +2021,14 @@
           ]
         }
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm",
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-08-12",
+        "accession_no": "0001193125-26-346328",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526346328/0001193125-26-346328-index.htm"
+      }
     },
     {
       "id": "0001185185-26-003448",
@@ -2045,7 +2052,7 @@
       "filing_price": "11-13",
       "offering_price": 13.0,
       "current_price": 32.88,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "RALEIGH, NC",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-02-08",
@@ -2512,7 +2519,7 @@
       "filing_price": "16-18",
       "offering_price": 18.0,
       "current_price": 24.13,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "THOUSAND OAKS, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-02-03",
@@ -3287,7 +3294,7 @@
       "filing_price": "15-17",
       "offering_price": 16.0,
       "current_price": 18.46,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "SAN DIEGO, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-02-03",
@@ -4171,10 +4178,10 @@
       "secondary_offering_shares": null,
       "offering_size_source": "cover share title",
       "offering_size_confidence": "High",
-      "filing_price": null,
+      "filing_price": "15-17",
       "offering_price": 18.0,
       "current_price": 27.76,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "San Francisco, CA",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2027-02-02",
@@ -4742,7 +4749,14 @@
           ]
         }
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2131524/000162828026054354/0001628280-26-054354-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2131524/000162828026054354/0001628280-26-054354-index.htm",
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-07-30",
+        "accession_no": "0001628280-26-050756",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2131524/000162828026050756/0001628280-26-050756-index.htm"
+      }
     },
     {
       "id": "0001193125-26-334997",
@@ -4766,7 +4780,7 @@
       "filing_price": "15-17",
       "offering_price": 17.0,
       "current_price": 19.55,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "SAN CARLOS, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-02-01",
@@ -5471,7 +5485,7 @@
       "filing_price": "21-25",
       "offering_price": 23.0,
       "current_price": 22.31,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "Tinton Falls, NJ",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2027-01-27",
@@ -5927,7 +5941,7 @@
       "filing_price": "14-16",
       "offering_price": 16.0,
       "current_price": 29.58,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "th Floor Cambridge, MA",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2027-01-27",
@@ -6705,7 +6719,7 @@
       "filing_price": "15-17",
       "offering_price": 15.0,
       "current_price": 13.68,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "St. Vernon, CA",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": null,
@@ -7064,7 +7078,7 @@
       "filing_price": "13-15",
       "offering_price": 15.0,
       "current_price": 31.7,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "ALAMEDA, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-01-23",
@@ -7473,10 +7487,10 @@
       "secondary_offering_shares": null,
       "offering_size_source": "cover share title",
       "offering_size_confidence": "High",
-      "filing_price": null,
+      "filing_price": "18-21",
       "offering_price": 15.0,
       "current_price": 13.7,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "OAK RIDGE, TN",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-01-12",
@@ -7971,7 +7985,14 @@
           ]
         }
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2086716/000121390026078747/0001213900-26-078747-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2086716/000121390026078747/0001213900-26-078747-index.htm",
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-07-07",
+        "accession_no": "0001213900-26-075742",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2086716/000121390026075742/0001213900-26-075742-index.htm"
+      }
     },
     {
       "id": "0001104659-26-084293",
@@ -7995,7 +8016,7 @@
       "filing_price": "23-27",
       "offering_price": 21.0,
       "current_price": 20.49,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "Coppell, TX",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2027-01-12",
@@ -8612,7 +8633,7 @@
       "filing_price": "24-26",
       "offering_price": 25.0,
       "current_price": 43.27,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "SAN FRANCISCO, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-12-09",
@@ -9156,7 +9177,7 @@
       "filing_price": "19-22",
       "offering_price": 16.0,
       "current_price": 12.45,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "Fort Lauderdale, FL",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2026-12-29",
@@ -9726,10 +9747,10 @@
       "secondary_offering_shares": null,
       "offering_size_source": "cover share title",
       "offering_size_confidence": "High",
-      "filing_price": null,
+      "filing_price": "14-16",
       "offering_price": 16.0,
       "current_price": 21.18,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "Princeton, NJ",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2026-12-15",
@@ -10298,7 +10319,14 @@
           ]
         }
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2123613/000119312526276096/0001193125-26-276096-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2123613/000119312526276096/0001193125-26-276096-index.htm",
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-06-11",
+        "accession_no": "0001193125-26-266629",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2123613/000119312526266629/0001193125-26-266629-index.htm"
+      }
     },
     {
       "id": "0001140361-26-025790",
@@ -10319,10 +10347,10 @@
       "secondary_offering_shares": null,
       "offering_size_source": "prospectus cover title",
       "offering_size_confidence": "High",
-      "filing_price": null,
+      "filing_price": "14-16",
       "offering_price": 12.5,
       "current_price": 12.66,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "Raleigh, NC",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2026-12-15",
@@ -10359,7 +10387,14 @@
         "Lock-up terms captured for liquidity-event follow-up"
       ],
       "people": [],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1531193/000114036126025790/0001140361-26-025790-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1531193/000114036126025790/0001140361-26-025790-index.htm",
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-06-12",
+        "accession_no": "0001140361-26-024973",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/1531193/000114036126024973/0001140361-26-024973-index.htm"
+      }
     },
     {
       "id": "0001628280-26-042639",
@@ -10383,7 +10418,7 @@
       "filing_price": null,
       "offering_price": 135.0,
       "current_price": 139.63,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "SECURITIES AND EXCHANGE COMMISSION WASHINGTON, DC",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2026-12-09",
@@ -10705,7 +10740,7 @@
       "filing_price": null,
       "offering_price": 10.0,
       "current_price": 9.95,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "INCLINE VILLAGE, NV",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-12-08",
@@ -10860,7 +10895,7 @@
       "filing_price": "18-20",
       "offering_price": 18.0,
       "current_price": 18.52,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "CHEVY CHASE, MD",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-12-08",
@@ -11485,10 +11520,10 @@
       "secondary_offering_shares": null,
       "offering_size_source": "cover share title",
       "offering_size_confidence": "High",
-      "filing_price": null,
+      "filing_price": "17-19",
       "offering_price": 20.0,
       "current_price": 39.26,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "Cambridge, MA",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2026-12-07",
@@ -12276,7 +12311,14 @@
           ]
         }
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1657677/000119312526265983/0001193125-26-265983-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1657677/000119312526265983/0001193125-26-265983-index.htm",
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-06-09",
+        "accession_no": "0001193125-26-262880",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/1657677/000119312526262880/0001193125-26-262880-index.htm"
+      }
     },
     {
       "id": "0001193125-26-265898",
@@ -12300,7 +12342,7 @@
       "filing_price": "20-23",
       "offering_price": 21.5,
       "current_price": 12.99,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "HOUSTON, TX",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-12-07",
@@ -13178,7 +13220,7 @@
       "filing_price": "25-27",
       "offering_price": 26.0,
       "current_price": 26.12,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "Philadelphia, PA",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2027-06-09",
@@ -13526,7 +13568,7 @@
       "filing_price": "13.5-16.5",
       "offering_price": 13.5,
       "current_price": 18.34,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "KELLOGG, ID",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": null,
@@ -13821,10 +13863,10 @@
       "secondary_offering_shares": null,
       "offering_size_source": "cover title adjacent to IPO statement",
       "offering_size_confidence": "High",
-      "filing_price": null,
+      "filing_price": "53-55",
       "offering_price": 60.0,
       "current_price": 53.29,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "S Technology Court Broomfield, CO",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": null,
@@ -13936,7 +13978,14 @@
           "lockup_schedule": []
         }
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2110105/000162828026041003/0001628280-26-041003-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2110105/000162828026041003/0001628280-26-041003-index.htm",
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-06-01",
+        "accession_no": "0001628280-26-039286",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2110105/000162828026039286/0001628280-26-039286-index.htm"
+      }
     },
     {
       "id": "0001193125-26-257410",
@@ -13960,7 +14009,7 @@
       "filing_price": "20-22",
       "offering_price": 23.0,
       "current_price": 18.44,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "PALO ALTO, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-12-01",
@@ -14507,10 +14556,10 @@
       "secondary_offering_shares": null,
       "offering_size_source": "cover title adjacent to IPO statement",
       "offering_size_confidence": "High",
-      "filing_price": null,
+      "filing_price": "18-21",
       "offering_price": 20.0,
       "current_price": 14.3,
-      "price_updated": "2026-08-27T09:18:12.954765+00:00",
+      "price_updated": "2026-08-27T10:08:05.448852+00:00",
       "location": "Huntsville, AL",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": null,
@@ -14560,7 +14609,14 @@
           "lockup_schedule": []
         }
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2118195/000119312526256356/0001193125-26-256356-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2118195/000119312526256356/0001193125-26-256356-index.htm",
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-05-26",
+        "accession_no": "0001193125-26-237828",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2118195/000119312526237828/0001193125-26-237828-index.htm"
+      }
     }
   ]
 }
