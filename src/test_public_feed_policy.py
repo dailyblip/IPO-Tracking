@@ -7,7 +7,7 @@ from public_feed_policy import MINIMUM_IPO_VALUE, enforce_public_feed_policy, qu
 
 
 class PublicFeedPolicyTests(unittest.TestCase):
-    def test_threshold_is_inclusive_at_100m_for_priced_ipo(self):
+    def test_100m_threshold_value_remains_a_valid_ipo_size(self):
         self.assertTrue(qualifies_for_public_feed({"company": "Large Operating Co", "form": "424B4", "value": MINIMUM_IPO_VALUE}))
         self.assertTrue(qualifies_for_public_feed({"company": "Large Operating Co", "form": "424B4", "value": "$100,000,000"}))
 
@@ -51,13 +51,15 @@ class PublicFeedPolicyTests(unittest.TestCase):
         }
         self.assertTrue(qualifies_for_public_feed(filing))
 
-    def test_sub_100m_is_excluded(self):
-        self.assertFalse(qualifies_for_public_feed({"company": "Small Operating Co", "form": "424B4", "value": 99_999_999}))
-        self.assertFalse(qualifies_for_public_feed({"company": "Small Operating Co", "form": "424B4", "value": "99999999"}))
+    def test_sub_100m_operating_ipos_are_included(self):
+        self.assertTrue(qualifies_for_public_feed({"company": "Small Operating Co", "form": "424B4", "value": 99_999_999}))
+        self.assertTrue(qualifies_for_public_feed({"company": "Small Operating Co", "form": "424B4", "value": "99999999"}))
+        self.assertTrue(qualifies_for_public_feed({"company": "Micro Operating Co", "form": "424B4", "value": 8_000_000}))
 
-    def test_unknown_or_invalid_size_is_excluded(self):
+    def test_unknown_or_invalid_size_does_not_exclude_otherwise_valid_ipo(self):
         for value in (None, "", "unknown", float("nan"), float("inf"), True):
-            self.assertFalse(qualifies_for_public_feed({"company": "Operating Co", "form": "424B4", "value": value}))
+            with self.subTest(value=value):
+                self.assertTrue(qualifies_for_public_feed({"company": "Operating Co", "form": "424B4", "value": value}))
 
     def test_unsupported_forms_are_excluded_even_with_large_values(self):
         for form in ("S-3", "S-3/A", "424B3", "F-1", "F-1/A", "20-F", "8-A12B", ""):
@@ -80,6 +82,7 @@ class PublicFeedPolicyTests(unittest.TestCase):
         for company in excluded:
             with self.subTest(company=company):
                 self.assertFalse(qualifies_for_public_feed({"company": company, "form": "424B4", "value": 500_000_000}))
+                self.assertFalse(qualifies_for_public_feed({"company": company, "form": "424B4", "value": None}))
 
     def test_legitimate_holdings_name_is_not_excluded_by_release_name_gate(self):
         self.assertTrue(
@@ -96,11 +99,21 @@ class PublicFeedPolicyTests(unittest.TestCase):
         }
         self.assertFalse(qualifies_for_public_feed(filing))
 
-    def test_s1_preliminary_range_can_qualify_at_threshold(self):
+    def test_s1_unknown_size_can_qualify_but_resale_provenance_still_blocks(self):
+        filing = {
+            "company": "Acme Robotics, Inc.",
+            "form": "S-1",
+            "value": None,
+        }
+        resale = dict(filing, offering_size_source="selling stockholder resale registration")
+        self.assertTrue(qualifies_for_public_feed(filing))
+        self.assertFalse(qualifies_for_public_feed(resale))
+
+    def test_s1_preliminary_range_can_qualify_at_any_size(self):
         filing = {
             "company": "Acme Robotics, Inc.",
             "form": "S-1/A",
-            "value": 150_000_000,
+            "value": 45_000_000,
             "price_range": "$18.00–$20.00",
         }
         self.assertTrue(qualifies_for_public_feed(filing))
@@ -109,7 +122,7 @@ class PublicFeedPolicyTests(unittest.TestCase):
         safe = {
             "company": "Acme Robotics, Inc.",
             "form": "S-1",
-            "value": 125_000_000,
+            "value": 75_000_000,
             "filing_price": "$10.00",
             "offering_size_source": "explicit issuer-only cover statement",
             "offering_size_confidence": "High",
@@ -224,7 +237,7 @@ class PublicFeedPolicyTests(unittest.TestCase):
             persisted = json.loads(output.read_text(encoding="utf-8"))
             self.assertEqual(persisted["filings"][0]["people"][0]["cash_value"], 64_000_000)
 
-    def test_policy_removes_non_qualifying_records_and_keeps_csv_in_sync(self):
+    def test_policy_keeps_any_size_operating_ipos_and_excludes_non_qualifying_records(self):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "filings.json"
             payload = {
@@ -233,28 +246,29 @@ class PublicFeedPolicyTests(unittest.TestCase):
                 "source": "SEC EDGAR",
                 "filings": [
                     {"id": "keep", "company": "Large IPO", "form": "424B4", "filed": "2026-08-24", "value": 125_000_000, "people": []},
-                    {"id": "small", "company": "Small IPO", "form": "424B4", "value": 80_000_000, "people": []},
-                    {"id": "unknown", "company": "Unknown IPO", "form": "424B4", "value": None, "people": []},
-                    {"id": "unsupported", "company": "Large Follow-On", "form": "S-3", "value": 500_000_000, "people": []},
-                    {"id": "spac", "company": "Gores Holdings XII, Inc.", "form": "424B4", "value": 600_000_000, "people": []},
-                    {"id": "etf", "company": "Example ETF Trust", "form": "424B4", "value": 300_000_000, "people": []},
-                    {"id": "resale", "company": "Aura Consolidated Group, Inc.", "form": "S-1", "value": 478_548_213, "filing_price": "$3.34", "people": []},
+                    {"id": "small", "company": "Small IPO", "form": "424B4", "filed": "2026-08-24", "value": 80_000_000, "people": []},
+                    {"id": "unknown", "company": "Unknown IPO", "form": "424B4", "filed": "2026-08-24", "value": None, "people": []},
+                    {"id": "unsupported", "company": "Large Follow-On", "form": "S-3", "filed": "2026-08-24", "value": 500_000_000, "people": []},
+                    {"id": "spac", "company": "Gores Holdings XII, Inc.", "form": "424B4", "filed": "2026-08-24", "value": 600_000_000, "people": []},
+                    {"id": "etf", "company": "Example ETF Trust", "form": "424B4", "filed": "2026-08-24", "value": 300_000_000, "people": []},
+                    {"id": "resale", "company": "Aura Consolidated Group, Inc.", "form": "S-1", "filed": "2026-08-24", "value": 478_548_213, "filing_price": "$3.34", "people": []},
                 ],
             }
             output.write_text(json.dumps(payload), encoding="utf-8")
 
             filtered, removed = enforce_public_feed_policy(output)
 
-            self.assertEqual(removed, 6)
-            self.assertEqual([filing["id"] for filing in filtered["filings"]], ["keep"])
+            self.assertEqual(removed, 4)
+            expected_ids = ["keep", "small", "unknown"]
+            self.assertEqual([filing["id"] for filing in filtered["filings"]], expected_ids)
             self.assertEqual(
                 [filing["id"] for filing in json.loads(output.read_text(encoding="utf-8"))["filings"]],
-                ["keep"],
+                expected_ids,
             )
             csv_text = output.with_suffix(".csv").read_text(encoding="utf-8")
             self.assertIn("Large IPO", csv_text)
-            self.assertNotIn("Small IPO", csv_text)
-            self.assertNotIn("Unknown IPO", csv_text)
+            self.assertIn("Small IPO", csv_text)
+            self.assertIn("Unknown IPO", csv_text)
             self.assertNotIn("Large Follow-On", csv_text)
             self.assertNotIn("Gores Holdings XII", csv_text)
             self.assertNotIn("Example ETF Trust", csv_text)
