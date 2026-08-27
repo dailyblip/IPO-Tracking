@@ -9,6 +9,7 @@ from pathlib import Path
 
 from dashboard_export import write_dashboard_csv
 from edgar_client import INVESTMENT_PRODUCT_NAME_PATTERN, SPAC_NAME_PATTERN
+from followon_sanitizer import sanitize_payload as sanitize_followon_offerings
 from ownership_parser import looks_like_document_heading
 from prepricing_quote_sanitizer import sanitize_payload as sanitize_prepricing_quotes
 from prospect_research import holder_type, valid_ownership_percent, valid_share_count
@@ -437,7 +438,7 @@ def qualifies_for_public_feed(filing):
     return True
 
 
-def enforce_public_feed_policy(output_path):
+def enforce_public_feed_policy(output_path, followon_submissions_loader=None):
     """Remove non-qualifying records, normalize safe fields, and sync the CSV."""
     output_path = Path(output_path)
     payload = json.loads(output_path.read_text(encoding="utf-8"))
@@ -447,6 +448,18 @@ def enforce_public_feed_policy(output_path):
     # forgets to run the standalone sanitizer first. The sanitizer only removes
     # market-derived fields from non-424B4 rows; it never invents replacement data.
     payload, _ = sanitize_prepricing_quotes(payload)
+
+    # Make post-reporting follow-on/resale exclusion part of the canonical release
+    # gate too. This prevents a publisher from leaking a later 424B4 merely because
+    # it forgot the standalone follow-on sanitizer step. SEC submissions history is
+    # authoritative; lookup failures continue to fail closed rather than guessing.
+    if followon_submissions_loader is None:
+        payload, removed_followons = sanitize_followon_offerings(payload)
+    else:
+        payload, removed_followons = sanitize_followon_offerings(
+            payload,
+            submissions_loader=followon_submissions_loader,
+        )
 
     filings = payload.get("filings")
     if not isinstance(filings, list):
@@ -466,8 +479,8 @@ def enforce_public_feed_policy(output_path):
         normalized = _normalize_market_value_consistency(normalized)
         qualifying.append(normalized)
 
-    removed = len(filings) - len(qualifying)
-    changed = qualifying != filings
+    removed = len(removed_followons) + len(filings) - len(qualifying)
+    changed = bool(removed_followons) or qualifying != filings
     if changed:
         payload["filings"] = qualifying
         temporary = output_path.with_suffix(output_path.suffix + ".tmp")
