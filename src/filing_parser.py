@@ -403,8 +403,26 @@ def extract_offering_terms(soup: BeautifulSoup) -> dict:
             sources.append(label)
             confidence = "High"
         elif total != explicit_total:
-            conflict = True
-            sources.append(f"conflict with {label} ({explicit_total:,} shares)")
+            component_label = None
+            if primary is not None and explicit_total == primary:
+                component_label = "primary"
+            if secondary is not None and explicit_total == secondary:
+                component_label = (
+                    "offering" if component_label else "secondary"
+                )
+            if component_label:
+                # A cover/title count can identify one leg of an IPO rather than
+                # the full base offering. When an explicit THE OFFERING or issuer+
+                # selling-holder construction already reconciles the primary and
+                # secondary legs, an exact component match is corroboration, not a
+                # contradictory total. Do not weaken a truly different count.
+                sources.append(
+                    f"{label} matches disclosed {component_label} offering component "
+                    f"({explicit_total:,} shares)"
+                )
+            else:
+                conflict = True
+                sources.append(f"conflict with {label} ({explicit_total:,} shares)")
         else:
             sources.append(label)
 
