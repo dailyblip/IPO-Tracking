@@ -42,6 +42,15 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # Release-safety code can make a previously checked-in row newly ineligible.
+      # Reconcile that stale snapshot before published-feed integrity tests run so
+      # the writer can self-heal rather than failing before it reaches the policy.
+      - name: Reconcile checked-in feed with current release policy
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python public_feed_policy.py ../docs/data/filings.json
+
       - name: Run unit tests
         run: python -m unittest discover -s src -p 'test_*.py' -v
 
