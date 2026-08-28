@@ -214,7 +214,14 @@ def parse_ownership_table(table):
                 value = _numeric(cell)
             if value is not None and data.get(kind) is None:
                 data[kind] = value
-        if all(data[k] is None for k in ("shares_before", "shares_sold", "shares_after", "shares")):
+        # A lone numeric cell is only a safe share-count fallback when the row did
+        # not already yield a percentage. SEC ownership tables commonly split a
+        # percentage value and its "%" marker across cells/continuation tables;
+        # reusing that disclosed percentage as shares fabricates a holding value.
+        if (
+            all(data[k] is None for k in ("shares_before", "shares_sold", "shares_after", "shares"))
+            and all(data[k] is None for k in ("percent_before", "percent_after", "percent"))
+        ):
             numeric = [_numeric(c) for c in row[1:] if _numeric(c) is not None]
             if len(numeric) == 1:
                 data["shares"] = numeric[0]
