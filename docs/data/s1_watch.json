@@ -1,8 +1,54 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T01:12:18.085554+00:00",
+  "generated_at": "2026-08-28T02:23:02.485664+00:00",
   "source": "SEC EDGAR",
   "filings": [
+    {
+      "id": "0001520138-26-000375",
+      "company": "Youmi Inc.",
+      "ticker": "",
+      "cik": "0002137360",
+      "accession_no": "0001520138-26-000375",
+      "form": "S-1/A",
+      "filed": "2026-08-27",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2137360/000152013826000375/0001520138-26-000375-index.htm"
+    },
+    {
+      "id": "0001493152-26-040434",
+      "company": "FullPAC, Inc.",
+      "ticker": "",
+      "cik": "0002076148",
+      "accession_no": "0001493152-26-040434",
+      "form": "S-1/A",
+      "filed": "2026-08-27",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2076148/000149315226040434/0001493152-26-040434-index.htm"
+    },
     {
       "id": "0001193125-26-361496",
       "company": "Holtec Nuclear Corp",
