@@ -52,6 +52,7 @@ jobs:
           MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          STANFORD_RESEARCH_CACHE_PATH: ../docs/data/stanford_research_cache.json
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
         # Re-evaluate a rolling window so recently missed filings can self-heal
         # after parser/data-quality improvements instead of aging out permanently.
@@ -103,7 +104,7 @@ jobs:
 
       - name: Publish Research Monitor data
         run: |
-          if git diff --quiet -- docs/data/filings.json docs/data/filings.csv; then
+          if git diff --quiet -- docs/data/filings.json docs/data/filings.csv docs/data/stanford_research_cache.json; then
             echo "Research Monitor data is unchanged."
             exit 0
           fi
@@ -120,6 +121,6 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/filings.json docs/data/filings.csv
+          git add docs/data/filings.json docs/data/filings.csv docs/data/stanford_research_cache.json
           git commit -m "Update Research Monitor data"
           git push origin HEAD:main
