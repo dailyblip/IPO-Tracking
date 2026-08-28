@@ -41,6 +41,32 @@ class OwnershipParserTests(unittest.TestCase):
         self.assertIsNone(r['shares'])
         self.assertIsNone(r['shares_after'])
 
+    def test_dual_class_share_counts_do_not_become_before_after_ipo_shares(self):
+        html="""<table>
+        <tr>
+          <th>Name of beneficial owner</th>
+          <th>Class A Common Stock beneficially owned before offering</th>
+          <th>Class B Common Stock beneficially owned after offering</th>
+          <th>Ownership Percent Before IPO</th>
+          <th>Ownership Percent After IPO</th>
+        </tr>
+        <tr>
+          <td>GPC Partners Investments (Elevate) LP</td>
+          <td>2,082,900</td>
+          <td>8,840,102</td>
+          <td>9.9%</td>
+          <td>7.2%</td>
+        </tr>
+        </table>"""
+        rows=parse_ownership_table(BeautifulSoup(html,'lxml').find('table'))
+        self.assertEqual(len(rows),1)
+        r=rows[0]
+        self.assertIsNone(r['shares'])
+        self.assertIsNone(r['shares_before'])
+        self.assertIsNone(r['shares_after'])
+        self.assertEqual(r['percent_before'],9.9)
+        self.assertEqual(r['percent_after'],7.2)
+
     def test_prospectus_section_headings_are_not_beneficial_owners(self):
         html="""<table>
         <tr><th>Name of beneficial owner</th><th>Shares beneficially owned</th></tr>
