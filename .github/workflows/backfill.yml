@@ -66,6 +66,7 @@ jobs:
           MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          STANFORD_RESEARCH_CACHE_PATH: ../docs/data/stanford_research_cache.json
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
         run: >
           python main.py
@@ -149,13 +150,13 @@ jobs:
       - name: Publish Research Monitor data
         run: |
           echo "Publishing corrected range $BACKFILL_START through $BACKFILL_END."
-          if [ -z "$(git status --short -- docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv docs/data/alerts.json docs/data/alerts_state.json)" ]; then
+          if [ -z "$(git status --short -- docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv docs/data/stanford_research_cache.json docs/data/alerts.json docs/data/alerts_state.json)" ]; then
             echo "Research Monitor data is unchanged."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv docs/data/alerts.json docs/data/alerts_state.json
+          git add docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv docs/data/stanford_research_cache.json docs/data/alerts.json docs/data/alerts_state.json
           git commit -m "Backfill Research Monitor data through $BACKFILL_END"
           git pull --rebase origin main
           git push origin HEAD:main
