@@ -54,6 +54,9 @@ _SHARE_TO_PERCENT = {
     "shares_before": "percent_before",
     "shares_after": "percent_after",
 }
+_SHARE_CLASS_RE = re.compile(
+    r"\bclass\s+([a-z0-9]+)\s+(?:common\s+)?(?:stock|shares?)\b", re.I
+)
 
 
 def _clean(text):
@@ -186,6 +189,12 @@ def _kind(header):
     return None
 
 
+def _share_class(header):
+    """Return an explicit common-stock class identifier from a composite header."""
+    match = _SHARE_CLASS_RE.search(str(header or ""))
+    return match.group(1).lower() if match else None
+
+
 def _name_from_row(row):
     for cell in row:
         text = _clean(cell)
@@ -208,7 +217,18 @@ def parse_ownership_table(table):
         return []
     matrix = _matrix(table)
     headers, start = _composite_headers(matrix)
-    kinds = [_kind(h) for h in headers]
+    share_classes = {share_class for header in headers if (share_class := _share_class(header))}
+    multi_class = len(share_classes) > 1
+    # The public ownership schema currently has no share-class dimension. When a
+    # table explicitly reports multiple common-stock classes, do not flatten a
+    # class-specific count into generic before/after/share fields. That can turn
+    # Class A vs Class B positions into a fictitious temporal ownership change.
+    # Unqualified temporal columns (for example, explicit dilution percentages)
+    # remain eligible because their meaning is still supported by the header.
+    kinds = [
+        None if (multi_class and _share_class(header)) else _kind(header)
+        for header in headers
+    ]
     results = []
     for row in matrix[start:]:
         name = _name_from_row(row)
@@ -247,8 +267,11 @@ def parse_ownership_table(table):
         # not already yield a percentage. SEC ownership tables commonly split a
         # percentage value and its "%" marker across cells/continuation tables;
         # reusing that disclosed percentage as shares fabricates a holding value.
+        # Disable this fallback entirely for multi-class tables so an otherwise
+        # ambiguous class-specific position cannot leak back into generic shares.
         if (
-            all(data[k] is None for k in ("shares_before", "shares_sold", "shares_after", "shares"))
+            not multi_class
+            and all(data[k] is None for k in ("shares_before", "shares_sold", "shares_after", "shares"))
             and all(data[k] is None for k in ("percent_before", "percent_after", "percent"))
         ):
             numeric = [_numeric(c) for c in row[1:] if _numeric(c) is not None]
