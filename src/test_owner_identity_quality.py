@@ -25,6 +25,16 @@ class OwnerIdentityQualityTests(unittest.TestCase):
             with self.subTest(name=name):
                 self.assertEqual(holder_type(name), "Entity")
 
+    def test_explicit_legal_entity_suffixes_do_not_fall_through_to_people(self):
+        for name in ("Nextech VII Oncology SCSp", "Example Holdings S.C.Sp."):
+            with self.subTest(name=name):
+                self.assertEqual(holder_type(name), "Entity")
+
+    def test_generic_seller_groups_are_not_individuals(self):
+        for name in ("Other selling stockholders", "Selling shareholders"):
+            with self.subTest(name=name):
+                self.assertEqual(holder_type(name), "Unknown")
+
     def test_normal_person_name_remains_individual(self):
         self.assertEqual(holder_type("Jane Smith"), "Individual")
 
