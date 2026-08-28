@@ -5225,7 +5225,7 @@
           "lockup_duration_unit": "days",
           "lockup_text": "We, our directors, executive officers, and holders of substantially all of our outstanding Common Units immediately prior to this offering have agreed, subject to certain exceptions, not to dispose of or hedge any shares of our Class A common stock (including shares issued upon exchange of Common Units) or securities convertible into or exchangeable for shares of our Class A common stock for 180 days from the date of this prospectus, except with the prior written consent of any two representatives 66 Table of Contents of the underwriters",
           "valuation_as_of": "2026-08-28",
-          "holder_type": "Individual",
+          "holder_type": "Entity",
           "role": null,
           "ownership_percent": 15.5,
           "ownership_percent_before": 19.1,
