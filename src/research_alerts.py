@@ -8,6 +8,7 @@ from pathlib import Path
 ALERT_SCHEMA_VERSION = 1
 STATE_SCHEMA_VERSION = 1
 MAX_ALERT_HISTORY = 250
+MISSING_RUN_GRACE = 1
 
 
 def _now_iso() -> str:
@@ -93,9 +94,6 @@ def detect_alerts(filings: list[dict], previous_state: dict | None) -> tuple[lis
     previous_ciks = previous_state.get("ciks", {})
     alerts: list[dict] = []
     current_items: dict[str, dict] = {}
-    # The state mirrors the current qualifying public feed. Keeping CIKs for
-    # issuers that have been removed (for example after a SPAC/follow-on repair)
-    # can create false lifecycle transitions if that stale state is reused later.
     current_ciks: dict[str, dict] = {}
 
     for filing in filings:
@@ -154,7 +152,28 @@ def detect_alerts(filings: list[dict], previous_state: dict | None) -> tuple[lis
                 "stage": stage,
                 "last_filing_id": filing_id,
                 "last_filed": filing.get("filed"),
+                "missing_runs": 0,
             }
+
+    # Daily and S-1 workflows both publish the canonical feed and each triggers
+    # alerts. During their handoff, one valid issuer can be absent for a single
+    # snapshot. Preserve it for that one completed refresh so its history is not
+    # pruned and then emitted again as "new". A second consecutive absence is
+    # treated as a real eligibility removal.
+    for cik, prior_cik in previous_ciks.items():
+        if cik in current_ciks:
+            continue
+        missing_runs = int(prior_cik.get("missing_runs") or 0) + 1
+        if missing_runs <= MISSING_RUN_GRACE:
+            current_ciks[cik] = {**prior_cik, "missing_runs": missing_runs}
+
+    retained_ciks = set(current_ciks)
+    for filing_id, prior_item in previous_items.items():
+        if filing_id in current_items:
+            continue
+        cik = str(prior_item.get("cik") or "")
+        if cik and cik in retained_ciks:
+            current_items[filing_id] = prior_item
 
     new_state = {
         "schema_version": STATE_SCHEMA_VERSION,
@@ -239,16 +258,8 @@ def run(feed_path: Path, alerts_path: Path, state_path: Path) -> int:
     # entire existing queue as newly discovered. Subsequent runs emit deltas.
     if not state_exists:
         new_alerts = []
-    eligible_ciks = {
-        str(filing.get("cik") or "")
-        for filing in filings
-        if str(filing.get("cik") or "")
-    }
-    eligible_filing_ids = {
-        str(filing.get("id") or "")
-        for filing in filings
-        if str(filing.get("id") or "")
-    }
+    eligible_ciks = set(new_state["ciks"])
+    eligible_filing_ids = set(new_state["items"])
     merged = merge_alert_history(
         existing_alerts,
         new_alerts,
