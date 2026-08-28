@@ -21,6 +21,15 @@ _LOCATION_RE = re.compile(r"^([^,]+),\s*([A-Za-z]{2})$")
 _UNIT_MARKER_RE = re.compile(
     r"\b(?:floor|suite|ste|unit|building|bldg|room|level)\b", re.IGNORECASE
 )
+_SEC_HEADER_RE = re.compile(r"\bsecurities\s+and\s+exchange\s+commission\b", re.IGNORECASE)
+# A street-type token followed by another word is strong evidence that flattened
+# address text leaked into the city field (e.g. ``Technology Court Broomfield``).
+# Requiring a following token avoids rejecting legitimate place names such as
+# ``Street, MD`` merely because the city itself matches a street-type word.
+_ADDRESS_CONTAMINATION_RE = re.compile(
+    r"\b(?:avenue|boulevard|court|drive|highway|parkway|street)\b\s+\S+",
+    re.IGNORECASE,
+)
 
 
 def normalize_location(value):
@@ -42,6 +51,10 @@ def normalize_location(value):
     if not city or any(character.isdigit() for character in city):
         return None
     if _UNIT_MARKER_RE.search(city):
+        return None
+    if _SEC_HEADER_RE.search(city):
+        return None
+    if _ADDRESS_CONTAMINATION_RE.search(city):
         return None
     return f"{city}, {state}"
 
