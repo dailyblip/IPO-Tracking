@@ -22,6 +22,21 @@ button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{ou
 .recent-item:focus-visible{outline:2px solid var(--focus)}.owner-toggle:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
 .legend-dot.filing,.bar.filing{background:#9ba8a0}
 .legend-dot.pricing,.bar.pricing{background:var(--cardinal)}
+.table-wrap{overflow:auto}
+table{min-width:1735px}
+th[data-col]:not([data-col="10"]){white-space:nowrap}
+td[data-col]:not([data-col="0"]):not([data-col="10"]){white-space:nowrap}
+th[data-col="0"],td[data-col="0"]{min-width:270px}
+th[data-col="1"],td[data-col="1"]{min-width:90px}
+th[data-col="2"],td[data-col="2"]{min-width:90px}
+th[data-col="3"],td[data-col="3"]{min-width:125px}
+th[data-col="4"],td[data-col="4"]{min-width:140px}
+th[data-col="5"],td[data-col="5"]{min-width:140px}
+th[data-col="6"],td[data-col="6"]{min-width:180px}
+th[data-col="7"],td[data-col="7"]{min-width:150px}
+th[data-col="8"],td[data-col="8"]{min-width:145px}
+th[data-col="9"],td[data-col="9"]{min-width:135px}
+th[data-col="10"],td[data-col="10"]{min-width:270px;white-space:normal}
 th{background:#f4f4f4}
 dialog{box-shadow:0 18px 45px rgba(46,45,41,.24)}
 </style>
