@@ -111,6 +111,8 @@ jobs:
           PY
       - name: Enforce public-feed eligibility policy
         working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python public_feed_policy.py ../docs/data/filings.json
       - name: Repair malformed issuer locations
         working-directory: src
