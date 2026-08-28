@@ -7,80 +7,57 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 FILINGS_PATH = ROOT / "docs" / "data" / "filings.json"
 
-# These fields describe the IPO/filing itself, not an individual beneficial owner.
-# The public feed can contain multiple rows for one filing (one per holder), but
-# issuer-level facts must not drift between those rows during enrichment or
-# lifecycle reconciliation.
-ISSUER_LEVEL_FIELDS = (
-    "company",
-    "cik",
-    "ticker",
-    "filed",
-    "form",
-    "accession",
-    "stage",
-    "location",
-    "offering_value",
-    "offering_size_usd",
-    "size_source",
-    "size_source_url",
-    "size_conflict",
-    "filing_price",
-    "current_price",
-    "price_date",
-    "price_updated",
-    "pricing_date",
-    "offering_price",
-    "offering_price_source",
-    "offer_status",
-    "lockup_status",
-    "lockup_end_date",
-    "lockup_waiver",
-    "lockup_source",
-)
 
-
-def _stable(value):
-    if isinstance(value, (dict, list)):
-        return json.dumps(value, sort_keys=True, separators=(",", ":"))
-    if value is None:
-        return ""
-    return str(value).strip()
-
-
-class TestIssuerRowConsistency(unittest.TestCase):
+class TestIssuerLifecycleUniqueness(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.rows = json.loads(FILINGS_PATH.read_text(encoding="utf-8"))
+        payload = json.loads(FILINGS_PATH.read_text(encoding="utf-8"))
+        cls.rows = payload.get("filings", [])
 
-    def test_duplicate_holder_rows_preserve_identical_issuer_facts(self):
-        groups = defaultdict(list)
+    def test_public_feed_has_single_active_lifecycle_record_per_cik(self):
+        """A priced promotion must not leave a stale pre-pricing row behind."""
+        by_cik = defaultdict(list)
         for row in self.rows:
             cik = str(row.get("cik") or "").strip()
-            accession = str(row.get("accession") or "").strip()
-            filing_url = str(row.get("filing_url") or "").strip()
-            if cik and accession:
-                key = (cik, accession)
-            elif filing_url:
-                key = ("url", filing_url)
-            else:
-                continue
-            groups[key].append(row)
+            if cik:
+                by_cik[cik].append(row)
 
-        conflicts = []
-        for key, rows in groups.items():
-            if len(rows) < 2:
+        duplicates = []
+        for cik, rows in by_cik.items():
+            if len(rows) <= 1:
                 continue
-            for field in ISSUER_LEVEL_FIELDS:
-                values = {_stable(row.get(field)) for row in rows}
-                if len(values) > 1:
-                    sample = sorted(values)[:4]
-                    conflicts.append(f"{key} {field}: {sample}")
+            duplicates.append(
+                {
+                    "cik": cik,
+                    "companies": sorted({str(row.get("company") or "").strip() for row in rows}),
+                    "stages": sorted({str(row.get("stage") or "").strip() for row in rows}),
+                    "accessions": sorted({str(row.get("accession_no") or "").strip() for row in rows}),
+                }
+            )
 
         self.assertFalse(
-            conflicts,
-            "Issuer-level facts drifted across beneficial-owner rows for the same filing:\n"
-            + "\n".join(conflicts[:30]),
+            duplicates,
+            "Public feed contains multiple active lifecycle records for one issuer: "
+            + json.dumps(duplicates[:20], sort_keys=True),
+        )
+
+    def test_public_feed_accessions_are_unique(self):
+        """The same SEC filing must not be published as duplicate issuer records."""
+        by_accession = defaultdict(list)
+        for row in self.rows:
+            accession = str(row.get("accession_no") or "").strip()
+            if accession:
+                by_accession[accession].append(row)
+
+        duplicates = {
+            accession: [str(row.get("company") or "").strip() for row in rows]
+            for accession, rows in by_accession.items()
+            if len(rows) > 1
+        }
+        self.assertFalse(
+            duplicates,
+            "Public feed contains duplicate SEC accession records: "
+            + json.dumps(dict(list(duplicates.items())[:20]), sort_keys=True),
         )
 
 
