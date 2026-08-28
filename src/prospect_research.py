@@ -26,6 +26,7 @@ AGGREGATE_ENTITY_MARKERS = (
     "funds affiliated with",
     "affiliates of",
 )
+EXPLICIT_ENTITY_NOUNS = ("entities", "aggregator")
 
 
 def _contains_phrase(value: str, phrase: str) -> bool:
@@ -42,6 +43,8 @@ def holder_type(name: str) -> str:
     # one disclosure row. Treat those labels as entities regardless of whether
     # the underlying sponsor name contains words such as Capital or Ventures.
     if any(marker in value for marker in AGGREGATE_ENTITY_MARKERS):
+        return "Entity"
+    if any(_contains_phrase(value, marker) for marker in EXPLICIT_ENTITY_NOUNS):
         return "Entity"
     if any(marker in value for marker in TRUST_MARKERS):
         return "Trust"
