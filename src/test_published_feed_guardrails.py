@@ -56,6 +56,41 @@ class PublishedFeedGuardrailTests(unittest.TestCase):
                         f"Published IPO row is missing required identity field: {field}",
                     )
 
+    def test_priced_filing_prices_have_authoritative_sec_provenance(self):
+        """A published preliminary price must retain its authoritative S-1 history."""
+        checked = 0
+        failures = []
+        for filing in self.filings:
+            if str(filing.get("stage") or "").casefold() != "priced":
+                continue
+            filing_price = str(filing.get("filing_price") or "").strip()
+            if not filing_price:
+                continue
+
+            checked += 1
+            label = filing.get("company") or filing.get("id") or "unknown filing"
+            source = filing.get("filing_price_source")
+            if not isinstance(source, dict):
+                failures.append(f"{label}: Filing Price lacks source provenance")
+                continue
+            if str(source.get("source") or "").strip() != "SEC EDGAR":
+                failures.append(f"{label}: Filing Price source is not SEC EDGAR")
+            if str(source.get("form") or "").strip() not in {"S-1", "S-1/A"}:
+                failures.append(f"{label}: Filing Price source is not S-1/S-1A")
+            for field in ("filing_date", "accession_no", "sec_url"):
+                if not str(source.get(field) or "").strip():
+                    failures.append(f"{label}: Filing Price provenance lacks {field}")
+            sec_url = str(source.get("sec_url") or "").strip()
+            if sec_url and not sec_url.startswith("https://www.sec.gov/"):
+                failures.append(f"{label}: Filing Price provenance is not an SEC URL")
+
+        self.assertGreater(checked, 0, "No priced IPO has a Filing Price to validate")
+        self.assertEqual(
+            failures,
+            [],
+            "Published Filing Price provenance failures: " + "; ".join(failures[:10]),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
