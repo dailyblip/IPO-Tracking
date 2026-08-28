@@ -50,6 +50,48 @@ class LocationQualityTests(unittest.TestCase):
         self.assertEqual(filing["location_source"], "SEC submissions metadata")
         self.assertEqual(len(changes), 1)
 
+    def test_replaces_sec_header_contamination_with_authoritative_fallback(self):
+        payload = {
+            "filings": [
+                {
+                    "company": "Example Co",
+                    "cik": "12345",
+                    "location": "SECURITIES AND EXCHANGE COMMISSION WASHINGTON, DC",
+                    "location_source": "S-1 principal executive office",
+                }
+            ]
+        }
+
+        repaired, changes = location_quality.repair_payload(
+            payload, resolve_location=lambda cik: "Hawthorne, CA"
+        )
+
+        filing = repaired["filings"][0]
+        self.assertEqual(filing["location"], "Hawthorne, CA")
+        self.assertEqual(filing["location_source"], "SEC submissions metadata")
+        self.assertEqual(len(changes), 1)
+
+    def test_replaces_street_address_contamination_with_authoritative_fallback(self):
+        payload = {
+            "filings": [
+                {
+                    "company": "Example Co",
+                    "cik": "12345",
+                    "location": "S Technology Court Broomfield, CO",
+                    "location_source": "S-1 principal executive office",
+                }
+            ]
+        }
+
+        repaired, changes = location_quality.repair_payload(
+            payload, resolve_location=lambda cik: "Broomfield, CO"
+        )
+
+        filing = repaired["filings"][0]
+        self.assertEqual(filing["location"], "Broomfield, CO")
+        self.assertEqual(filing["location_source"], "SEC submissions metadata")
+        self.assertEqual(len(changes), 1)
+
     def test_clears_malformed_location_when_authoritative_fallback_is_unavailable(self):
         payload = {
             "filings": [
@@ -76,6 +118,7 @@ class LocationQualityTests(unittest.TestCase):
         self.assertIsNone(location_quality.normalize_location("Boston, MA 02110"))
         self.assertIsNone(location_quality.normalize_location("Boston, Massachusetts"))
         self.assertEqual(location_quality.normalize_location("Boston, ma"), "Boston, MA")
+        self.assertEqual(location_quality.normalize_location("St. Louis, MO"), "St. Louis, MO")
 
     def test_repair_feed_persists_json_without_inventing_location(self):
         with tempfile.TemporaryDirectory() as temp_dir:
