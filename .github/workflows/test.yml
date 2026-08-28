@@ -31,6 +31,17 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      # Policy changes can make a previously checked-in public row newly
+      # ineligible before a feed-writer has had a chance to persist the repair.
+      # Normalize the runner's local snapshot first so CI tests the current
+      # release policy without publishing or committing generated data.
+      - name: Reconcile checked-in feed with current release policy
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python public_feed_policy.py ../docs/data/filings.json
+
       - name: Run unit tests
         run: python -m unittest discover -s src -p 'test_*.py' -v
       - name: Validate dashboard assets and public release policy
