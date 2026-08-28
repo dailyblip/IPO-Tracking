@@ -1,8 +1,36 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T02:03:01.134937+00:00",
-  "count": 33,
+  "generated_at": "2026-08-28T02:23:27.128459+00:00",
+  "count": 35,
   "alerts": [
+    {
+      "type": "new_prepricing",
+      "company": "Youmi Inc.",
+      "cik": "0002137360",
+      "filing_id": "s1:0002137360",
+      "form": "S-1/A",
+      "filed": "2026-08-27",
+      "stage": "pre-pricing",
+      "priority": "Medium",
+      "summary": "New pre-pricing S-1/A candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2137360/000152013826000375/0001520138-26-000375-index.htm",
+      "detected_at": "2026-08-28T02:23:27.128280+00:00",
+      "key": "new_prepricing|s1:0002137360|0002137360|2026-08-27|"
+    },
+    {
+      "type": "new_prepricing",
+      "company": "FullPAC, Inc.",
+      "cik": "0002076148",
+      "filing_id": "s1:0002076148",
+      "form": "S-1/A",
+      "filed": "2026-08-27",
+      "stage": "pre-pricing",
+      "priority": "Medium",
+      "summary": "New pre-pricing S-1/A candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2076148/000149315226040434/0001493152-26-040434-index.htm",
+      "detected_at": "2026-08-28T02:23:27.128325+00:00",
+      "key": "new_prepricing|s1:0002076148|0002076148|2026-08-27|"
+    },
     {
       "type": "new_prepricing",
       "company": "Game Your Game Inc.",
