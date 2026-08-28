@@ -27,14 +27,14 @@ class IpoSizeTests(unittest.TestCase):
         )
         self.assertEqual(value, 114_000_000)
 
-    def test_queue_uses_ipo_size_as_dashboard_value(self):
+    def test_queue_uses_canonical_dashboard_value_for_ipo_size(self):
         queued = s1_monitor._queue_record({
             "company": "Example Corp",
             "cik": "1234567",
-            "ipo_size": 100_000_000,
+            "ipo_size": 95_000_000,
         })
-        self.assertEqual(queued["ipo_size"], 100_000_000)
-        self.assertEqual(queued["value"], 100_000_000)
+        self.assertEqual(queued["value"], 95_000_000)
+        self.assertNotIn("ipo_size", queued)
 
     def test_dashboard_has_merged_ipo_size_offering_value_column(self):
         html = Path(__file__).resolve().parents[1].joinpath("docs", "index.html").read_text(encoding="utf-8")
