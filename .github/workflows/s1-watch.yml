@@ -19,6 +19,10 @@ on:
       - 'src/test_company_name_normalizer.py'
       - 'src/lifecycle_date_sanitizer.py'
       - 'src/test_lifecycle_date_sanitizer.py'
+      - 'src/feed_schema_contract.py'
+      - 'src/test_feed_schema_contract.py'
+      - 'schemas/**'
+      - 'requirements.txt'
       - '.github/workflows/s1-watch.yml'
   push:
     branches:
@@ -32,6 +36,10 @@ on:
       - 'src/test_company_name_normalizer.py'
       - 'src/lifecycle_date_sanitizer.py'
       - 'src/test_lifecycle_date_sanitizer.py'
+      - 'src/feed_schema_contract.py'
+      - 'src/test_feed_schema_contract.py'
+      - 'schemas/**'
+      - 'requirements.txt'
       - '.github/workflows/s1-watch.yml'
   schedule:
     - cron: '20 12 * * 1-5'
@@ -51,7 +59,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run S-1 monitor tests
         working-directory: src
-        run: python -m unittest test_s1_monitor.py test_public_feed_policy.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py -v
+        run: python -m unittest test_s1_monitor.py test_public_feed_policy.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py test_feed_schema_contract.py -v
 
   update-feed:
     if: github.event_name != 'pull_request'
@@ -111,6 +119,8 @@ jobs:
               raise SystemExit('Refusing to publish S-1 feed with weak offering-size evidence:\n- ' + '\n- '.join(failures))
           print(f"Validated populated offering-size provenance for {len(payload.get('filings', []))} filing(s)")
           PY
+      - name: Validate V1 public feed schema
+        run: python src/feed_schema_contract.py docs/data/filings.json
       - name: Publish S-1 watch and researcher queue data
         run: |
           if git diff --quiet -- docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv; then
