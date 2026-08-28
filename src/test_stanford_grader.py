@@ -1,4 +1,7 @@
 import os
+import json
+import tempfile
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 import stanford_grader as grader
@@ -157,3 +160,85 @@ def test_top_level_uses_openai_when_filing_is_silent():
 
     assert result == expected
     llm.assert_called_once_with("Jane Doe", "Acme", "CEO", "", [])
+
+
+def test_research_cache_reuses_unchanged_evidence_and_tracks_usage():
+    researched = {
+        "grade": 0,
+        "justification": "No Stanford affiliation found.",
+        "source": "openai_web_research",
+        "source_url": "",
+        "_usage": {"input_tokens": 120, "output_tokens": 20, "total_tokens": 140},
+    }
+    with tempfile.TemporaryDirectory() as directory:
+        cache_path = Path(directory) / "cache.json"
+        with patch.dict(os.environ, {"STANFORD_RESEARCH_CACHE_PATH": str(cache_path)}), \
+                patch.object(grader, "grade_via_llm", return_value=researched) as llm:
+            first = grader.grade_stanford_affiliation("Jane Doe", "Acme", "CEO", "No Stanford mention.")
+            second = grader.grade_stanford_affiliation("Jane Doe", "Acme", "CEO", "No Stanford mention.")
+
+        assert first == second
+        assert "_usage" not in first
+        llm.assert_called_once()
+        payload = json.loads(cache_path.read_text())
+        assert payload["usage"] == {
+            "requests": 1,
+            "input_tokens": 120,
+            "output_tokens": 20,
+            "total_tokens": 140,
+        }
+
+
+def test_research_cache_invalidates_when_evidence_changes():
+    researched = {
+        "grade": 0,
+        "justification": "No Stanford affiliation found.",
+        "source": "openai_web_research",
+        "source_url": "",
+    }
+    with tempfile.TemporaryDirectory() as directory:
+        cache_path = Path(directory) / "cache.json"
+        with patch.dict(os.environ, {"STANFORD_RESEARCH_CACHE_PATH": str(cache_path)}), \
+                patch.object(grader, "grade_via_llm", return_value=researched) as llm:
+            grader.grade_stanford_affiliation("Jane Doe", "Acme", "CEO", "First filing evidence.")
+            grader.grade_stanford_affiliation("Jane Doe", "Acme", "CEO", "Changed filing evidence.")
+
+        assert llm.call_count == 2
+
+
+def test_unrelated_long_filing_text_does_not_invalidate_person_cache():
+    researched = {
+        "grade": 0,
+        "justification": "No Stanford affiliation found.",
+        "source": "openai_web_research",
+        "source_url": "",
+    }
+    first_filing = "Unrelated cover text. " * 300
+    changed_filing = "Different unrelated cover text. " * 300
+    with tempfile.TemporaryDirectory() as directory:
+        cache_path = Path(directory) / "cache.json"
+        with patch.dict(os.environ, {"STANFORD_RESEARCH_CACHE_PATH": str(cache_path)}), \
+                patch.object(grader, "grade_via_llm", return_value=researched) as llm:
+            grader.grade_stanford_affiliation("Jane Doe", "Acme", "CEO", first_filing)
+            grader.grade_stanford_affiliation("Jane Doe", "Acme", "CEO", changed_filing)
+
+        assert llm.call_count == 1
+
+
+def test_long_filing_prompt_keeps_only_context_near_person():
+    text = ("Unrelated disclosure. " * 200) + "Jane Doe is Chief Executive Officer." + ("More disclosure. " * 200)
+    prompt = grader._build_openai_prompt("Jane Doe", "Acme", "CEO", text)
+    assert "Jane Doe is Chief Executive Officer." in prompt
+    assert len(prompt) < 5000
+
+
+def test_transient_research_failure_is_not_cached():
+    with tempfile.TemporaryDirectory() as directory:
+        cache_path = Path(directory) / "cache.json"
+        with patch.dict(os.environ, {"STANFORD_RESEARCH_CACHE_PATH": str(cache_path)}), \
+                patch.object(grader, "grade_via_llm", side_effect=grader.StanfordGraderError("temporary")) as llm:
+            grader.grade_stanford_affiliation("Jane Doe", "Acme", "CEO", "")
+            grader.grade_stanford_affiliation("Jane Doe", "Acme", "CEO", "")
+
+        assert llm.call_count == 2
+        assert not cache_path.exists()
