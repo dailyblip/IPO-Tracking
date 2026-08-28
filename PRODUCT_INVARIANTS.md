@@ -65,7 +65,7 @@ The main queue contains exactly these columns, in this default order:
 - The company name is Cardinal red only when at least one confirmed beneficial owner has a confirmed Stanford affiliation.
 - The specific confirmed Stanford-affiliated beneficial owner is also Cardinal red in the company detail view.
 - Person detail may show a concise Stanford connection note and a 1–5 confidence score where supported.
-- Historical Stanford regrading/backfill from June 1, 2026 through the present remains required until verified complete in the live feed.
+- Historical Stanford regrading/backfill from June 1, 2026 through the present is verified complete in the live feed. The June-present ownership refresh and SEC-confirmed Stanford recovery remain the canonical maintenance path for this coverage.
 
 ## Person detail
 
