@@ -58,6 +58,43 @@ class FilingPriceHistoryTests(unittest.TestCase):
         self.assertEqual(filing["filing_price_source"]["sec_url"], "https://www.sec.gov/amend-1")
         self.assertEqual((recovered, checked), (1, 1))
 
+    def test_blank_priced_row_recovers_fixed_expected_price_with_provenance(self):
+        history = [
+            {
+                "form_type": "S-1/A",
+                "accession_no": "0001628280-26-040364",
+                "filing_date": "2026-06-03",
+            },
+        ]
+
+        payload, recovered, checked = filing_price_history.recover_payload_filing_prices(
+            {
+                "filings": [
+                    self.priced_row(
+                        company="Space Exploration Technologies Corp",
+                        ticker="SPCX",
+                        cik="0001181412",
+                        pricing_date="2026-06-12",
+                        offering_price=135.0,
+                    )
+                ]
+            },
+            history_loader=lambda cik, pricing_date: history,
+            registration_loader=lambda cik, metadata: (
+                {"price_range": {"range_low": 135.0, "range_high": 135.0}},
+                "https://www.sec.gov/Archives/edgar/data/1181412/"
+                "000162828026040364/0001628280-26-040364-index.htm",
+            ),
+        )
+
+        filing = payload["filings"][0]
+        self.assertEqual(filing["filing_price"], "135")
+        self.assertEqual(
+            filing["filing_price_source"]["accession_no"],
+            "0001628280-26-040364",
+        )
+        self.assertEqual((recovered, checked), (1, 1))
+
     def test_verified_history_without_disclosed_range_keeps_blank(self):
         history = [
             {"form_type": "S-1/A", "accession_no": "amend", "filing_date": "2026-08-18"},
@@ -178,6 +215,18 @@ class FilingPriceHistoryTests(unittest.TestCase):
             {"range_low": 19.0, "range_high": 22.0},
         )
 
+    def test_spacex_fixed_expected_price_wording_is_recovered(self):
+        text = (
+            "We are offering 555,555,555 shares of our Class A common stock. "
+            "Currently, no public market exists for our Class A common stock. "
+            "We expect the initial public offering price to be $135.00 per share."
+        )
+        self.assertEqual(
+            filing_price_history._extract_explicit_price_range_from_text(text),
+            {"range_low": 135.0, "range_high": 135.0},
+        )
+        self.assertEqual(filing_price_history._format_range(135.0, 135.0), "135")
+
     def test_fee_table_maximum_price_is_not_treated_as_preliminary_range(self):
         text = (
             "Proposed Maximum Offering Price Per Unit $22.00 Maximum Aggregate "
@@ -225,6 +274,43 @@ class FilingPriceHistoryTests(unittest.TestCase):
 
         self.assertEqual(parsed["price_range"], {"range_low": 19.0, "range_high": 22.0})
         self.assertEqual(source_url, "https://www.sec.gov/index")
+
+    def test_parse_s1_history_entry_recovers_fixed_expected_price(self):
+        from bs4 import BeautifulSoup
+
+        soup = BeautifulSoup(
+            "We expect the initial public offering price to be $135.00 per share.",
+            "html.parser",
+        )
+        metadata = {"accession_no": "0001628280-26-040364"}
+        with (
+            mock.patch.object(
+                filing_price_history.edgar_client,
+                "build_filing_index_url",
+                return_value="https://www.sec.gov/spacex-index",
+            ),
+            mock.patch.object(
+                filing_price_history.filing_parser,
+                "find_primary_document_url",
+                return_value="https://www.sec.gov/spacex-document",
+            ),
+            mock.patch.object(
+                filing_price_history.filing_parser,
+                "fetch_document",
+                return_value=soup,
+            ),
+            mock.patch.object(
+                filing_price_history.filing_parser,
+                "extract_price_range",
+                return_value={"range_low": None, "range_high": None},
+            ),
+        ):
+            parsed, source_url = filing_price_history.parse_s1_history_entry(
+                "0001181412", metadata
+            )
+
+        self.assertEqual(parsed["price_range"], {"range_low": 135.0, "range_high": 135.0})
+        self.assertEqual(source_url, "https://www.sec.gov/spacex-index")
 
 
 if __name__ == "__main__":
