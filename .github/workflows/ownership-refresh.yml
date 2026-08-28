@@ -18,6 +18,10 @@ on:
       - 'src/prepricing_quote_sanitizer.py'
       - 'src/market_quote_identity.py'
       - 'src/location_quality.py'
+      - 'src/feed_schema_contract.py'
+      - 'src/test_feed_schema_contract.py'
+      - 'schemas/**'
+      - 'requirements.txt'
       - 'src/test_stanford_grader.py'
       - 'src/test_stanford_management_scope.py'
       - 'src/test_stanford_sec_backfill.py'
@@ -174,6 +178,8 @@ jobs:
           assert 'start=new Date(Date.UTC(2026,5,1))' in html
           print(f"Validated {len(feed['filings'])} filings; Stanford matches: {stanford_people}")
           PY
+      - name: Validate V1 public feed schema
+        run: python src/feed_schema_contract.py docs/data/filings.json
       - name: Publish refreshed ownership data
         run: |
           if [ -z "$(git status --short -- docs/data/filings.json docs/data/filings.csv docs/data/stanford_research_cache.json docs/index.html)" ]; then
