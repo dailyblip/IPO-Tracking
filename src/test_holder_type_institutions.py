@@ -10,6 +10,10 @@ class InstitutionalHolderTypeTests(unittest.TestCase):
         self.assertEqual(holder_type("California State Teachers Retirement System"), "Entity")
         self.assertEqual(holder_type("Example Pension Board"), "Entity")
 
+    def test_corporate_company_names_are_not_people(self):
+        self.assertEqual(holder_type("Eli Lilly and Company"), "Entity")
+        self.assertEqual(holder_type("The Boeing Company"), "Entity")
+
     def test_normal_person_name_remains_individual(self):
         self.assertEqual(holder_type("Jane Smith"), "Individual")
 
