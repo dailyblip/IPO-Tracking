@@ -7,10 +7,16 @@ WORKFLOW_DIR = REPO_ROOT / ".github" / "workflows"
 DAILY_WORKFLOW = WORKFLOW_DIR / "daily.yml"
 OWNERSHIP_WORKFLOW = WORKFLOW_DIR / "ownership-refresh.yml"
 S1_WORKFLOW = WORKFLOW_DIR / "s1-watch.yml"
+TEST_WORKFLOW = WORKFLOW_DIR / "test.yml"
 PUBLIC_FEED_POLICY_WORKFLOWS = [
     DAILY_WORKFLOW,
     S1_WORKFLOW,
     OWNERSHIP_WORKFLOW,
+]
+PRETEST_POLICY_RECONCILIATION_WORKFLOWS = [
+    DAILY_WORKFLOW,
+    OWNERSHIP_WORKFLOW,
+    TEST_WORKFLOW,
 ]
 SHARED_FEED_WRITER_WORKFLOWS = [
     DAILY_WORKFLOW,
@@ -44,13 +50,13 @@ class WorkflowContractTests(unittest.TestCase):
         validation_step = workflow.index("- name: Validate public feed")
         self.assertLess(policy_step, validation_step)
 
-    def test_feed_writers_reconcile_checked_in_policy_before_unit_tests(self):
+    def test_policy_sensitive_workflows_reconcile_checked_in_feed_before_unit_tests(self):
         pretest_marker = "- name: Reconcile checked-in feed with current release policy"
         unit_test_marker = "- name: Run unit tests"
         required_env = "SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}"
         policy_command = "python public_feed_policy.py ../docs/data/filings.json"
 
-        for path in (DAILY_WORKFLOW, OWNERSHIP_WORKFLOW):
+        for path in PRETEST_POLICY_RECONCILIATION_WORKFLOWS:
             workflow = _workflow(path)
             pretest_step = workflow.index(pretest_marker)
             unit_test_step = workflow.index(unit_test_marker)
