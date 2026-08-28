@@ -334,7 +334,7 @@ def export_feed(records: list[dict], output_path: Path = OUTPUT_PATH) -> dict:
 
 
 def _queue_record(record: dict) -> dict:
-    """Normalize a pre-pricing record to the existing dashboard schema."""
+    """Normalize a pre-pricing record to the V1 public dashboard schema."""
     cik = str(record.get("cik") or "").zfill(10) if record.get("cik") else ""
     ipo_size = record.get("ipo_size")
     return {
@@ -348,7 +348,6 @@ def _queue_record(record: dict) -> dict:
         "stage": record.get("stage") or "Pre-pricing",
         "price_range": record.get("price_range"),
         "filing_price": record.get("filing_price"),
-        "ipo_size": ipo_size,
         "offering_size_source": record.get("offering_size_source"),
         "offering_size_confidence": record.get("offering_size_confidence"),
         "primary_offering_shares": record.get("primary_offering_shares"),

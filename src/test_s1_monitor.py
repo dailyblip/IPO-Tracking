@@ -133,7 +133,7 @@ class S1MonitorTests(unittest.TestCase):
             self.assertEqual([item["id"] for item in payload["filings"]], ["new", "old"])
             self.assertFalse(Path(str(path) + ".tmp").exists())
 
-    def test_queue_record_uses_stable_issuer_id(self):
+    def test_queue_record_uses_stable_issuer_id_and_v1_size_field(self):
         filing = s1_monitor._queue_record({
             "id": "0001234567-26-000001",
             "company": "Acme Robotics, Inc.",
@@ -142,12 +142,14 @@ class S1MonitorTests(unittest.TestCase):
             "form": "S-1/A",
             "filed": "2026-08-17",
             "priority": "High",
+            "ipo_size": 95_000_000,
             "signals": ["Preliminary offering range disclosed at $18.00–$20.00"],
             "sec_url": "https://www.sec.gov/test",
         })
         self.assertEqual(filing["id"], "s1:0001234567")
         self.assertEqual(filing["people"], [])
-        self.assertIsNone(filing["value"])
+        self.assertEqual(filing["value"], 95_000_000)
+        self.assertNotIn("ipo_size", filing)
 
     def test_sync_queue_replaces_older_amendment_for_same_issuer(self):
         old = {
