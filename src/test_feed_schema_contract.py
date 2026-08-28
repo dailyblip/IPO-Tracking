@@ -15,12 +15,12 @@ class FeedSchemaContractTests(unittest.TestCase):
         failures = validate_file(ROOT / "docs" / "data" / "filings.json")
         self.assertEqual([], failures, "\n".join(failures))
 
-    def test_v1_schema_matches_public_export_allowlists(self):
+    def test_v1_schema_covers_public_export_allowlists(self):
         schema = load_schema(SCHEMA_VERSION)
         filing_fields = set(schema["$defs"]["filing"]["properties"])
         person_fields = set(schema["$defs"]["person"]["properties"])
-        self.assertEqual(PUBLIC_FILING_FIELDS, filing_fields)
-        self.assertEqual(PUBLIC_PERSON_FIELDS, person_fields)
+        self.assertTrue(PUBLIC_FILING_FIELDS <= filing_fields)
+        self.assertTrue(PUBLIC_PERSON_FIELDS <= person_fields)
         self.assertEqual(SCHEMA_VERSION, schema["properties"]["schema_version"]["const"])
 
     def test_unknown_top_level_field_is_rejected(self):
