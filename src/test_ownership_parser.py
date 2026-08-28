@@ -28,6 +28,19 @@ class OwnershipParserTests(unittest.TestCase):
         self.assertIsNone(r['shares'])
         self.assertIsNone(r['shares_after'])
 
+    def test_split_percent_marker_does_not_become_share_count(self):
+        html="""<table>
+        <tr><th>Name of beneficial owner</th><th>Shares beneficially owned</th><th></th></tr>
+        <tr><td>Forbright STRT Investor LLC</td><td>6.0</td><td>%</td></tr>
+        </table>"""
+        rows=parse_ownership_table(BeautifulSoup(html,'lxml').find('table'))
+        self.assertEqual(len(rows),1)
+        r=rows[0]
+        self.assertEqual(r['percent'],6.0)
+        self.assertEqual(r['percent_after'],6.0)
+        self.assertIsNone(r['shares'])
+        self.assertIsNone(r['shares_after'])
+
     def test_prospectus_section_headings_are_not_beneficial_owners(self):
         html="""<table>
         <tr><th>Name of beneficial owner</th><th>Shares beneficially owned</th></tr>
