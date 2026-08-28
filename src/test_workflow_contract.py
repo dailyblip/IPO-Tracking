@@ -44,6 +44,23 @@ class WorkflowContractTests(unittest.TestCase):
         validation_step = workflow.index("- name: Validate public feed")
         self.assertLess(policy_step, validation_step)
 
+    def test_feed_writers_reconcile_checked_in_policy_before_unit_tests(self):
+        pretest_marker = "- name: Reconcile checked-in feed with current release policy"
+        unit_test_marker = "- name: Run unit tests"
+        required_env = "SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}"
+        policy_command = "python public_feed_policy.py ../docs/data/filings.json"
+
+        for path in (DAILY_WORKFLOW, OWNERSHIP_WORKFLOW):
+            workflow = _workflow(path)
+            pretest_step = workflow.index(pretest_marker)
+            unit_test_step = workflow.index(unit_test_marker)
+            next_step = workflow.find("\n      - name:", pretest_step + len(pretest_marker))
+            block = workflow[pretest_step:] if next_step == -1 else workflow[pretest_step:next_step]
+            with self.subTest(workflow=path.name):
+                self.assertLess(pretest_step, unit_test_step)
+                self.assertIn(policy_command, block)
+                self.assertIn(required_env, block)
+
     def test_ownership_refresh_runs_release_safety_chain_before_validation(self):
         workflow = _ownership_workflow()
         ordered_steps = [
