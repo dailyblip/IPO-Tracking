@@ -88,6 +88,16 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn('storageRemove("research-monitor:column-order")', self.html)
         self.assertIn('id="resetColumns"', self.html)
 
+    def test_main_table_keeps_data_fields_single_line_except_public_signals(self):
+        self.assertIn('.table-wrap{overflow:auto}', self.html)
+        self.assertIn('table{min-width:1735px}', self.html)
+        self.assertIn('th[data-col]:not([data-col="10"]){white-space:nowrap}', self.html)
+        self.assertIn('td[data-col]:not([data-col="0"]):not([data-col="10"]){white-space:nowrap}', self.html)
+        self.assertIn('th[data-col="3"],td[data-col="3"]{min-width:125px}', self.html)
+        self.assertIn('th[data-col="4"],td[data-col="4"]{min-width:140px}', self.html)
+        self.assertIn('th[data-col="5"],td[data-col="5"]{min-width:140px}', self.html)
+        self.assertIn('th[data-col="10"],td[data-col="10"]{min-width:270px;white-space:normal}', self.html)
+
     def test_displays_all_requested_price_fields(self):
         self.assertIn("Filing Price</th>", self.html)
         self.assertIn("Final IPO Price</th>", self.html)
