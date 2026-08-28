@@ -30,6 +30,15 @@ _ADDRESS_CONTAMINATION_RE = re.compile(
     r"\b(?:avenue|boulevard|court|drive|highway|parkway|street)\b\s+\S+",
     re.IGNORECASE,
 )
+# A flattened cover can also leave only a street-suffix abbreviation before the
+# real city, e.g. ``5801 S. 2nd St. Vernon, CA`` becoming ``St. Vernon, CA``.
+# Some legitimate cities also begin with ``St.``, so this is not an automatic
+# rejection. It is a signal to cross-check official SEC submissions metadata.
+_STREET_SUFFIX_PREFIX_RE = re.compile(
+    r"^(?:st|street|ave|avenue|blvd|boulevard|dr|drive|rd|road|ct|court|"
+    r"hwy|highway|pkwy|parkway)\.?\s+\S+",
+    re.IGNORECASE,
+)
 
 
 def normalize_location(value):
@@ -59,12 +68,42 @@ def normalize_location(value):
     return f"{city}, {state}"
 
 
+def _needs_authoritative_cross_check(location):
+    """Return True for compact locations that may begin with a street suffix.
+
+    Values such as ``St. Louis, MO`` are legitimate, so callers must never treat
+    this signal as proof of contamination. A differing authoritative SEC location
+    is required before replacement.
+    """
+    normalized = normalize_location(location)
+    if not normalized:
+        return False
+    city = normalized.rsplit(",", 1)[0].strip()
+    return bool(_STREET_SUFFIX_PREFIX_RE.search(city))
+
+
+def _resolve_authoritative_location(filing, resolve_location):
+    """Resolve a normalized SEC submissions location without inferring values."""
+    cik = str(filing.get("cik") or "").strip()
+    if not cik:
+        return None
+    try:
+        return normalize_location(resolve_location(cik))
+    except Exception as exc:  # release sanitation must not preserve known-bad data
+        print(
+            f"Location quality gate: SEC fallback failed for "
+            f"{filing.get('company') or filing.get('id')}: {exc}"
+        )
+        return None
+
+
 def repair_payload(payload, resolve_location=edgar_client.get_business_location):
     """Repair/clear malformed locations in a public-feed payload.
 
     ``resolve_location`` is injectable for tests. Provider/network errors are treated
-    as unresolved data: the malformed value is cleared rather than retained or
-    replaced with an inference.
+    as unresolved data: visibly malformed values are cleared rather than retained or
+    replaced with an inference. Ambiguous street-suffix-prefixed values are replaced
+    only when official SEC metadata supplies a different, valid location.
     """
     filings = payload.get("filings", []) if isinstance(payload, dict) else []
     changes = []
@@ -78,6 +117,14 @@ def repair_payload(payload, resolve_location=edgar_client.get_business_location)
 
         normalized = normalize_location(raw_location)
         if normalized:
+            if _needs_authoritative_cross_check(normalized):
+                replacement = _resolve_authoritative_location(filing, resolve_location)
+                if replacement and replacement != normalized:
+                    company = filing.get("company") or filing.get("id") or "Unknown issuer"
+                    filing["location"] = replacement
+                    filing["location_source"] = "SEC submissions metadata"
+                    changes.append((company, raw_location, replacement))
+                    continue
             if normalized != raw_location:
                 filing["location"] = normalized
                 changes.append(
@@ -85,17 +132,7 @@ def repair_payload(payload, resolve_location=edgar_client.get_business_location)
                 )
             continue
 
-        replacement = None
-        cik = str(filing.get("cik") or "").strip()
-        if cik:
-            try:
-                replacement = normalize_location(resolve_location(cik))
-            except Exception as exc:  # release sanitation must not preserve bad data
-                print(
-                    f"Location quality gate: SEC fallback failed for "
-                    f"{filing.get('company') or filing.get('id')}: {exc}"
-                )
-
+        replacement = _resolve_authoritative_location(filing, resolve_location)
         company = filing.get("company") or filing.get("id") or "Unknown issuer"
         if replacement:
             filing["location"] = replacement
