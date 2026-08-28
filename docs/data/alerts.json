@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T10:20:43.728480+00:00",
-  "count": 34,
+  "generated_at": "2026-08-28T12:12:56.385327+00:00",
+  "count": 33,
   "alerts": [
     {
       "type": "new_prepricing",
@@ -147,21 +147,6 @@
       "detected_at": "2026-08-27T06:11:15.487341+00:00",
       "new_value": "$69M",
       "key": "new_424b4|0001140361-26-025790|0001531193|2026-06-18|$69M"
-    },
-    {
-      "type": "new_424b4",
-      "company": "RMG ML Sports Holdings",
-      "cik": "0002104879",
-      "filing_id": "0001213900-26-067558",
-      "form": "424B4",
-      "filed": "2026-06-11",
-      "stage": "priced",
-      "priority": "Medium",
-      "summary": "New 424B4 entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2104879/000121390026067558/0001213900-26-067558-index.htm",
-      "detected_at": "2026-08-27T06:11:15.487352+00:00",
-      "new_value": "—",
-      "key": "new_424b4|0001213900-26-067558|0002104879|2026-06-11|—"
     },
     {
       "type": "new_424b4",
