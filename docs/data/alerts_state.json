@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-28T09:14:43.398640+00:00",
+  "updated_at": "2026-08-28T10:20:43.728450+00:00",
   "items": {
     "s1:0002137360": {
       "id": "s1:0002137360",
@@ -290,18 +290,6 @@
       "value": 74999999925.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026042639/0001628280-26-042639-index.htm"
     },
-    "0001213900-26-067558": {
-      "id": "0001213900-26-067558",
-      "cik": "0002104879",
-      "company": "RMG ML Sports Holdings",
-      "form": "424B4",
-      "filed": "2026-06-11",
-      "stage": "priced",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2104879/000121390026067558/0001213900-26-067558-index.htm"
-    },
     "0001628280-26-042580": {
       "id": "0001628280-26-042580",
       "cik": "0001925062",
@@ -397,6 +385,18 @@
       "priority": "High",
       "value": 97500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2118195/000119312526256356/0001193125-26-256356-index.htm"
+    },
+    "0001213900-26-067558": {
+      "id": "0001213900-26-067558",
+      "cik": "0002104879",
+      "company": "RMG ML Sports Holdings",
+      "form": "424B4",
+      "filed": "2026-06-11",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2104879/000121390026067558/0001213900-26-067558-index.htm"
     }
   },
   "ciks": {
@@ -568,13 +568,6 @@
       "last_filed": "2026-06-12",
       "missing_runs": 0
     },
-    "0002104879": {
-      "company": "RMG ML Sports Holdings",
-      "stage": "priced",
-      "last_filing_id": "0001213900-26-067558",
-      "last_filed": "2026-06-11",
-      "missing_runs": 0
-    },
     "0001925062": {
       "company": "Forbright, Inc.",
       "stage": "priced",
@@ -630,6 +623,13 @@
       "last_filing_id": "0001193125-26-256356",
       "last_filed": "2026-06-04",
       "missing_runs": 0
+    },
+    "0002104879": {
+      "company": "RMG ML Sports Holdings",
+      "stage": "priced",
+      "last_filing_id": "0001213900-26-067558",
+      "last_filed": "2026-06-11",
+      "missing_runs": 1
     }
   }
 }
