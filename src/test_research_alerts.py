@@ -58,16 +58,31 @@ class ResearchAlertsTests(unittest.TestCase):
         self.assertEqual(state["ciks"]["0001234567"]["stage"], "priced")
 
     @patch("research_alerts._now_iso", return_value="2026-08-17T20:00:00+00:00")
-    def test_state_drops_ciks_no_longer_in_qualifying_feed(self, _):
+    def test_state_drops_ciks_after_two_consecutive_missing_feeds(self, _):
         old_state = {
             "items": {},
             "ciks": {
                 "0001234567": {"stage": "pre-pricing"},
-                "0009999999": {"stage": "pre-pricing"},
+                "0009999999": {"stage": "pre-pricing", "missing_runs": 1},
             },
         }
         _, state = detect_alerts([self.filing()], old_state)
         self.assertEqual(set(state["ciks"]), {"0001234567"})
+
+    @patch("research_alerts._now_iso", return_value="2026-08-17T20:00:00+00:00")
+    def test_temporary_feed_gap_preserves_history_without_false_new_alert(self, _):
+        original = self.filing()
+        _, initial_state = detect_alerts([original], {})
+
+        gap_alerts, gap_state = detect_alerts([], initial_state)
+        self.assertEqual(gap_alerts, [])
+        self.assertIn(original["cik"], gap_state["ciks"])
+        self.assertIn(original["id"], gap_state["items"])
+        self.assertEqual(gap_state["ciks"][original["cik"]]["missing_runs"], 1)
+
+        return_alerts, return_state = detect_alerts([original], gap_state)
+        self.assertEqual(return_alerts, [])
+        self.assertEqual(return_state["ciks"][original["cik"]]["missing_runs"], 0)
 
     @patch("research_alerts._now_iso", return_value="2026-08-17T20:00:00+00:00")
     def test_priority_escalation_only_moves_up(self, _):
@@ -134,7 +149,7 @@ class ResearchAlertsTests(unittest.TestCase):
             self.assertIn("s1:0001234567", json.loads(state.read_text())["items"])
 
     @patch("research_alerts._now_iso", return_value="2026-08-17T20:00:00+00:00")
-    def test_run_removes_stale_alerts_for_issuers_not_in_public_feed(self, _):
+    def test_run_removes_stale_alerts_after_confirmed_feed_absence(self, _):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
             feed = root / "filings.json"
@@ -147,7 +162,10 @@ class ResearchAlertsTests(unittest.TestCase):
                     {"key": "drop", "cik": "0009999999", "filing_id": "spac-s1"},
                 ]
             }))
-            state.write_text(json.dumps({"items": {}, "ciks": {}}))
+            state.write_text(json.dumps({
+                "items": {"spac-s1": {"id": "spac-s1", "cik": "0009999999"}},
+                "ciks": {"0009999999": {"stage": "pre-pricing", "missing_runs": 1}},
+            }))
 
             run(feed, alerts, state)
             payload = json.loads(alerts.read_text())
