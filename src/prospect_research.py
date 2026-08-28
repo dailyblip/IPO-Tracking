@@ -13,6 +13,8 @@ ENTITY_MARKERS = (
     " lp", " l.p.", " llc", " ltd", " limited", " inc", " corp", " corporation",
     " fund", " partners", " partnership", " capital", " ventures", " holdings",
     " trust", " foundation", " bank", " management", " advisors", " nominees",
+    " authority", " university", " college", " institute", " association",
+    " pension", " retirement system", " endowment", " government", " ministry",
 )
 FUND_MARKERS = (" fund", " capital", " ventures", " partners", " partnership", " lp", " l.p.")
 TRUST_MARKERS = (" trust", " trustee")
