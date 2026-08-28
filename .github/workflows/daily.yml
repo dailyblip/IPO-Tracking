@@ -13,6 +13,7 @@ on:
     branches: [main]
     paths:
       - 'src/**'
+      - 'schemas/**'
       - 'requirements.txt'
       - '.github/workflows/daily.yml'
   schedule:
@@ -113,6 +114,9 @@ jobs:
 
       - name: Validate generated lifecycle uniqueness
         run: python -m unittest discover -s src -p 'test_issuer_row_consistency.py' -v
+
+      - name: Validate V1 public feed schema
+        run: python src/feed_schema_contract.py docs/data/filings.json
 
       - name: Publish Research Monitor data
         run: |
