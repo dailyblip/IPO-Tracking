@@ -41,14 +41,17 @@ def _format_range(low, high):
     def compact(value):
         return f"{float(value):.2f}".rstrip("0").rstrip(".")
 
-    return f"{compact(low)}-{compact(high)}"
+    low_text = compact(low)
+    high_text = compact(high)
+    return low_text if float(low) == float(high) else f"{low_text}-{high_text}"
 
 
 def _extract_explicit_price_range_from_text(text):
-    """Extract common SEC preliminary-range wording missed by the legacy parser.
+    """Extract tightly anchored preliminary IPO range or fixed-price wording.
 
-    Keep the fallback tightly anchored to IPO/public-offering price language so fee
-    tables and unrelated dollar ranges are not treated as preliminary pricing.
+    Keep the fallback anchored to expected/estimated IPO price language so fee
+    tables, dilution examples, and unrelated dollar values are not treated as
+    preliminary pricing. A fixed expected price is represented as low == high.
     """
     text = str(text or "")[:60000]
     number = r"(\d{1,4}(?:\.\d{1,2})?)"
@@ -73,6 +76,23 @@ def _extract_explicit_price_range_from_text(text):
         high = _number(match.group(2))
         if low is not None and high is not None and low <= high:
             return {"range_low": low, "range_high": high}
+
+    fixed_patterns = [
+        rf"\b(?:we\s+)?expect(?:ed)?\s+(?:that\s+)?(?:the\s+)?initial\s+public\s+offering\s+price"
+        rf"(?:\s+per\s+share)?\s+(?:to\s+be|of)\s+\$\s*{number}(?:\s+per\s+share)?",
+        rf"\b(?:the\s+)?initial\s+public\s+offering\s+price(?:\s+per\s+share)?"
+        rf"\s+is\s+expected\s+to\s+be\s+\$\s*{number}(?:\s+per\s+share)?",
+        rf"\bexpected\s+initial\s+public\s+offering\s+price(?:\s+per\s+share)?"
+        rf"\s+of\s+\$\s*{number}(?:\s+per\s+share)?",
+    ]
+    for pattern in fixed_patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if not match:
+            continue
+        price = _number(match.group(1))
+        if price is not None:
+            return {"range_low": price, "range_high": price}
+
     return {"range_low": None, "range_high": None}
 
 
@@ -139,7 +159,7 @@ def sec_s1_history(cik, pricing_date):
 
 
 def parse_s1_history_entry(cik, metadata):
-    """Parse one SEC registration filing for its authoritative preliminary range."""
+    """Parse one SEC registration filing for its authoritative preliminary price."""
     index_url = edgar_client.build_filing_index_url(cik, metadata["accession_no"])
     document_url = filing_parser.find_primary_document_url(
         index_url,
@@ -161,17 +181,19 @@ def recover_payload_filing_prices(
     history_loader=sec_s1_history,
     registration_loader=parse_s1_history_entry,
 ):
-    """Enrich priced rows with an authoritative preliminary range and provenance.
+    """Enrich priced rows with an authoritative preliminary price and provenance.
 
-    A priced row is complete only when an existing preliminary range has a complete
-    SEC source record. Otherwise every relevant S-1/S-1A is inspected from newest to
-    oldest until the latest explicit range is found. This repairs both blank Filing
-    Price values and provenance metadata lost during later lifecycle/export steps.
+    A priced row is complete only when an existing preliminary price/range has a
+    complete SEC source record. Otherwise every relevant S-1/S-1A is inspected from
+    newest to oldest until the latest explicit preliminary price is found. This
+    repairs both blank Filing Price values and provenance metadata lost during later
+    lifecycle/export steps.
 
     If at least one registration statement is successfully inspected but no reliable
-    range exists, a genuinely blank row remains blank. An already-populated but
-    unprovenanced value is release-blocking if SEC history cannot verify a range; it
-    is safer to stop publication than silently retain unsupported pricing metadata.
+    preliminary price exists, a genuinely blank row remains blank. An already-
+    populated but unprovenanced value is release-blocking if SEC history cannot
+    verify it; it is safer to stop publication than silently retain unsupported
+    pricing metadata.
     """
     filings = payload.get("filings")
     if not isinstance(filings, list):
@@ -253,7 +275,7 @@ def recover_payload_filing_prices(
 
 
 def recover_filing_prices(output_path):
-    """Recover preliminary ranges in JSON and keep the flattened CSV synchronized."""
+    """Recover preliminary prices in JSON and keep the flattened CSV synchronized."""
     output_path = Path(output_path)
     payload = json.loads(output_path.read_text(encoding="utf-8"))
     updated, recovered, checked = recover_payload_filing_prices(payload)
