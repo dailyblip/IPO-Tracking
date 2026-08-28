@@ -7,6 +7,7 @@ on:
     paths:
       - 'src/**'
       - 'tests/**'
+      - 'schemas/**'
       - 'docs/index.html'
       - 'docs/data/**'
       - 'requirements.txt'
@@ -44,6 +45,8 @@ jobs:
 
       - name: Run unit tests
         run: python -m unittest discover -s src -p 'test_*.py' -v
+      - name: Validate V1 public feed schema
+        run: python src/feed_schema_contract.py docs/data/filings.json
       - name: Validate dashboard assets and public release policy
         run: |
           python - <<'PY'
