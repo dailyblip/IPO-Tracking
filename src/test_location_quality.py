@@ -92,6 +92,68 @@ class LocationQualityTests(unittest.TestCase):
         self.assertEqual(filing["location_source"], "SEC submissions metadata")
         self.assertEqual(len(changes), 1)
 
+    def test_replaces_flattened_street_suffix_prefix_when_sec_location_differs(self):
+        payload = {
+            "filings": [
+                {
+                    "company": "Reformation Inc.",
+                    "cik": "1787117",
+                    "location": "St. Vernon, CA",
+                    "location_source": "S-1 principal executive office",
+                }
+            ]
+        }
+
+        repaired, changes = location_quality.repair_payload(
+            payload, resolve_location=lambda cik: "Vernon, CA"
+        )
+
+        filing = repaired["filings"][0]
+        self.assertEqual(filing["location"], "Vernon, CA")
+        self.assertEqual(filing["location_source"], "SEC submissions metadata")
+        self.assertEqual(changes, [("Reformation Inc.", "St. Vernon, CA", "Vernon, CA")])
+
+    def test_preserves_legitimate_st_city_after_authoritative_cross_check(self):
+        payload = {
+            "filings": [
+                {
+                    "company": "St Louis Example",
+                    "cik": "98765",
+                    "location": "St. Louis, MO",
+                    "location_source": "S-1 principal executive office",
+                }
+            ]
+        }
+
+        repaired, changes = location_quality.repair_payload(
+            payload, resolve_location=lambda cik: "St. Louis, MO"
+        )
+
+        filing = repaired["filings"][0]
+        self.assertEqual(filing["location"], "St. Louis, MO")
+        self.assertEqual(filing["location_source"], "S-1 principal executive office")
+        self.assertEqual(changes, [])
+
+    def test_preserves_ambiguous_st_city_when_authoritative_lookup_is_unavailable(self):
+        payload = {
+            "filings": [
+                {
+                    "company": "St Louis Example",
+                    "cik": "98765",
+                    "location": "St. Louis, MO",
+                    "location_source": "S-1 principal executive office",
+                }
+            ]
+        }
+
+        repaired, changes = location_quality.repair_payload(
+            payload, resolve_location=lambda cik: None
+        )
+
+        filing = repaired["filings"][0]
+        self.assertEqual(filing["location"], "St. Louis, MO")
+        self.assertEqual(changes, [])
+
     def test_clears_malformed_location_when_authoritative_fallback_is_unavailable(self):
         payload = {
             "filings": [
