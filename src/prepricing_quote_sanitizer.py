@@ -1,18 +1,54 @@
-"""Remove market-price fields from IPO records that are not yet priced/trading.
+"""Remove market-price fields from IPO records that are not yet safely priced/trading.
 
 Ticker symbols can collide with already-trading securities before an IPO begins
 trading. Publishing those provider quotes on an S-1/S-1A record is therefore a
-data-integrity defect. Current Price is allowed only for final 424B4 IPO rows.
+data-integrity defect. Current Price is allowed only when a final 424B4 row also
+has a priced lifecycle state, an authoritative pricing date, and a positive final
+IPO price. A malformed or incomplete 424B4 must fail closed and lose market-derived
+fields rather than being treated as trading solely because of its form type.
 """
 
 from __future__ import annotations
 
 import json
+import math
+from datetime import date
 from pathlib import Path
 
 
+def _number(value):
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        number = float(str(value).replace(",", "").replace("$", "").strip())
+    except (TypeError, ValueError):
+        return None
+    return number if math.isfinite(number) else None
+
+
+def _canonical_nonfuture_date(value):
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = date.fromisoformat(raw)
+    except ValueError:
+        return None
+    if parsed.isoformat() != raw or parsed > date.today():
+        return None
+    return parsed
+
+
 def is_priced_ipo(filing: dict) -> bool:
-    return str(filing.get("form") or "").strip().upper() == "424B4"
+    """Return True only for a release-safe final priced lifecycle state."""
+    if str(filing.get("form") or "").strip().upper() != "424B4":
+        return False
+    if str(filing.get("stage") or "").strip().casefold() != "priced":
+        return False
+    if _canonical_nonfuture_date(filing.get("pricing_date")) is None:
+        return False
+    final_price = _number(filing.get("offering_price"))
+    return final_price is not None and final_price > 0
 
 
 def sanitize_payload(payload: dict) -> tuple[dict, int]:
@@ -25,8 +61,9 @@ def sanitize_payload(payload: dict) -> tuple[dict, int]:
             if field in filing:
                 filing.pop(field, None)
                 touched = True
-        # Pre-pricing records should not carry market-value calculations derived
-        # from a ticker quote either. Preserve only filing-supported facts.
+        # Records that are not release-safe priced IPOs must not carry market-value
+        # calculations derived from a ticker quote either. Preserve filing-supported
+        # ownership facts and clear only quote-derived values.
         for person in filing.get("people", []):
             if not isinstance(person, dict):
                 continue
@@ -58,8 +95,8 @@ def sanitize_file(path: str | Path) -> int:
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Remove invalid pre-pricing market quotes")
+    parser = argparse.ArgumentParser(description="Remove invalid pre-pricing or unsafe lifecycle market quotes")
     parser.add_argument("path", nargs="?", default="../docs/data/filings.json")
     args = parser.parse_args()
     count = sanitize_file(args.path)
-    print(f"Sanitized {count} pre-pricing filing(s) with market-derived fields")
+    print(f"Sanitized {count} filing(s) with unsafe market-derived fields")
