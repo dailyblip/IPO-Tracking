@@ -41,6 +41,8 @@ _DOCUMENT_SECTION_HEADINGS = {
     "a letter from our ceo",
     "letter from our ceo",
     "business",
+    "controlled company",
+    "conflicts of interest",
     "experts",
     "where you can find more information",
     "where you can find additional information",
