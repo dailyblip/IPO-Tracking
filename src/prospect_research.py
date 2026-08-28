@@ -11,7 +11,7 @@ import re
 
 ENTITY_MARKERS = (
     " lp", " l.p.", " llc", " ltd", " limited", " inc", " corp", " corporation",
-    " company", " fund", " partners", " partnership", " capital", " ventures", " holdings",
+    " company", " fund", " partners", " partnership", " scsp", " s.c.sp.", " capital", " ventures", " holdings",
     " trust", " foundation", " bank", " management", " advisors", " nominees",
 )
 INSTITUTION_MARKERS = (
@@ -27,6 +27,12 @@ AGGREGATE_ENTITY_MARKERS = (
     "affiliates of",
 )
 EXPLICIT_ENTITY_NOUNS = ("entities", "aggregator")
+GENERIC_HOLDER_LABELS = {
+    "other selling stockholders",
+    "other selling shareholders",
+    "selling stockholders",
+    "selling shareholders",
+}
 
 
 def _contains_phrase(value: str, phrase: str) -> bool:
@@ -38,6 +44,11 @@ def holder_type(name: str) -> str:
     """Classify a beneficial-owner row without pretending entities are people."""
     value = " ".join(str(name or "").split()).lower()
     if not value:
+        return "Unknown"
+    # Generic seller-group labels describe a set of holders rather than a named
+    # person or legal entity. Keep them explicitly unclassified instead of
+    # letting the natural-person token heuristic mislabel them as individuals.
+    if value in GENERIC_HOLDER_LABELS:
         return "Unknown"
     # SEC ownership tables often aggregate several affiliated legal entities into
     # one disclosure row. Treat those labels as entities regardless of whether
