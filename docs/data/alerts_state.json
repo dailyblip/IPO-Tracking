@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-28T05:00:05.955119+00:00",
+  "updated_at": "2026-08-28T05:54:03.788394+00:00",
   "items": {
     "s1:0002137360": {
       "id": "s1:0002137360",
@@ -404,199 +404,232 @@
       "company": "Youmi Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002137360",
-      "last_filed": "2026-08-27"
+      "last_filed": "2026-08-27",
+      "missing_runs": 0
     },
     "0002076148": {
       "company": "FullPAC, Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002076148",
-      "last_filed": "2026-08-27"
+      "last_filed": "2026-08-27",
+      "missing_runs": 0
     },
     "0002104277": {
       "company": "Holtec Nuclear Corp",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002104277",
-      "last_filed": "2026-08-24"
+      "last_filed": "2026-08-24",
+      "missing_runs": 0
     },
     "0002065821": {
       "company": "Little West Holdings Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002065821",
-      "last_filed": "2026-08-21"
+      "last_filed": "2026-08-21",
+      "missing_runs": 0
     },
     "0002131613": {
       "company": "CoVolt Power, Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002131613",
-      "last_filed": "2026-08-21"
+      "last_filed": "2026-08-21",
+      "missing_runs": 0
     },
     "0002124472": {
       "company": "Orion180 Insurance Group Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002124472",
-      "last_filed": "2026-08-20"
+      "last_filed": "2026-08-20",
+      "missing_runs": 0
     },
     "0002132582": {
       "company": "Lyntris Inc.",
       "stage": "priced",
       "last_filing_id": "0001193125-26-356916",
-      "last_filed": "2026-08-19"
+      "last_filed": "2026-08-19",
+      "missing_runs": 0
     },
     "0001880995": {
       "company": "Alopexx, Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0001880995",
-      "last_filed": "2026-08-17"
+      "last_filed": "2026-08-17",
+      "missing_runs": 0
     },
     "0001903784": {
       "company": "Vogenx, Inc.",
       "stage": "priced",
       "last_filing_id": "0001185185-26-003448",
-      "last_filed": "2026-08-12"
+      "last_filed": "2026-08-12",
+      "missing_runs": 0
     },
     "0002056611": {
       "company": "Latigo Biotherapeutics, Inc.",
       "stage": "priced",
       "last_filing_id": "0001193125-26-340329",
-      "last_filed": "2026-08-07"
+      "last_filed": "2026-08-07",
+      "missing_runs": 0
     },
     "0001839970": {
       "company": "BlossomHill Therapeutics, Inc.",
       "stage": "priced",
       "last_filing_id": "0001193125-26-340215",
-      "last_filed": "2026-08-07"
+      "last_filed": "2026-08-07",
+      "missing_runs": 0
     },
     "0002131524": {
       "company": "Braveheart Bio, Inc.",
       "stage": "priced",
       "last_filing_id": "0001628280-26-054354",
-      "last_filed": "2026-08-06"
+      "last_filed": "2026-08-06",
+      "missing_runs": 0
     },
     "0002058707": {
       "company": "Attovia Therapeutics, Inc.",
       "stage": "priced",
       "last_filing_id": "0001193125-26-334997",
-      "last_filed": "2026-08-05"
+      "last_filed": "2026-08-05",
+      "missing_runs": 0
     },
     "0002127043": {
       "company": "Jersey Mike's Subs Inc.",
       "stage": "priced",
       "last_filing_id": "0001193125-26-326453",
-      "last_filed": "2026-07-31"
+      "last_filed": "2026-07-31",
+      "missing_runs": 0
     },
     "0001745648": {
       "company": "Apnimed, Inc.",
       "stage": "priced",
       "last_filing_id": "0001193125-26-328422",
-      "last_filed": "2026-07-31"
+      "last_filed": "2026-07-31",
+      "missing_runs": 0
     },
     "0001787117": {
       "company": "Reformation Inc.",
       "stage": "priced",
       "last_filing_id": "0001104659-26-088733",
-      "last_filed": "2026-07-30"
+      "last_filed": "2026-07-30",
+      "missing_runs": 0
     },
     "0001853921": {
       "company": "Scribe Therapeutics, Inc.",
       "stage": "priced",
       "last_filing_id": "0001193125-26-316503",
-      "last_filed": "2026-07-27"
+      "last_filed": "2026-07-27",
+      "missing_runs": 0
     },
     "0002086716": {
       "company": "Standard Nuclear, Inc.",
       "stage": "priced",
       "last_filing_id": "0001213900-26-078747",
-      "last_filed": "2026-07-16"
+      "last_filed": "2026-07-16",
+      "missing_runs": 0
     },
     "0002105398": {
       "company": "Csquare, Inc.",
       "stage": "priced",
       "last_filing_id": "0001104659-26-084293",
-      "last_filed": "2026-07-16"
+      "last_filed": "2026-07-16",
+      "missing_runs": 0
     },
     "0001699963": {
       "company": "Neutron Holdings, Inc.",
       "stage": "priced",
       "last_filing_id": "0001628280-26-046635",
-      "last_filed": "2026-07-02"
+      "last_filed": "2026-07-02",
+      "missing_runs": 0
     },
     "0002110117": {
       "company": "ITG, Inc./DE/",
       "stage": "priced",
       "last_filing_id": "0001193125-26-292853",
-      "last_filed": "2026-07-02"
+      "last_filed": "2026-07-02",
+      "missing_runs": 0
     },
     "0002123613": {
       "company": "Kardigan, Inc.",
       "stage": "priced",
       "last_filing_id": "0001193125-26-276096",
-      "last_filed": "2026-06-18"
+      "last_filed": "2026-06-18",
+      "missing_runs": 0
     },
     "0001531193": {
       "company": "First Carolina Financial Services, Inc.",
       "stage": "priced",
       "last_filing_id": "0001140361-26-025790",
-      "last_filed": "2026-06-18"
+      "last_filed": "2026-06-18",
+      "missing_runs": 0
     },
     "0001181412": {
       "company": "Space Exploration Technologies Corp",
       "stage": "priced",
       "last_filing_id": "0001628280-26-042639",
-      "last_filed": "2026-06-12"
+      "last_filed": "2026-06-12",
+      "missing_runs": 0
     },
     "0002104879": {
       "company": "RMG ML Sports Holdings",
       "stage": "priced",
       "last_filing_id": "0001213900-26-067558",
-      "last_filed": "2026-06-11"
+      "last_filed": "2026-06-11",
+      "missing_runs": 0
     },
     "0001925062": {
       "company": "Forbright, Inc.",
       "stage": "priced",
       "last_filing_id": "0001628280-26-042580",
-      "last_filed": "2026-06-11"
+      "last_filed": "2026-06-11",
+      "missing_runs": 0
     },
     "0001657677": {
       "company": "Parabilis Medicines, Inc.",
       "stage": "priced",
       "last_filing_id": "0001193125-26-265983",
-      "last_filed": "2026-06-10"
+      "last_filed": "2026-06-10",
+      "missing_runs": 0
     },
     "0002110029": {
       "company": "ERock, Inc.",
       "stage": "priced",
       "last_filing_id": "0001193125-26-265898",
-      "last_filed": "2026-06-10"
+      "last_filed": "2026-06-10",
+      "missing_runs": 0
     },
     "0001921603": {
       "company": "WhiteHawk Income Corp",
       "stage": "priced",
       "last_filing_id": "0001193125-26-264014",
-      "last_filed": "2026-06-09"
+      "last_filed": "2026-06-09",
+      "missing_runs": 0
     },
     "0002091017": {
       "company": "Sunshine Silver Mining & Refining Co",
       "stage": "priced",
       "last_filing_id": "0001140361-26-024037",
-      "last_filed": "2026-06-05"
+      "last_filed": "2026-06-05",
+      "missing_runs": 0
     },
     "0002110105": {
       "company": "Quantinuum Inc.",
       "stage": "priced",
       "last_filing_id": "0001628280-26-041003",
-      "last_filed": "2026-06-05"
+      "last_filed": "2026-06-05",
+      "missing_runs": 0
     },
     "0001850351": {
       "company": "Liftoff Mobile, Inc.",
       "stage": "priced",
       "last_filing_id": "0001193125-26-257410",
-      "last_filed": "2026-06-04"
+      "last_filed": "2026-06-04",
+      "missing_runs": 0
     },
     "0002118195": {
       "company": "Applied Aerospace & Defense, Inc.",
       "stage": "priced",
       "last_filing_id": "0001193125-26-256356",
-      "last_filed": "2026-06-04"
+      "last_filed": "2026-06-04",
+      "missing_runs": 0
     }
   }
 }
