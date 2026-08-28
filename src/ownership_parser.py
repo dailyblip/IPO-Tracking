@@ -46,6 +46,13 @@ _DOCUMENT_SECTION_HEADINGS = {
     "where you can find additional information",
 }
 
+_PERCENT_MARKERS = {"%", "percent", "percentage"}
+_SHARE_TO_PERCENT = {
+    "shares": "percent",
+    "shares_before": "percent_before",
+    "shares_after": "percent_after",
+}
+
 
 def _clean(text):
     value = " ".join(str(text or "").replace("\xa0", " ").split())
@@ -121,6 +128,20 @@ def _percent(text):
     match = re.search(r"([\d,.]+)\s*%", value)
     if match:
         return float(match.group(1).replace(",", ""))
+    return None
+
+
+def _explicit_percent(cells, index):
+    """Return a percentage only when SEC table markup explicitly marks it as such."""
+    inline = _percent(cells[index])
+    if inline is not None and 0 <= inline <= 100:
+        return inline
+    if index + 1 < len(cells):
+        marker = _clean(cells[index + 1]).lower().rstrip(".")
+        if marker in _PERCENT_MARKERS:
+            value = _numeric(cells[index])
+            if value is not None and 0 <= float(value) <= 100:
+                return float(value)
     return None
 
 
@@ -205,11 +226,17 @@ def parse_ownership_table(table):
             kind = kinds[i] if i < len(kinds) else None
             if not kind:
                 continue
+            explicit_percent = _explicit_percent(row, i)
             if kind.startswith("percent"):
-                value = _percent(cell)
+                value = explicit_percent
                 if value is None and "%" in headers[i]:
                     n = _numeric(cell)
                     value = float(n) if n is not None else None
+            elif explicit_percent is not None:
+                percent_kind = _SHARE_TO_PERCENT.get(kind)
+                if percent_kind and data.get(percent_kind) is None:
+                    data[percent_kind] = explicit_percent
+                continue
             else:
                 value = _numeric(cell)
             if value is not None and data.get(kind) is None:
