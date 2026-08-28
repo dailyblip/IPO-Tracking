@@ -15,9 +15,6 @@
     }
   },
   "$defs": {
-    "nullableString": {"type": ["string", "null"]},
-    "nullableNumber": {"type": ["number", "null"]},
-    "nullableInteger": {"type": ["integer", "null"]},
     "dateOrNull": {
       "anyOf": [
         {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
@@ -119,7 +116,7 @@
         "priority": {"type": "string"},
         "status": {"type": "string"},
         "value": {"type": ["number", "null"]},
-        "value_label": {"type": "string"},
+        "value_label": {"type": ["string", "null"]},
         "people_count": {"type": "integer", "minimum": 0},
         "signals": {"type": "array", "items": {"type": "string"}},
         "people": {"type": "array", "items": {"$ref": "#/$defs/person"}},
@@ -127,6 +124,7 @@
         "stage": {"type": "string", "minLength": 1},
         "price_range": {"type": ["string", "null"]},
         "filing_price": {"type": ["string", "number", "null"]},
+        "filing_price_source": {"type": ["string", "null"]},
         "offering_price": {"type": ["number", "null"]},
         "current_price": {"type": ["number", "null"]},
         "price_updated": {"type": ["string", "null"]},
