@@ -16,13 +16,18 @@ Optional:
 """
 
 import json
+import hashlib
 import os
 import re
+from datetime import datetime, timezone
+from pathlib import Path
 
 import requests
 
 OPENAI_RESPONSES_API_URL = "https://api.openai.com/v1/responses"
 DEFAULT_OPENAI_MODEL = "gpt-5.6-luna"
+CACHE_SCHEMA_VERSION = 1
+GRADING_POLICY_VERSION = "2026-08-28-balanced-v1"
 
 DIRECT_MENTION_PATTERN = re.compile(r"\bstanford\b", re.IGNORECASE)
 STANFORD_UNIVERSITY_PATTERN = re.compile(r"\bstanford\s+university\b", re.IGNORECASE)
@@ -37,6 +42,74 @@ ORGANIZATION_PATTERN = re.compile(
 
 class StanfordGraderError(Exception):
     pass
+
+
+def _cache_path() -> Path | None:
+    value = os.environ.get("STANFORD_RESEARCH_CACHE_PATH", "").strip()
+    return Path(value) if value else None
+
+
+def _cache_key(person_name: str, company_name: str, title: str, bio_text: str) -> str:
+    evidence = {
+        "policy": GRADING_POLICY_VERSION,
+        "model": _openai_model(),
+        "person": _clean_person_name(person_name),
+        "company": " ".join(str(company_name or "").split()),
+        "title": " ".join(str(title or "").split()),
+        "bio": _research_evidence_excerpt(person_name, bio_text),
+    }
+    encoded = json.dumps(evidence, sort_keys=True, ensure_ascii=False).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def _load_cache(path: Path) -> dict:
+    if not path.exists():
+        return {"schema_version": CACHE_SCHEMA_VERSION, "entries": {}, "usage": {}}
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {"schema_version": CACHE_SCHEMA_VERSION, "entries": {}, "usage": {}}
+    if payload.get("schema_version") != CACHE_SCHEMA_VERSION:
+        return {"schema_version": CACHE_SCHEMA_VERSION, "entries": {}, "usage": {}}
+    payload.setdefault("entries", {})
+    payload.setdefault("usage", {})
+    return payload
+
+
+def _write_cache(path: Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    tmp.replace(path)
+
+
+def _cached_research(key: str) -> dict | None:
+    path = _cache_path()
+    if path is None:
+        return None
+    entry = _load_cache(path)["entries"].get(key)
+    return dict(entry["result"]) if isinstance(entry, dict) and isinstance(entry.get("result"), dict) else None
+
+
+def _store_research(key: str, result: dict) -> None:
+    path = _cache_path()
+    if path is None:
+        return
+    payload = _load_cache(path)
+    usage = result.get("_usage") if isinstance(result.get("_usage"), dict) else {}
+    public_result = {k: v for k, v in result.items() if k != "_usage"}
+    payload["entries"][key] = {
+        "result": public_result,
+        "model": _openai_model(),
+        "policy": GRADING_POLICY_VERSION,
+        "cached_at": datetime.now(timezone.utc).isoformat(),
+    }
+    totals = payload["usage"]
+    totals["requests"] = int(totals.get("requests") or 0) + 1
+    for field in ("input_tokens", "output_tokens", "total_tokens"):
+        totals[field] = int(totals.get(field) or 0) + int(usage.get(field) or 0)
+    payload["updated_at"] = datetime.now(timezone.utc).isoformat()
+    _write_cache(path, payload)
 
 
 def _get_env(name: str) -> str:
@@ -70,6 +143,25 @@ def _normalized_words(value: str) -> list[str]:
 
 def _normalized_phrase(value: str) -> str:
     return " ".join(_normalized_words(value))
+
+
+def _research_evidence_excerpt(person_name: str, bio_text: str, limit: int = 2500) -> str:
+    """Keep only compact person-specific evidence; discard unrelated filing text."""
+    text = " ".join(str(bio_text or "").split())
+    if len(text) <= limit:
+        return text
+    clean_name = _clean_person_name(person_name)
+    if not clean_name:
+        return ""
+    tokens = _normalized_words(clean_name)
+    if not tokens:
+        return ""
+    pattern = re.compile(r"\b" + r"\W+".join(re.escape(token) for token in tokens) + r"\b", re.I)
+    match = pattern.search(text)
+    if match is None:
+        return ""
+    radius = limit // 2
+    return text[max(0, match.start() - radius):min(len(text), match.end() + radius)]
 
 
 def _person_specific_filing_context(person_name: str, bio_text: str, radius: int = 2500) -> str:
@@ -121,7 +213,7 @@ def check_bio_for_stanford(bio_text: str, person_name: str = "") -> dict | None:
 
 def _build_openai_prompt(person_name: str, company_name: str, title: str, bio_text: str) -> str:
     clean_name = _clean_person_name(person_name)
-    filing_excerpt = " ".join(str(bio_text or "").split())[:6000]
+    filing_excerpt = _research_evidence_excerpt(clean_name, bio_text)
     return f"""Research whether this exact person has a public affiliation with Stanford University.
 
 Person: {clean_name}
@@ -200,7 +292,9 @@ def grade_via_llm(
             + (f": {detail}" if detail else "")
         )
 
-    text = _extract_response_text(response.json())
+    response_data = response.json()
+    text = _extract_response_text(response_data)
+    usage = response_data.get("usage") if isinstance(response_data.get("usage"), dict) else {}
     cleaned = text.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
     try:
         parsed = json.loads(cleaned)
@@ -221,6 +315,10 @@ def grade_via_llm(
             "justification": justification,
             "source": "openai_web_research",
             "source_url": source_url,
+            "_usage": {
+                field: int(usage.get(field) or 0)
+                for field in ("input_tokens", "output_tokens", "total_tokens")
+            },
         }
     except (json.JSONDecodeError, KeyError, TypeError, ValueError):
         return {
@@ -267,8 +365,17 @@ def grade_stanford_affiliation(
     # Research failures are operational state, not public evidence. Fail closed here
     # so the dashboard never publishes API/quota/credential details as a person's
     # Stanford connection note. The caller may log the underlying exception separately.
+    clean_name = _clean_person_name(person_name)
+    cache_key = _cache_key(clean_name, company_name, title, bio_text)
+    cached = _cached_research(cache_key)
+    if cached is not None:
+        return cached
+
     try:
-        return grade_via_llm(_clean_person_name(person_name), company_name, title, bio_text, [])
+        result = grade_via_llm(clean_name, company_name, title, bio_text, [])
+        if result.get("source") == "openai_web_research":
+            _store_research(cache_key, result)
+        return {k: v for k, v in result.items() if k != "_usage"}
     except StanfordGraderError:
         return {
             "grade": 0,
