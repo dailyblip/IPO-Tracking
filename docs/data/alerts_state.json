@@ -1,7 +1,31 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-28T02:03:01.134892+00:00",
+  "updated_at": "2026-08-28T02:23:27.128421+00:00",
   "items": {
+    "s1:0002137360": {
+      "id": "s1:0002137360",
+      "cik": "0002137360",
+      "company": "Youmi Inc.",
+      "form": "S-1/A",
+      "filed": "2026-08-27",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2137360/000152013826000375/0001520138-26-000375-index.htm"
+    },
+    "s1:0002076148": {
+      "id": "s1:0002076148",
+      "cik": "0002076148",
+      "company": "FullPAC, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-08-27",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2076148/000149315226040434/0001493152-26-040434-index.htm"
+    },
     "s1:0002104277": {
       "id": "s1:0002104277",
       "cik": "0002104277",
@@ -388,6 +412,18 @@
     }
   },
   "ciks": {
+    "0002137360": {
+      "company": "Youmi Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002137360",
+      "last_filed": "2026-08-27"
+    },
+    "0002076148": {
+      "company": "FullPAC, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002076148",
+      "last_filed": "2026-08-27"
+    },
     "0002104277": {
       "company": "Holtec Nuclear Corp",
       "stage": "pre-pricing",
