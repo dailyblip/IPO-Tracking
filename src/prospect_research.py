@@ -14,6 +14,10 @@ ENTITY_MARKERS = (
     " fund", " partners", " partnership", " capital", " ventures", " holdings",
     " trust", " foundation", " bank", " management", " advisors", " nominees",
 )
+INSTITUTION_MARKERS = (
+    "authority", "university", "college", "institute", "association", "pension",
+    "retirement system", "endowment", "government", "ministry",
+)
 FUND_MARKERS = (" fund", " capital", " ventures", " partners", " partnership", " lp", " l.p.")
 TRUST_MARKERS = (" trust", " trustee")
 AGGREGATE_ENTITY_MARKERS = (
@@ -22,6 +26,11 @@ AGGREGATE_ENTITY_MARKERS = (
     "funds affiliated with",
     "affiliates of",
 )
+
+
+def _contains_phrase(value: str, phrase: str) -> bool:
+    """Match institutional nouns as whole phrases, including at name start."""
+    return bool(re.search(rf"(?<![a-z]){re.escape(phrase)}(?![a-z])", value))
 
 
 def holder_type(name: str) -> str:
@@ -39,6 +48,8 @@ def holder_type(name: str) -> str:
     if any(marker in value for marker in FUND_MARKERS):
         return "Fund"
     if any(marker in value for marker in ENTITY_MARKERS):
+        return "Entity"
+    if any(_contains_phrase(value, marker) for marker in INSTITUTION_MARKERS):
         return "Entity"
     # SEC natural-person rows are usually 2-5 alphabetic name tokens.
     tokens = [t for t in re.split(r"\s+", value) if re.search(r"[a-z]", t)]
