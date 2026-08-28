@@ -67,6 +67,7 @@ jobs:
           MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          STANFORD_RESEARCH_CACHE_PATH: ../docs/data/stanford_research_cache.json
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
         run: |
           START=2026-06-01
@@ -167,7 +168,7 @@ jobs:
           PY
       - name: Publish refreshed ownership data
         run: |
-          if [ -z "$(git status --short -- docs/data/filings.json docs/data/filings.csv docs/index.html)" ]; then
+          if [ -z "$(git status --short -- docs/data/filings.json docs/data/filings.csv docs/data/stanford_research_cache.json docs/index.html)" ]; then
             echo "Ownership and dashboard data unchanged."
             exit 0
           fi
@@ -180,6 +181,6 @@ jobs:
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add docs/data/filings.json docs/data/filings.csv docs/index.html
+          git add docs/data/filings.json docs/data/filings.csv docs/data/stanford_research_cache.json docs/index.html
           git commit -m "Refresh Prospect Research ownership history"
           git push origin HEAD:main
