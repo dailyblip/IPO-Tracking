@@ -9,16 +9,30 @@
     "schema_version": {"const": 1},
     "generated_at": {"type": "string", "minLength": 1},
     "source": {"const": "SEC EDGAR"},
-    "filings": {
-      "type": "array",
-      "items": {"$ref": "#/$defs/filing"}
-    }
+    "filings": {"type": "array", "items": {"$ref": "#/$defs/filing"}}
   },
   "$defs": {
     "dateOrNull": {
       "anyOf": [
         {"type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$"},
         {"type": "null"}
+      ]
+    },
+    "filingPriceSource": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source", "form", "filing_date", "accession_no", "sec_url"],
+          "properties": {
+            "source": {"type": "string"},
+            "form": {"type": "string"},
+            "filing_date": {"$ref": "#/$defs/dateOrNull"},
+            "accession_no": {"type": "string"},
+            "sec_url": {"type": "string"}
+          }
+        }
       ]
     },
     "lockupTerm": {
@@ -87,10 +101,7 @@
         "lockup_duration_days": {"type": ["integer", "null"]},
         "lockup_duration_value": {"type": ["integer", "number", "string", "null"]},
         "lockup_duration_unit": {"type": ["string", "null"]},
-        "lockup_schedule": {
-          "type": "array",
-          "items": {"$ref": "#/$defs/lockupScheduleTerm"}
-        },
+        "lockup_schedule": {"type": "array", "items": {"$ref": "#/$defs/lockupScheduleTerm"}},
         "lockup_text": {"type": ["string", "null"]},
         "valuation_as_of": {"type": ["string", "null"]}
       }
@@ -124,7 +135,7 @@
         "stage": {"type": "string", "minLength": 1},
         "price_range": {"type": ["string", "null"]},
         "filing_price": {"type": ["string", "number", "null"]},
-        "filing_price_source": {"type": ["string", "null"]},
+        "filing_price_source": {"$ref": "#/$defs/filingPriceSource"},
         "offering_price": {"type": ["number", "null"]},
         "current_price": {"type": ["number", "null"]},
         "price_updated": {"type": ["string", "null"]},
