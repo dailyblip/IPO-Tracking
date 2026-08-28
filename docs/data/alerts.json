@@ -1,22 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-28T21:20:41.159512+00:00",
-  "count": 34,
+  "generated_at": "2026-08-28T21:38:22.930195+00:00",
+  "count": 33,
   "alerts": [
-    {
-      "type": "new_prepricing",
-      "company": "Game Your Game Inc.",
-      "cik": "0002111846",
-      "filing_id": "s1:0002111846",
-      "form": "S-1",
-      "filed": "2026-08-21",
-      "stage": "pre-pricing",
-      "priority": "Medium",
-      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026092695/0001213900-26-092695-index.htm",
-      "detected_at": "2026-08-28T20:10:36.583480+00:00",
-      "key": "new_prepricing|s1:0002111846|0002111846|2026-08-21|"
-    },
     {
       "type": "new_prepricing",
       "company": "Youmi Inc.",
