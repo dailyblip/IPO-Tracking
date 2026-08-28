@@ -101,6 +101,9 @@ jobs:
           MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
         run: python market_quote_identity.py ../docs/data/filings.json
 
+      - name: Validate generated lifecycle uniqueness
+        run: python -m unittest discover -s src -p 'test_issuer_row_consistency.py' -v
+
       - name: Publish Research Monitor data
         run: |
           if git diff --quiet -- docs/data/filings.json docs/data/filings.csv; then
