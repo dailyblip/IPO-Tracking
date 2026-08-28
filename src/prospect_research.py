@@ -11,7 +11,7 @@ import re
 
 ENTITY_MARKERS = (
     " lp", " l.p.", " llc", " ltd", " limited", " inc", " corp", " corporation",
-    " fund", " partners", " partnership", " capital", " ventures", " holdings",
+    " company", " fund", " partners", " partnership", " capital", " ventures", " holdings",
     " trust", " foundation", " bank", " management", " advisors", " nominees",
 )
 INSTITUTION_MARKERS = (
