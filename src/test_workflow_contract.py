@@ -4,12 +4,18 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW_DIR = REPO_ROOT / ".github" / "workflows"
+DAILY_WORKFLOW = WORKFLOW_DIR / "daily.yml"
 OWNERSHIP_WORKFLOW = WORKFLOW_DIR / "ownership-refresh.yml"
 S1_WORKFLOW = WORKFLOW_DIR / "s1-watch.yml"
+PUBLIC_FEED_POLICY_WORKFLOWS = [
+    DAILY_WORKFLOW,
+    S1_WORKFLOW,
+    OWNERSHIP_WORKFLOW,
+]
 SHARED_FEED_WRITER_WORKFLOWS = [
-    WORKFLOW_DIR / "daily.yml",
-    WORKFLOW_DIR / "s1-watch.yml",
-    WORKFLOW_DIR / "ownership-refresh.yml",
+    DAILY_WORKFLOW,
+    S1_WORKFLOW,
+    OWNERSHIP_WORKFLOW,
     WORKFLOW_DIR / "backfill.yml",
     WORKFLOW_DIR / "stanford-backfill-once.yml",
 ]
@@ -76,6 +82,18 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertIn("Pre-pricing record has a live market quote", workflow)
         self.assertIn("Impossible lifecycle chronology", workflow)
         self.assertIn("filing.get('current_price') not in (None, '')", workflow)
+
+    def test_public_feed_policy_steps_have_sec_user_agent(self):
+        marker = "- name: Enforce public-feed eligibility policy"
+        required_env = "SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}"
+
+        for path in PUBLIC_FEED_POLICY_WORKFLOWS:
+            workflow = _workflow(path)
+            start = workflow.index(marker)
+            next_step = workflow.find("\n      - name:", start + len(marker))
+            block = workflow[start:] if next_step == -1 else workflow[start:next_step]
+            with self.subTest(workflow=path.name):
+                self.assertIn(required_env, block)
 
     def test_shared_feed_writers_queue_instead_of_replacing_pending_runs(self):
         for path in SHARED_FEED_WRITER_WORKFLOWS:
