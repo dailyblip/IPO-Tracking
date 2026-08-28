@@ -214,6 +214,35 @@ class ResearchGradeOfferingTermsTests(unittest.TestCase):
         self.assertEqual(terms["primary_shares"], 4_878_049)
         self.assertEqual(terms["secondary_shares"], 19_121_951)
 
+    def test_cover_count_matching_secondary_component_is_not_conflict(self):
+        import filing_parser
+        soup = _soup("""<html><body>
+        276,731 Shares Common Stock. This is our initial public offering.
+        THE OFFERING
+        Common stock offered by us | 6,679,791 shares of common stock.
+        Common stock offered by the selling stockholders | 276,731 shares of common stock.
+        </body></html>""")
+        terms = filing_parser.extract_offering_terms(soup)
+        self.assertEqual(terms["total_shares"], 6_956_522)
+        self.assertEqual(terms["primary_shares"], 6_679_791)
+        self.assertEqual(terms["secondary_shares"], 276_731)
+        self.assertFalse(terms["conflict"])
+        self.assertIn("matches disclosed secondary offering component", terms["source"])
+        self.assertNotIn("conflict with", terms["source"])
+
+    def test_unreconciled_cover_count_still_flags_conflict(self):
+        import filing_parser
+        soup = _soup("""<html><body>
+        500,000 Shares Common Stock. This is our initial public offering.
+        THE OFFERING
+        Common stock offered by us | 6,679,791 shares of common stock.
+        Common stock offered by the selling stockholders | 276,731 shares of common stock.
+        </body></html>""")
+        terms = filing_parser.extract_offering_terms(soup)
+        self.assertEqual(terms["total_shares"], 6_956_522)
+        self.assertTrue(terms["conflict"])
+        self.assertIn("conflict with", terms["source"])
+
     def test_parse_filing_exposes_principal_office_location(self):
         import filing_parser
         soup = _soup("""<html><body>Brian Morrison Chief Executive Officer Lyntris Inc.
