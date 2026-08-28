@@ -23,6 +23,8 @@ _DOCUMENT_SECTION_HEADINGS = {
     "shares eligible for future sale",
     "material u.s. federal income tax considerations",
     "material us federal income tax considerations",
+    "material u.s. federal income tax consequences to non-u.s. holders",
+    "material us federal income tax consequences to non-us holders",
     "legal matters",
     "risk factors",
     "use of proceeds",
@@ -36,6 +38,7 @@ _DOCUMENT_SECTION_HEADINGS = {
     "certain relationships and related transactions",
     "experts",
     "where you can find more information",
+    "where you can find additional information",
 }
 
 
@@ -67,7 +70,7 @@ def looks_like_document_heading(value):
     # heading (for example, "UNDERWRITING (CONFLICTS OF INTEREST)"). Avoid a
     # generic startswith check so an actual owner such as "Underwriting Capital
     # Partners LLC" remains eligible.
-    return normalized == "underwriting" or normalized.startswith("underwriting (")
+    return normalized in {"underwriting", "underwriters"} or normalized.startswith("underwriting (")
 
 
 def _expand_row(row):
