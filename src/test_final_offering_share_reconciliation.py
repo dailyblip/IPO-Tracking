@@ -55,6 +55,29 @@ class FinalOfferingShareReconciliationTests(unittest.TestCase):
         self.assertFalse(terms["conflict"])
         self.assertEqual(terms["total_shares"] * 21, 1_050_000_000)
 
+    def test_aadx_an_initial_public_offering_title_beats_option_shares(self):
+        terms = filing_parser.extract_offering_terms(_soup("""
+        32,500,000 Shares Applied Aerospace & Defense, Inc. Common Stock.
+        This is an initial public offering of Applied Aerospace & Defense, Inc.
+        We are offering 32,500,000 shares of our common stock.
+        The initial public offering price per share is $20.00.
+        We have granted the underwriters an option to purchase up to an additional
+        4,875,000 shares of common stock from us at the initial offering price.
+        """))
+        self.assertEqual(terms["total_shares"], 32_500_000)
+        self.assertEqual(terms["primary_shares"], 32_500_000)
+        self.assertIsNone(terms["secondary_shares"])
+        self.assertFalse(terms["conflict"])
+        self.assertEqual(terms["total_shares"] * 20, 650_000_000)
+
+    def test_option_share_count_is_not_accepted_as_context_fallback_total(self):
+        terms = filing_parser.extract_offering_terms(_soup("""
+        This is an initial public offering of Example Corp.
+        We have granted the underwriters an option to purchase up to an additional
+        4,875,000 shares of common stock from us at the initial offering price.
+        """))
+        self.assertIsNone(terms["total_shares"])
+
     def test_cover_title_does_not_fold_overallotment_into_base_ipo(self):
         terms = filing_parser.extract_offering_terms(_soup("""
         PROSPECTUS 12,000,000 Shares Example Corp Common Stock.
