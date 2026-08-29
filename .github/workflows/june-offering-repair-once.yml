@@ -129,7 +129,12 @@ jobs:
               actual = row.get('value')
               if actual is None or abs(float(actual) - value) > 1:
                   raise SystemExit(f'{ticker} value mismatch after repair: {actual} != {value}')
-          print('Validated QNT, LFTO, and AADX base IPO values after parser reprocessing.')
+          aadx = by_ticker['AADX']
+          if float(aadx.get('primary_offering_shares') or 0) != 32_500_000:
+              raise SystemExit(f"AADX primary share mismatch: {aadx.get('primary_offering_shares')}")
+          if float(aadx.get('secondary_offering_shares') or 0) != 0:
+              raise SystemExit(f"AADX should not have secondary base shares: {aadx.get('secondary_offering_shares')}")
+          print('Validated QNT, LFTO, and AADX base IPO values; AADX base shares are 32,500,000 and exclude the option.')
           PY
 
       - name: Guard ownership-history backfill before generated-data commit
