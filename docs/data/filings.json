@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-29T06:58:28.596576+00:00",
+  "generated_at": "2026-08-29T08:21:38.805088+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -67,19 +67,19 @@
       "filed": "2026-08-28",
       "stage": "Pre-pricing",
       "price_range": null,
-      "filing_price": "$3.27",
+      "filing_price": null,
       "offering_size_source": null,
       "offering_size_confidence": null,
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
-      "priority": "High",
+      "priority": "Medium",
       "status": "New",
       "value": null,
       "value_label": "—",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
-        "Fixed offering price disclosed at $3.27 per share"
+        "No preliminary price range or fixed offering price detected yet"
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526374259/0001193125-26-374259-index.htm"
@@ -121,19 +121,19 @@
       "filed": "2026-08-28",
       "stage": "Pre-pricing",
       "price_range": null,
-      "filing_price": "$8.03",
+      "filing_price": null,
       "offering_size_source": null,
       "offering_size_confidence": null,
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
-      "priority": "High",
+      "priority": "Medium",
       "status": "New",
       "value": null,
       "value_label": "—",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
-        "Fixed offering price disclosed at $8.03 per share"
+        "No preliminary price range or fixed offering price detected yet"
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526372368/0001193125-26-372368-index.htm"
@@ -246,6 +246,33 @@
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026092565/0001213900-26-092565-index.htm"
+    },
+    {
+      "id": "s1:0002111846",
+      "company": "Game Your Game Inc.",
+      "ticker": "GYGY",
+      "cik": "0002111846",
+      "accession_no": "0001213900-26-092695",
+      "form": "S-1",
+      "filed": "2026-08-21",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "priority": "Medium",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 0,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026092695/0001213900-26-092695-index.htm"
     },
     {
       "id": "s1:0002131613",
@@ -2148,6 +2175,33 @@
         "accession_no": "0001193125-26-346328",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526346328/0001193125-26-346328-index.htm"
       }
+    },
+    {
+      "id": "s1:0002112634",
+      "company": "Sensei Harbor Corp.",
+      "ticker": "",
+      "cik": "0002112634",
+      "accession_no": "0001683168-26-006561",
+      "form": "S-1/A",
+      "filed": "2026-08-18",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "priority": "Medium",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 0,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2112634/000168316826006561/0001683168-26-006561-index.htm"
     },
     {
       "id": "s1:0001880995",
