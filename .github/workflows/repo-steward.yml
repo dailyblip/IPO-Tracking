@@ -232,6 +232,7 @@ jobs:
       contents: read
     outputs:
       has_patch: ${{ steps.patch.outputs.has_patch }}
+      agent_failed: ${{ steps.agent_status.outputs.agent_failed }}
     steps:
       - name: Check out failing commit
         uses: actions/checkout@v5
@@ -249,6 +250,7 @@ jobs:
       - name: Analyze and attempt a bounded repair
         id: codex
         uses: openai/codex-action@v1
+        continue-on-error: true
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           permission-profile: ":workspace"
@@ -277,8 +279,21 @@ jobs:
             A repair is only complete if its focused validation passes. State the root cause,
             files changed, commands run, and validation result in the final response.
 
+      - name: Record repair-agent outcome
+        id: agent_status
+        if: always()
+        env:
+          CODEX_OUTCOME: ${{ steps.codex.outcome }}
+        run: |
+          if [ "$CODEX_OUTCOME" = "success" ]; then
+            echo "agent_failed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "agent_failed=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Build and constrain patch
         id: patch
+        if: steps.codex.outcome == 'success'
         run: |
           set -euo pipefail
           cp .repo-steward-input/codex-summary.md "$RUNNER_TEMP/codex-summary.md"
@@ -308,7 +323,7 @@ jobs:
           echo "has_patch=true" >> "$GITHUB_OUTPUT"
 
       - name: Upload repair result
-        if: always()
+        if: always() && steps.codex.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: repo-steward-result-${{ env.RUN_ID }}-${{ env.RUN_ATTEMPT }}
@@ -386,6 +401,7 @@ jobs:
       needs.triage.outputs.should_repair == 'true' &&
       needs.triage.outputs.codex_available == 'true' &&
       needs.generate_fix.result == 'success' &&
+      needs.generate_fix.outputs.agent_failed != 'true' &&
       needs.generate_fix.outputs.has_patch != 'true'
     runs-on: ubuntu-latest
     permissions:
@@ -409,7 +425,8 @@ jobs:
             echo
             echo "No repository patch was proposed. The incident remains open for visibility."
           } > "$RUNNER_TEMP/incident-comment.md"
-          gh issue comment "$INCIDENT_NUMBER" --body-file "$RUNNER_TEMP/incident-comment.md"
+          gh issue comment "$INCIDENT_NUMBER" --repo "$GITHUB_REPOSITORY" \
+            --body-file "$RUNNER_TEMP/incident-comment.md"
 
   report_agent_failure:
     needs: [triage, generate_fix]
@@ -417,7 +434,8 @@ jobs:
       always() &&
       needs.triage.result == 'success' &&
       needs.triage.outputs.codex_available == 'true' &&
-      needs.generate_fix.result == 'failure'
+      needs.generate_fix.result == 'success' &&
+      needs.generate_fix.outputs.agent_failed == 'true'
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -427,5 +445,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           INCIDENT_NUMBER: ${{ needs.triage.outputs.incident_number }}
         run: |
-          gh issue comment "$INCIDENT_NUMBER" --body \
+          gh issue comment "$INCIDENT_NUMBER" --repo "$GITHUB_REPOSITORY" --body \
             "Repo Steward analyzed the failure, but its bounded repair job did not complete successfully. No code was pushed and the incident remains open."
