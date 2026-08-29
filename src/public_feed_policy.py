@@ -356,13 +356,18 @@ def _normalize_person_ownership_metrics(filing):
 
 
 def _sanitize_person_ipo_sales(filing):
-    """Clear holder-level IPO sales that exceed the entire known secondary offering.
+    """Fail closed when holder-level IPO sales conflict with the known secondary offering.
 
-    A holder cannot sell more shares in the IPO than all selling stockholders sold
-    in aggregate. Historical ownership-table parsing can misclassify a beneficial-
-    ownership position as ``shares_sold_ipo``. When the filing-level secondary
-    component is known, fail closed on that impossible state and clear the related
-    realized-cash derivative rather than inventing a replacement sale quantity.
+    No holder can sell more shares in the IPO than all selling stockholders sold in
+    aggregate. Likewise, the sum of all holder-level sale assignments cannot exceed
+    the filing-level secondary offering. Historical ownership-table parsing can
+    misclassify or duplicate beneficial-ownership positions as ``shares_sold_ipo``.
+
+    First clear any individually impossible sale while preserving other supported
+    holder rows. Then compare the remaining holder-level sale total with the known
+    secondary offering. If that aggregate still exceeds the filing-level total, the
+    release gate cannot know which holder assignments are wrong, so clear every
+    holder-level IPO sale and related realized-cash derivative rather than guess.
     """
     normalized = dict(filing)
     people = filing.get("people")
@@ -370,18 +375,42 @@ def _sanitize_person_ipo_sales(filing):
     if not isinstance(people, list) or secondary is None:
         return normalized
 
+    secondary_value = _number(secondary)
+    if secondary_value is None:
+        return normalized
+
     normalized_people = []
+    aggregate_sold = 0.0
     for person in people:
         if not isinstance(person, dict):
             normalized_people.append(person)
             continue
         normalized_person = dict(person)
         sold = valid_share_count(person.get("shares_sold_ipo"))
-        if sold is not None and sold > secondary:
+        sold_value = _number(sold)
+        if sold_value is not None and sold_value > secondary_value:
             normalized_person["shares_sold_ipo"] = None
             if "cash_realized_ipo" in normalized_person:
                 normalized_person["cash_realized_ipo"] = None
+            sold_value = None
+        if sold_value is not None:
+            aggregate_sold += sold_value
         normalized_people.append(normalized_person)
+
+    if aggregate_sold > secondary_value:
+        aggregate_cleared = []
+        for person in normalized_people:
+            if not isinstance(person, dict):
+                aggregate_cleared.append(person)
+                continue
+            normalized_person = dict(person)
+            if valid_share_count(normalized_person.get("shares_sold_ipo")) is not None:
+                normalized_person["shares_sold_ipo"] = None
+                if "cash_realized_ipo" in normalized_person:
+                    normalized_person["cash_realized_ipo"] = None
+            aggregate_cleared.append(normalized_person)
+        normalized_people = aggregate_cleared
+
     normalized["people"] = normalized_people
     return normalized
 
