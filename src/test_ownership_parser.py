@@ -67,6 +67,53 @@ class OwnershipParserTests(unittest.TestCase):
         self.assertEqual(r['percent_before'],9.9)
         self.assertEqual(r['percent_after'],7.2)
 
+    def test_paired_multiclass_temporal_counts_are_safely_aggregated(self):
+        html="""<table>
+        <tr>
+          <th>Name of beneficial owner</th>
+          <th>Class A Common Stock beneficially owned before offering</th>
+          <th>Class B Common Stock beneficially owned before offering</th>
+          <th>Class A Common Stock beneficially owned after offering</th>
+          <th>Class B Common Stock beneficially owned after offering</th>
+        </tr>
+        <tr>
+          <td>Ira Ehrenpreis</td>
+          <td>809,050</td>
+          <td>564,650</td>
+          <td>809,050</td>
+          <td>564,650</td>
+        </tr>
+        <tr>
+          <td>Gwynne Shotwell</td>
+          <td>5,759,610</td>
+          <td>7,113,550</td>
+          <td>5,759,610</td>
+          <td>7,113,550</td>
+        </tr>
+        <tr>
+          <td>Bret Johnsen</td>
+          <td>9,048,565</td>
+          <td>—</td>
+          <td>9,048,565</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td>Donald Harrison</td>
+          <td>—</td>
+          <td>—</td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+        </table>"""
+        rows=parse_ownership_table(BeautifulSoup(html,'lxml').find('table'))
+        self.assertEqual([row['name'] for row in rows], ['Ira Ehrenpreis', 'Gwynne Shotwell', 'Bret Johnsen'])
+        self.assertEqual(rows[0]['shares_before'],1373700)
+        self.assertEqual(rows[0]['shares_after'],1373700)
+        self.assertEqual(rows[1]['shares_before'],12873160)
+        self.assertEqual(rows[1]['shares_after'],12873160)
+        self.assertEqual(rows[2]['shares_before'],9048565)
+        self.assertEqual(rows[2]['shares_after'],9048565)
+
     def test_prospectus_section_headings_are_not_beneficial_owners(self):
         html="""<table>
         <tr><th>Name of beneficial owner</th><th>Shares beneficially owned</th></tr>
