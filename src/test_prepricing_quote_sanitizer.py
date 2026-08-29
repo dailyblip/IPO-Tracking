@@ -49,6 +49,54 @@ class PrepricingQuoteSanitizerTests(unittest.TestCase):
         self.assertEqual(filing["current_price"], 24.13)
         self.assertEqual(filing["people"][0]["cash_value"], 100)
 
+    def test_priced_record_without_current_quote_clears_stale_market_derivatives(self):
+        payload = {
+            "filings": [{
+                "id": "whitehawk-regression",
+                "form": "424B4",
+                "stage": "Priced",
+                "pricing_date": "2026-06-09",
+                "offering_price": 26.0,
+                "price_updated": "2026-08-29T19:56:40+00:00",
+                "signals": [
+                    "9 named beneficial owners disclosed",
+                    "Largest named holding currently valued at approximately $86M",
+                    "Lock-up terms captured for liquidity-event follow-up",
+                ],
+                "people": [{
+                    "name": "Omega Capital Partners, LP",
+                    "shares": 3_261_216,
+                    "cash_value": 86_487_448.32,
+                    "ipo_value": 84_791_616.0,
+                    "cash_realized_ipo": 1_000_000.0,
+                    "liquid_shares": 100_000,
+                    "liquid_value": 2_652_000.0,
+                    "locked_shares": 200_000,
+                    "locked_value": 5_304_000.0,
+                    "valuation_as_of": "2026-08-29",
+                }],
+            }]
+        }
+        sanitized, changed = sanitize_payload(payload)
+        filing = sanitized["filings"][0]
+        person = filing["people"][0]
+
+        self.assertEqual(changed, 1)
+        self.assertNotIn("current_price", filing)
+        self.assertNotIn("price_updated", filing)
+        for field in ("cash_value", "liquid_value", "locked_value", "valuation_as_of"):
+            self.assertNotIn(field, person)
+        self.assertEqual(person["shares"], 3_261_216)
+        self.assertEqual(person["ipo_value"], 84_791_616.0)
+        self.assertEqual(person["cash_realized_ipo"], 1_000_000.0)
+        self.assertEqual(
+            filing["signals"],
+            [
+                "9 named beneficial owners disclosed",
+                "Lock-up terms captured for liquidity-event follow-up",
+            ],
+        )
+
     def test_removes_quote_from_424b4_with_prepricing_stage(self):
         payload = {
             "filings": [{
