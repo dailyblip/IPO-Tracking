@@ -1,4 +1,5 @@
 name: Repair June Offering Values (One Time)
+# Retry from current main so the historical reparse uses the same parser/release code as production.
 
 on:
   push:
