@@ -1,0 +1,44 @@
+name: Diagnose AADX Offering Extraction
+
+on:
+  push:
+    branches: [repair/june-offering-values]
+    paths:
+      - '.github/workflows/aadx-parser-debug.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: repair/june-offering-values
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - name: Parse final AADX prospectus
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: |
+          python - <<'PY'
+          import json
+          import filing_parser
+          url = 'https://www.sec.gov/Archives/edgar/data/2118195/000119312526256356/d25758d424b4.htm'
+          parsed = filing_parser.parse_filing(url)
+          cover = parsed['cover_page']
+          print(json.dumps({
+              'offering_price': cover.get('offering_price'),
+              'offering_size_shares': cover.get('offering_size_shares'),
+              'primary_offering_shares': cover.get('primary_offering_shares'),
+              'secondary_offering_shares': cover.get('secondary_offering_shares'),
+              'offering_size_source': cover.get('offering_size_source'),
+              'offering_size_confidence': cover.get('offering_size_confidence'),
+              'offering_size_conflict': cover.get('offering_size_conflict'),
+          }, indent=2))
+          PY
