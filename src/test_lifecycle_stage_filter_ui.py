@@ -20,7 +20,8 @@ class LifecycleStageFilterUiTests(unittest.TestCase):
     def test_stage_filter_uses_authoritative_stage_field(self):
         self.assertIn('stage=$("stageFilter").value', self.html)
         self.assertIn('(!stage||f.stage===stage)', self.html)
-        self.assertIn('$("stageFilter").addEventListener("change",render)', self.html)
+        self.assertIn('function resetPageAndRender(){currentPage=1;render()}', self.html)
+        self.assertIn('$("stageFilter").addEventListener("change",resetPageAndRender)', self.html)
 
     def test_clear_filters_resets_stage_filter(self):
         self.assertIn('$("stageFilter").value=""', self.html)
