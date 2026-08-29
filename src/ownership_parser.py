@@ -195,6 +195,49 @@ def _share_class(header):
     return match.group(1).lower() if match else None
 
 
+def _safe_paired_multiclass_kinds(headers):
+    """Return temporal share fields that can be safely aggregated across classes.
+
+    A class-agnostic total is defensible only when the same two-or-more explicit
+    share classes are reported within both the before- and after-offering groups.
+    This distinguishes a SpaceX-style A+B / before-and-after table from the unsafe
+    case where one class appears only before and another class appears only after.
+    """
+    classes_by_kind = {"shares_before": set(), "shares_after": set()}
+    for header in headers:
+        kind = _kind(header)
+        share_class = _share_class(header)
+        if kind in classes_by_kind and share_class:
+            classes_by_kind[kind].add(share_class)
+    before = classes_by_kind["shares_before"]
+    after = classes_by_kind["shares_after"]
+    if len(before) >= 2 and before == after:
+        return {"shares_before", "shares_after"}
+    return set()
+
+
+def _aggregate_class_counts(row, headers, base_kinds, aggregate_kind):
+    """Sum an explicitly complete multi-class temporal share group, else return None."""
+    values = []
+    for i, (header, kind) in enumerate(zip(headers, base_kinds)):
+        if kind != aggregate_kind or not _share_class(header):
+            continue
+        cell = row[i] if i < len(row) else ""
+        number = _numeric(cell)
+        if number is None:
+            # An explicit dash in an SEC ownership table denotes no shares in
+            # that class. Blank or otherwise unparseable content remains unknown.
+            if _clean(cell) in {"—", "-"}:
+                number = 0
+            else:
+                return None
+        values.append(number)
+    if not values:
+        return None
+    total = sum(values)
+    return total if total > 0 else None
+
+
 def _name_from_row(row):
     for cell in row:
         text = _clean(cell)
@@ -217,17 +260,19 @@ def parse_ownership_table(table):
         return []
     matrix = _matrix(table)
     headers, start = _composite_headers(matrix)
+    base_kinds = [_kind(header) for header in headers]
     share_classes = {share_class for header in headers if (share_class := _share_class(header))}
     multi_class = len(share_classes) > 1
+    safe_multiclass_kinds = _safe_paired_multiclass_kinds(headers) if multi_class else set()
     # The public ownership schema currently has no share-class dimension. When a
     # table explicitly reports multiple common-stock classes, do not flatten a
-    # class-specific count into generic before/after/share fields. That can turn
-    # Class A vs Class B positions into a fictitious temporal ownership change.
-    # Unqualified temporal columns (for example, explicit dilution percentages)
-    # remain eligible because their meaning is still supported by the header.
+    # class-specific count into generic before/after/share fields by position.
+    # A narrowly safe exception below sums explicit class counts only when the
+    # same multi-class set appears in both temporal groups. Unqualified temporal
+    # columns (for example explicit dilution percentages) remain eligible.
     kinds = [
-        None if (multi_class and _share_class(header)) else _kind(header)
-        for header in headers
+        None if (multi_class and _share_class(header)) else base_kinds[i]
+        for i, header in enumerate(headers)
     ]
     results = []
     for row in matrix[start:]:
@@ -263,6 +308,12 @@ def parse_ownership_table(table):
                 value = _numeric(cell)
             if value is not None and data.get(kind) is None:
                 data[kind] = value
+
+        for aggregate_kind in safe_multiclass_kinds:
+            total = _aggregate_class_counts(row, headers, base_kinds, aggregate_kind)
+            if total is not None:
+                data[aggregate_kind] = total
+
         # A lone numeric cell is only a safe share-count fallback when the row did
         # not already yield a percentage. SEC ownership tables commonly split a
         # percentage value and its "%" marker across cells/continuation tables;
