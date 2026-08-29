@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-29T06:02:24.530162+00:00",
-  "count": 42,
+  "generated_at": "2026-08-29T06:14:46.550481+00:00",
+  "count": 40,
   "alerts": [
     {
       "type": "new_prepricing",
@@ -30,20 +30,6 @@
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2130606/000119312526374729/0001193125-26-374729-index.htm",
       "detected_at": "2026-08-29T05:05:28.958851+00:00",
       "key": "new_prepricing|s1:0002130606|0002130606|2026-08-28|"
-    },
-    {
-      "type": "new_prepricing",
-      "company": "Graf Industrial Corp. II",
-      "cik": "0002113088",
-      "filing_id": "s1:0002113088",
-      "form": "S-1",
-      "filed": "2026-08-28",
-      "stage": "pre-pricing",
-      "priority": "Medium",
-      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2113088/000110465926103334/0001104659-26-103334-index.htm",
-      "detected_at": "2026-08-29T05:05:28.958861+00:00",
-      "key": "new_prepricing|s1:0002113088|0002113088|2026-08-28|"
     },
     {
       "type": "new_prepricing",
@@ -86,20 +72,6 @@
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526372368/0001193125-26-372368-index.htm",
       "detected_at": "2026-08-29T05:05:28.958881+00:00",
       "key": "new_prepricing|s1:0002141616|0002141616|2026-08-28|"
-    },
-    {
-      "type": "new_prepricing",
-      "company": "Game Your Game Inc.",
-      "cik": "0002111846",
-      "filing_id": "s1:0002111846",
-      "form": "S-1",
-      "filed": "2026-08-21",
-      "stage": "pre-pricing",
-      "priority": "Medium",
-      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026092695/0001213900-26-092695-index.htm",
-      "detected_at": "2026-08-29T05:05:28.958917+00:00",
-      "key": "new_prepricing|s1:0002111846|0002111846|2026-08-21|"
     },
     {
       "type": "priority_escalation",
