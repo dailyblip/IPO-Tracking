@@ -3,8 +3,9 @@
 The Research Monitor treats Current Price as secondary data. SEC filings establish
 IPO identity. Finnhub Company Profile 2 is the primary quote-identity check. When
 that profile is incomplete for a newly listed issuer, SEC submissions metadata may
-supply the missing issuer/ticker identity. Explicit provider conflicts are never
-overridden by the SEC fallback.
+supply the missing issuer/ticker identity. A provider issuer-name change may also be
+reconciled only when SEC submissions for the filing CIK confirms the same ticker and
+current provider issuer name. Provider ticker conflicts are never overridden.
 """
 
 import argparse
@@ -85,8 +86,9 @@ def _provider_identity_is_complete(ticker, company_name, profile):
     """Validate populated Finnhub identity fields and report completeness.
 
     Missing fields are not a collision because newly listed symbols can have a
-    live quote before Company Profile 2 is fully indexed. Any populated conflict
-    remains release-blocking and is never overridden with SEC data.
+    live quote before Company Profile 2 is fully indexed. This helper remains
+    deliberately strict; _verify_identity may separately reconcile a name-only
+    change using the filing CIK plus authoritative SEC submissions metadata.
     """
     provider_ticker = str((profile or {}).get("ticker") or "").strip().upper()
     provider_name = str((profile or {}).get("name") or "").strip()
@@ -129,7 +131,9 @@ def _normalize_cik(cik):
     return digits.zfill(10) if digits else ""
 
 
-def _validate_sec_identity(ticker, company_name, cik, sec_profile):
+def _validate_sec_identity(
+    ticker, company_name, cik, sec_profile, corroborating_name=None
+):
     """Validate issuer/ticker identity using authoritative SEC submissions data."""
     expected_ticker = str(ticker or "").strip().upper()
     expected_cik = _normalize_cik(cik)
@@ -159,10 +163,15 @@ def _validate_sec_identity(ticker, company_name, cik, sec_profile):
             f"{company_name} ({expected_ticker}): SEC submissions profile does not "
             "confirm the filing ticker"
         )
-    if not sec_name or not _company_names_match(company_name, sec_name):
+
+    expected_name = str(corroborating_name or company_name).strip()
+    if not sec_name or not _company_names_match(expected_name, sec_name):
+        match_target = (
+            "current market-profile issuer" if corroborating_name else "filing issuer"
+        )
         raise QuoteIdentityError(
             f"{company_name} ({expected_ticker}): SEC submissions issuer "
-            f"{sec_name or 'missing'} does not match the filing issuer"
+            f"{sec_name or 'missing'} does not match the {match_target}"
         )
     return True
 
@@ -352,23 +361,46 @@ def _strip_quote_derived_fields(filing):
 
 
 def _verify_identity(filing, provider_profile, lookup_sec_profile=None, sec_profiles=None):
-    """Verify quote identity; SEC may fill missing provider fields, never conflicts."""
+    """Verify quote identity with fail-closed SEC corroboration for issuer renames."""
     company = str(filing.get("company") or "").strip()
     ticker = str(filing.get("ticker") or "").strip().upper()
-    if _provider_identity_is_complete(ticker, company, provider_profile):
-        return "finnhub"
-    if lookup_sec_profile is None:
-        _validate_profile(ticker, company, provider_profile)
+    provider_ticker = str((provider_profile or {}).get("ticker") or "").strip().upper()
+    provider_name = str((provider_profile or {}).get("name") or "").strip()
+    corroborating_name = None
+
+    try:
+        if _provider_identity_is_complete(ticker, company, provider_profile):
+            return "finnhub"
+    except QuoteIdentityError:
+        # A ticker disagreement is an explicit collision and can never be
+        # overridden. A name-only disagreement may reflect a legitimate issuer
+        # rename, but only when the provider confirms the filing ticker and the
+        # exact filing CIK can corroborate that current issuer name via SEC.
+        if provider_ticker != ticker or not provider_name or lookup_sec_profile is None:
+            raise
+        corroborating_name = provider_name
+    else:
+        if lookup_sec_profile is None:
+            _validate_profile(ticker, company, provider_profile)
 
     cik = _normalize_cik(filing.get("cik"))
     if not cik:
+        context = (
+            "issuer-name reconciliation" if corroborating_name else "SEC fallback"
+        )
         raise QuoteIdentityError(
-            f"{company} ({ticker}): incomplete market profile and no CIK for SEC fallback"
+            f"{company} ({ticker}): {context} requires a filing CIK"
         )
     sec_profiles = sec_profiles if sec_profiles is not None else {}
     if cik not in sec_profiles:
         sec_profiles[cik] = lookup_sec_profile(cik)
-    _validate_sec_identity(ticker, company, cik, sec_profiles[cik])
+    _validate_sec_identity(
+        ticker,
+        company,
+        cik,
+        sec_profiles[cik],
+        corroborating_name=corroborating_name,
+    )
     return "sec_submissions"
 
 
