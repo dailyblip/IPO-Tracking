@@ -1,0 +1,181 @@
+name: Reverse Backfill Batch 10
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/reverse-backfill-batch.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-monitor-feed-writers
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  backfill-ten:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Reconcile checked-in feed with current release policy
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python public_feed_policy.py ../docs/data/filings.json
+
+      - name: Run deterministic tests
+        env:
+          SKIP_LIVE_GOLDEN: '1'
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+
+      - name: Capture current reverse boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from src.reverse_backfill_batch import oldest_priced_date
+
+          feed = json.loads(Path('docs/data/filings.json').read_text())
+          ids = sorted(
+              str(row.get('accession_no') or '')
+              for row in feed.get('filings', [])
+              if str(row.get('form') or '').upper() == '424B4'
+          )
+          Path('/tmp/reverse_before_ids.json').write_text(json.dumps(ids))
+          Path('/tmp/reverse_cutoff.txt').write_text(oldest_priced_date(feed).isoformat())
+          print('Reverse boundary:', Path('/tmp/reverse_cutoff.txt').read_text())
+          PY
+
+      - name: Add exactly ten older qualifying IPOs
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+          MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          STANFORD_RESEARCH_CACHE_PATH: ../docs/data/stanford_research_cache.json
+          SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+        run: python reverse_backfill_batch.py --limit 10 --scan-days 90
+
+      - name: Reconcile final 424B4 lifecycle transitions
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python lifecycle_reconciler.py ../docs/data/filings.json
+
+      - name: Sanitize impossible lifecycle dates
+        working-directory: src
+        run: python lifecycle_date_sanitizer.py ../docs/data/filings.json
+
+      - name: Remove post-reporting follow-on/resale offerings
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python followon_sanitizer.py ../docs/data/filings.json
+
+      - name: Normalize issuer display names
+        working-directory: src
+        run: python company_name_normalizer.py ../docs/data/filings.json
+
+      - name: Enforce public-feed eligibility policy
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python public_feed_policy.py ../docs/data/filings.json
+
+      - name: Preserve authoritative final offering aggregates
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python offering_value_reconciler.py ../docs/data/filings.json
+
+      - name: Repair malformed issuer locations
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python location_quality.py ../docs/data/filings.json
+
+      - name: Recover authoritative preliminary filing-price ranges
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python filing_price_history.py ../docs/data/filings.json
+
+      - name: Remove market quotes from pre-pricing records
+        working-directory: src
+        run: python prepricing_quote_sanitizer.py ../docs/data/filings.json
+
+      - name: Verify market quote issuer identity
+        working-directory: src
+        env:
+          MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python market_quote_identity.py ../docs/data/filings.json
+
+      - name: Verify batch survived release gates
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import date
+          from pathlib import Path
+
+          before = set(json.loads(Path('/tmp/reverse_before_ids.json').read_text()))
+          cutoff = date.fromisoformat(Path('/tmp/reverse_cutoff.txt').read_text().strip())
+          feed = json.loads(Path('docs/data/filings.json').read_text())
+          added = []
+          for row in feed.get('filings', []):
+              if str(row.get('form') or '').upper() != '424B4':
+                  continue
+              accession = str(row.get('accession_no') or '')
+              if accession in before:
+                  continue
+              filed = date.fromisoformat(str(row.get('pricing_date') or row.get('filed'))[:10])
+              if filed >= cutoff:
+                  raise SystemExit(f'New reverse-backfill row is not older than cutoff: {accession} {filed}')
+              added.append((filed, accession, row.get('company')))
+          if len(added) != 10:
+              raise SystemExit(f'Expected exactly 10 surviving older IPOs; found {len(added)}: {added}')
+          for item in sorted(added, reverse=True):
+              print(item)
+          PY
+
+      - name: Validate V1 public feed schema
+        run: python src/feed_schema_contract.py docs/data/filings.json
+
+      - name: Validate refreshed golden records
+        run: python -m unittest discover -s src -p 'test_golden_records.py' -v
+
+      - name: Run full regression suite on expanded feed
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+
+      - name: Publish ten-IPO reverse batch
+        run: |
+          if git diff --quiet -- docs/data/filings.json docs/data/filings.csv docs/data/stanford_research_cache.json; then
+            echo 'No feed changes; refusing to claim a completed batch.'
+            exit 1
+          fi
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            echo 'main advanced during this run; skipping stale publication.'
+            exit 1
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/data/filings.json docs/data/filings.csv docs/data/stanford_research_cache.json
+          git commit -m 'Backfill 10 older Research Monitor IPOs'
+          git push origin HEAD:main
