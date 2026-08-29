@@ -333,7 +333,8 @@ def _normalize_person_ownership_metrics(filing):
             normalized_person[field] = sanitized
             if original not in (None, "") and sanitized is None:
                 for value_field in derived_value_fields.get(field, ()):
-                    normalized_person[value_field] = None
+                    if value_field in normalized_person:
+                        normalized_person[value_field] = None
 
         # Fail closed on stale dollar metrics when their supporting share quantity
         # is absent or invalid. Historical parser bugs sometimes placed ownership
@@ -344,8 +345,9 @@ def _normalize_person_ownership_metrics(filing):
             if valid_share_count(normalized_person.get(share_field)) is not None:
                 continue
             for value_field in value_fields:
-                normalized_person[value_field] = None
-        if valid_share_count(normalized_person.get("shares")) is None:
+                if value_field in normalized_person:
+                    normalized_person[value_field] = None
+        if valid_share_count(normalized_person.get("shares")) is None and "valuation_as_of" in normalized_person:
             normalized_person["valuation_as_of"] = None
 
         normalized_people.append(normalized_person)
