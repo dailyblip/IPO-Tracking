@@ -46,12 +46,71 @@ jobs:
           SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
         run: python main.py --backfill-start 2026-06-01 --backfill-end 2026-06-30
 
+      # A historical reparse must pass through the same release-safety/enrichment
+      # chain as the canonical ownership refresh before it is validated or published.
+      # Otherwise correctly repaired offering values can overwrite preserved Stanford,
+      # issuer-name, lifecycle, location, and filing-price provenance metadata.
+      - name: Reconcile final 424B4 lifecycle transitions
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python lifecycle_reconciler.py ../docs/data/filings.json
+
+      - name: Sanitize impossible lifecycle dates
+        working-directory: src
+        run: python lifecycle_date_sanitizer.py ../docs/data/filings.json
+
+      - name: Remove post-reporting follow-on/resale offerings
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python followon_sanitizer.py ../docs/data/filings.json
+
+      - name: Recover SEC-confirmed Stanford beneficial-owner affiliations
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python stanford_sec_backfill.py ../docs/data/filings.json --start 2026-06-01 --end 2026-06-30
+
+      - name: Normalize issuer display names
+        working-directory: src
+        run: python company_name_normalizer.py ../docs/data/filings.json
+
+      - name: Enforce public-feed eligibility policy
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python public_feed_policy.py ../docs/data/filings.json
+
+      - name: Repair malformed issuer locations
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python location_quality.py ../docs/data/filings.json
+
+      - name: Recover authoritative preliminary filing-price ranges
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python filing_price_history.py ../docs/data/filings.json
+
+      - name: Remove market quotes from pre-pricing records
+        working-directory: src
+        run: python prepricing_quote_sanitizer.py ../docs/data/filings.json
+
+      - name: Verify market quote issuer identity
+        working-directory: src
+        env:
+          MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
+        run: python market_quote_identity.py ../docs/data/filings.json
+
       - name: Refresh alerts
         run: python src/research_alerts.py
 
       - name: Validate repaired public feed
         run: |
           python -m unittest discover -s src -p 'test_*.py' -v
+          python src/feed_schema_contract.py docs/data/filings.json
           python - <<'PY'
           import json
           from pathlib import Path
