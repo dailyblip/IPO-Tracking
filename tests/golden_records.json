@@ -127,8 +127,8 @@
           "name": "Ira Ehrenpreis",
           "expected": {
             "stanford_university_bio": true,
-            "shares_before_ipo": 809050,
-            "shares_after_ipo": 809050,
+            "shares_before_ipo": 1373700,
+            "shares_after_ipo": 1373700,
             "lockup_duration_days": 180
           },
           "stanford_source_contains": [
