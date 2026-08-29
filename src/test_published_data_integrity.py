@@ -85,6 +85,108 @@ class PublishedResearchMonitorDataIntegrityTests(unittest.TestCase):
 
         self.assertGreater(checked, 0, "No filings had exact offering components to validate")
 
+    def test_public_market_quotes_only_exist_on_priced_424b4_rows(self):
+        """A live quote is valid only after authoritative IPO pricing is established."""
+        failures = []
+        for filing in self.filings:
+            current_price = _number(filing.get("current_price"))
+            if current_price is None:
+                continue
+
+            label = filing.get("company") or filing.get("id") or "unknown filing"
+            form = str(filing.get("form") or "").strip().upper()
+            stage = str(filing.get("stage") or "").strip().casefold()
+            if form != "424B4":
+                failures.append(
+                    f"{label}: Current Price is attached to non-424B4 form {filing.get('form')!r}"
+                )
+            if stage != "priced":
+                failures.append(
+                    f"{label}: Current Price is attached to non-priced stage {filing.get('stage')!r}"
+                )
+            if _number(filing.get("offering_price")) is None:
+                failures.append(f"{label}: Current Price exists without authoritative Final IPO Price")
+            if not str(filing.get("pricing_date") or "").strip():
+                failures.append(f"{label}: Current Price exists without Pricing Date")
+
+        self.assertEqual(
+            failures,
+            [],
+            "Published quote lifecycle failures: " + "; ".join(failures[:10]),
+        )
+
+    def test_prepricing_rows_publish_no_market_derived_values(self):
+        """Pre-pricing rows must not retain live quotes or quote-derived holder values."""
+        failures = []
+        filing_market_fields = ("current_price", "price_updated")
+        person_market_fields = ("cash_value", "liquid_value", "locked_value", "valuation_as_of")
+
+        for filing in self.filings:
+            if str(filing.get("stage") or "").strip().casefold() != "pre-pricing":
+                continue
+
+            label = filing.get("company") or filing.get("id") or "unknown filing"
+            for field in filing_market_fields:
+                if filing.get(field) not in (None, "", "—"):
+                    failures.append(f"{label}: pre-pricing row retains {field}")
+
+            for person in filing.get("people") or []:
+                if not isinstance(person, dict):
+                    continue
+                for field in person_market_fields:
+                    if person.get(field) not in (None, "", "—"):
+                        failures.append(
+                            f"{label} / {person.get('name')}: pre-pricing row retains {field}"
+                        )
+
+        self.assertEqual(
+            failures,
+            [],
+            "Pre-pricing market-data leaks: " + "; ".join(failures[:10]),
+        )
+
+    def test_priced_rows_have_authoritative_pricing_metadata(self):
+        """Priced 424B4 rows need final pricing facts and SEC provenance for any filing range."""
+        failures = []
+        checked = 0
+        for filing in self.filings:
+            form = str(filing.get("form") or "").strip().upper()
+            stage = str(filing.get("stage") or "").strip().casefold()
+            if form != "424B4" or stage != "priced":
+                continue
+
+            checked += 1
+            label = filing.get("company") or filing.get("id") or "unknown filing"
+            if _number(filing.get("offering_price")) is None:
+                failures.append(f"{label}: priced row lacks Final IPO Price")
+            if not str(filing.get("pricing_date") or "").strip():
+                failures.append(f"{label}: priced row lacks Pricing Date")
+
+            preliminary = str(
+                filing.get("filing_price") or filing.get("price_range") or ""
+            ).strip()
+            if not preliminary:
+                continue
+
+            source = filing.get("filing_price_source")
+            if not isinstance(source, dict):
+                failures.append(f"{label}: populated Filing Price lacks source provenance")
+                continue
+            if str(source.get("source") or "").strip().casefold() != "sec edgar":
+                failures.append(f"{label}: Filing Price source is not SEC EDGAR")
+            if str(source.get("form") or "").strip().upper() not in {"S-1", "S-1/A"}:
+                failures.append(f"{label}: Filing Price source is not S-1/S-1A")
+            for field in ("filing_date", "accession_no", "sec_url"):
+                if not str(source.get(field) or "").strip():
+                    failures.append(f"{label}: Filing Price source lacks {field}")
+
+        self.assertGreater(checked, 0, "No priced 424B4 rows were available to validate")
+        self.assertEqual(
+            failures,
+            [],
+            "Published pricing metadata failures: " + "; ".join(failures[:10]),
+        )
+
     def test_public_stanford_sources_do_not_expose_internal_processing_text(self):
         """Operational failures and internal grader notes must never be public evidence."""
         forbidden_markers = (
