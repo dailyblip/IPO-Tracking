@@ -218,23 +218,39 @@ def _safe_paired_multiclass_kinds(headers):
 
 def _aggregate_class_counts(row, headers, base_kinds, aggregate_kind):
     """Sum an explicitly complete multi-class temporal share group, else return None."""
-    values = []
+    expected_classes = {
+        _share_class(header)
+        for header, kind in zip(headers, base_kinds)
+        if kind == aggregate_kind and _share_class(header)
+    }
+    values_by_class = {}
     for i, (header, kind) in enumerate(zip(headers, base_kinds)):
-        if kind != aggregate_kind or not _share_class(header):
+        share_class = _share_class(header)
+        if kind != aggregate_kind or not share_class:
             continue
         cell = row[i] if i < len(row) else ""
+        cleaned = _clean(cell)
+        # SEC tables often place an empty presentation cell between a numeric
+        # value and its percentage marker. Composite colspan headers repeat the
+        # class label over that spacer, so it must not make the class incomplete.
+        if not cleaned:
+            continue
         number = _numeric(cell)
         if number is None:
             # An explicit dash in an SEC ownership table denotes no shares in
             # that class. Blank or otherwise unparseable content remains unknown.
-            if _clean(cell) in {"—", "-"}:
+            if cleaned in {"—", "-"}:
                 number = 0
             else:
                 return None
-        values.append(number)
-    if not values:
+        values_by_class.setdefault(share_class, set()).add(number)
+    if set(values_by_class) != expected_classes:
         return None
-    total = sum(values)
+    # Multiple distinct numbers for one class are ambiguous and must not be
+    # flattened into a generic class-agnostic total.
+    if any(len(values) != 1 for values in values_by_class.values()):
+        return None
+    total = sum(next(iter(values)) for values in values_by_class.values())
     return total if total > 0 else None
 
 
