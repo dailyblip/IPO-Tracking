@@ -69,7 +69,13 @@ jobs:
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python public_feed_policy.py ../docs/data/filings.json
+      # Parser/generator changes can intentionally make the checked-in live feed
+      # stale until this workflow regenerates it. Keep deterministic unit coverage
+      # before the replay, then enforce the live golden comparison on regenerated
+      # data before publication.
       - name: Run unit tests
+        env:
+          SKIP_LIVE_GOLDEN: '1'
         run: python -m unittest discover -s src -p 'test_*.py' -v
       # Full June-present replay also refreshes lifecycle filing/pricing dates after export schema changes.
       - name: Refresh qualifying IPO history and Stanford affiliations
@@ -145,6 +151,8 @@ jobs:
         env:
           MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
         run: python market_quote_identity.py ../docs/data/filings.json
+      - name: Validate regenerated golden records
+        run: python -m unittest discover -s src -p 'test_golden_records.py' -v
       - name: Validate public feed
         run: |
           python - <<'PY'
