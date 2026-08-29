@@ -97,11 +97,16 @@ def _extract_explicit_price_range_from_text(text):
 
 
 def _is_priced_row(filing):
+    """Return True for every canonical priced lifecycle row.
+
+    Do not require downstream completeness fields here. A priced 424B4 that lost
+    pricing_date or final offering_price is itself a data-quality defect; silently
+    treating it as outside the history gate would let a blank Filing Price bypass
+    the required S-1/S-1A review.
+    """
     return (
         str(filing.get("form") or "").strip().upper() == "424B4"
         and str(filing.get("stage") or "").strip().casefold() == "priced"
-        and filing.get("pricing_date")
-        and filing.get("offering_price") not in (None, "")
     )
 
 
@@ -209,6 +214,12 @@ def recover_payload_filing_prices(
             updated_filings.append(filing)
             continue
 
+        pricing_date = str(filing.get("pricing_date") or "").strip()
+        if not pricing_date:
+            raise FilingPriceHistoryError(
+                f"Priced row {filing.get('company') or filing.get('id')} has no pricing date for S-1 history review"
+            )
+
         existing_preliminary = _preliminary_price_value(filing)
         if existing_preliminary and _has_authoritative_price_source(filing):
             updated_filings.append(filing)
@@ -219,7 +230,7 @@ def recover_payload_filing_prices(
             raise FilingPriceHistoryError(
                 f"Priced row {filing.get('company') or filing.get('id')} has no CIK for S-1 history review"
             )
-        history = history_loader(cik, filing.get("pricing_date"))
+        history = history_loader(cik, pricing_date)
         if not history:
             raise FilingPriceHistoryError(
                 f"Priced row {filing.get('company') or filing.get('id')} has no preceding S-1/S-1A history"
