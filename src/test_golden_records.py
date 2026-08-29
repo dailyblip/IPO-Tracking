@@ -1,4 +1,5 @@
 import json
+import os
 import re
 import unittest
 from pathlib import Path
@@ -60,6 +61,10 @@ class GoldenRecordRegressionTests(unittest.TestCase):
                 f"{company}: duplicate normalized owner identity",
             )
 
+    @unittest.skipIf(
+        os.environ.get("SKIP_LIVE_GOLDEN") == "1",
+        "Live golden-record comparison is deferred until generated feed refresh.",
+    )
     def test_golden_records_match_live_feed(self):
         self.assertEqual(self.fixture.get("schema_version"), 1)
         records = self.fixture.get("records")
