@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-29T06:02:24.530122+00:00",
+  "updated_at": "2026-08-29T06:14:46.550442+00:00",
   "items": {
     "s1:0001779977": {
       "id": "s1:0001779977",
@@ -445,30 +445,6 @@
       "priority": "High",
       "value": 97500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2118195/000119312526256356/0001193125-26-256356-index.htm"
-    },
-    "s1:0002113088": {
-      "id": "s1:0002113088",
-      "cik": "0002113088",
-      "company": "Graf Industrial Corp. II",
-      "form": "S-1",
-      "filed": "2026-08-28",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2113088/000110465926103334/0001104659-26-103334-index.htm"
-    },
-    "s1:0002111846": {
-      "id": "s1:0002111846",
-      "cik": "0002111846",
-      "company": "Game Your Game Inc.",
-      "form": "S-1",
-      "filed": "2026-08-21",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026092695/0001213900-26-092695-index.htm"
     }
   },
   "ciks": {
@@ -730,20 +706,6 @@
       "last_filing_id": "0001193125-26-256356",
       "last_filed": "2026-06-04",
       "missing_runs": 0
-    },
-    "0002113088": {
-      "company": "Graf Industrial Corp. II",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002113088",
-      "last_filed": "2026-08-28",
-      "missing_runs": 1
-    },
-    "0002111846": {
-      "company": "Game Your Game Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002111846",
-      "last_filed": "2026-08-21",
-      "missing_runs": 1
     }
   }
 }
