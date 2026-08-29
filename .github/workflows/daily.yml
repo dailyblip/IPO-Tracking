@@ -86,6 +86,10 @@ jobs:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python followon_sanitizer.py ../docs/data/filings.json
 
+      - name: Normalize issuer display names
+        working-directory: src
+        run: python company_name_normalizer.py ../docs/data/filings.json
+
       - name: Enforce public-feed eligibility policy
         working-directory: src
         env:
