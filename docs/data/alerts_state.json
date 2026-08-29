@@ -1,7 +1,79 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-29T04:57:52.407079+00:00",
+  "updated_at": "2026-08-29T05:05:28.958992+00:00",
   "items": {
+    "s1:0001779977": {
+      "id": "s1:0001779977",
+      "cik": "0001779977",
+      "company": "SeeQC, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-08-28",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1779977/000121390026095175/0001213900-26-095175-index.htm"
+    },
+    "s1:0002130606": {
+      "id": "s1:0002130606",
+      "cik": "0002130606",
+      "company": "Obsidian Therapeutics, Inc.",
+      "form": "S-1",
+      "filed": "2026-08-28",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2130606/000119312526374729/0001193125-26-374729-index.htm"
+    },
+    "s1:0002113088": {
+      "id": "s1:0002113088",
+      "cik": "0002113088",
+      "company": "Graf Industrial Corp. II",
+      "form": "S-1",
+      "filed": "2026-08-28",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2113088/000110465926103334/0001104659-26-103334-index.htm"
+    },
+    "s1:0002088082": {
+      "id": "s1:0002088082",
+      "cik": "0002088082",
+      "company": "Electra Therapeutics, Inc.",
+      "form": "S-1",
+      "filed": "2026-08-28",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "High",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526374259/0001193125-26-374259-index.htm"
+    },
+    "s1:0002125355": {
+      "id": "s1:0002125355",
+      "cik": "0002125355",
+      "company": "Bamboo Insurance Services, Inc.",
+      "form": "S-1",
+      "filed": "2026-08-28",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2125355/000162828026059433/0001628280-26-059433-index.htm"
+    },
+    "s1:0002141616": {
+      "id": "s1:0002141616",
+      "cik": "0002141616",
+      "company": "Amaero Inc.",
+      "form": "S-1",
+      "filed": "2026-08-28",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "High",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526372368/0001193125-26-372368-index.htm"
+    },
     "s1:0002137360": {
       "id": "s1:0002137360",
       "cik": "0002137360",
@@ -49,6 +121,18 @@
       "priority": "High",
       "value": 18750000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026092565/0001213900-26-092565-index.htm"
+    },
+    "s1:0002111846": {
+      "id": "s1:0002111846",
+      "cik": "0002111846",
+      "company": "Game Your Game Inc.",
+      "form": "S-1",
+      "filed": "2026-08-21",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026092695/0001213900-26-092695-index.htm"
     },
     "s1:0002131613": {
       "id": "s1:0002131613",
@@ -245,7 +329,7 @@
     "0001193125-26-292853": {
       "id": "0001193125-26-292853",
       "cik": "0002110117",
-      "company": "ITG, Inc./DE/",
+      "company": "ITG, Inc.",
       "form": "424B4",
       "filed": "2026-07-02",
       "stage": "priced",
@@ -388,6 +472,48 @@
     }
   },
   "ciks": {
+    "0001779977": {
+      "company": "SeeQC, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001779977",
+      "last_filed": "2026-08-28",
+      "missing_runs": 0
+    },
+    "0002130606": {
+      "company": "Obsidian Therapeutics, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002130606",
+      "last_filed": "2026-08-28",
+      "missing_runs": 0
+    },
+    "0002113088": {
+      "company": "Graf Industrial Corp. II",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002113088",
+      "last_filed": "2026-08-28",
+      "missing_runs": 0
+    },
+    "0002088082": {
+      "company": "Electra Therapeutics, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002088082",
+      "last_filed": "2026-08-28",
+      "missing_runs": 0
+    },
+    "0002125355": {
+      "company": "Bamboo Insurance Services, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002125355",
+      "last_filed": "2026-08-28",
+      "missing_runs": 0
+    },
+    "0002141616": {
+      "company": "Amaero Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002141616",
+      "last_filed": "2026-08-28",
+      "missing_runs": 0
+    },
     "0002137360": {
       "company": "Youmi Inc.",
       "stage": "pre-pricing",
@@ -413,6 +539,13 @@
       "company": "Little West Holdings Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002065821",
+      "last_filed": "2026-08-21",
+      "missing_runs": 0
+    },
+    "0002111846": {
+      "company": "Game Your Game Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002111846",
       "last_filed": "2026-08-21",
       "missing_runs": 0
     },
@@ -529,7 +662,7 @@
       "missing_runs": 0
     },
     "0002110117": {
-      "company": "ITG, Inc./DE/",
+      "company": "ITG, Inc.",
       "stage": "priced",
       "last_filing_id": "0001193125-26-292853",
       "last_filed": "2026-07-02",
