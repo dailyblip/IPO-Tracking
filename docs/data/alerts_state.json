@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-29T14:00:17.056879+00:00",
+  "updated_at": "2026-08-29T14:06:50.116606+00:00",
   "items": {
     "s1:0001779977": {
       "id": "s1:0001779977",
@@ -407,7 +407,7 @@
       "stage": "priced",
       "price_range": null,
       "priority": "High",
-      "value": 600000005.5,
+      "value": 600000006,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2110029/000119312526265898/0001193125-26-265898-index.htm"
     },
     "0001193125-26-264014": {
