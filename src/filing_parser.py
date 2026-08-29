@@ -337,13 +337,15 @@ def extract_offering_terms(soup: BeautifulSoup) -> dict:
     conflict = False
 
     # Most explicit construction: issuer block + selling-stockholder block.
+    # Final prospectuses vary between "we are offering" and "we are selling",
+    # and selling-holder legs may be described as "an aggregate of" shares.
     combined_patterns = [
-        r"we\s+(?:are|will\s+be)\s+offering\s+([\d,]{4,})\s+shares[^.]{0,1600}?"
+        r"we\s+(?:are|will\s+be)\s+(?:offering|selling)\s+([\d,]{4,})\s+shares[^.]{0,1600}?"
         r"selling\s+stockholders?[^.]{0,900}?(?:are\s+offering|are\s+selling|will\s+sell|offer)"
-        r"(?:\s+an\s+additional)?\s+([\d,]{4,})\s+shares",
-        r"we\s+(?:are|will\s+be)\s+offering\s+([\d,]{4,})\s+shares[^.]{0,1600}?"
+        r"(?:\s+(?:an\s+additional|an\s+aggregate\s+of))?\s+([\d,]{4,})\s+shares",
+        r"we\s+(?:are|will\s+be)\s+(?:offering|selling)\s+([\d,]{4,})\s+shares[^.]{0,1600}?"
         r"selling\s+shareholders?[^.]{0,900}?(?:are\s+offering|are\s+selling|will\s+sell|offer)"
-        r"(?:\s+an\s+additional)?\s+([\d,]{4,})\s+shares",
+        r"(?:\s+(?:an\s+additional|an\s+aggregate\s+of))?\s+([\d,]{4,})\s+shares",
     ]
     for pattern in combined_patterns:
         match = re.search(pattern, cover, re.I)
@@ -382,6 +384,10 @@ def extract_offering_terms(soup: BeautifulSoup) -> dict:
         (r"initial\s+public\s+offering\s+of\s+([\d,]{4,})\s+shares", "explicit initial-public-offering total"),
         (r"(?:preliminary\s+)?prospectus\s+([\d,]{4,})\s+shares\s+(?:of\s+)?(?:class\s+[a-z]\s+)?common\s+stock", "prospectus cover title"),
         (r"\b([\d,]{4,})\s+shares\s+(?:of\s+)?(?:class\s+[a-z]\s+)?common\s+stock\s+this\s+is\b", "cover share title"),
+        # EDGAR cover titles frequently place issuer name / artwork / security
+        # class between the share count and the IPO narrative, e.g.
+        # "50,000,000 Shares Csquare, Inc. Common Stock This is the initial...".
+        (r"\b([\d,]{4,})\s+shares\b.{0,400}?\bthis\s+is\s+the\s+initial\s+public\s+offering\b", "cover title preceding IPO statement"),
     ]
     for pattern, label in explicit_patterns:
         for match in re.finditer(pattern, cover, re.I):
@@ -430,20 +436,32 @@ def extract_offering_terms(soup: BeautifulSoup) -> dict:
             sources.append(label)
 
     # Issuer-only offering. Safe only when the cover does not identify selling holders
-    # participating in the base offering.
-    if total is None:
-        issuer_only = re.search(r"\bwe\s+(?:are|will\s+be)\s+offering\s+([\d,]{4,})\s+shares\b", cover[:25000], re.I)
-        selling_language = re.search(r"selling\s+(?:stockholders|shareholders)[^.]{0,900}?(?:offering|selling|sell)\s+(?:an\s+additional\s+)?[\d,]{4,}\s+shares", cover[:30000], re.I)
-        if issuer_only and not selling_language:
-            primary = _share_int(issuer_only.group(1))
-            total = primary
+    # participating in the base offering. This also preserves the primary-share
+    # breakdown when an authoritative cover title already supplied the same total.
+    issuer_only = re.search(
+        r"\bwe\s+(?:are|will\s+be)\s+(?:offering|selling)\s+([\d,]{4,})\s+shares\b",
+        cover[:25000], re.I,
+    )
+    selling_language = re.search(
+        r"selling\s+(?:stockholders|shareholders)[^.]{0,900}?(?:offering|selling|sell)\s+"
+        r"(?:(?:an\s+additional|an\s+aggregate\s+of)\s+)?[\d,]{4,}\s+shares",
+        cover[:30000], re.I,
+    )
+    if issuer_only and not selling_language:
+        issuer_count = _share_int(issuer_only.group(1))
+        if total is None:
+            primary = issuer_count
+            total = issuer_count
             sources.append("explicit issuer-only cover statement")
             confidence = "High"
+        elif primary is None and issuer_count == total:
+            primary = issuer_count
+            sources.append("explicit issuer-only cover statement matches total")
 
     # Last-resort pattern is deliberately restricted to the first 15k and requires
     # nearby IPO language. It is flagged Medium so QC can surface it for review.
     if total is None:
-        for match in re.finditer(r"\boffering\s+([\d,]{4,})\s+shares\b", cover[:15000], re.I):
+        for match in re.finditer(r"\b(?:offering|selling)\s+([\d,]{4,})\s+shares\b", cover[:15000], re.I):
             nearby = cover[max(0, match.start()-500):min(len(cover), match.end()+500)].lower()
             if "initial public offering" in nearby and "outstanding" not in nearby:
                 total = _share_int(match.group(1))
