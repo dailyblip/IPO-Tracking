@@ -50,7 +50,8 @@ jobs:
           test.write_text(test_text.replace(marker, addition + marker, 1))
           PY
       - name: Run focused parser regressions
-        run: python -m unittest src.test_final_offering_share_reconciliation src.test_filing_parser -v
+        working-directory: src
+        run: python -m unittest test_final_offering_share_reconciliation test_filing_parser -v
       - name: Verify live AADX prospectus parsing
         working-directory: src
         env:
