@@ -181,7 +181,45 @@ class MarketQuoteIdentityTests(unittest.TestCase):
         self.assertEqual(sanitized, [])
         self.assertEqual(sec_calls, ["0002132582"])
 
-    def test_sec_fallback_never_overrides_explicit_provider_conflict(self):
+    def test_sec_corroborates_legitimate_post_ipo_issuer_rename(self):
+        payload = {
+            "filings": [
+                {
+                    "company": "WhiteHawk Income Corp",
+                    "ticker": "WHK",
+                    "cik": "0001921603",
+                    "form": "424B4",
+                    "stage": "Priced",
+                    "current_price": 24.10,
+                    "price_updated": "2026-08-29T16:00:00+00:00",
+                }
+            ]
+        }
+        sec_calls = []
+
+        def sec_lookup(cik):
+            sec_calls.append(cik)
+            return {
+                "cik": 1921603,
+                "name": "WhiteHawk Minerals Corp.",
+                "tickers": ["WHK"],
+                "exchanges": ["NYSE"],
+            }
+
+        payload, audited, sanitized = sanitize_payload(
+            payload,
+            lookup_profile=lambda ticker: {
+                "ticker": "WHK",
+                "name": "WhiteHawk Minerals Corp.",
+            },
+            lookup_sec_profile=sec_lookup,
+        )
+        self.assertEqual(audited, 1)
+        self.assertEqual(sanitized, [])
+        self.assertEqual(payload["filings"][0]["current_price"], 24.10)
+        self.assertEqual(sec_calls, ["0001921603"])
+
+    def test_sec_fallback_does_not_override_uncorroborated_provider_name_conflict(self):
         payload = {
             "filings": [
                 {
@@ -205,6 +243,42 @@ class MarketQuoteIdentityTests(unittest.TestCase):
             lookup_profile=lambda ticker: {
                 "ticker": "WHK",
                 "name": "Whitehawk Minerals Corp",
+            },
+            lookup_sec_profile=sec_lookup,
+        )
+        self.assertEqual(audited, 0)
+        self.assertEqual(len(sanitized), 1)
+        self.assertNotIn("current_price", payload["filings"][0])
+        self.assertEqual(sec_calls, ["0002110105"])
+
+    def test_sec_never_overrides_explicit_provider_ticker_conflict(self):
+        payload = {
+            "filings": [
+                {
+                    "company": "WhiteHawk Income Corp",
+                    "ticker": "WHK",
+                    "cik": "0001921603",
+                    "form": "424B4",
+                    "stage": "Priced",
+                    "current_price": 24.10,
+                }
+            ]
+        }
+        sec_calls = []
+
+        def sec_lookup(cik):
+            sec_calls.append(cik)
+            return {
+                "cik": 1921603,
+                "name": "WhiteHawk Minerals Corp.",
+                "tickers": ["WHK"],
+            }
+
+        payload, audited, sanitized = sanitize_payload(
+            payload,
+            lookup_profile=lambda ticker: {
+                "ticker": "OTHER",
+                "name": "WhiteHawk Minerals Corp.",
             },
             lookup_sec_profile=sec_lookup,
         )
