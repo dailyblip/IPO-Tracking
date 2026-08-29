@@ -158,6 +158,18 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertIn("populated offering size is missing source provenance", workflow)
         self.assertIn("populated offering-size confidence must be High", workflow)
 
+    def test_s1_watch_reacts_to_cover_price_parser_changes(self):
+        workflow = _workflow(S1_WORKFLOW)
+        required_paths = [
+            "src/filing_parser.py",
+            "src/test_cover_price_context.py",
+        ]
+
+        for path in required_paths:
+            with self.subTest(path=path):
+                self.assertGreaterEqual(workflow.count(f"- '{path}'"), 2)
+        self.assertIn("test_cover_price_context.py", workflow)
+
 
 if __name__ == "__main__":
     unittest.main()
