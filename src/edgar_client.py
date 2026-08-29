@@ -119,6 +119,15 @@ DIRECT_LISTING_PATTERNS = [
         r"initial public offering\b",
         re.IGNORECASE,
     ),
+    # Resale registrations can use Form S-1/S-1A even when no issuer shares are
+    # being sold. Keep this deliberately narrow to classic cover-page resale
+    # language so ordinary IPOs with a secondary component are not excluded.
+    re.compile(
+        r"\bthis prospectus relates to (?:the )?(?:offer and sale|resale),? "
+        r"from time to time,? by (?:the )?selling "
+        r"(?:securityholders|stockholders|shareholders)\b",
+        re.IGNORECASE | re.DOTALL,
+    ),
 ]
 
 
@@ -176,7 +185,6 @@ def _request_json(url: str, headers: dict, params: dict = None) -> dict:
             if attempt < 3:
                 time.sleep(2 ** attempt)
     raise EdgarClientError(f"SEC request failed after retries: {last_error}")
-
 
 def _find_from_daily_indexes(start_date: str, end_date: str, max_results: int,
                              headers: dict) -> list:
@@ -357,7 +365,6 @@ def check_investment_product_indicators(filing_text: str, company_name: str = ""
         for pattern in INVESTMENT_PRODUCT_SELF_DESCRIPTION_PATTERNS
     )
 
-
 def check_spac_indicators(filing_text: str, company_name: str = "") -> bool:
     """
     Identify excluded non-operating issuer types handled by the shared IPO gate:
@@ -378,7 +385,7 @@ def check_spac_indicators(filing_text: str, company_name: str = "") -> bool:
 
 
 def check_direct_listing_indicators(filing_text: str) -> bool:
-    """Return True for a first-time direct listing rather than a primary IPO."""
+    """Return True for a direct listing or resale registration rather than a primary IPO."""
     cover_and_summary = str(filing_text or "")[:100000]
     return any(pattern.search(cover_and_summary) for pattern in DIRECT_LISTING_PATTERNS)
 
