@@ -1,11 +1,12 @@
-"""Remove market-price fields from IPO records that are not yet safely priced/trading.
+"""Remove market-price fields from IPO records that are not safely quoteable.
 
 Ticker symbols can collide with already-trading securities before an IPO begins
 trading. Publishing those provider quotes on an S-1/S-1A record is therefore a
 data-integrity defect. Current Price is allowed only when a final 424B4 row also
-has a priced lifecycle state, an authoritative pricing date, and a positive final
-IPO price. A malformed or incomplete 424B4 must fail closed and lose market-derived
-fields rather than being treated as trading solely because of its form type.
+has a priced lifecycle state, an authoritative pricing date, a positive final
+IPO price, and a positive current quote. A malformed/incomplete lifecycle or a
+priced row without a publishable quote must fail closed and lose market-derived
+holder values rather than retaining stale quote arithmetic.
 """
 
 from __future__ import annotations
@@ -14,6 +15,15 @@ import json
 import math
 from datetime import date
 from pathlib import Path
+
+
+_MARKET_VALUE_SIGNAL_PREFIX = "Largest named holding currently valued at approximately "
+_MARKET_DERIVED_PERSON_FIELDS = (
+    "cash_value",
+    "liquid_value",
+    "locked_value",
+    "valuation_as_of",
+)
 
 
 def _number(value):
@@ -51,26 +61,52 @@ def is_priced_ipo(filing: dict) -> bool:
     return final_price is not None and final_price > 0
 
 
+def has_release_safe_market_quote(filing: dict) -> bool:
+    """Require both a safely priced lifecycle and a positive published quote."""
+    if not is_priced_ipo(filing):
+        return False
+    current_price = _number(filing.get("current_price"))
+    return current_price is not None and current_price > 0
+
+
 def sanitize_payload(payload: dict) -> tuple[dict, int]:
     changed = 0
     for filing in payload.get("filings", []):
-        if not isinstance(filing, dict) or is_priced_ipo(filing):
+        if not isinstance(filing, dict) or has_release_safe_market_quote(filing):
             continue
         touched = False
         for field in ("current_price", "price_updated"):
             if field in filing:
                 filing.pop(field, None)
                 touched = True
-        # Records that are not release-safe priced IPOs must not carry market-value
-        # calculations derived from a ticker quote either. Preserve filing-supported
-        # ownership facts and clear only quote-derived values.
+
+        # Without a release-safe filing-level quote, holder-level current market
+        # values have no publishable basis. Preserve SEC-supported ownership facts,
+        # IPO-value arithmetic, and realized IPO cash; clear only quote derivatives.
         for person in filing.get("people", []):
             if not isinstance(person, dict):
                 continue
-            for field in ("cash_value", "liquid_value", "locked_value", "valuation_as_of"):
+            for field in _MARKET_DERIVED_PERSON_FIELDS:
                 if field in person:
                     person.pop(field, None)
                     touched = True
+
+        # A stale public signal can imply that a current quote still exists even
+        # after the quote itself is absent. Remove only this market-derived signal.
+        signals = filing.get("signals")
+        if isinstance(signals, list):
+            filtered_signals = [
+                signal
+                for signal in signals
+                if not (
+                    isinstance(signal, str)
+                    and signal.startswith(_MARKET_VALUE_SIGNAL_PREFIX)
+                )
+            ]
+            if len(filtered_signals) != len(signals):
+                filing["signals"] = filtered_signals
+                touched = True
+
         if touched:
             changed += 1
     return payload, changed
@@ -95,7 +131,7 @@ def sanitize_file(path: str | Path) -> int:
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Remove invalid pre-pricing or unsafe lifecycle market quotes")
+    parser = argparse.ArgumentParser(description="Remove unsafe lifecycle or unsupported market-derived quote fields")
     parser.add_argument("path", nargs="?", default="../docs/data/filings.json")
     args = parser.parse_args()
     count = sanitize_file(args.path)
