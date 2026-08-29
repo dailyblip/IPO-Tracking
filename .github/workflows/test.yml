@@ -54,6 +54,13 @@ jobs:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python public_feed_policy.py ../docs/data/filings.json
 
+      # Display-name parser changes can likewise make a checked-in generated row
+      # stale until the next main-branch feed writer runs. Apply the deterministic
+      # normalizer locally so CI validates the new rule without publishing data.
+      - name: Normalize checked-in issuer display names
+        working-directory: src
+        run: python company_name_normalizer.py ../docs/data/filings.json
+
       # Generator/parser changes may intentionally repair stale checked-in feed
       # data only after the ownership refresh runs on main. Keep all deterministic
       # unit coverage active in PR CI, but defer the live golden comparison until
