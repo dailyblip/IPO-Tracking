@@ -223,6 +223,10 @@ def extract_cover_page_data(soup: BeautifulSoup) -> dict:
         r"(?:symbol|ticker)[\s\"“]*[:\-]?\s*[\"“]?([A-Z]{1,6})[\"”]?",
         cover_text,
     )
+    # Fixed IPO prices must be tied to explicit IPO/public-offering language.
+    # Prospectuses contain many unrelated per-share amounts (option exercise
+    # prices, fair values, earnings per share, etc.), so a generic "$X per
+    # share" fallback is intentionally prohibited.
     price_patterns = [
         r"initial public offering price(?:\s+per\s+share)?"
         r"\s*(?:is|of|:)?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
@@ -230,7 +234,6 @@ def extract_cover_page_data(soup: BeautifulSoup) -> dict:
         r"\s*(?:is|of|:)?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
         r"price\s+to\s+(?:the\s+)?public(?:\s+per\s+share)?\s*[:\-]?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
         r"offering\s+price\s+per\s+share\s*[:\-]?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
-        r"\$\s*(\d{1,4}(?:\.\d{1,2})?)\s+per\s+(?:ordinary\s+|class\s+[ab]\s+)?share",
     ]
     price_match = next(
         (
