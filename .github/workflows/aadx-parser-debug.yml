@@ -1,4 +1,4 @@
-name: Diagnose AADX Offering Extraction
+name: Patch AADX Offering Extraction
 
 on:
   push:
@@ -7,38 +7,77 @@ on:
       - '.github/workflows/aadx-parser-debug.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  diagnose:
+  patch:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
           ref: repair/june-offering-values
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: pip install -r requirements.txt
-      - name: Parse final AADX prospectus
+      - name: Patch offering-title and option-share handling
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          parser = Path('src/filing_parser.py')
+          text = parser.read_text()
+          old = r'(r"\b([\d,]{4,})\s+shares\b.{0,400}?\bthis\s+is\s+the\s+initial\s+public\s+offering\b", "cover title preceding IPO statement"),'
+          new = r'(r"\b([\d,]{4,})\s+shares\b.{0,400}?\bthis\s+is\s+(?:an|the)\s+initial\s+public\s+offering\b", "cover title preceding IPO statement"),'
+          if old not in text:
+              raise SystemExit('expected cover-title pattern not found')
+          text = text.replace(old, new, 1)
+
+          old_fallback = '''        nearby = cover[max(0, match.start()-250):min(len(cover), match.end()+650)].lower()\n        if "initial public offering" in nearby and "outstanding" not in nearby:\n            value = _share_int(match.group(1))\n            if value:\n                total_candidates.append((match.start(), value, "cover title adjacent to IPO statement"))\n'''
+          new_fallback = '''        nearby = cover[max(0, match.start()-250):min(len(cover), match.end()+650)].lower()\n        preceding = cover[max(0, match.start()-180):match.start()].lower()\n        option_context = "option" in preceding and "additional" in preceding\n        if "initial public offering" in nearby and "outstanding" not in nearby and not option_context:\n            value = _share_int(match.group(1))\n            if value:\n                total_candidates.append((match.start(), value, "cover title adjacent to IPO statement"))\n'''
+          if old_fallback not in text:
+              raise SystemExit('expected adjacent-title fallback not found')
+          parser.write_text(text.replace(old_fallback, new_fallback, 1))
+
+          test = Path('src/test_final_offering_share_reconciliation.py')
+          test_text = test.read_text()
+          marker = '''    def test_cover_title_does_not_fold_overallotment_into_base_ipo(self):\n'''
+          addition = '''    def test_aadx_an_initial_public_offering_title_beats_option_shares(self):\n        terms = filing_parser.extract_offering_terms(_soup("""\n        32,500,000 Shares Applied Aerospace & Defense, Inc. Common Stock.\n        This is an initial public offering of Applied Aerospace & Defense, Inc.\n        We are offering 32,500,000 shares of our common stock.\n        The initial public offering price per share is $20.00.\n        We have granted the underwriters an option to purchase up to an additional\n        4,875,000 shares of common stock from us at the initial offering price.\n        """))\n        self.assertEqual(terms["total_shares"], 32_500_000)\n        self.assertEqual(terms["primary_shares"], 32_500_000)\n        self.assertIsNone(terms["secondary_shares"])\n        self.assertFalse(terms["conflict"])\n        self.assertEqual(terms["total_shares"] * 20, 650_000_000)\n\n    def test_option_share_count_is_not_accepted_as_context_fallback_total(self):\n        terms = filing_parser.extract_offering_terms(_soup("""\n        This is an initial public offering of Example Corp.\n        We have granted the underwriters an option to purchase up to an additional\n        4,875,000 shares of common stock from us at the initial offering price.\n        """))\n        self.assertIsNone(terms["total_shares"])\n\n'''
+          if marker not in test_text:
+              raise SystemExit('test insertion marker not found')
+          test.write_text(test_text.replace(marker, addition + marker, 1))
+          PY
+      - name: Run focused parser regressions
+        run: python -m unittest src.test_final_offering_share_reconciliation src.test_filing_parser -v
+      - name: Verify live AADX prospectus parsing
         working-directory: src
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: |
           python - <<'PY'
-          import json
           import filing_parser
           url = 'https://www.sec.gov/Archives/edgar/data/2118195/000119312526256356/d25758d424b4.htm'
-          parsed = filing_parser.parse_filing(url)
-          cover = parsed['cover_page']
-          print(json.dumps({
-              'offering_price': cover.get('offering_price'),
-              'offering_size_shares': cover.get('offering_size_shares'),
-              'primary_offering_shares': cover.get('primary_offering_shares'),
-              'secondary_offering_shares': cover.get('secondary_offering_shares'),
-              'offering_size_source': cover.get('offering_size_source'),
-              'offering_size_confidence': cover.get('offering_size_confidence'),
-              'offering_size_conflict': cover.get('offering_size_conflict'),
-          }, indent=2))
+          cover = filing_parser.parse_filing(url)['cover_page']
+          assert cover['offering_size_shares'] == 32_500_000, cover
+          assert cover['primary_offering_shares'] == 32_500_000, cover
+          assert cover['offering_price'] == 20.0, cover
+          print('AADX parser verified at 32,500,000 base shares x $20 = $650,000,000.')
           PY
+      - name: Guard ownership-history backfill before commit
+        id: guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          active=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" --jq '[.workflow_runs[] | select(.name == "Refresh Prospect Ownership History" and (.status == "queued" or .status == "in_progress" or .status == "pending"))] | length')
+          echo "active=$active" >> "$GITHUB_OUTPUT"
+          test "$active" -eq 0
+      - name: Commit parser fix and regressions
+        if: steps.guard.outputs.active == '0'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/filing_parser.py src/test_final_offering_share_reconciliation.py
+          git commit -m "Reject greenshoe counts as base IPO shares"
+          git push origin HEAD:repair/june-offering-values
