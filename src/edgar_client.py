@@ -37,6 +37,7 @@ SPAC_NAME_PATTERN = re.compile(
     r"\bcapital\s+(?:corp|partners?)\b|"
     r"\bgores\s+holdings\b|"
     r"\brmg\s+ml\s+sports\s+holdings\b|"
+    r"\bgraf\s+industrial\s+corp(?:oration)?\.?(?:\s+[ivx]+)?(?=\W|$)|"
     r"\bgigcapital\d*\b",
     re.IGNORECASE,
 )
