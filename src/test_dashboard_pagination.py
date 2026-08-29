@@ -10,7 +10,7 @@ def test_main_feed_pagination_defaults_to_25_rows():
     assert '<option value="50">50</option>' in HTML
     assert '<option value="100">100</option>' in HTML
     assert 'const DEFAULT_PAGE_SIZE=25' in HTML
-    assert 'let currentPage=1' in HTML
+    assert 'expandedOwner=null,currentPage=1' in HTML
 
 
 def test_pagination_is_applied_after_existing_filters_and_sort():
