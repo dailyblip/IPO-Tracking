@@ -122,6 +122,7 @@ jobs:
         working-directory: src
         env:
           MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python market_quote_identity.py ../docs/data/filings.json
 
       - name: Validate generated lifecycle uniqueness
