@@ -13,6 +13,8 @@ on:
     paths:
       - 'src/s1_monitor.py'
       - 'src/test_s1_monitor.py'
+      - 'src/filing_parser.py'
+      - 'src/test_cover_price_context.py'
       - 'src/public_feed_policy.py'
       - 'src/test_public_feed_policy.py'
       - 'src/company_name_normalizer.py'
@@ -30,6 +32,8 @@ on:
     paths:
       - 'src/s1_monitor.py'
       - 'src/test_s1_monitor.py'
+      - 'src/filing_parser.py'
+      - 'src/test_cover_price_context.py'
       - 'src/public_feed_policy.py'
       - 'src/test_public_feed_policy.py'
       - 'src/company_name_normalizer.py'
@@ -59,7 +63,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run S-1 monitor tests
         working-directory: src
-        run: python -m unittest test_s1_monitor.py test_public_feed_policy.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py test_feed_schema_contract.py -v
+        run: python -m unittest test_s1_monitor.py test_cover_price_context.py test_public_feed_policy.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py test_feed_schema_contract.py -v
 
   update-feed:
     if: github.event_name != 'pull_request'
