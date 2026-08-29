@@ -62,7 +62,11 @@ class QuoteProviderError(QuoteIdentityError):
 
 
 def _identity_tokens(name):
-    tokens = re.findall(r"[a-z0-9]+", str(name or "").casefold())
+    raw_name = str(name or "").strip()
+    # SEC company-name strings can carry a terminal state-of-incorporation marker
+    # such as ``/DE/``. It is provenance metadata, not part of the issuer identity.
+    raw_name = re.sub(r"/[A-Z]{2}/\s*$", "", raw_name, flags=re.IGNORECASE)
+    tokens = re.findall(r"[a-z0-9]+", raw_name.casefold())
     while tokens and tokens[-1] in _CORPORATE_SUFFIXES:
         tokens.pop()
     return tokens
