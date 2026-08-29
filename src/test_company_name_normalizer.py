@@ -18,6 +18,17 @@ class CompanyNameNormalizerTests(unittest.TestCase):
             "McKesson Corporation",
         )
 
+    def test_strips_terminal_sec_jurisdiction_metadata(self):
+        self.assertEqual(normalize_company_name("ITG, Inc./DE/"), "ITG, Inc.")
+        self.assertEqual(
+            normalize_company_name("EXAMPLE CORP./NV/"),
+            "Example Corp.",
+        )
+        self.assertEqual(
+            normalize_company_name("Example/AI Labs"),
+            "Example/AI Labs",
+        )
+
     def test_preserves_known_acronyms_brands_and_roman_numerals(self):
         self.assertEqual(normalize_company_name("FIGURE AI, INC."), "Figure AI, Inc.")
         self.assertEqual(normalize_company_name("SPACEX"), "SpaceX")
