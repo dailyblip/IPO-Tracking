@@ -114,6 +114,45 @@ class OwnershipParserTests(unittest.TestCase):
         self.assertEqual(rows[2]['shares_before'],9048565)
         self.assertEqual(rows[2]['shares_after'],9048565)
 
+    def test_paired_multiclass_counts_ignore_sec_presentation_spacers(self):
+        html="""<table>
+        <tr>
+          <th>Name of beneficial owner</th>
+          <th>Shares beneficially owned before this offering Class A common stock Number</th>
+          <th>Shares beneficially owned before this offering Class A common stock</th>
+          <th>Shares beneficially owned before this offering Class A common stock %</th>
+          <th>Shares beneficially owned before this offering Class B common stock Number</th>
+          <th>Shares beneficially owned before this offering Class B common stock</th>
+          <th>Shares beneficially owned before this offering Class B common stock %</th>
+          <th>Shares beneficially owned after this offering Class A common stock Number</th>
+          <th>Shares beneficially owned after this offering Class A common stock</th>
+          <th>Shares beneficially owned after this offering Class A common stock %</th>
+          <th>Shares beneficially owned after this offering Class B common stock Number</th>
+          <th>Shares beneficially owned after this offering Class B common stock</th>
+          <th>Shares beneficially owned after this offering Class B common stock %</th>
+        </tr>
+        <tr>
+          <td>Gwynne Shotwell (2)</td>
+          <td>5,759,610</td><td></td><td>*</td>
+          <td>7,113,550</td><td></td><td>*</td>
+          <td>5,759,610</td><td></td><td>*</td>
+          <td>7,113,550</td><td></td><td>*</td>
+        </tr>
+        <tr>
+          <td>Ira Ehrenpreis (4)</td>
+          <td>809,050</td><td></td><td>*</td>
+          <td>564,650</td><td></td><td>*</td>
+          <td>809,050</td><td></td><td>*</td>
+          <td>564,650</td><td></td><td>*</td>
+        </tr>
+        </table>"""
+        rows=parse_ownership_table(BeautifulSoup(html,'lxml').find('table'))
+        self.assertEqual([row['name'] for row in rows], ['Gwynne Shotwell (2)', 'Ira Ehrenpreis (4)'])
+        self.assertEqual(rows[0]['shares_before'],12873160)
+        self.assertEqual(rows[0]['shares_after'],12873160)
+        self.assertEqual(rows[1]['shares_before'],1373700)
+        self.assertEqual(rows[1]['shares_after'],1373700)
+
     def test_prospectus_section_headings_are_not_beneficial_owners(self):
         html="""<table>
         <tr><th>Name of beneficial owner</th><th>Shares beneficially owned</th></tr>
