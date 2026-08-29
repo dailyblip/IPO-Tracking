@@ -1,0 +1,98 @@
+name: Repair June Offering Values (One Time)
+
+on:
+  push:
+    branches: [repair/june-offering-values]
+    paths:
+      - '.github/workflows/june-offering-repair-once.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: research-monitor-feed-writers
+  cancel-in-progress: false
+
+jobs:
+  repair-june:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check out repair branch
+        uses: actions/checkout@v4
+        with:
+          ref: repair/june-offering-values
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run regression suite before repair
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+
+      - name: Reprocess June 2026 priced IPOs with current parser
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+          MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          STANFORD_RESEARCH_CACHE_PATH: ../docs/data/stanford_research_cache.json
+          SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+        run: python main.py --backfill-start 2026-06-01 --backfill-end 2026-06-30
+
+      - name: Refresh alerts
+        run: python src/research_alerts.py
+
+      - name: Validate repaired public feed
+        run: |
+          python -m unittest discover -s src -p 'test_*.py' -v
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          feed = json.loads(Path('docs/data/filings.json').read_text())
+          by_ticker = {str(row.get('ticker') or '').upper(): row for row in feed.get('filings', [])}
+          expected = {
+              'QNT': 1_680_000_000,
+              'LFTO': 437_000_000,
+              'AADX': 650_000_000,
+          }
+          for ticker, value in expected.items():
+              row = by_ticker.get(ticker)
+              if not row:
+                  raise SystemExit(f'{ticker} missing after June repair')
+              actual = row.get('value')
+              if actual is None or abs(float(actual) - value) > 1:
+                  raise SystemExit(f'{ticker} value mismatch after repair: {actual} != {value}')
+          print('Validated QNT, LFTO, and AADX base IPO values after parser reprocessing.')
+          PY
+
+      - name: Guard ownership-history backfill before generated-data commit
+        id: guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          active=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?per_page=100" --jq '[.workflow_runs[] | select(.name == "Refresh Prospect Ownership History" and (.status == "queued" or .status == "in_progress" or .status == "pending"))] | length')
+          echo "active=$active" >> "$GITHUB_OUTPUT"
+          if [ "$active" -gt 0 ]; then
+            echo "Ownership-history backfill has priority; leaving repaired files uncommitted on this run."
+          fi
+
+      - name: Commit generated repair to branch
+        if: steps.guard.outputs.active == '0'
+        run: |
+          if [ -z "$(git status --short -- docs/data/filings.json docs/data/filings.csv docs/data/stanford_research_cache.json docs/data/alerts.json docs/data/alerts_state.json)" ]; then
+            echo "June repair produced no feed changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/filings.json docs/data/filings.csv docs/data/stanford_research_cache.json docs/data/alerts.json docs/data/alerts_state.json
+          git commit -m "Reprocess June 2026 IPO offering values"
+          git push origin HEAD:repair/june-offering-values
