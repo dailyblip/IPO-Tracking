@@ -355,6 +355,37 @@ def _normalize_person_ownership_metrics(filing):
     return normalized
 
 
+def _sanitize_person_ipo_sales(filing):
+    """Clear holder-level IPO sales that exceed the entire known secondary offering.
+
+    A holder cannot sell more shares in the IPO than all selling stockholders sold
+    in aggregate. Historical ownership-table parsing can misclassify a beneficial-
+    ownership position as ``shares_sold_ipo``. When the filing-level secondary
+    component is known, fail closed on that impossible state and clear the related
+    realized-cash derivative rather than inventing a replacement sale quantity.
+    """
+    normalized = dict(filing)
+    people = filing.get("people")
+    secondary = valid_share_count(filing.get("secondary_offering_shares"))
+    if not isinstance(people, list) or secondary is None:
+        return normalized
+
+    normalized_people = []
+    for person in people:
+        if not isinstance(person, dict):
+            normalized_people.append(person)
+            continue
+        normalized_person = dict(person)
+        sold = valid_share_count(person.get("shares_sold_ipo"))
+        if sold is not None and sold > secondary:
+            normalized_person["shares_sold_ipo"] = None
+            if "cash_realized_ipo" in normalized_person:
+                normalized_person["cash_realized_ipo"] = None
+        normalized_people.append(normalized_person)
+    normalized["people"] = normalized_people
+    return normalized
+
+
 def _scrub_stanford_operational_errors(filing):
     """Keep internal Stanford-processing text out of public person records.
 
@@ -492,6 +523,7 @@ def enforce_public_feed_policy(output_path, followon_submissions_loader=None):
         normalized = _remove_document_heading_people(normalized)
         normalized = _normalize_people_types(normalized)
         normalized = _normalize_person_ownership_metrics(normalized)
+        normalized = _sanitize_person_ipo_sales(normalized)
         normalized = _scrub_stanford_operational_errors(normalized)
         normalized = _normalize_market_value_consistency(normalized)
         qualifying.append(normalized)
