@@ -18,6 +18,7 @@ on:
       - 'src/prepricing_quote_sanitizer.py'
       - 'src/market_quote_identity.py'
       - 'src/location_quality.py'
+      - 'src/offering_value_reconciler.py'
       - 'src/feed_schema_contract.py'
       - 'src/test_feed_schema_contract.py'
       - 'schemas/**'
@@ -32,6 +33,7 @@ on:
       - 'src/test_prepricing_quote_sanitizer.py'
       - 'src/test_market_quote_identity.py'
       - 'src/test_location_quality.py'
+      - 'src/test_offering_value_reconciler.py'
       - 'src/test_dashboard_ui.py'
       - 'src/company_name_normalizer.py'
       - 'src/public_feed_policy.py'
@@ -133,6 +135,11 @@ jobs:
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python public_feed_policy.py ../docs/data/filings.json
+      - name: Preserve authoritative final offering aggregates
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python offering_value_reconciler.py ../docs/data/filings.json
       - name: Repair malformed issuer locations
         working-directory: src
         env:
