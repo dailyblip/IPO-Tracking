@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-29T08:04:25.520894+00:00",
+  "updated_at": "2026-08-29T08:22:07.021212+00:00",
   "items": {
     "s1:0001779977": {
       "id": "s1:0001779977",
@@ -34,7 +34,7 @@
       "filed": "2026-08-28",
       "stage": "pre-pricing",
       "price_range": null,
-      "priority": "High",
+      "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526374259/0001193125-26-374259-index.htm"
     },
@@ -58,7 +58,7 @@
       "filed": "2026-08-28",
       "stage": "pre-pricing",
       "price_range": null,
-      "priority": "High",
+      "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526372368/0001193125-26-372368-index.htm"
     },
@@ -110,6 +110,18 @@
       "value": 18750000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026092565/0001213900-26-092565-index.htm"
     },
+    "s1:0002111846": {
+      "id": "s1:0002111846",
+      "cik": "0002111846",
+      "company": "Game Your Game Inc.",
+      "form": "S-1",
+      "filed": "2026-08-21",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026092695/0001213900-26-092695-index.htm"
+    },
     "s1:0002131613": {
       "id": "s1:0002131613",
       "cik": "0002131613",
@@ -145,6 +157,18 @@
       "priority": "High",
       "value": 297500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm"
+    },
+    "s1:0002112634": {
+      "id": "s1:0002112634",
+      "cik": "0002112634",
+      "company": "Sensei Harbor Corp.",
+      "form": "S-1/A",
+      "filed": "2026-08-18",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2112634/000168316826006561/0001683168-26-006561-index.htm"
     },
     "s1:0001880995": {
       "id": "s1:0001880995",
@@ -511,6 +535,13 @@
       "last_filed": "2026-08-21",
       "missing_runs": 0
     },
+    "0002111846": {
+      "company": "Game Your Game Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002111846",
+      "last_filed": "2026-08-21",
+      "missing_runs": 0
+    },
     "0002131613": {
       "company": "CoVolt Power, Inc.",
       "stage": "pre-pricing",
@@ -530,6 +561,13 @@
       "stage": "priced",
       "last_filing_id": "0001193125-26-356916",
       "last_filed": "2026-08-19",
+      "missing_runs": 0
+    },
+    "0002112634": {
+      "company": "Sensei Harbor Corp.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002112634",
+      "last_filed": "2026-08-18",
       "missing_runs": 0
     },
     "0001880995": {
