@@ -11,14 +11,18 @@ class DashboardFreshnessTests(unittest.TestCase):
     def setUpClass(cls):
         cls.html = HTML_PATH.read_text(encoding="utf-8")
 
-    def test_edgar_refresh_timestamp_is_shown_near_header(self):
+    def test_edgar_refresh_timestamp_is_shown_below_recent_activity(self):
         self.assertIn('id="edgarRefresh"', self.html)
         self.assertIn("EDGAR data last refreshed:", self.html)
         header_index = self.html.index('<header class="top">')
-        freshness_index = self.html.index('id="edgarRefresh"')
         activity_index = self.html.index('<section class="activity">')
-        self.assertLess(header_index, freshness_index)
-        self.assertLess(freshness_index, activity_index)
+        recent_index = self.html.index('<section class="recent-activity">')
+        freshness_index = self.html.index('id="edgarRefresh"')
+        panel_index = self.html.index('<section class="panel">')
+        self.assertLess(header_index, activity_index)
+        self.assertLess(activity_index, recent_index)
+        self.assertLess(recent_index, freshness_index)
+        self.assertLess(freshness_index, panel_index)
 
     def test_edgar_refresh_uses_feed_generated_at_in_pacific_time(self):
         self.assertIn("function edgarRefreshLabel(value)", self.html)
