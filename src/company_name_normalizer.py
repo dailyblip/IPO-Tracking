@@ -13,6 +13,9 @@ BRAND_OVERRIDES = {"SPACEX": "SpaceX"}
 
 def normalize_company_name(value: str) -> str:
     raw = " ".join(str(value or "").split())
+    # SEC company-name strings can include a terminal state-of-incorporation marker
+    # such as /DE/. It is provenance metadata, not part of the issuer display name.
+    raw = re.sub(r"/[A-Z]{2}/\s*$", "", raw, flags=re.IGNORECASE).rstrip()
     if not raw or raw != raw.upper() or not re.search(r"[A-Z]", raw):
         return raw
 
