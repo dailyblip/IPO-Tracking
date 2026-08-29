@@ -27,6 +27,13 @@ class MarketQuoteIdentityTests(unittest.TestCase):
         )
         self.assertFalse(_company_names_match("Standard Nuclear Inc.", "Nuclear Energy Corp"))
 
+    def test_company_name_matching_ignores_terminal_sec_jurisdiction_marker(self):
+        self.assertTrue(_company_names_match("ITG, Inc./DE/", "ITG Inc"))
+        self.assertTrue(_company_names_match("Example Corp./NV/", "Example Corporation"))
+        self.assertFalse(
+            _company_names_match("WhiteHawk Income Corp/DE/", "Whitehawk Minerals Corp")
+        )
+
     def test_profile_ticker_must_match_filing_ticker(self):
         with self.assertRaisesRegex(QuoteIdentityError, "does not match SEC/filing ticker"):
             _validate_profile("LYNX", "Lyntris Inc.", {"ticker": "OLD", "name": "Lyntris Inc"})
