@@ -187,7 +187,7 @@
       }
     },
     {
-      "label": "Priced record with intentionally unresolved optional fields",
+      "label": "Priced record with verified base offering and unresolved lock-up",
       "cik": "0002118195",
       "expected": {
         "company": "Applied Aerospace & Defense, Inc.",
@@ -197,14 +197,14 @@
         "filing_date": "2026-05-26",
         "pricing_date": "2026-06-04",
         "stage": "Priced",
-        "value": 97500000.0,
+        "value": 650000000.0,
         "filing_price": "18-21",
         "offering_price": 20.0,
+        "primary_offering_shares": 32500000,
         "lockup_confidence": "Unresolved",
         "people_count": 1
       },
       "expected_null_fields": [
-        "primary_offering_shares",
         "secondary_offering_shares",
         "lockup_end_date",
         "lockup_duration_days",
@@ -213,7 +213,7 @@
       ],
       "expected_signals_contain": [
         "1 named beneficial owner disclosed",
-        "Offering raised approximately $98M"
+        "Offering raised approximately $650M"
       ]
     }
   ]
