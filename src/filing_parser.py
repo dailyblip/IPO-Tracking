@@ -387,7 +387,7 @@ def extract_offering_terms(soup: BeautifulSoup) -> dict:
         # EDGAR cover titles frequently place issuer name / artwork / security
         # class between the share count and the IPO narrative, e.g.
         # "50,000,000 Shares Csquare, Inc. Common Stock This is the initial...".
-        (r"\b([\d,]{4,})\s+shares\b.{0,400}?\bthis\s+is\s+the\s+initial\s+public\s+offering\b", "cover title preceding IPO statement"),
+        (r"\b([\d,]{4,})\s+shares\b.{0,400}?\bthis\s+is\s+(?:an|the)\s+initial\s+public\s+offering\b", "cover title preceding IPO statement"),
     ]
     for pattern, label in explicit_patterns:
         for match in re.finditer(pattern, cover, re.I):
@@ -399,7 +399,9 @@ def extract_offering_terms(soup: BeautifulSoup) -> dict:
     # "17,000,000 Shares Common Stock This is ... initial public offering ..."
     for match in re.finditer(r"\b([\d,]{4,})\s+shares\s+(?:of\s+)?(?:class\s+[a-z]\s+)?common\s+stock\b", cover[:20000], re.I):
         nearby = cover[max(0, match.start()-250):min(len(cover), match.end()+650)].lower()
-        if "initial public offering" in nearby and "outstanding" not in nearby:
+        preceding = cover[max(0, match.start()-180):match.start()].lower()
+        option_context = "option" in preceding and "additional" in preceding
+        if "initial public offering" in nearby and "outstanding" not in nearby and not option_context:
             value = _share_int(match.group(1))
             if value:
                 total_candidates.append((match.start(), value, "cover title adjacent to IPO statement"))
