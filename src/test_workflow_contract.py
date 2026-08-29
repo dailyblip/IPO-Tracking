@@ -8,6 +8,7 @@ DAILY_WORKFLOW = WORKFLOW_DIR / "daily.yml"
 OWNERSHIP_WORKFLOW = WORKFLOW_DIR / "ownership-refresh.yml"
 S1_WORKFLOW = WORKFLOW_DIR / "s1-watch.yml"
 TEST_WORKFLOW = WORKFLOW_DIR / "test.yml"
+REPO_STEWARD_WORKFLOW = WORKFLOW_DIR / "repo-steward.yml"
 PUBLIC_FEED_POLICY_WORKFLOWS = [
     DAILY_WORKFLOW,
     S1_WORKFLOW,
@@ -81,6 +82,29 @@ class WorkflowContractTests(unittest.TestCase):
 
         positions = [workflow.index(step) for step in ordered_steps]
         self.assertEqual(positions, sorted(positions))
+
+    def test_daily_writer_defers_live_golden_until_after_regeneration(self):
+        workflow = _workflow(DAILY_WORKFLOW)
+        unit_test_step = workflow.index("- name: Run unit tests")
+        refresh_step = workflow.index("- name: Run daily pipeline")
+        golden_step = workflow.index("- name: Validate refreshed golden records")
+        publish_step = workflow.index("- name: Publish Research Monitor data")
+        next_step = workflow.find("\n      - name:", unit_test_step + 1)
+        unit_test_block = workflow[unit_test_step:next_step]
+
+        self.assertIn("SKIP_LIVE_GOLDEN: '1'", unit_test_block)
+        self.assertLess(unit_test_step, refresh_step)
+        self.assertLess(refresh_step, golden_step)
+        self.assertLess(golden_step, publish_step)
+        self.assertIn("test_golden_records.py", workflow[golden_step:publish_step])
+
+    def test_repo_steward_reports_agent_failure_without_failing_again(self):
+        workflow = _workflow(REPO_STEWARD_WORKFLOW)
+
+        self.assertIn("continue-on-error: true", workflow)
+        self.assertIn("agent_failed: ${{ steps.agent_status.outputs.agent_failed }}", workflow)
+        self.assertIn("needs.generate_fix.outputs.agent_failed == 'true'", workflow)
+        self.assertIn('gh issue comment "$INCIDENT_NUMBER" --repo "$GITHUB_REPOSITORY"', workflow)
 
     def test_ownership_refresh_reacts_to_release_safety_code_changes(self):
         workflow = _ownership_workflow()
