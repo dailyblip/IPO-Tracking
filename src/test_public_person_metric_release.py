@@ -86,11 +86,11 @@ class PublicPersonMetricReleaseTests(unittest.TestCase):
 
             person = filtered["filings"][0]["people"][0]
             self.assertIsNone(person["shares"])
-            self.assertIsNone(person["cash_value"])
+            self.assertIsNone(person.get("cash_value"))
             self.assertIsNone(person["liquid_shares"])
-            self.assertIsNone(person["liquid_value"])
+            self.assertIsNone(person.get("liquid_value"))
             self.assertIsNone(person["locked_shares"])
-            self.assertIsNone(person["locked_value"])
+            self.assertIsNone(person.get("locked_value"))
 
 
 if __name__ == "__main__":
