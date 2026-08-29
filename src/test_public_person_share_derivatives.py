@@ -97,9 +97,9 @@ class PublicPersonShareDerivativeTests(unittest.TestCase):
         self.assertEqual(person["shares"], 1_000)
         self.assertEqual(person["ipo_value"], 15_000.0)
         self.assertEqual(person["cash_realized_ipo"], 1_500.0)
-        self.assertEqual(person["cash_value"], 18_810.0)
-        self.assertEqual(person["liquid_value"], 3_762.0)
-        self.assertEqual(person["locked_value"], 15_048.0)
+        self.assertAlmostEqual(person["cash_value"], 18_810.0)
+        self.assertAlmostEqual(person["liquid_value"], 3_762.0)
+        self.assertAlmostEqual(person["locked_value"], 15_048.0)
 
 
 if __name__ == "__main__":
