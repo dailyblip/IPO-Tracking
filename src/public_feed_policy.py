@@ -310,7 +310,8 @@ def _normalize_person_ownership_metrics(filing):
         "locked_shares",
     )
     derived_value_fields = {
-        "shares": ("cash_value",),
+        "shares": ("cash_value", "ipo_value"),
+        "shares_sold_ipo": ("cash_realized_ipo",),
         "liquid_shares": ("liquid_value",),
         "locked_shares": ("locked_value",),
     }
@@ -332,7 +333,23 @@ def _normalize_person_ownership_metrics(filing):
             normalized_person[field] = sanitized
             if original not in (None, "") and sanitized is None:
                 for value_field in derived_value_fields.get(field, ()):
+                    if value_field in normalized_person:
+                        normalized_person[value_field] = None
+
+        # Fail closed on stale dollar metrics when their supporting share quantity
+        # is absent or invalid. Historical parser bugs sometimes placed ownership
+        # percentages into share fields, derived tiny dollar values, and later
+        # cleared only the malformed share count. Do not let those derivatives
+        # survive the canonical release gate.
+        for share_field, value_fields in derived_value_fields.items():
+            if valid_share_count(normalized_person.get(share_field)) is not None:
+                continue
+            for value_field in value_fields:
+                if value_field in normalized_person:
                     normalized_person[value_field] = None
+        if valid_share_count(normalized_person.get("shares")) is None and "valuation_as_of" in normalized_person:
+            normalized_person["valuation_as_of"] = None
+
         normalized_people.append(normalized_person)
     normalized["people"] = normalized_people
     return normalized
