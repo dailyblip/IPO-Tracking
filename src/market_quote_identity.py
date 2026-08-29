@@ -1,10 +1,10 @@
 """Fail closed when a market-data ticker resolves to the wrong issuer.
 
-The Research Monitor intentionally treats Current Price as secondary data. SEC
-filings establish the IPO identity; a market-data quote is publishable only when
-Finnhub's Company Profile 2 endpoint resolves the quoted ticker back to the same
-issuer. Deterministic identity failures are sanitized before publication; transient
-provider failures still block the release so an outage cannot silently erase data.
+The Research Monitor treats Current Price as secondary data. SEC filings establish
+IPO identity. Finnhub Company Profile 2 is the primary quote-identity check. When
+that profile is incomplete for a newly listed issuer, SEC submissions metadata may
+supply the missing issuer/ticker identity. Explicit provider conflicts are never
+overridden by the SEC fallback.
 """
 
 import argparse
@@ -17,40 +17,25 @@ from pathlib import Path
 import requests
 
 FINNHUB_BASE_URL = "https://finnhub.io/api/v1"
+SEC_SUBMISSIONS_BASE_URL = "https://data.sec.gov/submissions"
 PROFILE_TIMEOUT_SECONDS = 10
 PROFILE_MAX_RETRIES = 4
 PROFILE_RETRY_BACKOFF_SECONDS = 5
 PROFILE_MIN_INTERVAL_SECONDS = 1.1
+SEC_TIMEOUT_SECONDS = 10
+SEC_MAX_RETRIES = 4
+SEC_RETRY_BACKOFF_SECONDS = 3
+SEC_MIN_INTERVAL_SECONDS = 0.2
 
 _CORPORATE_SUFFIXES = {
-    "inc",
-    "incorporated",
-    "corp",
-    "corporation",
-    "co",
-    "company",
-    "ltd",
-    "limited",
-    "plc",
-    "llc",
-    "lp",
+    "inc", "incorporated", "corp", "corporation", "co", "company",
+    "ltd", "limited", "plc", "llc", "lp",
 }
 _GENERIC_NAME_TOKENS = {
-    "group",
-    "holdings",
-    "holding",
-    "financial",
-    "technology",
-    "technologies",
-    "solutions",
-    "systems",
-    "international",
-    "global",
+    "group", "holdings", "holding", "financial", "technology",
+    "technologies", "solutions", "systems", "international", "global",
 }
-_MARKET_VALUE_SIGNAL_MARKERS = (
-    "currently valued",
-    "current market value",
-)
+_MARKET_VALUE_SIGNAL_MARKERS = ("currently valued", "current market value")
 
 
 class QuoteIdentityError(RuntimeError):
@@ -58,13 +43,12 @@ class QuoteIdentityError(RuntimeError):
 
 
 class QuoteProviderError(QuoteIdentityError):
-    """Raised when the provider cannot complete an identity lookup reliably."""
+    """Raised when an identity provider cannot complete a lookup reliably."""
 
 
 def _identity_tokens(name):
     raw_name = str(name or "").strip()
-    # SEC company-name strings can carry a terminal state-of-incorporation marker
-    # such as ``/DE/``. It is provenance metadata, not part of the issuer identity.
+    # SEC issuer strings can carry a terminal incorporation marker such as /DE/.
     raw_name = re.sub(r"/[A-Z]{2}/\s*$", "", raw_name, flags=re.IGNORECASE)
     tokens = re.findall(r"[a-z0-9]+", raw_name.casefold())
     while tokens and tokens[-1] in _CORPORATE_SUFFIXES:
@@ -73,7 +57,7 @@ def _identity_tokens(name):
 
 
 def _company_names_match(expected_name, provider_name):
-    """Conservatively compare SEC issuer and market-provider company names."""
+    """Conservatively compare SEC issuer and identity-provider company names."""
     expected = _identity_tokens(expected_name)
     provider = _identity_tokens(provider_name)
     if not expected or not provider:
@@ -84,12 +68,9 @@ def _company_names_match(expected_name, provider_name):
     expected_set = set(expected)
     provider_set = set(provider)
     common = expected_set & provider_set
-    distinctive_common = common - _GENERIC_NAME_TOKENS
-    if not distinctive_common:
+    if not (common - _GENERIC_NAME_TOKENS):
         return False
 
-    # Providers sometimes omit one generic trailing word (for example Group or
-    # Holdings). Require the shorter identity to otherwise be fully represented.
     smaller, larger = (
         (expected_set, provider_set)
         if len(expected_set) <= len(provider_set)
@@ -97,44 +78,105 @@ def _company_names_match(expected_name, provider_name):
     )
     if len(smaller) >= 2 and smaller <= larger:
         return True
-
-    overlap = len(common) / max(len(expected_set | provider_set), 1)
-    return overlap >= 0.8
+    return len(common) / max(len(expected_set | provider_set), 1) >= 0.8
 
 
-def _validate_profile(ticker, company_name, profile):
+def _provider_identity_is_complete(ticker, company_name, profile):
+    """Validate populated Finnhub identity fields and report completeness.
+
+    Missing fields are not a collision because newly listed symbols can have a
+    live quote before Company Profile 2 is fully indexed. Any populated conflict
+    remains release-blocking and is never overridden with SEC data.
+    """
     provider_ticker = str((profile or {}).get("ticker") or "").strip().upper()
     provider_name = str((profile or {}).get("name") or "").strip()
     expected_ticker = str(ticker or "").strip().upper()
 
-    if not provider_ticker or provider_ticker != expected_ticker:
+    if provider_ticker and provider_ticker != expected_ticker:
         raise QuoteIdentityError(
-            f"{company_name}: market profile ticker {provider_ticker or 'missing'} "
-            f"does not match SEC/filing ticker {expected_ticker or 'missing'}"
+            f"{company_name}: market profile ticker {provider_ticker} does not match "
+            f"SEC/filing ticker {expected_ticker or 'missing'}"
+        )
+    if provider_name and not _company_names_match(company_name, provider_name):
+        raise QuoteIdentityError(
+            f"{company_name} ({expected_ticker}): market profile resolves to "
+            f"{provider_name!r}; refusing to publish a possibly collided quote"
+        )
+    return bool(provider_ticker and provider_name)
+
+
+def _validate_profile(ticker, company_name, profile):
+    """Strict Finnhub-only validation retained for tests and manual audits."""
+    if _provider_identity_is_complete(ticker, company_name, profile):
+        return True
+    provider_ticker = str((profile or {}).get("ticker") or "").strip().upper()
+    provider_name = str((profile or {}).get("name") or "").strip()
+    expected_ticker = str(ticker or "").strip().upper()
+    if not provider_ticker:
+        raise QuoteIdentityError(
+            f"{company_name}: market profile ticker missing does not match "
+            f"SEC/filing ticker {expected_ticker or 'missing'}"
         )
     if not provider_name:
         raise QuoteIdentityError(
             f"{company_name} ({expected_ticker}): market profile is missing issuer name"
         )
-    if not _company_names_match(company_name, provider_name):
+    return True
+
+
+def _normalize_cik(cik):
+    digits = re.sub(r"\D", "", str(cik or ""))
+    return digits.zfill(10) if digits else ""
+
+
+def _validate_sec_identity(ticker, company_name, cik, sec_profile):
+    """Validate issuer/ticker identity using authoritative SEC submissions data."""
+    expected_ticker = str(ticker or "").strip().upper()
+    expected_cik = _normalize_cik(cik)
+    sec_name = str((sec_profile or {}).get("name") or "").strip()
+    sec_cik = _normalize_cik((sec_profile or {}).get("cik"))
+    raw_tickers = (sec_profile or {}).get("tickers") or []
+    if isinstance(raw_tickers, str):
+        raw_tickers = [raw_tickers]
+    sec_tickers = {
+        str(item or "").strip().upper()
+        for item in raw_tickers
+        if str(item or "").strip()
+    }
+
+    if not expected_cik:
         raise QuoteIdentityError(
-            f"{company_name} ({expected_ticker}): market profile resolves to "
-            f"{provider_name!r}; refusing to publish a possibly collided quote"
+            f"{company_name} ({expected_ticker or 'no ticker'}): "
+            "SEC fallback requires a filing CIK"
+        )
+    if sec_cik and sec_cik != expected_cik:
+        raise QuoteIdentityError(
+            f"{company_name} ({expected_ticker}): SEC submissions CIK {sec_cik} "
+            f"does not match filing CIK {expected_cik}"
+        )
+    if expected_ticker not in sec_tickers:
+        raise QuoteIdentityError(
+            f"{company_name} ({expected_ticker}): SEC submissions profile does not "
+            "confirm the filing ticker"
+        )
+    if not sec_name or not _company_names_match(company_name, sec_name):
+        raise QuoteIdentityError(
+            f"{company_name} ({expected_ticker}): SEC submissions issuer "
+            f"{sec_name or 'missing'} does not match the filing issuer"
         )
     return True
 
 
-def _retry_delay(response, attempt):
+def _retry_delay(response, attempt, default_backoff=PROFILE_RETRY_BACKOFF_SECONDS):
     raw = str((getattr(response, "headers", {}) or {}).get("Retry-After") or "").strip()
     try:
-        delay = float(raw)
+        return max(float(raw), 0.0)
     except (TypeError, ValueError):
-        delay = PROFILE_RETRY_BACKOFF_SECONDS * attempt
-    return max(delay, PROFILE_MIN_INTERVAL_SECONDS)
+        return default_backoff * attempt
 
 
 def _fetch_profile(ticker, api_key):
-    """Fetch one provider profile, retrying transient quota/server failures."""
+    """Fetch one Finnhub profile with bounded retry for quota/server failures."""
     last_error = None
     for attempt in range(1, PROFILE_MAX_RETRIES + 1):
         try:
@@ -156,13 +198,12 @@ def _fetch_profile(ticker, api_key):
         if status == 429 or 500 <= status < 600:
             last_error = RuntimeError(f"HTTP {status}")
             if attempt < PROFILE_MAX_RETRIES:
-                time.sleep(_retry_delay(response, attempt))
+                time.sleep(max(_retry_delay(response, attempt), PROFILE_MIN_INTERVAL_SECONDS))
                 continue
             raise QuoteProviderError(
-                f"Could not verify market-data identity for {ticker}: "
-                f"provider returned HTTP {status} after {PROFILE_MAX_RETRIES} attempts"
+                f"Could not verify market-data identity for {ticker}: provider returned "
+                f"HTTP {status} after {PROFILE_MAX_RETRIES} attempts"
             )
-
         try:
             response.raise_for_status()
             profile = response.json()
@@ -174,25 +215,90 @@ def _fetch_profile(ticker, api_key):
             raise QuoteProviderError(
                 f"Could not verify market-data identity for {ticker}: invalid JSON response"
             ) from exc
-
         if not isinstance(profile, dict):
             raise QuoteProviderError(
                 f"Could not verify market-data identity for {ticker}: invalid company profile"
             )
-        # An empty profile is a deterministic provider non-match, not a transport
-        # failure. The release sanitizer will clear that ticker's market-derived
-        # fields rather than blocking unrelated IPOs.
         return profile
-
     raise QuoteProviderError(
         f"Could not verify market-data identity for {ticker}: {last_error}"
     )
 
 
-def _paced_profile_lookup(api_key):
-    """Keep identity lookups below Finnhub's free-tier request cadence."""
-    last_started = [None]
+def _fetch_sec_profile(cik, user_agent):
+    """Fetch SEC submissions metadata for one issuer CIK."""
+    normalized_cik = _normalize_cik(cik)
+    if not normalized_cik:
+        raise QuoteIdentityError("SEC fallback cannot run without a valid CIK")
+    if not str(user_agent or "").strip():
+        raise QuoteProviderError(
+            "SEC_EDGAR_USER_AGENT is required for SEC market-identity fallback"
+        )
 
+    url = f"{SEC_SUBMISSIONS_BASE_URL}/CIK{normalized_cik}.json"
+    last_error = None
+    for attempt in range(1, SEC_MAX_RETRIES + 1):
+        try:
+            response = requests.get(
+                url,
+                headers={
+                    "User-Agent": str(user_agent).strip(),
+                    "Accept": "application/json",
+                    "Accept-Encoding": "gzip, deflate",
+                },
+                timeout=SEC_TIMEOUT_SECONDS,
+            )
+        except requests.RequestException as exc:
+            last_error = exc
+            if attempt < SEC_MAX_RETRIES:
+                time.sleep(SEC_RETRY_BACKOFF_SECONDS * attempt)
+                continue
+            raise QuoteProviderError(
+                f"Could not verify SEC issuer identity for CIK {normalized_cik}: {exc}"
+            ) from exc
+
+        status = int(getattr(response, "status_code", 0) or 0)
+        if status == 404:
+            raise QuoteIdentityError(
+                f"SEC submissions profile unavailable for CIK {normalized_cik}"
+            )
+        if status == 429 or 500 <= status < 600:
+            last_error = RuntimeError(f"HTTP {status}")
+            if attempt < SEC_MAX_RETRIES:
+                time.sleep(max(
+                    _retry_delay(response, attempt, SEC_RETRY_BACKOFF_SECONDS),
+                    SEC_MIN_INTERVAL_SECONDS,
+                ))
+                continue
+            raise QuoteProviderError(
+                f"Could not verify SEC issuer identity for CIK {normalized_cik}: "
+                f"SEC returned HTTP {status} after {SEC_MAX_RETRIES} attempts"
+            )
+        try:
+            response.raise_for_status()
+            profile = response.json()
+        except requests.RequestException as exc:
+            raise QuoteProviderError(
+                f"Could not verify SEC issuer identity for CIK {normalized_cik}: {exc}"
+            ) from exc
+        except ValueError as exc:
+            raise QuoteProviderError(
+                f"Could not verify SEC issuer identity for CIK {normalized_cik}: "
+                "invalid JSON response"
+            ) from exc
+        if not isinstance(profile, dict):
+            raise QuoteProviderError(
+                f"Could not verify SEC issuer identity for CIK {normalized_cik}: "
+                "invalid submissions profile"
+            )
+        return profile
+    raise QuoteProviderError(
+        f"Could not verify SEC issuer identity for CIK {normalized_cik}: {last_error}"
+    )
+
+
+def _paced_profile_lookup(api_key):
+    last_started = [None]
     def lookup(ticker):
         now = time.monotonic()
         if last_started[0] is not None:
@@ -201,18 +307,29 @@ def _paced_profile_lookup(api_key):
                 time.sleep(PROFILE_MIN_INTERVAL_SECONDS - elapsed)
         last_started[0] = time.monotonic()
         return _fetch_profile(ticker, api_key)
+    return lookup
 
+
+def _paced_sec_lookup(user_agent):
+    last_started = [None]
+    def lookup(cik):
+        now = time.monotonic()
+        if last_started[0] is not None:
+            elapsed = now - last_started[0]
+            if elapsed < SEC_MIN_INTERVAL_SECONDS:
+                time.sleep(SEC_MIN_INTERVAL_SECONDS - elapsed)
+        last_started[0] = time.monotonic()
+        return _fetch_sec_profile(cik, user_agent)
     return lookup
 
 
 def _strip_quote_derived_fields(filing):
-    """Remove a quote and values that are calculated from that quote."""
+    """Remove a quote and values calculated from that quote."""
     touched = False
     for field in ("current_price", "price_updated"):
         if field in filing:
             filing.pop(field, None)
             touched = True
-
     for person in filing.get("people", []):
         if not isinstance(person, dict):
             continue
@@ -220,7 +337,6 @@ def _strip_quote_derived_fields(filing):
             if field in person:
                 person.pop(field, None)
                 touched = True
-
     signals = filing.get("signals")
     if isinstance(signals, list):
         kept = []
@@ -232,169 +348,153 @@ def _strip_quote_derived_fields(filing):
             kept.append(signal)
         if len(kept) != len(signals):
             filing["signals"] = kept
-
     return touched
 
 
-def audit_payload(payload, lookup_profile):
-    """Strictly validate every published Current Price against provider identity."""
+def _verify_identity(filing, provider_profile, lookup_sec_profile=None, sec_profiles=None):
+    """Verify quote identity; SEC may fill missing provider fields, never conflicts."""
+    company = str(filing.get("company") or "").strip()
+    ticker = str(filing.get("ticker") or "").strip().upper()
+    if _provider_identity_is_complete(ticker, company, provider_profile):
+        return "finnhub"
+    if lookup_sec_profile is None:
+        _validate_profile(ticker, company, provider_profile)
+
+    cik = _normalize_cik(filing.get("cik"))
+    if not cik:
+        raise QuoteIdentityError(
+            f"{company} ({ticker}): incomplete market profile and no CIK for SEC fallback"
+        )
+    sec_profiles = sec_profiles if sec_profiles is not None else {}
+    if cik not in sec_profiles:
+        sec_profiles[cik] = lookup_sec_profile(cik)
+    _validate_sec_identity(ticker, company, cik, sec_profiles[cik])
+    return "sec_submissions"
+
+
+def _validate_lifecycle(filing):
+    company = str(filing.get("company") or "").strip()
+    ticker = str(filing.get("ticker") or "").strip().upper()
+    form = str(filing.get("form") or "").strip().upper()
+    stage = str(filing.get("stage") or "").strip().casefold()
+    if form != "424B4" or stage != "priced":
+        raise QuoteIdentityError(
+            f"{company or 'Unknown issuer'} ({ticker or 'no ticker'}): Current Price "
+            "is populated before a final 424B4/Priced lifecycle state"
+        )
+    return company, ticker
+
+
+def audit_payload(payload, lookup_profile, lookup_sec_profile=None):
     filings = payload.get("filings", []) if isinstance(payload, dict) else []
-    profiles = {}
+    profiles, sec_profiles = {}, {}
     audited = 0
     for filing in filings:
-        if not isinstance(filing, dict):
+        if not isinstance(filing, dict) or filing.get("current_price") in (None, ""):
             continue
-        if filing.get("current_price") in (None, ""):
-            continue
-
-        company = str(filing.get("company") or "").strip()
-        ticker = str(filing.get("ticker") or "").strip().upper()
-        form = str(filing.get("form") or "").strip().upper()
-        stage = str(filing.get("stage") or "").strip().casefold()
-        if form != "424B4" or stage != "priced":
-            raise QuoteIdentityError(
-                f"{company or 'Unknown issuer'} ({ticker or 'no ticker'}): Current Price "
-                "is populated before a final 424B4/Priced lifecycle state"
-            )
+        company, ticker = _validate_lifecycle(filing)
         if not company or not ticker:
             raise QuoteIdentityError(
                 "Current Price is populated without both issuer name and ticker provenance"
             )
-
         if ticker not in profiles:
             profiles[ticker] = lookup_profile(ticker)
-        _validate_profile(ticker, company, profiles[ticker])
+        _verify_identity(
+            filing, profiles[ticker], lookup_sec_profile=lookup_sec_profile,
+            sec_profiles=sec_profiles,
+        )
         audited += 1
     return audited
 
 
-def sanitize_payload(payload, lookup_profile):
-    """Remove deterministic identity failures while preserving verified quotes.
-
-    Provider transport/quota failures are not deterministic and still raise, so a
-    temporary Finnhub outage cannot erase otherwise-valid market data.
-    """
+def sanitize_payload(payload, lookup_profile, lookup_sec_profile=None):
+    """Clear deterministic identity failures; propagate transport/quota failures."""
     filings = payload.get("filings", []) if isinstance(payload, dict) else []
-    profiles = {}
-    audited = 0
-    sanitized = []
-
+    profiles, sec_profiles = {}, {}
+    audited, sanitized = 0, []
     for filing in filings:
         if not isinstance(filing, dict) or filing.get("current_price") in (None, ""):
             continue
-
-        company = str(filing.get("company") or "").strip()
-        ticker = str(filing.get("ticker") or "").strip().upper()
-        form = str(filing.get("form") or "").strip().upper()
-        stage = str(filing.get("stage") or "").strip().casefold()
-
-        # A quote surviving on a pre-pricing record means the earlier canonical
-        # sanitizer failed. Treat that as a release-blocking pipeline defect.
-        if form != "424B4" or stage != "priced":
-            raise QuoteIdentityError(
-                f"{company or 'Unknown issuer'} ({ticker or 'no ticker'}): Current Price "
-                "is populated before a final 424B4/Priced lifecycle state"
-            )
-
+        company, ticker = _validate_lifecycle(filing)
         if not company or not ticker:
             _strip_quote_derived_fields(filing)
-            sanitized.append(
-                (
-                    company or "Unknown issuer",
-                    ticker or "no ticker",
-                    "missing issuer/ticker provenance",
-                )
-            )
+            sanitized.append((
+                company or "Unknown issuer", ticker or "no ticker",
+                "missing issuer/ticker provenance",
+            ))
             continue
-
         if ticker not in profiles:
             profiles[ticker] = lookup_profile(ticker)
-        profile = profiles[ticker]
-
         try:
-            _validate_profile(ticker, company, profile)
+            _verify_identity(
+                filing, profiles[ticker], lookup_sec_profile=lookup_sec_profile,
+                sec_profiles=sec_profiles,
+            )
+        except QuoteProviderError:
+            raise
         except QuoteIdentityError as exc:
             _strip_quote_derived_fields(filing)
             sanitized.append((company, ticker, str(exc)))
             continue
-
         audited += 1
-
     return payload, audited, sanitized
 
 
 def audit_feed(path, api_key=None):
-    """Strict feed audit retained for tests/manual validation."""
     path = Path(path)
     payload = json.loads(path.read_text(encoding="utf-8"))
-    quoted = [
-        filing
-        for filing in payload.get("filings", [])
-        if isinstance(filing, dict) and filing.get("current_price") not in (None, "")
-    ]
+    quoted = [f for f in payload.get("filings", []) if isinstance(f, dict) and f.get("current_price") not in (None, "")]
     if not quoted:
         print("Market quote identity audit: no populated Current Price values to verify")
         return 0
-
     api_key = api_key or os.environ.get("MARKET_DATA_API_KEY")
     if not api_key:
         raise QuoteIdentityError(
             "MARKET_DATA_API_KEY is required to verify populated Current Price values"
         )
-
-    audited = audit_payload(payload, lookup_profile=_paced_profile_lookup(api_key))
+    sec_user_agent = os.environ.get("SEC_EDGAR_USER_AGENT")
+    audited = audit_payload(
+        payload,
+        lookup_profile=_paced_profile_lookup(api_key),
+        lookup_sec_profile=_paced_sec_lookup(sec_user_agent) if sec_user_agent else None,
+    )
     print(f"Market quote identity audit passed for {audited} quoted IPOs")
     return audited
 
 
 def sanitize_feed(path, api_key=None):
-    """Release gate: verify quotes and clear deterministic issuer/profile misses."""
     path = Path(path)
     payload = json.loads(path.read_text(encoding="utf-8"))
-    quoted = [
-        filing
-        for filing in payload.get("filings", [])
-        if isinstance(filing, dict) and filing.get("current_price") not in (None, "")
-    ]
+    quoted = [f for f in payload.get("filings", []) if isinstance(f, dict) and f.get("current_price") not in (None, "")]
     if not quoted:
         print("Market quote identity audit: no populated Current Price values to verify")
         return 0, 0
-
     api_key = api_key or os.environ.get("MARKET_DATA_API_KEY")
     if not api_key:
         raise QuoteProviderError(
             "MARKET_DATA_API_KEY is required to verify populated Current Price values"
         )
-
+    sec_user_agent = os.environ.get("SEC_EDGAR_USER_AGENT")
     payload, audited, sanitized = sanitize_payload(
         payload,
         lookup_profile=_paced_profile_lookup(api_key),
+        lookup_sec_profile=_paced_sec_lookup(sec_user_agent) if sec_user_agent else None,
     )
-
     if sanitized:
         temp = path.with_suffix(path.suffix + ".tmp")
-        temp.write_text(
-            json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
-            encoding="utf-8",
-        )
+        temp.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
         temp.replace(path)
         try:
             from dashboard_export import write_dashboard_csv
-
             write_dashboard_csv(payload.get("filings", []), path)
         except ImportError:
             pass
-
         for company, ticker, reason in sanitized:
             print(
                 f"Market quote identity sanitizer: cleared Current Price for "
                 f"{company} ({ticker}): {reason}"
             )
-
-    print(
-        f"Market quote identity gate: {audited} verified; "
-        f"{len(sanitized)} sanitized"
-    )
+    print(f"Market quote identity gate: {audited} verified; {len(sanitized)} sanitized")
     return audited, len(sanitized)
 
 
