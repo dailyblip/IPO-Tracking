@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-30T10:07:44.916694+00:00",
+  "updated_at": "2026-08-30T10:26:09.159099+00:00",
   "items": {
     "s1:0001779977": {
       "id": "s1:0001779977",
@@ -34,7 +34,7 @@
       "filed": "2026-08-28",
       "stage": "pre-pricing",
       "price_range": null,
-      "priority": "High",
+      "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526374259/0001193125-26-374259-index.htm"
     },
