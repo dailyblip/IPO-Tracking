@@ -159,16 +159,34 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertIn("populated offering-size confidence must be High", workflow)
 
     def test_s1_watch_reacts_to_cover_price_parser_changes(self):
-        workflow = _workflow(S1_WORKFLOW)
+        s1_workflow = _workflow(S1_WORKFLOW)
+        daily_workflow = _workflow(DAILY_WORKFLOW)
         required_paths = [
             "src/filing_parser.py",
             "src/test_cover_price_context.py",
         ]
 
+        # PRs that touch the parser still run the focused S-1 regression suite.
         for path in required_paths:
             with self.subTest(path=path):
-                self.assertGreaterEqual(workflow.count(f"- '{path}'"), 2)
-        self.assertIn("test_cover_price_context.py", workflow)
+                self.assertIn(f"- '{path}'", s1_workflow)
+        self.assertIn("test_cover_price_context.py", s1_workflow)
+
+        # On main, source changes trigger Daily via src/**; the S-1 writer then
+        # follows that successful run instead of racing it for the shared writer lock.
+        self.assertIn("- 'src/**'", daily_workflow)
+        self.assertIn("workflow_run:", s1_workflow)
+        self.assertIn("- Daily IPO Tracker", s1_workflow)
+        self.assertIn("github.event.workflow_run.conclusion == 'success'", s1_workflow)
+        workflow_run_start = s1_workflow.index("  workflow_run:")
+        dispatch_start = s1_workflow.index("  workflow_dispatch:")
+        workflow_run_block = s1_workflow[workflow_run_start:dispatch_start]
+        self.assertIn("branches:\n      - main", workflow_run_block)
+        push_start = s1_workflow.index("  push:")
+        push_block = s1_workflow[push_start:workflow_run_start]
+        for path in required_paths:
+            with self.subTest(push_path=path):
+                self.assertNotIn(f"- '{path}'", push_block)
 
 
 if __name__ == "__main__":
