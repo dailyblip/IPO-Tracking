@@ -56,7 +56,13 @@ def _format_fixed_price(value) -> str | None:
 
 
 def _is_micro_self_underwritten_offering(filing_text: str, parsed: dict, ipo_size) -> bool:
-    """Exclude tiny self-underwritten/best-efforts registrations without an exchange listing."""
+    """Legacy diagnostic retained for test/backward compatibility only.
+
+    This helper is intentionally NOT used as an eligibility gate. Under the current
+    Any-size policy, a qualifying operating-company IPO cannot be excluded merely
+    because it is small, self-underwritten, best-efforts, or lacks an exchange
+    listing.
+    """
     try:
         amount = float(ipo_size or 0)
     except (TypeError, ValueError):
@@ -73,6 +79,48 @@ def _is_micro_self_underwritten_offering(filing_text: str, parsed: dict, ipo_siz
     cover = parsed.get("cover_page", {}) if isinstance(parsed, dict) else {}
     exchange = str(cover.get("exchange") or "").strip()
     return self_sold and not exchange
+
+
+def _explicit_fixed_price_primary_terms(filing_text: str) -> dict:
+    """Recover tightly anchored fixed-price primary IPO terms from the cover page.
+
+    This fallback exists for micro/small issuer prospectuses whose SEC HTML says,
+    for example, "We are offering for sale a total of 6,000,000 shares ... at a
+    fixed price of $0.02 per share" but whose table markup defeats the generic
+    cover parser. It intentionally does not use fee-table values or generic
+    per-share amounts.
+    """
+    text = " ".join(str(filing_text or "").split())[:100000]
+    pattern = re.compile(
+        r"\bwe\s+are\s+offering\s+for\s+sale\s+(?:a\s+total\s+of\s+)?"
+        r"([\d,]{2,})\s+shares\b"
+        r"(?P<context>.{0,1200}?)"
+        r"\bat\s+a\s+fixed\s+price\s+of\s+\$\s*(\d{1,4}(?:\.\d{1,4})?)"
+        r"\s+per\s+share\b",
+        re.IGNORECASE,
+    )
+    match = pattern.search(text)
+    if not match:
+        return {}
+
+    context = match.group("context")
+    # Do not flatten a mixed primary/secondary deal into an issuer-only total.
+    if re.search(r"\bselling\s+(?:stockholder|shareholder)s?\b", context, re.IGNORECASE):
+        return {}
+
+    try:
+        shares = int(match.group(1).replace(",", ""))
+        price = float(match.group(3))
+    except (TypeError, ValueError):
+        return {}
+    if shares <= 0 or price <= 0:
+        return {}
+    return {
+        "shares": shares,
+        "price": price,
+        "source": "SEC cover: explicit fixed-price primary offering",
+        "confidence": "High",
+    }
 
 
 def parse_daily_index(text: str) -> list[dict]:
@@ -240,13 +288,28 @@ def enrich_record(meta: dict) -> dict | None:
         price_range = parsed.get("price_range", {})
         range_label = _format_range(price_range.get("range_low"), price_range.get("range_high"))
         cover = parsed.get("cover_page", {}) if isinstance(parsed, dict) else {}
+
+        # Narrow fallback for explicit fixed-price issuer IPO covers. Only fill
+        # fields the generic parser did not already establish.
+        fixed_terms = _explicit_fixed_price_primary_terms(filing_text)
+        if fixed_terms:
+            if not cover.get("offering_price"):
+                cover["offering_price"] = fixed_terms["price"]
+            if not cover.get("offering_size_shares"):
+                cover["offering_size_shares"] = fixed_terms["shares"]
+            if not cover.get("primary_offering_shares"):
+                cover["primary_offering_shares"] = fixed_terms["shares"]
+            if not cover.get("offering_size_source"):
+                cover["offering_size_source"] = fixed_terms["source"]
+            if not cover.get("offering_size_confidence"):
+                cover["offering_size_confidence"] = fixed_terms["confidence"]
+            if cover.get("offering_size_conflict") is None:
+                cover["offering_size_conflict"] = False
+
         fixed_price_label = _format_fixed_price(cover.get("offering_price"))
         filing_price_label = range_label or fixed_price_label
         ipo_size = _extract_ipo_size(filing_text, parsed, price_range)
         offering_size_source, offering_size_confidence = _size_provenance(cover, ipo_size)
-        if _is_micro_self_underwritten_offering(filing_text, parsed, ipo_size):
-            print(f"[s1_monitor] Skipping {company}: micro self-underwritten/best-efforts registration without exchange listing")
-            return None
 
         ticker = str(cover.get("ticker") or "").strip().upper() or None
         if not ticker:
@@ -328,7 +391,10 @@ def export_feed(records: list[dict], output_path: Path = OUTPUT_PATH) -> dict:
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     temp = output_path.with_suffix(output_path.suffix + ".tmp")
-    temp.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    temp.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
     temp.replace(output_path)
     return payload
 
@@ -383,7 +449,9 @@ def sync_research_queue(
         and item.get("cik")
     }
 
-    processed_ciks = {str(cik or "").zfill(10) for cik in (processed_ciks or set()) if cik}
+    processed_ciks = {
+        str(cik or "").zfill(10) for cik in (processed_ciks or set()) if cik
+    }
     for item in existing:
         if isinstance(item, dict) and str(item.get("id", "")).startswith("s1:"):
             item["filed"] = _normalize_filing_date(item.get("filed") or "")
@@ -414,7 +482,10 @@ def sync_research_queue(
 
     queue_path.parent.mkdir(parents=True, exist_ok=True)
     temp = queue_path.with_suffix(queue_path.suffix + ".tmp")
-    temp.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    temp.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
     temp.replace(queue_path)
     write_dashboard_csv(payload["filings"], queue_path)
     return payload
@@ -425,12 +496,19 @@ def run(days_back: int = 4) -> dict:
     print(f"[s1_monitor] Found {len(candidates)} recent S-1/S-1A filing(s).")
     records = []
     for index, meta in enumerate(candidates, 1):
-        print(f"[s1_monitor] Processing {index}/{len(candidates)}: {meta['company_name']} ({meta['form_type']})")
+        print(
+            f"[s1_monitor] Processing {index}/{len(candidates)}: "
+            f"{meta['company_name']} ({meta['form_type']})"
+        )
         record = enrich_record(meta)
         if record:
             records.append(record)
     payload = export_feed(records)
-    processed_ciks = {str(meta.get("cik") or "").zfill(10) for meta in candidates if meta.get("cik")}
+    processed_ciks = {
+        str(meta.get("cik") or "").zfill(10)
+        for meta in candidates
+        if meta.get("cik")
+    }
     queue = sync_research_queue(records, processed_ciks=processed_ciks)
     print(f"[s1_monitor] Feed now contains {len(payload['filings'])} pre-pricing filing(s).")
     print(f"[s1_monitor] Research queue now contains {len(queue['filings'])} filing(s).")
