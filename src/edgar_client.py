@@ -457,11 +457,12 @@ def is_first_time_registrant(cik: str) -> bool:
     return not any(form == "10-K" for form in forms)
 
 
-def find_matching_s1(cik: str) -> dict:
+def find_matching_s1(cik: str, before_date: str = None) -> dict:
     """
-    Find the most recent S-1 or S-1/A filed by the same CIK prior to the
-    424B4, to capture the original filing-range price. Returns filing
-    metadata, or an empty dict if none is found.
+    Find the most recent S-1 or S-1/A filed by the same CIK on or before
+    the target 424B4 filing date, so post-IPO registration statements can
+    never replace the IPO registration history. Returns filing metadata,
+    or an empty dict if no qualifying registration filing is found.
     """
     headers = _get_headers()
     padded_cik = str(cik).zfill(10)
@@ -478,12 +479,15 @@ def find_matching_s1(cik: str) -> dict:
     filing_dates = recent.get("filingDate", [])
 
     for form, accession_no, filing_date in zip(forms, accession_numbers, filing_dates):
-        if form in ("S-1", "S-1/A"):
-            return {
-                "form_type": form,
-                "accession_no": accession_no,
-                "filing_date": filing_date,
-            }
+        if form not in ("S-1", "S-1/A"):
+            continue
+        if before_date and filing_date and filing_date > before_date:
+            continue
+        return {
+            "form_type": form,
+            "accession_no": accession_no,
+            "filing_date": filing_date,
+        }
 
     return {}
 
