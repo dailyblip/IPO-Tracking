@@ -15,6 +15,8 @@ on:
       - 'src/test_s1_monitor.py'
       - 'src/edgar_client.py'
       - 'src/test_resale_registration_exclusion.py'
+      - 'src/s1_registration_history_gate.py'
+      - 'src/test_s1_registration_history_gate.py'
       - 'src/filing_parser.py'
       - 'src/test_cover_price_context.py'
       - 'src/public_feed_policy.py'
@@ -36,6 +38,8 @@ on:
       - 'src/test_s1_monitor.py'
       - 'src/edgar_client.py'
       - 'src/test_resale_registration_exclusion.py'
+      - 'src/s1_registration_history_gate.py'
+      - 'src/test_s1_registration_history_gate.py'
       - 'src/filing_parser.py'
       - 'src/test_cover_price_context.py'
       - 'src/public_feed_policy.py'
@@ -67,7 +71,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run S-1 monitor tests
         working-directory: src
-        run: python -m unittest test_s1_monitor.py test_resale_registration_exclusion.py test_cover_price_context.py test_public_feed_policy.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py test_feed_schema_contract.py -v
+        run: python -m unittest test_s1_monitor.py test_resale_registration_exclusion.py test_s1_registration_history_gate.py test_cover_price_context.py test_public_feed_policy.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py test_feed_schema_contract.py -v
 
   update-feed:
     if: github.event_name != 'pull_request'
@@ -91,6 +95,11 @@ jobs:
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python s1_monitor.py 14
+      - name: Exclude resale-only S-1 amendments by registration history
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_registration_history_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
       - name: Sanitize impossible lifecycle dates
         working-directory: src
         run: python lifecycle_date_sanitizer.py ../docs/data/filings.json
