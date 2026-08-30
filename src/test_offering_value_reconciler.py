@@ -3,9 +3,11 @@ from datetime import date
 
 from offering_value_reconciler import (
     OfferingValueReconciliationError,
+    PRIMARY_SHARES_MARKER,
     SOURCE_MARKER,
     _needs_check,
     extract_authoritative_aggregate,
+    extract_authoritative_primary_shares,
     reconcile_record,
 )
 
@@ -28,6 +30,27 @@ class AuthoritativeOfferingValueTests(unittest.TestCase):
         text = "Initial public offering price $ 21.50000 $ 600,000,006"
         self.assertIsNone(extract_authoritative_aggregate(text, expected_price=22.00))
 
+    def test_extracts_scribe_explicit_issuer_primary_shares(self):
+        text = """
+        PROSPECTUS 8,580,000 Shares Common Stock.
+        Scribe Therapeutics Inc. is offering 8,580,000 shares of its common stock.
+        This is our initial public offering of shares of common stock, and no public
+        market currently exists for our common stock. The initial public offering
+        price is $15.00 per share.
+        """
+        self.assertEqual(extract_authoritative_primary_shares(text), 8_580_000)
+
+    def test_does_not_treat_selling_stockholder_shares_as_primary(self):
+        text = """
+        PROSPECTUS. This is the initial public offering of Example Corp.
+        The selling stockholders are offering 3,915,995 shares of our common stock.
+        """
+        self.assertIsNone(extract_authoritative_primary_shares(text))
+
+    def test_primary_share_extraction_requires_ipo_context(self):
+        text = "Example Corp. is offering 8,580,000 shares of its common stock under this shelf registration."
+        self.assertIsNone(extract_authoritative_primary_shares(text))
+
     def test_preserves_authoritative_rounding_and_provenance(self):
         filing = {
             "company": "ERock, Inc.",
@@ -37,6 +60,28 @@ class AuthoritativeOfferingValueTests(unittest.TestCase):
         self.assertTrue(reconcile_record(filing, 600_000_006))
         self.assertEqual(filing["value"], 600_000_006)
         self.assertIn(SOURCE_MARKER, filing["offering_size_source"])
+
+    def test_repairs_blank_primary_shares_without_inventing_secondary_shares(self):
+        filing = {
+            "company": "Scribe Therapeutics, Inc.",
+            "value": 128_700_000,
+            "primary_offering_shares": None,
+            "secondary_offering_shares": None,
+            "offering_size_source": "authoritative final 424B4 aggregate IPO price table",
+        }
+        self.assertTrue(reconcile_record(filing, 128_700_000, primary_shares=8_580_000))
+        self.assertEqual(filing["primary_offering_shares"], 8_580_000)
+        self.assertIsNone(filing["secondary_offering_shares"])
+        self.assertIn(PRIMARY_SHARES_MARKER, filing["offering_size_source"])
+
+    def test_conflicting_explicit_primary_share_count_fails_closed(self):
+        filing = {
+            "company": "Conflict Co.",
+            "value": 128_700_000,
+            "primary_offering_shares": 7_000_000,
+        }
+        with self.assertRaises(OfferingValueReconciliationError):
+            reconcile_record(filing, 128_700_000, primary_shares=8_580_000)
 
     def test_material_conflict_fails_closed(self):
         filing = {"company": "Bad Economics Co.", "value": 500_000_000}
