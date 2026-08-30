@@ -1,5 +1,6 @@
 import json
 import unittest
+from datetime import date
 from pathlib import Path
 
 
@@ -14,6 +15,17 @@ def _number(value):
         return float(str(value).replace(",", "").replace("$", ""))
     except (TypeError, ValueError):
         return None
+
+
+def _iso_date(value):
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = date.fromisoformat(raw)
+    except ValueError:
+        return None
+    return parsed if parsed.isoformat() == raw else None
 
 
 class PublishedResearchMonitorDataIntegrityTests(unittest.TestCase):
@@ -185,6 +197,48 @@ class PublishedResearchMonitorDataIntegrityTests(unittest.TestCase):
             failures,
             [],
             "Published pricing metadata failures: " + "; ".join(failures[:10]),
+        )
+
+    def test_priced_rows_have_canonical_chronological_pricing_dates(self):
+        """Reject populated pricing metadata that encodes an impossible IPO lifecycle."""
+        failures = []
+        checked = 0
+        today = date.today()
+
+        for filing in self.filings:
+            form = str(filing.get("form") or "").strip().upper()
+            stage = str(filing.get("stage") or "").strip().casefold()
+            if form != "424B4" or stage != "priced":
+                continue
+
+            checked += 1
+            label = filing.get("company") or filing.get("id") or "unknown filing"
+            raw_pricing_date = str(filing.get("pricing_date") or "").strip()
+            pricing_date = _iso_date(raw_pricing_date)
+            filed = _iso_date(filing.get("filed"))
+            initial_filing_date = _iso_date(filing.get("filing_date"))
+
+            if pricing_date is None:
+                failures.append(f"{label}: Pricing Date is missing or non-canonical: {raw_pricing_date!r}")
+                continue
+            if pricing_date > today:
+                failures.append(f"{label}: Pricing Date is in the future: {raw_pricing_date}")
+            if filed is None:
+                failures.append(f"{label}: 424B4 Filed date is missing or non-canonical")
+            elif pricing_date > filed:
+                failures.append(
+                    f"{label}: Pricing Date {pricing_date.isoformat()} occurs after 424B4 Filed {filed.isoformat()}"
+                )
+            if initial_filing_date is not None and initial_filing_date > pricing_date:
+                failures.append(
+                    f"{label}: initial Filing Date {initial_filing_date.isoformat()} occurs after Pricing Date {pricing_date.isoformat()}"
+                )
+
+        self.assertGreater(checked, 0, "No priced 424B4 rows were available to validate")
+        self.assertEqual(
+            failures,
+            [],
+            "Published IPO chronology failures: " + "; ".join(failures[:10]),
         )
 
     def test_public_stanford_sources_do_not_expose_internal_processing_text(self):
