@@ -418,10 +418,20 @@ def check_spac_indicators(filing_text: str, company_name: str = "") -> bool:
 def check_direct_listing_indicators(filing_text: str) -> bool:
     """Return True for a direct listing or resale registration rather than a primary IPO."""
     # SEC HTML frequently contains non-breaking spaces and other layout whitespace.
-    # Normalize it before applying cover-page phrase checks so formatting changes do
-    # not allow a known resale-only registration to re-enter the IPO feed.
-    cover_and_summary = " ".join(str(filing_text or "").split())[:125000]
-    return any(pattern.search(cover_and_summary) for pattern in DIRECT_LISTING_PATTERNS)
+    # Normalize it before applying phrase checks so formatting changes do not allow
+    # a known resale-only registration to re-enter the IPO feed.
+    normalized = " ".join(str(filing_text or "").split())
+    cover_and_summary = normalized[:125000]
+    if any(pattern.search(cover_and_summary) for pattern in DIRECT_LISTING_PATTERNS):
+        return True
+
+    # Inline-XBRL documents can contain a large block of hidden tagged facts before
+    # the visible prospectus cover. That can push otherwise definitive resale-cover
+    # language past the 125k front-matter window. The resale patterns below are
+    # intentionally specific to the current prospectus economics, so scan those
+    # across the full normalized document while keeping generic direct-listing
+    # phrases constrained to front matter.
+    return any(pattern.search(normalized) for pattern in DIRECT_LISTING_PATTERNS[2:])
 
 
 def is_first_time_registrant(cik: str) -> bool:
