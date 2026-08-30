@@ -60,6 +60,39 @@ class TestIssuerLifecycleUniqueness(unittest.TestCase):
             + json.dumps(dict(list(duplicates.items())[:20]), sort_keys=True),
         )
 
+    def test_public_feed_tickers_do_not_map_to_multiple_ciks(self):
+        """A live feed ticker must not resolve to more than one SEC issuer identity."""
+        by_ticker = defaultdict(list)
+        for row in self.rows:
+            ticker = str(row.get("ticker") or "").strip().upper()
+            if ticker:
+                by_ticker[ticker].append(row)
+
+        collisions = []
+        for ticker, rows in by_ticker.items():
+            ciks = sorted(
+                {
+                    str(row.get("cik") or "").strip()
+                    for row in rows
+                    if str(row.get("cik") or "").strip()
+                }
+            )
+            if len(ciks) <= 1:
+                continue
+            collisions.append(
+                {
+                    "ticker": ticker,
+                    "ciks": ciks,
+                    "companies": sorted({str(row.get("company") or "").strip() for row in rows}),
+                }
+            )
+
+        self.assertFalse(
+            collisions,
+            "Public feed contains ticker-to-issuer collisions: "
+            + json.dumps(collisions[:20], sort_keys=True),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
