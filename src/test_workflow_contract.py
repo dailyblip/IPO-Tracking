@@ -98,6 +98,21 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertLess(golden_step, publish_step)
         self.assertIn("test_golden_records.py", workflow[golden_step:publish_step])
 
+    def test_daily_writer_validates_regenerated_feed_before_publish(self):
+        workflow = _workflow(DAILY_WORKFLOW)
+        refresh_step = workflow.index("- name: Run daily pipeline")
+        identity_step = workflow.index("- name: Verify market quote issuer identity")
+        release_step = workflow.index("- name: Run release-blocking regression suite on generated feed")
+        publish_step = workflow.index("- name: Publish Research Monitor data")
+        next_step = workflow.find("\n      - name:", release_step + 1)
+        release_block = workflow[release_step:] if next_step == -1 else workflow[release_step:next_step]
+
+        self.assertLess(refresh_step, identity_step)
+        self.assertLess(identity_step, release_step)
+        self.assertLess(release_step, publish_step)
+        self.assertIn("python -m unittest discover -s src -p 'test_*.py' -v", release_block)
+        self.assertIn("SKIP_LIVE_GOLDEN: '1'", release_block)
+
     def test_repo_steward_reports_agent_failure_without_failing_again(self):
         workflow = _workflow(REPO_STEWARD_WORKFLOW)
 
