@@ -210,6 +210,40 @@ def _find_section_text(soup: BeautifulSoup, heading_patterns: list, max_chars: i
     return " ".join(collected)[:max_chars]
 
 
+def _extract_explicit_ipo_price_from_tables(soup: BeautifulSoup):
+    """Recover a final per-share IPO price from explicit SEC pricing-table rows.
+
+    Some 424B4 generators separate the row label, ``Per Share`` header, dollar
+    sign, per-share price, and aggregate total into different cells. Flattening
+    the document can therefore insert unrelated header text between the label and
+    price and defeat the prose regexes below. This fallback stays deliberately
+    narrow: it only accepts an explicit IPO/public-price row, rejects assumed or
+    estimated rows, and requires a dollar-denominated per-share-sized amount.
+    """
+    label_re = re.compile(
+        r"\b(?:initial\s+public\s+offering\s+price|"
+        r"public\s+offering\s+price|price\s+to\s+(?:the\s+)?public)\b",
+        re.IGNORECASE,
+    )
+    for table in soup.find_all("table"):
+        for row in table.find_all("tr"):
+            row_text = row.get_text(" ", strip=True)
+            label_match = label_re.search(row_text)
+            if not label_match:
+                continue
+            label_context = row_text[: label_match.end()]
+            if re.search(r"\b(?:assumed|estimated)\b", label_context, re.IGNORECASE):
+                continue
+            tail = row_text[label_match.end() :]
+            for raw_value in re.findall(
+                r"\$\s*(\d{1,4}(?:\.\d{1,2})?)\b", tail
+            ):
+                value = float(raw_value)
+                if 0 < value < 10000:
+                    return value
+    return None
+
+
 def extract_cover_page_data(soup: BeautifulSoup) -> dict:
     """
     Extract company name, ticker, exchange, and offering price from the
@@ -243,6 +277,7 @@ def extract_cover_page_data(soup: BeautifulSoup) -> dict:
         ),
         None,
     )
+    table_price = None if price_match else _extract_explicit_ipo_price_from_tables(soup)
     exchange_match = re.search(
         r"(Nasdaq|New York Stock Exchange|NYSE)",
         cover_text,
@@ -251,7 +286,7 @@ def extract_cover_page_data(soup: BeautifulSoup) -> dict:
 
     return {
         "ticker": ticker_match.group(1) if ticker_match else None,
-        "offering_price": float(price_match.group(1)) if price_match else None,
+        "offering_price": float(price_match.group(1)) if price_match else table_price,
         "exchange": exchange_match.group(1) if exchange_match else None,
     }
 
