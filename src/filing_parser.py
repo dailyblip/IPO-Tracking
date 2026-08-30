@@ -210,6 +210,15 @@ def _find_section_text(soup: BeautifulSoup, heading_patterns: list, max_chars: i
     return " ".join(collected)[:max_chars]
 
 
+def _is_sensitivity_price_context(text: str, start: int, end: int) -> bool:
+    """Return True when a dollar amount is part of an assumed-price sensitivity."""
+    context = text[max(0, start - 96) : min(len(text), end + 160)]
+    return bool(
+        re.search(r"\b(?:assumed|estimated)\b", context, re.IGNORECASE)
+        and re.search(r"\b(?:increase|decrease|change)\b", context, re.IGNORECASE)
+    )
+
+
 def _extract_explicit_ipo_price_from_tables(soup: BeautifulSoup):
     """Recover a final per-share IPO price from explicit SEC pricing-table rows.
 
@@ -227,6 +236,14 @@ def _extract_explicit_ipo_price_from_tables(soup: BeautifulSoup):
     )
     for table in soup.find_all("table"):
         for row in table.find_all("tr"):
+            # SEC presentation tables are frequently nested. A wrapper row can
+            # flatten a blank IPO-price row together with a later sensitivity
+            # disclosure such as "$1.00 increase ... assumed IPO price" and
+            # incorrectly pair that unrelated amount with the price label.
+            # Inspect only leaf rows; their direct nested rows are visited
+            # separately by find_all() and preserve the real row boundary.
+            if row.find("tr") is not None:
+                continue
             row_text = row.get_text(" ", strip=True)
             label_match = label_re.search(row_text)
             if not label_match:
@@ -235,10 +252,14 @@ def _extract_explicit_ipo_price_from_tables(soup: BeautifulSoup):
             if re.search(r"\b(?:assumed|estimated)\b", label_context, re.IGNORECASE):
                 continue
             tail = row_text[label_match.end() :]
-            for raw_value in re.findall(
+            for value_match in re.finditer(
                 r"\$\s*(\d{1,4}(?:\.\d{1,2})?)\b", tail
             ):
-                value = float(raw_value)
+                if _is_sensitivity_price_context(
+                    tail, value_match.start(), value_match.end()
+                ):
+                    continue
+                value = float(value_match.group(1))
                 if 0 < value < 10000:
                     return value
     return None
@@ -277,6 +298,10 @@ def extract_cover_page_data(soup: BeautifulSoup) -> dict:
                 r"\b(?:assumed|estimated)\s+(?:initial\s+)?$",
                 prefix,
                 re.IGNORECASE,
+            ):
+                continue
+            if _is_sensitivity_price_context(
+                cover_text, candidate.start(1), candidate.end(1)
             ):
                 continue
             price_match = candidate
