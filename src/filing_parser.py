@@ -227,6 +227,14 @@ def _extract_explicit_ipo_price_from_tables(soup: BeautifulSoup):
     )
     for table in soup.find_all("table"):
         for row in table.find_all("tr"):
+            # SEC presentation tables are frequently nested. A wrapper row can
+            # flatten a blank IPO-price row together with a later sensitivity
+            # disclosure such as "$1.00 increase ... assumed IPO price" and
+            # incorrectly pair that unrelated amount with the price label.
+            # Inspect only leaf rows; their direct nested rows are visited
+            # separately by find_all() and preserve the real row boundary.
+            if row.find("tr") is not None:
+                continue
             row_text = row.get_text(" ", strip=True)
             label_match = label_re.search(row_text)
             if not label_match:
