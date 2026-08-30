@@ -128,6 +128,17 @@ DIRECT_LISTING_PATTERNS = [
         r"(?:securityholders|stockholders|shareholders)\b",
         re.IGNORECASE | re.DOTALL,
     ),
+    # Some resale-only amendments vary the cover wording while preserving the
+    # definitive economics: specifically identified Resale Shares are registered
+    # for selling holders and the issuer receives none of the offering proceeds.
+    # Requiring all three concepts avoids misclassifying a normal IPO that merely
+    # contains a secondary selling-stockholder component.
+    re.compile(
+        r"\b(?:resale shares|shares registered for resale)\b.{0,2500}\b"
+        r"selling (?:securityholders|stockholders|shareholders)\b.{0,1500}\b"
+        r"we (?:will|would) not receive any (?:of )?the proceeds\b",
+        re.IGNORECASE | re.DOTALL,
+    ),
 ]
 
 
@@ -386,7 +397,10 @@ def check_spac_indicators(filing_text: str, company_name: str = "") -> bool:
 
 def check_direct_listing_indicators(filing_text: str) -> bool:
     """Return True for a direct listing or resale registration rather than a primary IPO."""
-    cover_and_summary = str(filing_text or "")[:100000]
+    # SEC HTML frequently contains non-breaking spaces and other layout whitespace.
+    # Normalize it before applying cover-page phrase checks so formatting changes do
+    # not allow a known resale-only registration to re-enter the IPO feed.
+    cover_and_summary = " ".join(str(filing_text or "").split())[:125000]
     return any(pattern.search(cover_and_summary) for pattern in DIRECT_LISTING_PATTERNS)
 
 
