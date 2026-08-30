@@ -20,6 +20,7 @@ OWNERSHIP_WORDS = (
 # because legitimate fund and corporate owner names may be uppercase in SEC HTML.
 _DOCUMENT_SECTION_HEADINGS = {
     "description of capital stock",
+    "description of indebtedness",
     "shares eligible for future sale",
     "material u.s. federal income tax considerations",
     "material us federal income tax considerations",
@@ -47,6 +48,16 @@ _DOCUMENT_SECTION_HEADINGS = {
     "where you can find more information",
     "where you can find additional information",
 }
+
+# Some SEC section headings append a holder-class qualifier. Limit prefix matching
+# to well-known tax-section labels rather than broadly rejecting long uppercase
+# text, because legitimate holder names can also be uppercase.
+_DOCUMENT_SECTION_HEADING_PREFIXES = (
+    "material u.s. federal income tax considerations to ",
+    "material us federal income tax considerations to ",
+    "material u.s. federal income tax consequences to ",
+    "material us federal income tax consequences to ",
+)
 
 _PERCENT_MARKERS = {"%", "percent", "percentage"}
 _SHARE_TO_PERCENT = {
@@ -82,6 +93,8 @@ def looks_like_document_heading(value):
     if not normalized:
         return False
     if normalized in _DOCUMENT_SECTION_HEADINGS:
+        return True
+    if any(normalized.startswith(prefix) for prefix in _DOCUMENT_SECTION_HEADING_PREFIXES):
         return True
     # SEC prospectuses frequently append a parenthetical to the Underwriting
     # heading (for example, "UNDERWRITING (CONFLICTS OF INTEREST)"). Avoid a
