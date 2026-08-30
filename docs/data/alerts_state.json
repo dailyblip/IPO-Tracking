@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-30T13:19:28.636426+00:00",
+  "updated_at": "2026-08-30T15:51:23.918060+00:00",
   "items": {
     "s1:0001779977": {
       "id": "s1:0001779977",
@@ -97,18 +97,6 @@
       "priority": "High",
       "value": 18750000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026092565/0001213900-26-092565-index.htm"
-    },
-    "s1:0002111846": {
-      "id": "s1:0002111846",
-      "cik": "0002111846",
-      "company": "Game Your Game Inc.",
-      "form": "S-1",
-      "filed": "2026-08-21",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026092695/0001213900-26-092695-index.htm"
     },
     "s1:0002131613": {
       "id": "s1:0002131613",
@@ -457,6 +445,138 @@
       "priority": "High",
       "value": 650000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2118195/000119312526256356/0001193125-26-256356-index.htm"
+    },
+    "0001193125-26-197686": {
+      "id": "0001193125-26-197686",
+      "cik": "0001540171",
+      "company": "Avalyn Pharma Inc.",
+      "form": "424B4",
+      "filed": "2026-04-30",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "Medium",
+      "value": 300000006.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1540171/000119312526197686/0001193125-26-197686-index.htm"
+    },
+    "0001104659-26-049515": {
+      "id": "0001104659-26-049515",
+      "cik": "0002088896",
+      "company": "X-Energy, Inc.",
+      "form": "424B4",
+      "filed": "2026-04-27",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 1017857157.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2088896/000110465926049515/0001104659-26-049515-index.htm"
+    },
+    "0001104659-26-047210": {
+      "id": "0001104659-26-047210",
+      "cik": "0001859836",
+      "company": "Yesway, Inc.",
+      "form": "424B4",
+      "filed": "2026-04-23",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 280000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1859836/000110465926047210/0001104659-26-047210-index.htm"
+    },
+    "0001213900-26-047144": {
+      "id": "0001213900-26-047144",
+      "cik": "0002101698",
+      "company": "Elmet Group Co.",
+      "form": "424B4",
+      "filed": "2026-04-23",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "Medium",
+      "value": 119999992.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2101698/000121390026047144/0001213900-26-047144-index.htm"
+    },
+    "0001193125-26-162601": {
+      "id": "0001193125-26-162601",
+      "cik": "0002096300",
+      "company": "AEVEX Corp.",
+      "form": "424B4",
+      "filed": "2026-04-20",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 320000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2096300/000119312526162601/0001193125-26-162601-index.htm"
+    },
+    "0001193125-26-160250": {
+      "id": "0001193125-26-160250",
+      "cik": "0002098430",
+      "company": "Madison Air Solutions Corp",
+      "form": "424B4",
+      "filed": "2026-04-17",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 2232692316.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2098430/000119312526160250/0001193125-26-160250-index.htm"
+    },
+    "0001193125-26-161521": {
+      "id": "0001193125-26-161521",
+      "cik": "0002096997",
+      "company": "Kailera Therapeutics, Inc.",
+      "form": "424B4",
+      "filed": "2026-04-17",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 625000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2096997/000119312526161521/0001193125-26-161521-index.htm"
+    },
+    "0001193125-26-161647": {
+      "id": "0001193125-26-161647",
+      "cik": "0002104204",
+      "company": "Alamar Biosciences, Inc.",
+      "form": "424B4",
+      "filed": "2026-04-17",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 191250000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2104204/000119312526161647/0001193125-26-161647-index.htm"
+    },
+    "0001193125-26-159369": {
+      "id": "0001193125-26-159369",
+      "cik": "0002093536",
+      "company": "Arxis, Inc.",
+      "form": "424B4",
+      "filed": "2026-04-16",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 1134000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2093536/000119312526159369/0001193125-26-159369-index.htm"
+    },
+    "0001193125-26-138102": {
+      "id": "0001193125-26-138102",
+      "cik": "0002021880",
+      "company": "HMH Holding Inc",
+      "form": "424B4",
+      "filed": "2026-04-01",
+      "stage": "priced",
+      "price_range": null,
+      "priority": "High",
+      "value": 210400000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2021880/000119312526138102/0001193125-26-138102-index.htm"
+    },
+    "s1:0002111846": {
+      "id": "s1:0002111846",
+      "cik": "0002111846",
+      "company": "Game Your Game Inc.",
+      "form": "S-1",
+      "filed": "2026-08-21",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026092695/0001213900-26-092695-index.htm"
     }
   },
   "ciks": {
@@ -513,13 +633,6 @@
       "company": "Little West Holdings Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002065821",
-      "last_filed": "2026-08-21",
-      "missing_runs": 0
-    },
-    "0002111846": {
-      "company": "Game Your Game Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002111846",
       "last_filed": "2026-08-21",
       "missing_runs": 0
     },
@@ -725,6 +838,83 @@
       "last_filing_id": "0001193125-26-256356",
       "last_filed": "2026-06-04",
       "missing_runs": 0
+    },
+    "0001540171": {
+      "company": "Avalyn Pharma Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-197686",
+      "last_filed": "2026-04-30",
+      "missing_runs": 0
+    },
+    "0002088896": {
+      "company": "X-Energy, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001104659-26-049515",
+      "last_filed": "2026-04-27",
+      "missing_runs": 0
+    },
+    "0001859836": {
+      "company": "Yesway, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001104659-26-047210",
+      "last_filed": "2026-04-23",
+      "missing_runs": 0
+    },
+    "0002101698": {
+      "company": "Elmet Group Co.",
+      "stage": "priced",
+      "last_filing_id": "0001213900-26-047144",
+      "last_filed": "2026-04-23",
+      "missing_runs": 0
+    },
+    "0002096300": {
+      "company": "AEVEX Corp.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-162601",
+      "last_filed": "2026-04-20",
+      "missing_runs": 0
+    },
+    "0002098430": {
+      "company": "Madison Air Solutions Corp",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-160250",
+      "last_filed": "2026-04-17",
+      "missing_runs": 0
+    },
+    "0002096997": {
+      "company": "Kailera Therapeutics, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-161521",
+      "last_filed": "2026-04-17",
+      "missing_runs": 0
+    },
+    "0002104204": {
+      "company": "Alamar Biosciences, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-161647",
+      "last_filed": "2026-04-17",
+      "missing_runs": 0
+    },
+    "0002093536": {
+      "company": "Arxis, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-159369",
+      "last_filed": "2026-04-16",
+      "missing_runs": 0
+    },
+    "0002021880": {
+      "company": "HMH Holding Inc",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-138102",
+      "last_filed": "2026-04-01",
+      "missing_runs": 0
+    },
+    "0002111846": {
+      "company": "Game Your Game Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002111846",
+      "last_filed": "2026-08-21",
+      "missing_runs": 1
     }
   }
 }
