@@ -1,8 +1,40 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-30T06:21:12.011862+00:00",
-  "count": 42,
+  "generated_at": "2026-08-30T06:24:13.465489+00:00",
+  "count": 44,
   "alerts": [
+    {
+      "type": "priority_escalation",
+      "company": "Electra Therapeutics, Inc.",
+      "cik": "0002088082",
+      "filing_id": "s1:0002088082",
+      "form": "S-1",
+      "filed": "2026-08-28",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "Research priority increased from Medium to High.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526374259/0001193125-26-374259-index.htm",
+      "detected_at": "2026-08-30T06:24:13.465321+00:00",
+      "old_value": "Medium",
+      "new_value": "High",
+      "key": "priority_escalation|s1:0002088082|0002088082|2026-08-28|High"
+    },
+    {
+      "type": "priority_escalation",
+      "company": "Holtec Nuclear Corp",
+      "cik": "0002104277",
+      "filing_id": "s1:0002104277",
+      "form": "S-1/A",
+      "filed": "2026-08-24",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "Research priority increased from Medium to High.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526361496/0001193125-26-361496-index.htm",
+      "detected_at": "2026-08-30T06:24:13.465359+00:00",
+      "old_value": "Medium",
+      "new_value": "High",
+      "key": "priority_escalation|s1:0002104277|0002104277|2026-08-24|High"
+    },
     {
       "type": "new_prepricing",
       "company": "Game Your Game Inc.",
