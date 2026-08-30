@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-30T04:35:01.662251+00:00",
+  "updated_at": "2026-08-30T04:42:39.597467+00:00",
   "items": {
     "s1:0001779977": {
       "id": "s1:0001779977",
@@ -74,18 +74,6 @@
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2137360/000152013826000375/0001520138-26-000375-index.htm"
     },
-    "s1:0002076148": {
-      "id": "s1:0002076148",
-      "cik": "0002076148",
-      "company": "FullPAC, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-08-27",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2076148/000149315226040434/0001493152-26-040434-index.htm"
-    },
     "s1:0002104277": {
       "id": "s1:0002104277",
       "cik": "0002104277",
@@ -109,6 +97,18 @@
       "priority": "High",
       "value": 18750000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026092565/0001213900-26-092565-index.htm"
+    },
+    "s1:0002111846": {
+      "id": "s1:0002111846",
+      "cik": "0002111846",
+      "company": "Game Your Game Inc.",
+      "form": "S-1",
+      "filed": "2026-08-21",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026092695/0001213900-26-092695-index.htm"
     },
     "s1:0002131613": {
       "id": "s1:0002131613",
@@ -457,6 +457,18 @@
       "priority": "High",
       "value": 650000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2118195/000119312526256356/0001193125-26-256356-index.htm"
+    },
+    "s1:0002076148": {
+      "id": "s1:0002076148",
+      "cik": "0002076148",
+      "company": "FullPAC, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-08-27",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2076148/000149315226040434/0001493152-26-040434-index.htm"
     }
   },
   "ciks": {
@@ -502,13 +514,6 @@
       "last_filed": "2026-08-27",
       "missing_runs": 0
     },
-    "0002076148": {
-      "company": "FullPAC, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002076148",
-      "last_filed": "2026-08-27",
-      "missing_runs": 0
-    },
     "0002104277": {
       "company": "Holtec Nuclear Corp",
       "stage": "pre-pricing",
@@ -520,6 +525,13 @@
       "company": "Little West Holdings Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002065821",
+      "last_filed": "2026-08-21",
+      "missing_runs": 0
+    },
+    "0002111846": {
+      "company": "Game Your Game Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002111846",
       "last_filed": "2026-08-21",
       "missing_runs": 0
     },
@@ -725,6 +737,13 @@
       "last_filing_id": "0001193125-26-256356",
       "last_filed": "2026-06-04",
       "missing_runs": 0
+    },
+    "0002076148": {
+      "company": "FullPAC, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002076148",
+      "last_filed": "2026-08-27",
+      "missing_runs": 1
     }
   }
 }
