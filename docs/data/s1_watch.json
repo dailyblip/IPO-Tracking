@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-30T05:03:45.377780+00:00",
+  "generated_at": "2026-08-30T06:23:05.496187+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -58,9 +58,9 @@
       "form": "S-1",
       "filed": "2026-08-28",
       "stage": "Pre-pricing",
-      "priority": "Medium",
+      "priority": "High",
       "price_range": null,
-      "filing_price": null,
+      "filing_price": "$1.00",
       "ipo_size": null,
       "offering_size_source": null,
       "offering_size_confidence": null,
@@ -68,7 +68,7 @@
       "secondary_offering_shares": null,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
+        "Fixed offering price disclosed at $1.00 per share"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526374259/0001193125-26-374259-index.htm"
     },
@@ -150,9 +150,9 @@
       "form": "S-1/A",
       "filed": "2026-08-24",
       "stage": "Pre-pricing",
-      "priority": "Medium",
+      "priority": "High",
       "price_range": null,
-      "filing_price": null,
+      "filing_price": "$1.00",
       "ipo_size": null,
       "offering_size_source": null,
       "offering_size_confidence": null,
@@ -160,7 +160,7 @@
       "secondary_offering_shares": null,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
+        "Fixed offering price disclosed at $1.00 per share"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526361496/0001193125-26-361496-index.htm"
     },
