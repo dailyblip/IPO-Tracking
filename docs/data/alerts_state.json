@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-30T00:05:32.346776+00:00",
+  "updated_at": "2026-08-30T00:12:09.563015+00:00",
   "items": {
     "s1:0001779977": {
       "id": "s1:0001779977",
@@ -73,6 +73,18 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2137360/000152013826000375/0001520138-26-000375-index.htm"
+    },
+    "s1:0002076148": {
+      "id": "s1:0002076148",
+      "cik": "0002076148",
+      "company": "FullPAC, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-08-27",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2076148/000149315226040434/0001493152-26-040434-index.htm"
     },
     "s1:0002104277": {
       "id": "s1:0002104277",
@@ -154,8 +166,8 @@
       "filed": "2026-08-18",
       "stage": "pre-pricing",
       "price_range": null,
-      "priority": "Medium",
-      "value": null,
+      "priority": "High",
+      "value": 120000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2112634/000168316826006561/0001683168-26-006561-index.htm"
     },
     "s1:0001880995": {
@@ -499,6 +511,13 @@
       "company": "Youmi Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002137360",
+      "last_filed": "2026-08-27",
+      "missing_runs": 0
+    },
+    "0002076148": {
+      "company": "FullPAC, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002076148",
       "last_filed": "2026-08-27",
       "missing_runs": 0
     },

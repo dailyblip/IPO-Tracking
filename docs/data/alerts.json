@@ -1,8 +1,38 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-30T00:05:32.346827+00:00",
-  "count": 41,
+  "generated_at": "2026-08-30T00:12:09.563041+00:00",
+  "count": 43,
   "alerts": [
+    {
+      "type": "new_prepricing",
+      "company": "FullPAC, Inc.",
+      "cik": "0002076148",
+      "filing_id": "s1:0002076148",
+      "form": "S-1/A",
+      "filed": "2026-08-27",
+      "stage": "pre-pricing",
+      "priority": "Medium",
+      "summary": "New pre-pricing S-1/A candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2076148/000149315226040434/0001493152-26-040434-index.htm",
+      "detected_at": "2026-08-30T00:12:09.562928+00:00",
+      "key": "new_prepricing|s1:0002076148|0002076148|2026-08-27|"
+    },
+    {
+      "type": "priority_escalation",
+      "company": "Sensei Harbor Corp.",
+      "cik": "0002112634",
+      "filing_id": "s1:0002112634",
+      "form": "S-1/A",
+      "filed": "2026-08-18",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "Research priority increased from Medium to High.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2112634/000168316826006561/0001683168-26-006561-index.htm",
+      "detected_at": "2026-08-30T00:12:09.562961+00:00",
+      "old_value": "Medium",
+      "new_value": "High",
+      "key": "priority_escalation|s1:0002112634|0002112634|2026-08-18|High"
+    },
     {
       "type": "new_prepricing",
       "company": "Game Your Game Inc.",
