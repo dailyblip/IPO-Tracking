@@ -160,6 +160,8 @@ class OwnershipParserTests(unittest.TestCase):
         <tr><td>DESCRIPTION OF CAPITAL STOCK</td><td>123</td></tr>
         <tr><td>SHARES ELIGIBLE FOR FUTURE SALE</td><td>132</td></tr>
         <tr><td>MATERIAL U.S. FEDERAL INCOME TAX CONSIDERATIONS</td><td>134</td></tr>
+        <tr><td>DESCRIPTION OF INDEBTEDNESS</td><td>164</td></tr>
+        <tr><td>MATERIAL U.S. FEDERAL INCOME TAX CONSIDERATIONS TO NON-U.S. HOLDERS OF CLASS A COMMON STOCK</td><td>169</td></tr>
         <tr><td>UNDERWRITING (CONFLICTS OF INTEREST)</td><td>138</td></tr>
         <tr><td>LEGAL MATTERS</td><td>147</td></tr>
         </table>"""
