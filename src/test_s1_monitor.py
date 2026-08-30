@@ -113,6 +113,30 @@ class S1MonitorTests(unittest.TestCase):
         })
         self.assertIsNone(record)
 
+    @patch("s1_monitor.edgar_client.is_us_based", side_effect=RuntimeError("SEC unavailable"))
+    def test_evaluate_record_preserves_state_on_transient_failure(self, us_based):
+        record, evaluated = s1_monitor.evaluate_record({
+            "company_name": "Acme Robotics, Inc.",
+            "cik": "1234567",
+            "form_type": "S-1",
+            "filing_date": "2026-08-17",
+            "accession_no": "0001234567-26-000001",
+        })
+        self.assertIsNone(record)
+        self.assertFalse(evaluated)
+
+    @patch("s1_monitor.edgar_client.is_us_based", return_value=False)
+    def test_evaluate_record_marks_deterministic_rejection_complete(self, us_based):
+        record, evaluated = s1_monitor.evaluate_record({
+            "company_name": "Foreign Issuer",
+            "cik": "1234567",
+            "form_type": "S-1",
+            "filing_date": "2026-08-17",
+            "accession_no": "0001234567-26-000001",
+        })
+        self.assertIsNone(record)
+        self.assertTrue(evaluated)
+
     def test_export_feed_merges_history_and_is_atomic(self):
         old = {
             "id": "old",
@@ -132,6 +156,48 @@ class S1MonitorTests(unittest.TestCase):
             payload = s1_monitor.export_feed([new], path)
             self.assertEqual([item["id"] for item in payload["filings"]], ["new", "old"])
             self.assertFalse(Path(str(path) + ".tmp").exists())
+
+    def test_export_feed_prunes_successfully_reevaluated_stale_issuer(self):
+        stale = {
+            "id": "old-spac",
+            "company": "Old SPAC",
+            "cik": "0002113088",
+            "filed": "2026-08-28",
+            "form": "S-1",
+        }
+        unrelated = {
+            "id": "other",
+            "company": "Operating Co",
+            "cik": "0001234567",
+            "filed": "2026-08-27",
+            "form": "S-1",
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "s1_watch.json"
+            path.write_text(json.dumps({"filings": [stale, unrelated]}), encoding="utf-8")
+            payload = s1_monitor.export_feed([], path, processed_ciks={"2113088"})
+            self.assertEqual([item["id"] for item in payload["filings"]], ["other"])
+
+    def test_export_feed_replaces_old_accession_for_reevaluated_issuer(self):
+        old = {
+            "id": "old-accession",
+            "company": "Acme Robotics, Inc.",
+            "cik": "0001234567",
+            "filed": "2026-08-10",
+            "form": "S-1",
+        }
+        new = {
+            "id": "new-accession",
+            "company": "Acme Robotics, Inc.",
+            "cik": "0001234567",
+            "filed": "2026-08-17",
+            "form": "S-1/A",
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "s1_watch.json"
+            path.write_text(json.dumps({"filings": [old]}), encoding="utf-8")
+            payload = s1_monitor.export_feed([new], path, processed_ciks={"1234567"})
+            self.assertEqual([item["id"] for item in payload["filings"]], ["new-accession"])
 
     def test_queue_record_uses_stable_issuer_id_and_v1_size_field(self):
         filing = s1_monitor._queue_record({
