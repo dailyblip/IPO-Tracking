@@ -21,3 +21,25 @@ def test_secondary_component_in_real_ipo_is_not_excluded():
     """
 
     assert not edgar_client.check_direct_listing_indicators(filing_text)
+
+
+def test_fullpac_resale_cover_after_large_ixbrl_prefix_is_excluded():
+    filing_text = ("hidden fact " * 15000) + """
+    This prospectus relates to the offer and sale, from time to time, by the
+    selling securityholders named in this prospectus of 3,915,995 Resale Shares.
+    """
+
+    assert len(" ".join(filing_text.split())) > 125000
+    assert edgar_client.check_direct_listing_indicators(filing_text)
+
+
+def test_late_secondary_component_in_real_ipo_is_not_excluded():
+    filing_text = ("hidden fact " * 15000) + """
+    We are offering 10,000,000 shares of common stock and the selling stockholders
+    are offering 2,000,000 additional shares. We will receive the proceeds from
+    the shares sold by us. We will not receive any proceeds from the sale of the
+    shares by the selling stockholders.
+    """
+
+    assert len(" ".join(filing_text.split())) > 125000
+    assert not edgar_client.check_direct_listing_indicators(filing_text)
