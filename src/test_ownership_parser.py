@@ -1,6 +1,6 @@
 import unittest
 from bs4 import BeautifulSoup
-from ownership_parser import parse_ownership_table
+from ownership_parser import _aggregate_class_counts, _share_class, parse_ownership_table
 
 
 class OwnershipParserTests(unittest.TestCase):
@@ -43,20 +43,8 @@ class OwnershipParserTests(unittest.TestCase):
 
     def test_dual_class_share_counts_do_not_become_before_after_ipo_shares(self):
         html="""<table>
-        <tr>
-          <th>Name of beneficial owner</th>
-          <th>Class A Common Stock beneficially owned before offering</th>
-          <th>Class B Common Stock beneficially owned after offering</th>
-          <th>Ownership Percent Before IPO</th>
-          <th>Ownership Percent After IPO</th>
-        </tr>
-        <tr>
-          <td>GPC Partners Investments (Elevate) LP</td>
-          <td>2,082,900</td>
-          <td>8,840,102</td>
-          <td>9.9%</td>
-          <td>7.2%</td>
-        </tr>
+        <tr><th>Name of beneficial owner</th><th>Class A Common Stock beneficially owned before offering</th><th>Class B Common Stock beneficially owned after offering</th><th>Ownership Percent Before IPO</th><th>Ownership Percent After IPO</th></tr>
+        <tr><td>GPC Partners Investments (Elevate) LP</td><td>2,082,900</td><td>8,840,102</td><td>9.9%</td><td>7.2%</td></tr>
         </table>"""
         rows=parse_ownership_table(BeautifulSoup(html,'lxml').find('table'))
         self.assertEqual(len(rows),1)
@@ -69,41 +57,11 @@ class OwnershipParserTests(unittest.TestCase):
 
     def test_paired_multiclass_temporal_counts_are_safely_aggregated(self):
         html="""<table>
-        <tr>
-          <th>Name of beneficial owner</th>
-          <th>Class A Common Stock beneficially owned before offering</th>
-          <th>Class B Common Stock beneficially owned before offering</th>
-          <th>Class A Common Stock beneficially owned after offering</th>
-          <th>Class B Common Stock beneficially owned after offering</th>
-        </tr>
-        <tr>
-          <td>Ira Ehrenpreis</td>
-          <td>809,050</td>
-          <td>564,650</td>
-          <td>809,050</td>
-          <td>564,650</td>
-        </tr>
-        <tr>
-          <td>Gwynne Shotwell</td>
-          <td>5,759,610</td>
-          <td>7,113,550</td>
-          <td>5,759,610</td>
-          <td>7,113,550</td>
-        </tr>
-        <tr>
-          <td>Bret Johnsen</td>
-          <td>9,048,565</td>
-          <td>—</td>
-          <td>9,048,565</td>
-          <td>—</td>
-        </tr>
-        <tr>
-          <td>Donald Harrison</td>
-          <td>—</td>
-          <td>—</td>
-          <td>—</td>
-          <td>—</td>
-        </tr>
+        <tr><th>Name of beneficial owner</th><th>Class A Common Stock beneficially owned before offering</th><th>Class B Common Stock beneficially owned before offering</th><th>Class A Common Stock beneficially owned after offering</th><th>Class B Common Stock beneficially owned after offering</th></tr>
+        <tr><td>Ira Ehrenpreis</td><td>809,050</td><td>564,650</td><td>809,050</td><td>564,650</td></tr>
+        <tr><td>Gwynne Shotwell</td><td>5,759,610</td><td>7,113,550</td><td>5,759,610</td><td>7,113,550</td></tr>
+        <tr><td>Bret Johnsen</td><td>9,048,565</td><td>—</td><td>9,048,565</td><td>—</td></tr>
+        <tr><td>Donald Harrison</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
         </table>"""
         rows=parse_ownership_table(BeautifulSoup(html,'lxml').find('table'))
         self.assertEqual([row['name'] for row in rows], ['Ira Ehrenpreis', 'Gwynne Shotwell', 'Bret Johnsen'])
@@ -118,33 +76,13 @@ class OwnershipParserTests(unittest.TestCase):
         html="""<table>
         <tr>
           <th>Name of beneficial owner</th>
-          <th>Shares beneficially owned before this offering Class A common stock Number</th>
-          <th>Shares beneficially owned before this offering Class A common stock</th>
-          <th>Shares beneficially owned before this offering Class A common stock %</th>
-          <th>Shares beneficially owned before this offering Class B common stock Number</th>
-          <th>Shares beneficially owned before this offering Class B common stock</th>
-          <th>Shares beneficially owned before this offering Class B common stock %</th>
-          <th>Shares beneficially owned after this offering Class A common stock Number</th>
-          <th>Shares beneficially owned after this offering Class A common stock</th>
-          <th>Shares beneficially owned after this offering Class A common stock %</th>
-          <th>Shares beneficially owned after this offering Class B common stock Number</th>
-          <th>Shares beneficially owned after this offering Class B common stock</th>
-          <th>Shares beneficially owned after this offering Class B common stock %</th>
+          <th>Shares beneficially owned before this offering Class A common stock Number</th><th>Shares beneficially owned before this offering Class A common stock</th><th>Shares beneficially owned before this offering Class A common stock %</th>
+          <th>Shares beneficially owned before this offering Class B common stock Number</th><th>Shares beneficially owned before this offering Class B common stock</th><th>Shares beneficially owned before this offering Class B common stock %</th>
+          <th>Shares beneficially owned after this offering Class A common stock Number</th><th>Shares beneficially owned after this offering Class A common stock</th><th>Shares beneficially owned after this offering Class A common stock %</th>
+          <th>Shares beneficially owned after this offering Class B common stock Number</th><th>Shares beneficially owned after this offering Class B common stock</th><th>Shares beneficially owned after this offering Class B common stock %</th>
         </tr>
-        <tr>
-          <td>Gwynne Shotwell (2)</td>
-          <td>5,759,610</td><td></td><td>*</td>
-          <td>7,113,550</td><td></td><td>*</td>
-          <td>5,759,610</td><td></td><td>*</td>
-          <td>7,113,550</td><td></td><td>*</td>
-        </tr>
-        <tr>
-          <td>Ira Ehrenpreis (4)</td>
-          <td>809,050</td><td></td><td>*</td>
-          <td>564,650</td><td></td><td>*</td>
-          <td>809,050</td><td></td><td>*</td>
-          <td>564,650</td><td></td><td>*</td>
-        </tr>
+        <tr><td>Gwynne Shotwell (2)</td><td>5,759,610</td><td></td><td>*</td><td>7,113,550</td><td></td><td>*</td><td>5,759,610</td><td></td><td>*</td><td>7,113,550</td><td></td><td>*</td></tr>
+        <tr><td>Ira Ehrenpreis (4)</td><td>809,050</td><td></td><td>*</td><td>564,650</td><td></td><td>*</td><td>809,050</td><td></td><td>*</td><td>564,650</td><td></td><td>*</td></tr>
         </table>"""
         rows=parse_ownership_table(BeautifulSoup(html,'lxml').find('table'))
         self.assertEqual([row['name'] for row in rows], ['Gwynne Shotwell (2)', 'Ira Ehrenpreis (4)'])
@@ -153,6 +91,21 @@ class OwnershipParserTests(unittest.TestCase):
         self.assertEqual(rows[1]['shares_before'],1373700)
         self.assertEqual(rows[1]['shares_after'],1373700)
 
+    def test_arxis_multiclass_percentages_do_not_become_share_counts(self):
+        headers = [
+            'name',
+            'class a common stock after this offering',
+            'class a common stock after this offering %',
+            'class b common stock after this offering',
+            'class b common stock after this offering %',
+            'convertible common stock after this offering',
+            'convertible common stock after this offering %',
+        ]
+        row = ['Arcline Investment Management', '—', '—', '340,676,786', '100.0%', '1', '100.0%']
+        base_kinds = [None, 'shares_after', 'shares_after', 'shares_after', 'shares_after', 'shares_after', 'shares_after']
+        self.assertEqual(_share_class(headers[5]), 'convertible')
+        self.assertEqual(_aggregate_class_counts(row, headers, base_kinds, 'shares_after'), 340676787)
+
     def test_prospectus_section_headings_are_not_beneficial_owners(self):
         html="""<table>
         <tr><th>Name of beneficial owner</th><th>Shares beneficially owned</th></tr>
@@ -160,6 +113,8 @@ class OwnershipParserTests(unittest.TestCase):
         <tr><td>DESCRIPTION OF CAPITAL STOCK</td><td>123</td></tr>
         <tr><td>SHARES ELIGIBLE FOR FUTURE SALE</td><td>132</td></tr>
         <tr><td>MATERIAL U.S. FEDERAL INCOME TAX CONSIDERATIONS</td><td>134</td></tr>
+        <tr><td>DESCRIPTION OF INDEBTEDNESS</td><td>164</td></tr>
+        <tr><td>MATERIAL U.S. FEDERAL INCOME TAX CONSIDERATIONS TO NON-U.S. HOLDERS OF CLASS A COMMON STOCK</td><td>169</td></tr>
         <tr><td>UNDERWRITING (CONFLICTS OF INTEREST)</td><td>138</td></tr>
         <tr><td>LEGAL MATTERS</td><td>147</td></tr>
         </table>"""
@@ -167,10 +122,7 @@ class OwnershipParserTests(unittest.TestCase):
         self.assertEqual([row['name'] for row in rows], ['Jane Smith'])
 
     def test_uppercase_corporate_owner_is_preserved(self):
-        html="""<table>
-        <tr><th>Name of beneficial owner</th><th>Shares beneficially owned</th></tr>
-        <tr><td>IBM CORPORATION</td><td>5,000</td></tr>
-        </table>"""
+        html="""<table><tr><th>Name of beneficial owner</th><th>Shares beneficially owned</th></tr><tr><td>IBM CORPORATION</td><td>5,000</td></tr></table>"""
         rows=parse_ownership_table(BeautifulSoup(html,'lxml').find('table'))
         self.assertEqual(len(rows), 1)
         self.assertEqual(rows[0]['name'], 'IBM CORPORATION')

@@ -20,6 +20,7 @@ OWNERSHIP_WORDS = (
 # because legitimate fund and corporate owner names may be uppercase in SEC HTML.
 _DOCUMENT_SECTION_HEADINGS = {
     "description of capital stock",
+    "description of indebtedness",
     "shares eligible for future sale",
     "material u.s. federal income tax considerations",
     "material us federal income tax considerations",
@@ -47,6 +48,16 @@ _DOCUMENT_SECTION_HEADINGS = {
     "where you can find more information",
     "where you can find additional information",
 }
+
+# Some SEC section headings append a holder-class qualifier. Limit prefix matching
+# to well-known tax-section labels rather than broadly rejecting long uppercase
+# text, because legitimate holder names can also be uppercase.
+_DOCUMENT_SECTION_HEADING_PREFIXES = (
+    "material u.s. federal income tax considerations to ",
+    "material us federal income tax considerations to ",
+    "material u.s. federal income tax consequences to ",
+    "material us federal income tax consequences to ",
+)
 
 _PERCENT_MARKERS = {"%", "percent", "percentage"}
 _SHARE_TO_PERCENT = {
@@ -82,6 +93,8 @@ def looks_like_document_heading(value):
     if not normalized:
         return False
     if normalized in _DOCUMENT_SECTION_HEADINGS:
+        return True
+    if any(normalized.startswith(prefix) for prefix in _DOCUMENT_SECTION_HEADING_PREFIXES):
         return True
     # SEC prospectuses frequently append a parenthetical to the Underwriting
     # heading (for example, "UNDERWRITING (CONFLICTS OF INTEREST)"). Avoid a
@@ -191,7 +204,10 @@ def _kind(header):
 
 def _share_class(header):
     """Return an explicit common-stock class identifier from a composite header."""
-    match = _SHARE_CLASS_RE.search(str(header or ""))
+    normalized = str(header or "").lower()
+    if "convertible common stock" in normalized:
+        return "convertible"
+    match = _SHARE_CLASS_RE.search(normalized)
     return match.group(1).lower() if match else None
 
 
@@ -234,6 +250,10 @@ def _aggregate_class_counts(row, headers, base_kinds, aggregate_kind):
         # value and its percentage marker. Composite colspan headers repeat the
         # class label over that spacer, so it must not make the class incomplete.
         if not cleaned:
+            continue
+        # Never aggregate a percentage-marked cell into a share count even if SEC
+        # colspan markup causes the composite header to look like a share column.
+        if _explicit_percent(row, i) is not None:
             continue
         number = _numeric(cell)
         if number is None:
