@@ -122,9 +122,11 @@ DIRECT_LISTING_PATTERNS = [
     # Resale registrations can use Form S-1/S-1A even when no issuer shares are
     # being sold. Keep this deliberately narrow to classic cover-page resale
     # language so ordinary IPOs with a secondary component are not excluded.
+    # Inline XBRL can place whitespace around punctuation when BeautifulSoup
+    # flattens tagged text, so allow spaces before/after the optional commas.
     re.compile(
-        r"\bthis prospectus relates to (?:the )?(?:offer and sale|resale),? "
-        r"from time to time,? by (?:the )?selling "
+        r"\bthis prospectus relates to (?:the )?(?:offer and sale|resale)\s*,?\s*"
+        r"from time to time\s*,?\s*by (?:the )?selling "
         r"(?:securityholders|stockholders|shareholders)\b",
         re.IGNORECASE | re.DOTALL,
     ),
@@ -176,7 +178,6 @@ def _clean_company_name(value: str) -> str:
         "",
         cleaned,
     ).strip()
-
 
 def _request_json(url: str, headers: dict, params: dict = None) -> dict:
     """GET JSON with bounded retries for SEC throttling and transient 5xx errors."""
