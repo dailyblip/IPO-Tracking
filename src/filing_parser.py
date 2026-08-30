@@ -211,11 +211,20 @@ def _find_section_text(soup: BeautifulSoup, heading_patterns: list, max_chars: i
 
 
 def _is_sensitivity_price_context(text: str, start: int, end: int) -> bool:
-    """Return True when a dollar amount is part of an assumed-price sensitivity."""
+    """Return True when a dollar amount is part of an IPO-price sensitivity."""
+    before = text[max(0, start - 120) : start]
     context = text[max(0, start - 96) : min(len(text), end + 160)]
-    return bool(
+    if (
         re.search(r"\b(?:assumed|estimated)\b", context, re.IGNORECASE)
         and re.search(r"\b(?:increase|decrease|change)\b", context, re.IGNORECASE)
+    ):
+        return True
+    return bool(
+        re.search(
+            r"\b(?:increase\s+or\s+decrease|decrease\s+or\s+increase)\s+by\s*$",
+            before,
+            re.IGNORECASE,
+        )
     )
 
 
