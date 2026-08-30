@@ -149,6 +149,43 @@ class FilingPriceHistoryTests(unittest.TestCase):
         self.assertEqual(payload["filings"][0]["filing_price"], "15-17")
         self.assertEqual((recovered, checked), (0, 0))
 
+    def test_existing_source_outside_ipo_chronology_is_rechecked(self):
+        history = [
+            {"form_type": "S-1/A", "accession_no": "valid-amend", "filing_date": "2026-08-18"},
+            {"form_type": "S-1", "accession_no": "initial", "filing_date": "2026-08-01"},
+        ]
+
+        for invalid_source_date in ("2026-08-21", "2026-07-31"):
+            with self.subTest(invalid_source_date=invalid_source_date):
+                payload, recovered, checked = filing_price_history.recover_payload_filing_prices(
+                    {"filings": [self.priced_row(
+                        filing_date="2026-08-01",
+                        filing_price="99-101",
+                        filing_price_source={
+                            "source": "SEC EDGAR",
+                            "form": "S-1/A",
+                            "filing_date": invalid_source_date,
+                            "accession_no": "stale-source",
+                            "sec_url": "https://www.sec.gov/stale-source",
+                        },
+                    )]},
+                    history_loader=lambda cik, pricing_date: history,
+                    registration_loader=lambda cik, metadata: (
+                        {"price_range": {"range_low": 15, "range_high": 17}},
+                        "https://www.sec.gov/valid-amend",
+                    ),
+                )
+
+                filing = payload["filings"][0]
+                self.assertEqual(filing["filing_price"], "15-17")
+                self.assertEqual(
+                    filing["filing_price_source"]["accession_no"], "valid-amend"
+                )
+                self.assertEqual(
+                    filing["filing_price_source"]["filing_date"], "2026-08-18"
+                )
+                self.assertEqual((recovered, checked), (1, 1))
+
     def test_existing_preliminary_price_without_source_recovers_provenance(self):
         history = [
             {"form_type": "S-1/A", "accession_no": "amend", "filing_date": "2026-08-18"},
