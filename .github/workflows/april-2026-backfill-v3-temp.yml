@@ -1,5 +1,5 @@
 name: April 2026 Historical IPO Backfill v3
-# Replay after beneficial-owner heading repair; historical threshold policy preserved.
+# Replay after multiclass beneficial-owner share-count repair; historical threshold policy preserved.
 
 on:
   push:
