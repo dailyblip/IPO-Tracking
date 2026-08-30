@@ -17,7 +17,7 @@ MAX_FILINGS = 250
 PUBLIC_FILING_FIELDS = {
     "id", "company", "ticker", "cik", "accession_no", "form", "filed", "filing_date", "pricing_date",
     "priority", "status", "value", "value_label", "people_count", "signals",
-    "people", "sec_url", "stage", "price_range", "filing_price",
+    "people", "sec_url", "stage", "price_range", "filing_price", "filing_price_source",
     "offering_price", "current_price", "price_updated", "location", "location_source",
     "primary_offering_shares", "secondary_offering_shares", "offering_size_source",
     "offering_size_confidence", "lockup_end_date",
