@@ -261,7 +261,7 @@ def _size_provenance(cover: dict, ipo_size) -> tuple[str | None, str | None]:
     return source or None, confidence or None
 
 
-def enrich_record(meta: dict) -> dict | None:
+def enrich_record(meta: dict, *, raise_errors: bool = False) -> dict | None:
     """Validate an S-1 candidate and capture lightweight IPO-stage signals."""
     cik = meta.get("cik")
     company = meta.get("company_name") or "Unknown"
@@ -353,8 +353,25 @@ def enrich_record(meta: dict) -> dict | None:
             "sec_url": index_url,
         }
     except Exception as error:
+        if raise_errors:
+            raise
         print(f"[s1_monitor] Skipping {company}: {error}")
         return None
+
+
+def evaluate_record(meta: dict) -> tuple[dict | None, bool]:
+    """Return the candidate result plus whether SEC evaluation completed successfully.
+
+    Deterministic exclusions are successful evaluations and may remove stale state.
+    Transient/parser failures are not, so prior published state is preserved rather
+    than being deleted merely because SEC enrichment failed during this run.
+    """
+    company = meta.get("company_name") or "Unknown"
+    try:
+        return enrich_record(meta, raise_errors=True), True
+    except Exception as error:
+        print(f"[s1_monitor] Evaluation failed for {company}: {error}")
+        return None, False
 
 
 def build_payload(records: list[dict], generated_at: str | None = None) -> dict:
@@ -370,8 +387,12 @@ def build_payload(records: list[dict], generated_at: str | None = None) -> dict:
     }
 
 
-def export_feed(records: list[dict], output_path: Path = OUTPUT_PATH) -> dict:
-    """Merge new records into bounded S-1 history and write atomically."""
+def export_feed(
+    records: list[dict],
+    output_path: Path = OUTPUT_PATH,
+    processed_ciks: set[str] | None = None,
+) -> dict:
+    """Merge current S-1 results and prune successfully reevaluated stale issuer state."""
     output_path = Path(output_path)
     existing = []
     if output_path.exists():
@@ -380,10 +401,15 @@ def export_feed(records: list[dict], output_path: Path = OUTPUT_PATH) -> dict:
         except (OSError, json.JSONDecodeError):
             existing = []
 
+    processed_ciks = {
+        str(cik or "").zfill(10) for cik in (processed_ciks or set()) if cik
+    }
     merged = {
         item.get("id"): item
         for item in existing
-        if isinstance(item, dict) and item.get("id")
+        if isinstance(item, dict)
+        and item.get("id")
+        and str(item.get("cik") or "").zfill(10) not in processed_ciks
     }
     merged.update({item["id"]: item for item in records if item.get("id")})
     payload = build_payload(list(merged.values()))
@@ -495,20 +521,18 @@ def run(days_back: int = 4) -> dict:
     candidates = discover_recent_s1(days_back=days_back)
     print(f"[s1_monitor] Found {len(candidates)} recent S-1/S-1A filing(s).")
     records = []
+    processed_ciks = set()
     for index, meta in enumerate(candidates, 1):
         print(
             f"[s1_monitor] Processing {index}/{len(candidates)}: "
             f"{meta['company_name']} ({meta['form_type']})"
         )
-        record = enrich_record(meta)
+        record, evaluated = evaluate_record(meta)
+        if evaluated and meta.get("cik"):
+            processed_ciks.add(str(meta.get("cik") or "").zfill(10))
         if record:
             records.append(record)
-    payload = export_feed(records)
-    processed_ciks = {
-        str(meta.get("cik") or "").zfill(10)
-        for meta in candidates
-        if meta.get("cik")
-    }
+    payload = export_feed(records, processed_ciks=processed_ciks)
     queue = sync_research_queue(records, processed_ciks=processed_ciks)
     print(f"[s1_monitor] Feed now contains {len(payload['filings'])} pre-pricing filing(s).")
     print(f"[s1_monitor] Research queue now contains {len(queue['filings'])} filing(s).")
