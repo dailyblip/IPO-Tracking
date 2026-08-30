@@ -269,14 +269,20 @@ def extract_cover_page_data(soup: BeautifulSoup) -> dict:
         r"price\s+to\s+(?:the\s+)?public(?:\s+per\s+share)?\s*[:\-]?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
         r"offering\s+price\s+per\s+share\s*[:\-]?\s*\$\s*(\d{1,4}(?:\.\d{1,2})?)",
     ]
-    price_match = next(
-        (
-            match
-            for pattern in price_patterns
-            if (match := re.search(pattern, cover_text, re.IGNORECASE))
-        ),
-        None,
-    )
+    price_match = None
+    for pattern in price_patterns:
+        for candidate in re.finditer(pattern, cover_text, re.IGNORECASE):
+            prefix = cover_text[max(0, candidate.start() - 40) : candidate.start()]
+            if re.search(
+                r"\b(?:assumed|estimated)\s+(?:initial\s+)?$",
+                prefix,
+                re.IGNORECASE,
+            ):
+                continue
+            price_match = candidate
+            break
+        if price_match:
+            break
     table_price = None if price_match else _extract_explicit_ipo_price_from_tables(soup)
     exchange_match = re.search(
         r"(Nasdaq|New York Stock Exchange|NYSE)",
