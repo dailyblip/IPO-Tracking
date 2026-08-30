@@ -153,7 +153,9 @@ def process_filing(filing_meta: dict) -> list:
             )
             return []
 
-        s1_meta = edgar_client.find_matching_s1(cik)
+        s1_meta = edgar_client.find_matching_s1(
+            cik, before_date=filing_meta.get("filing_date")
+        )
         if not s1_meta:
             print(
                 f"[main] Skipping {company_name}: no S-1/S-1A registration found; "
