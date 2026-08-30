@@ -71,7 +71,88 @@ class LocationQualityTests(unittest.TestCase):
         self.assertEqual(filing["location_source"], "SEC submissions metadata")
         self.assertEqual(len(changes), 1)
 
-    def test_replaces_street_address_contamination_with_authoritative_fallback(self):
+    def test_recovers_trailing_city_from_flattened_principal_office_address(self):
+        metadata_calls = []
+        payload = {
+            "filings": [
+                {
+                    "company": "Yesway, Inc.",
+                    "cik": "1859836",
+                    "location": "Eagle Parkway Fort Worth, TX",
+                    "location_source": "S-1 principal executive office",
+                }
+            ]
+        }
+
+        repaired, changes = location_quality.repair_payload(
+            payload,
+            resolve_location=lambda cik: metadata_calls.append(cik) or "Beverly, MA",
+        )
+
+        filing = repaired["filings"][0]
+        self.assertEqual(filing["location"], "Fort Worth, TX")
+        self.assertEqual(filing["location_source"], "S-1 principal executive office")
+        self.assertEqual(
+            changes,
+            [("Yesway, Inc.", "Eagle Parkway Fort Worth, TX", "Fort Worth, TX")],
+        )
+        self.assertEqual(metadata_calls, [])
+
+    def test_prefers_filing_principal_office_over_stale_sec_metadata(self):
+        payload = {
+            "filings": [
+                {
+                    "id": "yesway-424b4",
+                    "company": "Yesway, Inc.",
+                    "cik": "1859836",
+                    "form": "424B4",
+                    "sec_url": "https://www.sec.gov/example-index.htm",
+                    "location": "BEVERLY, MA",
+                    "location_source": "SEC submissions metadata",
+                }
+            ]
+        }
+
+        repaired, changes = location_quality.repair_payload(
+            payload,
+            resolve_location=lambda cik: "BEVERLY, MA",
+            resolve_filing_location=lambda filing: "Fort Worth, TX",
+        )
+
+        filing = repaired["filings"][0]
+        self.assertEqual(filing["location"], "Fort Worth, TX")
+        self.assertEqual(filing["location_source"], "424B4 principal executive office")
+        self.assertEqual(
+            changes,
+            [("Yesway, Inc.", "BEVERLY, MA", "Fort Worth, TX")],
+        )
+
+    def test_preserves_metadata_location_when_filing_cross_check_is_unavailable(self):
+        payload = {
+            "filings": [
+                {
+                    "id": "example-424b4",
+                    "company": "Example Co",
+                    "cik": "12345",
+                    "form": "424B4",
+                    "sec_url": "https://www.sec.gov/example-index.htm",
+                    "location": "Boston, MA",
+                    "location_source": "SEC submissions metadata",
+                }
+            ]
+        }
+
+        repaired, changes = location_quality.repair_payload(
+            payload,
+            resolve_location=lambda cik: "Boston, MA",
+            resolve_filing_location=lambda filing: None,
+        )
+
+        self.assertEqual(repaired["filings"][0]["location"], "Boston, MA")
+        self.assertEqual(repaired["filings"][0]["location_source"], "SEC submissions metadata")
+        self.assertEqual(changes, [])
+
+    def test_recovers_street_address_contamination_before_metadata_fallback(self):
         payload = {
             "filings": [
                 {
@@ -89,7 +170,7 @@ class LocationQualityTests(unittest.TestCase):
 
         filing = repaired["filings"][0]
         self.assertEqual(filing["location"], "Broomfield, CO")
-        self.assertEqual(filing["location_source"], "SEC submissions metadata")
+        self.assertEqual(filing["location_source"], "S-1 principal executive office")
         self.assertEqual(len(changes), 1)
 
     def test_replaces_flattened_street_suffix_prefix_when_sec_location_differs(self):
@@ -181,6 +262,25 @@ class LocationQualityTests(unittest.TestCase):
         self.assertIsNone(location_quality.normalize_location("Boston, Massachusetts"))
         self.assertEqual(location_quality.normalize_location("Boston, ma"), "Boston, MA")
         self.assertEqual(location_quality.normalize_location("St. Louis, MO"), "St. Louis, MO")
+
+    def test_extracts_principal_office_from_flattened_filing_cover(self):
+        from bs4 import BeautifulSoup
+
+        soup = BeautifulSoup(
+            """
+            <html><body>
+            Yesway, Inc. 2301 Eagle Parkway Fort Worth, TX 76177
+            (Address, including zip code, and telephone number, including area code,
+            of registrant's principal executive offices)
+            </body></html>
+            """,
+            "html.parser",
+        )
+
+        self.assertEqual(
+            location_quality._extract_filing_principal_office_location(soup),
+            "Fort Worth, TX",
+        )
 
     def test_repair_feed_persists_json_without_inventing_location(self):
         with tempfile.TemporaryDirectory() as temp_dir:
