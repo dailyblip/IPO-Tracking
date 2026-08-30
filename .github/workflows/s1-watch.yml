@@ -33,38 +33,28 @@ on:
       - 'schemas/**'
       - 'requirements.txt'
       - '.github/workflows/s1-watch.yml'
+  # Source changes already trigger Daily IPO Tracker, which writes the same public
+  # feed under the same concurrency group. Running S-1 on the same push can leave
+  # it pending and then cancelled when another feed writer queues. Serialize the
+  # S-1 rebuild behind a successful Daily run instead. Keep a direct push trigger
+  # only for changes to this workflow itself so orchestration fixes self-validate.
   push:
     branches:
       - main
     paths:
-      - 'src/s1_monitor.py'
-      - 'src/test_s1_monitor.py'
-      - 'src/edgar_client.py'
-      - 'src/test_resale_registration_exclusion.py'
-      - 'src/test_fullpac_real_proceeds_regression.py'
-      - 'src/s1_registration_history_gate.py'
-      - 'src/test_s1_registration_history_gate.py'
-      - 'src/resale_registration_sanitizer.py'
-      - 'src/test_resale_registration_sanitizer.py'
-      - 'src/filing_parser.py'
-      - 'src/test_cover_price_context.py'
-      - 'src/public_feed_policy.py'
-      - 'src/test_public_feed_policy.py'
-      - 'src/company_name_normalizer.py'
-      - 'src/test_company_name_normalizer.py'
-      - 'src/lifecycle_date_sanitizer.py'
-      - 'src/test_lifecycle_date_sanitizer.py'
-      - 'src/feed_schema_contract.py'
-      - 'src/test_feed_schema_contract.py'
-      - 'schemas/**'
-      - 'requirements.txt'
       - '.github/workflows/s1-watch.yml'
-  schedule:
-    - cron: '20 12 * * 1-5'
+  workflow_run:
+    workflows:
+      - Daily IPO Tracker
+    types:
+      - completed
+    branches:
+      - main
   workflow_dispatch: {}
 
 jobs:
   test:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
@@ -80,7 +70,7 @@ jobs:
         run: python -m unittest test_s1_monitor.py test_resale_registration_exclusion.py test_fullpac_real_proceeds_regression.py test_s1_registration_history_gate.py test_resale_registration_sanitizer.py test_cover_price_context.py test_public_feed_policy.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py test_feed_schema_contract.py -v
 
   update-feed:
-    if: github.event_name != 'pull_request'
+    if: ${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') }}
     needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 20
