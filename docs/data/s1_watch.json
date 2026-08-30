@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-30T00:29:15.475395+00:00",
+  "generated_at": "2026-08-30T01:06:31.544772+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -48,29 +48,6 @@
         "No preliminary price range or fixed offering price detected yet"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2130606/000119312526374729/0001193125-26-374729-index.htm"
-    },
-    {
-      "id": "0001104659-26-103334",
-      "company": "Graf Industrial Corp. II",
-      "ticker": "",
-      "cik": "0002113088",
-      "accession_no": "0001104659-26-103334",
-      "form": "S-1",
-      "filed": "2026-08-28",
-      "stage": "Pre-pricing",
-      "priority": "Medium",
-      "price_range": null,
-      "filing_price": null,
-      "ipo_size": null,
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": null,
-      "secondary_offering_shares": null,
-      "signals": [
-        "Initial registration statement filed — IPO is pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2113088/000110465926103334/0001104659-26-103334-index.htm"
     },
     {
       "id": "0001193125-26-374259",
@@ -326,25 +303,6 @@
         "No preliminary price range or fixed offering price detected yet"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026058231/0001628280-26-058231-index.htm"
-    },
-    {
-      "id": "0001999371-26-018236",
-      "company": "Canary Staked TRX ETF",
-      "ticker": "TRXS",
-      "cik": "0002064768",
-      "accession_no": "0001999371-26-018236",
-      "form": "S-1/A",
-      "filed": "2026-08-19",
-      "stage": "Pre-pricing",
-      "priority": "Medium",
-      "price_range": null,
-      "filing_price": null,
-      "ipo_size": null,
-      "signals": [
-        "Registration statement amended — IPO remains pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2064768/000199937126018236/0001999371-26-018236-index.htm"
     },
     {
       "id": "0001683168-26-006561",
