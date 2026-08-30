@@ -141,6 +141,25 @@ DIRECT_LISTING_PATTERNS = [
         r"we (?:will|would) not receive any (?:of )?the proceeds\b",
         re.IGNORECASE | re.DOTALL,
     ),
+    # A resale-only registration may identify the economics through proceeds
+    # language rather than a literal "Resale Shares" label. Require that selling
+    # holders receive all proceeds from the shares offered hereby and that the
+    # issuer receives none; this stays distinct from a real IPO with a secondary
+    # component, where the issuer still receives proceeds from primary shares.
+    re.compile(
+        r"\bselling (?:securityholders|stockholders|shareholders)\b.{0,1000}\b"
+        r"will receive all (?:of )?the proceeds from (?:any )?sales of the shares "
+        r"offered hereby\b.{0,1000}\bwe (?:will|would) not receive any "
+        r"(?:of )?the proceeds\b",
+        re.IGNORECASE | re.DOTALL,
+    ),
+    re.compile(
+        r"\bwe (?:will|would) not receive any proceeds from the sale of the shares\b"
+        r".{0,500}\bby (?:the )?selling (?:securityholders|stockholders|shareholders)\b"
+        r".{0,1000}\ball net proceeds\b.{0,500}\b(?:will go|go) to (?:the )?selling "
+        r"(?:securityholders|stockholders|shareholders)\b",
+        re.IGNORECASE | re.DOTALL,
+    ),
 ]
 
 
