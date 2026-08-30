@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import math
 import re
+from datetime import date
 from pathlib import Path
 
 import dashboard_export
@@ -35,6 +36,17 @@ def _number(value):
     except (TypeError, ValueError):
         return None
     return number if math.isfinite(number) and number > 0 else None
+
+
+def _canonical_date(value):
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = date.fromisoformat(raw)
+    except ValueError:
+        return None
+    return parsed if parsed.isoformat() == raw else None
 
 
 def _format_range(low, high):
@@ -118,13 +130,26 @@ def _has_authoritative_price_source(filing):
     source = filing.get("filing_price_source")
     if not isinstance(source, dict):
         return False
-    return bool(
+    if not bool(
         str(source.get("source") or "").strip().casefold() == "sec edgar"
         and str(source.get("form") or "").strip().upper() in {"S-1", "S-1/A"}
         and str(source.get("filing_date") or "").strip()
         and str(source.get("accession_no") or "").strip()
         and str(source.get("sec_url") or "").strip()
-    )
+    ):
+        return False
+
+    source_date = _canonical_date(source.get("filing_date"))
+    pricing_date = _canonical_date(filing.get("pricing_date"))
+    if source_date is None or pricing_date is None or source_date > pricing_date:
+        return False
+
+    raw_initial_date = str(filing.get("filing_date") or "").strip()
+    if raw_initial_date:
+        initial_date = _canonical_date(raw_initial_date)
+        if initial_date is None or source_date < initial_date:
+            return False
+    return True
 
 
 def sec_s1_history(cik, pricing_date):
@@ -189,10 +214,11 @@ def recover_payload_filing_prices(
     """Enrich priced rows with an authoritative preliminary price and provenance.
 
     A priced row is complete only when an existing preliminary price/range has a
-    complete SEC source record. Otherwise every relevant S-1/S-1A is inspected from
-    newest to oldest until the latest explicit preliminary price is found. This
-    repairs both blank Filing Price values and provenance metadata lost during later
-    lifecycle/export steps.
+    complete, chronologically valid SEC source record. Otherwise every relevant
+    S-1/S-1A is inspected from newest to oldest until the latest explicit
+    preliminary price is found. This repairs blank Filing Price values, provenance
+    metadata lost during later lifecycle/export steps, and stale source dates that
+    cannot belong to the priced IPO lifecycle.
 
     If at least one registration statement is successfully inspected but no reliable
     preliminary price exists, a genuinely blank row remains blank. An already-
