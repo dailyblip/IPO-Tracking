@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-30T04:18:22.959142+00:00",
+  "generated_at": "2026-08-30T04:37:15.814283+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -140,29 +140,6 @@
         "No preliminary price range or fixed offering price detected yet"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2137360/000152013826000375/0001520138-26-000375-index.htm"
-    },
-    {
-      "id": "0001493152-26-040434",
-      "company": "FullPAC, Inc.",
-      "ticker": "",
-      "cik": "0002076148",
-      "accession_no": "0001493152-26-040434",
-      "form": "S-1/A",
-      "filed": "2026-08-27",
-      "stage": "Pre-pricing",
-      "priority": "Medium",
-      "price_range": null,
-      "filing_price": null,
-      "ipo_size": null,
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": null,
-      "secondary_offering_shares": null,
-      "signals": [
-        "Registration statement amended — IPO remains pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2076148/000149315226040434/0001493152-26-040434-index.htm"
     },
     {
       "id": "0001193125-26-361496",
@@ -448,26 +425,6 @@
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1670747/000149315226037435/0001493152-26-037435-index.htm"
     },
     {
-      "id": "0001628280-26-055463",
-      "company": "Aura Consolidated Group, Inc.",
-      "ticker": "AXQ",
-      "cik": "0002055301",
-      "accession_no": "0001628280-26-055463",
-      "form": "S-1",
-      "filed": "2026-08-11",
-      "stage": "Pre-pricing",
-      "priority": "High",
-      "price_range": null,
-      "filing_price": "$3.34",
-      "ipo_size": 478548213,
-      "signals": [
-        "Initial registration statement filed — IPO is pre-pricing",
-        "Fixed offering price disclosed at $3.34 per share",
-        "IPO size disclosed or derived at approximately $478,548,213"
-      ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2055301/000162828026055463/0001628280-26-055463-index.htm"
-    },
-    {
       "id": "0001185185-26-003353",
       "company": "Vogenx, Inc.",
       "ticker": "VOGX",
@@ -562,30 +519,6 @@
         "No preliminary price range or fixed offering price detected yet"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1838003/000110465926093252/0001104659-26-093252-index.htm"
-    },
-    {
-      "id": "0001713282-24-001181",
-      "company": "Thoughtful Media Group Inc.",
-      "ticker": "TMGX",
-      "cik": "0001991879",
-      "accession_no": "0001713282-24-001181",
-      "form": "S-1/A",
-      "filed": "2024-10-18",
-      "stage": "Pre-pricing",
-      "priority": "High",
-      "price_range": null,
-      "filing_price": "$4.50",
-      "ipo_size": 9000000,
-      "offering_size_source": "cover share title",
-      "offering_size_confidence": "High",
-      "primary_offering_shares": null,
-      "secondary_offering_shares": null,
-      "signals": [
-        "Registration statement amended — IPO remains pre-pricing",
-        "Fixed offering price disclosed at $4.50 per share",
-        "IPO size disclosed or derived at approximately $9,000,000"
-      ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1991879/000171328224001181/0001713282-24-001181-index.htm"
     }
   ]
 }
