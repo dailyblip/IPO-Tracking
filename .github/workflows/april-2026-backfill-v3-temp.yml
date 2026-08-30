@@ -1,5 +1,5 @@
 name: April 2026 Historical IPO Backfill v3
-# Replay from current main after Filing Price sensitivity/provenance fixes; historical threshold policy restored.
+# Replay after beneficial-owner heading repair; historical threshold policy preserved.
 
 on:
   push:
