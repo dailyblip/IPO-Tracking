@@ -204,7 +204,10 @@ def _kind(header):
 
 def _share_class(header):
     """Return an explicit common-stock class identifier from a composite header."""
-    match = _SHARE_CLASS_RE.search(str(header or ""))
+    normalized = str(header or "").lower()
+    if "convertible common stock" in normalized:
+        return "convertible"
+    match = _SHARE_CLASS_RE.search(normalized)
     return match.group(1).lower() if match else None
 
 
@@ -247,6 +250,10 @@ def _aggregate_class_counts(row, headers, base_kinds, aggregate_kind):
         # value and its percentage marker. Composite colspan headers repeat the
         # class label over that spacer, so it must not make the class incomplete.
         if not cleaned:
+            continue
+        # Never aggregate a percentage-marked cell into a share count even if SEC
+        # colspan markup causes the composite header to look like a share column.
+        if _explicit_percent(row, i) is not None:
             continue
         number = _numeric(cell)
         if number is None:
