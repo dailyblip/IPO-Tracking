@@ -51,7 +51,8 @@ _FLATTENED_ADDRESS_CITY_RE = re.compile(
 )
 _FILING_ADDRESS_CITY_RE = re.compile(
     rf"\b\d{{1,6}}\s+[A-Za-z0-9 .#'&/-]{{1,100}}?\b{_STREET_SUFFIX}"
-    r"(?:,\s*(?:suite|ste\.?|unit|floor|fl\.?)\s*[A-Za-z0-9-]+)?\s+"
+    r"(?:,\s*(?:suite|ste\.?|unit|floor|fl\.?)\s*[A-Za-z0-9-]+)?"
+    r",?\s+"
     r"([A-Za-z][A-Za-z .'-]{1,60}),\s*([A-Z]{2})\s+\d{5}(?:-\d{4})?",
     re.IGNORECASE,
 )
