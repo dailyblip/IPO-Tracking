@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-30T02:04:59.179816+00:00",
+  "generated_at": "2026-08-30T03:09:43.398502+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -246,6 +246,33 @@
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026092565/0001213900-26-092565-index.htm"
+    },
+    {
+      "id": "s1:0002111846",
+      "company": "Game Your Game Inc.",
+      "ticker": "GYGY",
+      "cik": "0002111846",
+      "accession_no": "0001213900-26-092695",
+      "form": "S-1",
+      "filed": "2026-08-21",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "priority": "Medium",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 0,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026092695/0001213900-26-092695-index.htm"
     },
     {
       "id": "s1:0002131613",
