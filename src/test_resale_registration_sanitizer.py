@@ -13,6 +13,16 @@ class ResaleRegistrationSanitizerTests(unittest.TestCase):
         )
         self.assertTrue(looks_like_resale_only_cover(filing_text))
 
+    def test_post_listing_selling_holder_resale_is_excluded(self):
+        filing_text = """
+        Our common stock began trading on the Nasdaq Capital Market under the
+        symbol OBX on August 4, 2026. Common stock Offered by the Selling
+        Stockholders: 29,164,045 shares of common stock. We will not receive any
+        proceeds from the sale of the shares of common stock covered by this
+        prospectus.
+        """
+        self.assertTrue(looks_like_resale_only_cover(filing_text))
+
     def test_normal_ipo_with_secondary_shares_is_not_excluded(self):
         filing_text = """
         We are offering 10,000,000 shares of common stock and the selling
@@ -20,6 +30,15 @@ class ResaleRegistrationSanitizerTests(unittest.TestCase):
         from shares sold by us. We will not receive proceeds from shares sold by
         the selling stockholders. The shares are being offered through the
         underwriters named in this prospectus.
+        """
+        self.assertFalse(looks_like_resale_only_cover(filing_text))
+
+    def test_expected_future_trading_does_not_trigger_post_listing_resale(self):
+        filing_text = """
+        This is our initial public offering. We expect our common stock to begin
+        trading on Nasdaq after pricing. The selling stockholders are offering
+        1,000,000 shares and we will not receive proceeds from shares sold by the
+        selling stockholders.
         """
         self.assertFalse(looks_like_resale_only_cover(filing_text))
 
