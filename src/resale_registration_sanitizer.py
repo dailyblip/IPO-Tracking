@@ -12,6 +12,7 @@ import json
 import re
 import sys
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 from dashboard_export import write_dashboard_csv
 import filing_parser
@@ -102,6 +103,31 @@ def _visible_filing_text(soup) -> str:
     return soup.get_text(" ", strip=True)
 
 
+def _raw_sec_document_url(url: str) -> str:
+    """Unwrap SEC inline-XBRL viewer URLs to the underlying filing document.
+
+    EDGAR index pages can link a primary S-1 through ``/ix?doc=...`` or the
+    legacy ``/ixviewer/doc/action?doc=...`` route. Those endpoints render the
+    viewer shell rather than the filing text needed by release classifiers.
+    Accept only SEC-hosted viewer links whose ``doc`` target is an EDGAR Archives
+    path; everything else is returned unchanged.
+    """
+    raw = str(url or "").strip()
+    if not raw:
+        return raw
+    parsed = urlparse(raw)
+    host = parsed.netloc.casefold()
+    path = parsed.path.rstrip("/").casefold()
+    if host not in {"www.sec.gov", "sec.gov"}:
+        return raw
+    if path not in {"/ix", "/ixviewer/doc/action"}:
+        return raw
+    document = (parse_qs(parsed.query).get("doc") or [""])[0].strip()
+    if not document.startswith("/Archives/edgar/"):
+        return raw
+    return f"https://www.sec.gov{document}"
+
+
 def _fetch_filing_text(record: dict) -> str:
     index_url = str(record.get("sec_url") or "").strip()
     if not index_url:
@@ -109,6 +135,7 @@ def _fetch_filing_text(record: dict) -> str:
     document_url = filing_parser.find_primary_document_url(
         index_url, expected_form_types=["S-1", "S-1/A"]
     )
+    document_url = _raw_sec_document_url(document_url)
     soup = filing_parser.fetch_document(document_url)
     return _visible_filing_text(soup)
 
