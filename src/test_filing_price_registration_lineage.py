@@ -25,19 +25,19 @@ class FilingPriceRegistrationLineageTests(unittest.TestCase):
         history = [
             {
                 "form_type": "S-1/A",
-                "accession_no": "current-amendment",
+                "accession_no": "0001104659-26-088001",
                 "filing_date": "2026-07-27",
                 "file_number": "333-300001",
             },
             {
                 "form_type": "S-1/A",
-                "accession_no": "range-amendment",
+                "accession_no": "0001104659-26-084856",
                 "filing_date": "2026-07-20",
                 "file_number": "333-300001",
             },
             {
                 "form_type": "S-1/A",
-                "accession_no": "old-registration",
+                "accession_no": "0001104659-25-099999",
                 "filing_date": "2025-11-15",
                 "file_number": "333-200001",
             },
@@ -46,12 +46,12 @@ class FilingPriceRegistrationLineageTests(unittest.TestCase):
 
         def registration_loader(cik, metadata):
             calls.append(metadata["accession_no"])
-            if metadata["accession_no"] == "range-amendment":
+            if metadata["accession_no"] == "0001104659-26-084856":
                 return (
                     {"price_range": {"range_low": 15, "range_high": 17}},
                     "https://www.sec.gov/range-amendment",
                 )
-            if metadata["accession_no"] == "old-registration":
+            if metadata["accession_no"] == "0001104659-25-099999":
                 return (
                     {"price_range": {"range_low": 9, "range_high": 11}},
                     "https://www.sec.gov/old-registration",
@@ -69,21 +69,27 @@ class FilingPriceRegistrationLineageTests(unittest.TestCase):
 
         row = payload["filings"][0]
         self.assertEqual(row["filing_price"], "15-17")
-        self.assertEqual(row["filing_price_source"]["accession_no"], "range-amendment")
-        self.assertEqual(calls, ["current-amendment", "range-amendment"])
+        self.assertEqual(
+            row["filing_price_source"]["accession_no"],
+            "0001104659-26-084856",
+        )
+        self.assertEqual(
+            calls,
+            ["0001104659-26-088001", "0001104659-26-084856"],
+        )
         self.assertEqual((recovered, checked), (1, 1))
 
     def test_different_registration_is_never_borrowed(self):
         history = [
             {
                 "form_type": "S-1",
-                "accession_no": "current-initial",
+                "accession_no": "0001104659-26-080001",
                 "filing_date": "2026-07-10",
                 "file_number": "333-300001",
             },
             {
                 "form_type": "S-1/A",
-                "accession_no": "old-registration",
+                "accession_no": "0001104659-26-070001",
                 "filing_date": "2026-06-30",
                 "file_number": "333-200001",
             },
@@ -92,7 +98,7 @@ class FilingPriceRegistrationLineageTests(unittest.TestCase):
 
         def registration_loader(cik, metadata):
             calls.append(metadata["accession_no"])
-            if metadata["accession_no"] == "old-registration":
+            if metadata["accession_no"] == "0001104659-26-070001":
                 return (
                     {"price_range": {"range_low": 9, "range_high": 11}},
                     "https://www.sec.gov/old-registration",
@@ -108,7 +114,7 @@ class FilingPriceRegistrationLineageTests(unittest.TestCase):
             registration_loader=registration_loader,
         )
 
-        self.assertEqual(calls, ["current-initial"])
+        self.assertEqual(calls, ["0001104659-26-080001"])
         self.assertIsNone(payload["filings"][0]["filing_price"])
         self.assertEqual((recovered, checked), (0, 1))
 
@@ -116,19 +122,19 @@ class FilingPriceRegistrationLineageTests(unittest.TestCase):
         history = [
             {
                 "form_type": "S-1/A",
-                "accession_no": "current-amendment",
+                "accession_no": "0001104659-26-088001",
                 "filing_date": "2026-07-27",
                 "file_number": "333-300001",
             },
             {
                 "form_type": "S-1/A",
-                "accession_no": "range-amendment",
+                "accession_no": "0001104659-26-084856",
                 "filing_date": "2026-07-20",
                 "file_number": "333-300001",
             },
             {
                 "form_type": "S-1/A",
-                "accession_no": "old-registration",
+                "accession_no": "0001104659-26-060001",
                 "filing_date": "2026-06-01",
                 "file_number": "333-200001",
             },
@@ -137,8 +143,8 @@ class FilingPriceRegistrationLineageTests(unittest.TestCase):
             "source": "SEC EDGAR",
             "form": "S-1/A",
             "filing_date": "2026-07-20",
-            "accession_no": "range-amendment",
-            "sec_url": "https://www.sec.gov/Archives/edgar/data/1787117/range-amendment-index.htm",
+            "accession_no": "0001104659-26-084856",
+            "sec_url": "https://www.sec.gov/Archives/edgar/data/1787117/000110465926084856/0001104659-26-084856-index.htm",
         }
 
         payload, recovered, checked = filing_price_history.recover_payload_filing_prices(
