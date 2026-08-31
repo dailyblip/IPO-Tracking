@@ -408,7 +408,18 @@ def check_spac_indicators(filing_text: str, company_name: str = "") -> bool:
     if SPAC_NAME_PATTERN.search(str(company_name or "")):
         return True
 
-    cover_and_summary = str(filing_text or "")[:125000]
+    cover_and_summary = " ".join(str(filing_text or "").split())[:125000]
+    issuer_name = " ".join(str(company_name or "").split())
+    if issuer_name:
+        issuer_self_description = re.compile(
+            rf"(?<!\w){re.escape(issuer_name)}(?!\w)\s+is\s+(?:a|an)\s+"
+            rf"(?:newly\s+(?:formed|organized|incorporated)\s+)?"
+            rf"(?:blank check|special purpose acquisition)\s+company\b",
+            re.IGNORECASE,
+        )
+        if issuer_self_description.search(cover_and_summary):
+            return True
+
     return any(pattern.search(cover_and_summary) for pattern in (
         *SPAC_SELF_DESCRIPTION_PATTERNS,
         *REVERSE_SPAC_PATTERNS,
