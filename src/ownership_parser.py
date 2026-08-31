@@ -191,6 +191,11 @@ def _kind(header):
     is_pct = "%" in h or "percent" in h or "percentage" in h
     if re.search(r"shares?\s+(?:being\s+)?(?:offered|sold)|offered\s+shares|secondary", h):
         return "shares_sold"
+    # A numeric "combined voting power" column is a vote count, not a share
+    # count. Percentage voting-power columns can still support a disclosed
+    # ownership percentage, but a raw vote count must never become shares.
+    if "voting power" in h and not is_pct:
+        return None
     if re.search(r"before|prior to|pre-offering|pre offering", h):
         return "percent_before" if is_pct else "shares_before"
     if re.search(r"after|following|post-offering|post offering", h):
@@ -214,10 +219,11 @@ def _share_class(header):
 def _safe_paired_multiclass_kinds(headers):
     """Return temporal share fields that can be safely aggregated across classes.
 
-    A class-agnostic total is defensible only when the same two-or-more explicit
-    share classes are reported within both the before- and after-offering groups.
-    This distinguishes a SpaceX-style A+B / before-and-after table from the unsafe
-    case where one class appears only before and another class appears only after.
+    A point-in-time class-agnostic total is defensible when that temporal group
+    explicitly reports two or more share classes. The before and after groups do
+    not have to expose the same classes: a reorganization can legitimately change
+    the security structure at the IPO. A one-class-before/one-class-after table is
+    still unsafe and remains unaggregated.
     """
     classes_by_kind = {"shares_before": set(), "shares_after": set()}
     for header in headers:
@@ -225,11 +231,44 @@ def _safe_paired_multiclass_kinds(headers):
         share_class = _share_class(header)
         if kind in classes_by_kind and share_class:
             classes_by_kind[kind].add(share_class)
-    before = classes_by_kind["shares_before"]
-    after = classes_by_kind["shares_after"]
-    if len(before) >= 2 and before == after:
-        return {"shares_before", "shares_after"}
-    return set()
+    return {
+        kind for kind, classes in classes_by_kind.items()
+        if len(classes) >= 2
+    }
+
+
+def _unsafe_unqualified_temporal_kinds(headers, safe_multiclass_kinds):
+    """Flag unqualified temporal share totals that cross an explicit class change.
+
+    Some IPO reorganizations report predecessor ordinary shares before the
+    offering but multiple classes of registrant common stock after it. Because the
+    public schema has no security-class/basis dimension, carrying that predecessor
+    count into generic ``shares_before`` creates a false apples-to-apples ownership
+    transition. Percentages remain usable, and an independently complete
+    multi-class after group can still be aggregated safely.
+    """
+    classes_by_kind = {"shares_before": set(), "shares_after": set()}
+    has_unqualified = {"shares_before": False, "shares_after": False}
+    for header in headers:
+        kind = _kind(header)
+        if kind not in classes_by_kind:
+            continue
+        share_class = _share_class(header)
+        if share_class:
+            classes_by_kind[kind].add(share_class)
+        else:
+            has_unqualified[kind] = True
+
+    unsafe = set()
+    pairs = (("shares_before", "shares_after"), ("shares_after", "shares_before"))
+    for kind, other_kind in pairs:
+        if (
+            has_unqualified[kind]
+            and kind not in safe_multiclass_kinds
+            and len(classes_by_kind[other_kind]) >= 2
+        ):
+            unsafe.add(kind)
+    return unsafe
 
 
 def _aggregate_class_counts(row, headers, base_kinds, aggregate_kind):
@@ -300,14 +339,25 @@ def parse_ownership_table(table):
     share_classes = {share_class for header in headers if (share_class := _share_class(header))}
     multi_class = len(share_classes) > 1
     safe_multiclass_kinds = _safe_paired_multiclass_kinds(headers) if multi_class else set()
+    unsafe_unqualified_temporal_kinds = (
+        _unsafe_unqualified_temporal_kinds(headers, safe_multiclass_kinds)
+        if multi_class else set()
+    )
     # The public ownership schema currently has no share-class dimension. When a
     # table explicitly reports multiple common-stock classes, do not flatten a
     # class-specific count into generic before/after/share fields by position.
-    # A narrowly safe exception below sums explicit class counts only when the
-    # same multi-class set appears in both temporal groups. Unqualified temporal
-    # columns (for example explicit dilution percentages) remain eligible.
+    # Explicitly complete multi-class temporal groups are aggregated below. An
+    # unqualified predecessor count is also suppressed when the opposite temporal
+    # group is explicitly multi-class, because those security bases are not safely
+    # comparable in the generic public schema.
     kinds = [
-        None if (multi_class and _share_class(header)) else base_kinds[i]
+        None if (
+            multi_class
+            and (
+                _share_class(header)
+                or base_kinds[i] in unsafe_unqualified_temporal_kinds
+            )
+        ) else base_kinds[i]
         for i, header in enumerate(headers)
     ]
     results = []
