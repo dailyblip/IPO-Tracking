@@ -12,6 +12,7 @@ on:
       - 'src/stanford_grader.py'
       - 'src/stanford_sec_backfill.py'
       - 'src/filing_price_history.py'
+      - 'src/pricing_date_reconciler.py'
       - 'src/lifecycle_reconciler.py'
       - 'src/lifecycle_date_sanitizer.py'
       - 'src/followon_sanitizer.py'
@@ -28,6 +29,7 @@ on:
       - 'src/test_stanford_management_scope.py'
       - 'src/test_stanford_sec_backfill.py'
       - 'src/test_filing_price_history.py'
+      - 'src/test_pricing_date_reconciler.py'
       - 'src/test_lifecycle_reconciler.py'
       - 'src/test_lifecycle_date_sanitizer.py'
       - 'src/test_followon_sanitizer.py'
@@ -101,6 +103,11 @@ jobs:
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python lifecycle_reconciler.py ../docs/data/filings.json
+      - name: Reconcile authoritative IPO pricing dates
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python pricing_date_reconciler.py ../docs/data/filings.json
       - name: Sanitize impossible lifecycle dates
         working-directory: src
         run: python lifecycle_date_sanitizer.py ../docs/data/filings.json
