@@ -257,9 +257,40 @@ def recover_payload_filing_prices(
                 f"Priced row {filing.get('company') or filing.get('id')} has no CIK for S-1 history review"
             )
         history = history_loader(cik, pricing_date)
+
+        # Bound the recovery scan to the current IPO lifecycle. An issuer can have
+        # older S-1/S-1A registrations from an abandoned offering or another
+        # transaction; those filings must never supply the current IPO's Filing
+        # Price merely because they share the same CIK.
+        pricing_day = _canonical_date(pricing_date)
+        if pricing_day is None:
+            raise FilingPriceHistoryError(
+                f"Priced row {filing.get('company') or filing.get('id')} has a non-canonical pricing date for S-1 history review"
+            )
+        raw_initial_date = str(filing.get("filing_date") or "").strip()
+        initial_day = _canonical_date(raw_initial_date) if raw_initial_date else None
+        if raw_initial_date and initial_day is None:
+            raise FilingPriceHistoryError(
+                f"Priced row {filing.get('company') or filing.get('id')} has a non-canonical initial filing date for S-1 history review"
+            )
+        if initial_day is not None and initial_day > pricing_day:
+            raise FilingPriceHistoryError(
+                f"Priced row {filing.get('company') or filing.get('id')} has an initial filing date after its pricing date"
+            )
+
+        lifecycle_history = []
+        for metadata in history or []:
+            source_day = _canonical_date((metadata or {}).get("filing_date"))
+            if source_day is None or source_day > pricing_day:
+                continue
+            if initial_day is not None and source_day < initial_day:
+                continue
+            lifecycle_history.append(metadata)
+        history = lifecycle_history
+
         if not history:
             raise FilingPriceHistoryError(
-                f"Priced row {filing.get('company') or filing.get('id')} has no preceding S-1/S-1A history"
+                f"Priced row {filing.get('company') or filing.get('id')} has no S-1/S-1A history inside the current IPO lifecycle"
             )
 
         checked += 1

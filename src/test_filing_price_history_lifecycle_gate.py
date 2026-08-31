@@ -81,6 +81,43 @@ class PricedHistoryLifecycleGateTests(unittest.TestCase):
         self.assertEqual(payload["filings"][0], row)
         self.assertEqual((recovered, checked), (0, 0))
 
+    def test_recovery_ignores_registration_history_before_current_ipo(self):
+        calls = []
+        history = [
+            {
+                "form_type": "S-1",
+                "accession_no": "current-initial",
+                "filing_date": "2026-08-01",
+            },
+            {
+                "form_type": "S-1/A",
+                "accession_no": "stale-prior-registration",
+                "filing_date": "2025-11-15",
+            },
+        ]
+
+        def registration_loader(cik, metadata):
+            calls.append(metadata["accession_no"])
+            if metadata["accession_no"] == "current-initial":
+                return (
+                    {"price_range": {"range_low": None, "range_high": None}},
+                    "https://www.sec.gov/current-initial",
+                )
+            return (
+                {"price_range": {"range_low": 9, "range_high": 11}},
+                "https://www.sec.gov/stale-prior-registration",
+            )
+
+        payload, recovered, checked = filing_price_history.recover_payload_filing_prices(
+            {"filings": [self._row(filing_date="2026-08-01")]},
+            history_loader=lambda cik, pricing_date: history,
+            registration_loader=registration_loader,
+        )
+
+        self.assertEqual(calls, ["current-initial"])
+        self.assertIsNone(payload["filings"][0]["filing_price"])
+        self.assertEqual((recovered, checked), (0, 1))
+
 
 if __name__ == "__main__":
     unittest.main()
