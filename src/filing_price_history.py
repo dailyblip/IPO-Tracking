@@ -30,6 +30,10 @@ def _canonical_cik(value):
     return digits.zfill(10) if digits else ""
 
 
+def _normalized_accession(value):
+    return re.sub(r"\D", "", str(value or ""))
+
+
 def _number(value):
     try:
         number = float(value)
@@ -141,23 +145,15 @@ def _has_authoritative_price_source(filing):
 
     source_date = _canonical_date(source.get("filing_date"))
     pricing_date = _canonical_date(filing.get("pricing_date"))
-    if source_date is None or pricing_date is None or source_date > pricing_date:
-        return False
-
-    raw_initial_date = str(filing.get("filing_date") or "").strip()
-    if raw_initial_date:
-        initial_date = _canonical_date(raw_initial_date)
-        if initial_date is None or source_date < initial_date:
-            return False
-    return True
+    return bool(source_date is not None and pricing_date is not None and source_date <= pricing_date)
 
 
 def sec_s1_history(cik, pricing_date):
     """Return S-1/S-1A metadata on or before the authoritative pricing date.
 
-    SEC submissions metadata is authoritative for form, accession, and filing date.
-    Results are newest first so the amendment closest to pricing is inspected first,
-    while every preceding registration statement remains available as a fallback.
+    SEC submissions metadata is authoritative for form, accession, filing date,
+    and registration file number. Results are newest first so the current IPO's
+    SEC registration lineage can be selected before any preliminary range is used.
     """
     cik = _canonical_cik(cik)
     if not cik:
@@ -170,11 +166,14 @@ def sec_s1_history(cik, pricing_date):
     forms = recent.get("form") or []
     accessions = recent.get("accessionNumber") or []
     dates = recent.get("filingDate") or []
+    file_numbers = recent.get("fileNumber") or []
     history = []
-    for form, accession, filed in zip(forms, accessions, dates):
-        form = str(form or "").strip().upper()
-        filed = str(filed or "").strip()
-        accession = str(accession or "").strip()
+    count = min(len(forms), len(accessions), len(dates))
+    for index in range(count):
+        form = str(forms[index] or "").strip().upper()
+        filed = str(dates[index] or "").strip()
+        accession = str(accessions[index] or "").strip()
+        file_number = str(file_numbers[index] or "").strip() if index < len(file_numbers) else ""
         if form not in {"S-1", "S-1/A"} or not filed or not accession:
             continue
         if pricing_date and filed > str(pricing_date):
@@ -183,9 +182,66 @@ def sec_s1_history(cik, pricing_date):
             "form_type": form,
             "accession_no": accession,
             "filing_date": filed,
+            "file_number": file_number,
         })
     history.sort(key=lambda item: item["filing_date"], reverse=True)
     return history
+
+
+def _current_registration_history(history, *, pricing_day, initial_day=None):
+    """Limit S-1 history to the current SEC registration statement.
+
+    SEC ``fileNumber`` is the authoritative lineage key. When it is available,
+    the newest S-1/S-1A on or before pricing identifies the current registration
+    and older registrations with different file numbers are excluded even if they
+    belong to the same issuer. The row-level initial filing date is retained only
+    as a conservative fallback for injected/legacy history that lacks fileNumber.
+    """
+    chronological = []
+    for metadata in history or []:
+        if not isinstance(metadata, dict):
+            continue
+        source_day = _canonical_date(metadata.get("filing_date"))
+        if source_day is None or source_day > pricing_day:
+            continue
+        chronological.append(metadata)
+
+    current_file_number = next(
+        (
+            str(metadata.get("file_number") or "").strip()
+            for metadata in chronological
+            if str(metadata.get("file_number") or "").strip()
+        ),
+        "",
+    )
+    if current_file_number:
+        return [
+            metadata
+            for metadata in chronological
+            if str(metadata.get("file_number") or "").strip() == current_file_number
+        ]
+
+    if initial_day is not None:
+        return [
+            metadata
+            for metadata in chronological
+            if _canonical_date(metadata.get("filing_date")) >= initial_day
+        ]
+    return chronological
+
+
+def _source_matches_registration_history(filing, history):
+    if not _has_authoritative_price_source(filing):
+        return False
+    source = filing.get("filing_price_source") or {}
+    source_accession = _normalized_accession(source.get("accession_no"))
+    if not source_accession:
+        return False
+    return any(
+        _normalized_accession(metadata.get("accession_no")) == source_accession
+        for metadata in history
+        if isinstance(metadata, dict)
+    )
 
 
 def parse_s1_history_entry(cik, metadata):
@@ -214,11 +270,11 @@ def recover_payload_filing_prices(
     """Enrich priced rows with an authoritative preliminary price and provenance.
 
     A priced row is complete only when an existing preliminary price/range has a
-    complete, chronologically valid SEC source record. Otherwise every relevant
-    S-1/S-1A is inspected from newest to oldest until the latest explicit
-    preliminary price is found. This repairs blank Filing Price values, provenance
-    metadata lost during later lifecycle/export steps, and stale source dates that
-    cannot belong to the priced IPO lifecycle.
+    complete, chronologically valid SEC source record in the same registration
+    lineage. Otherwise every relevant S-1/S-1A is inspected from newest to oldest
+    until the latest explicit preliminary price is found. This repairs blank Filing
+    Price values, provenance metadata lost during later lifecycle/export steps, and
+    stale sources from an earlier registration by the same issuer.
 
     If at least one registration statement is successfully inspected but no reliable
     preliminary price exists, a genuinely blank row remains blank. An already-
@@ -247,10 +303,6 @@ def recover_payload_filing_prices(
             )
 
         existing_preliminary = _preliminary_price_value(filing)
-        if existing_preliminary and _has_authoritative_price_source(filing):
-            updated_filings.append(filing)
-            continue
-
         cik = _canonical_cik(filing.get("cik"))
         if not cik:
             raise FilingPriceHistoryError(
@@ -258,10 +310,6 @@ def recover_payload_filing_prices(
             )
         history = history_loader(cik, pricing_date)
 
-        # Bound the recovery scan to the current IPO lifecycle. An issuer can have
-        # older S-1/S-1A registrations from an abandoned offering or another
-        # transaction; those filings must never supply the current IPO's Filing
-        # Price merely because they share the same CIK.
         pricing_day = _canonical_date(pricing_date)
         if pricing_day is None:
             raise FilingPriceHistoryError(
@@ -278,20 +326,19 @@ def recover_payload_filing_prices(
                 f"Priced row {filing.get('company') or filing.get('id')} has an initial filing date after its pricing date"
             )
 
-        lifecycle_history = []
-        for metadata in history or []:
-            source_day = _canonical_date((metadata or {}).get("filing_date"))
-            if source_day is None or source_day > pricing_day:
-                continue
-            if initial_day is not None and source_day < initial_day:
-                continue
-            lifecycle_history.append(metadata)
-        history = lifecycle_history
-
+        history = _current_registration_history(
+            history,
+            pricing_day=pricing_day,
+            initial_day=initial_day,
+        )
         if not history:
             raise FilingPriceHistoryError(
-                f"Priced row {filing.get('company') or filing.get('id')} has no S-1/S-1A history inside the current IPO lifecycle"
+                f"Priced row {filing.get('company') or filing.get('id')} has no S-1/S-1A history inside the current IPO registration"
             )
+
+        if existing_preliminary and _source_matches_registration_history(filing, history):
+            updated_filings.append(filing)
+            continue
 
         checked += 1
         inspected = 0
