@@ -27,8 +27,11 @@ _POST_LISTING_TRADING_RE = re.compile(
     re.IGNORECASE,
 )
 _NO_ISSUER_PROCEEDS_FROM_COVERED_SHARES_RE = re.compile(
-    r"\bwe (?:will|would) not receive any (?:of )?(?:the )?proceeds from the sale of "
-    r"(?:the )?shares(?: of (?:our )?common stock)? covered by this prospectus\b",
+    r"\bwe (?:will|would) not receive any (?:of )?(?:the )?proceeds from (?:"
+    r"(?:the )?sale of (?:the )?shares(?: of (?:our )?common stock)? covered by this prospectus"
+    r"|any sale of (?:our )?common stock by (?:the )?selling\s+"
+    r"(?:securityholders|stockholders|shareholders) pursuant to this prospectus"
+    r")\b",
     re.IGNORECASE,
 )
 
@@ -46,9 +49,10 @@ def looks_like_resale_only_cover(filing_text: str) -> bool:
     A second, equally deterministic variant covers post-listing registrations
     filed after a merger or other transaction: the prospectus states that the
     common stock already began/commenced trading, identifies selling holders, and
-    states that the issuer receives no proceeds from the shares covered by the
-    prospectus. Requiring all three facts avoids treating an ordinary IPO with a
-    secondary component as a resale-only registration.
+    states that the issuer receives no proceeds from the shares covered by or sold
+    by selling holders pursuant to that prospectus. Requiring all three facts
+    avoids treating an ordinary IPO with a secondary component as a resale-only
+    registration.
     """
     normalized = " ".join(str(filing_text or "").split())
     if not normalized:

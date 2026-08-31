@@ -23,6 +23,16 @@ class ResaleRegistrationSanitizerTests(unittest.TestCase):
         """
         self.assertTrue(looks_like_resale_only_cover(filing_text))
 
+    def test_obsidian_pursuant_to_prospectus_resale_wording_is_excluded(self):
+        filing_text = """
+        Our common stock began trading on the Nasdaq Capital Market under the
+        symbol OBX on August 4, 2026. This prospectus relates to the proposed offer
+        and resale or other disposition by the selling stockholders of shares of
+        our common stock. We will not receive any proceeds from any sale of common
+        stock by the selling stockholders pursuant to this prospectus.
+        """
+        self.assertTrue(looks_like_resale_only_cover(filing_text))
+
     def test_normal_ipo_with_secondary_shares_is_not_excluded(self):
         filing_text = """
         We are offering 10,000,000 shares of common stock and the selling
