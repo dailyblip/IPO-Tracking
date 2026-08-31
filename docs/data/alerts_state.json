@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-31T13:32:10.902177+00:00",
+  "updated_at": "2026-08-31T13:35:55.890513+00:00",
   "items": {
     "s1:0001779977": {
       "id": "s1:0001779977",
@@ -97,6 +97,18 @@
       "priority": "High",
       "value": 18750000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026092565/0001213900-26-092565-index.htm"
+    },
+    "s1:0002111846": {
+      "id": "s1:0002111846",
+      "cik": "0002111846",
+      "company": "Game Your Game Inc.",
+      "form": "S-1",
+      "filed": "2026-08-21",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026092695/0001213900-26-092695-index.htm"
     },
     "s1:0002131613": {
       "id": "s1:0002131613",
@@ -529,54 +541,6 @@
       "priority": "High",
       "value": 210400000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2021880/000119312526138102/0001193125-26-138102-index.htm"
-    },
-    "s1:0002111846": {
-      "id": "s1:0002111846",
-      "cik": "0002111846",
-      "company": "Game Your Game Inc.",
-      "form": "S-1",
-      "filed": "2026-08-21",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026092695/0001213900-26-092695-index.htm"
-    },
-    "0001193125-26-340215": {
-      "id": "0001193125-26-340215",
-      "cik": "0001839970",
-      "company": "BlossomHill Therapeutics, Inc.",
-      "form": "424B4",
-      "filed": "2026-08-07",
-      "stage": "priced",
-      "price_range": null,
-      "priority": "Medium",
-      "value": 150000000.0,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1839970/000119312526340215/0001193125-26-340215-index.htm"
-    },
-    "0001628280-26-054354": {
-      "id": "0001628280-26-054354",
-      "cik": "0002131524",
-      "company": "Braveheart Bio, Inc.",
-      "form": "424B4",
-      "filed": "2026-08-06",
-      "stage": "priced",
-      "price_range": null,
-      "priority": "High",
-      "value": 382500000.0,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2131524/000162828026054354/0001628280-26-054354-index.htm"
-    },
-    "0001193125-26-334997": {
-      "id": "0001193125-26-334997",
-      "cik": "0002058707",
-      "company": "Attovia Therapeutics, Inc.",
-      "form": "424B4",
-      "filed": "2026-08-05",
-      "stage": "priced",
-      "price_range": null,
-      "priority": "Medium",
-      "value": 289000000.0,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2058707/000119312526334997/0001193125-26-334997-index.htm"
     }
   },
   "ciks": {
@@ -633,6 +597,13 @@
       "company": "Little West Holdings Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002065821",
+      "last_filed": "2026-08-21",
+      "missing_runs": 0
+    },
+    "0002111846": {
+      "company": "Game Your Game Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002111846",
       "last_filed": "2026-08-21",
       "missing_runs": 0
     },
@@ -887,34 +858,6 @@
       "last_filing_id": "0001193125-26-138102",
       "last_filed": "2026-04-01",
       "missing_runs": 0
-    },
-    "0002111846": {
-      "company": "Game Your Game Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002111846",
-      "last_filed": "2026-08-21",
-      "missing_runs": 1
-    },
-    "0001839970": {
-      "company": "BlossomHill Therapeutics, Inc.",
-      "stage": "priced",
-      "last_filing_id": "0001193125-26-340215",
-      "last_filed": "2026-08-07",
-      "missing_runs": 1
-    },
-    "0002131524": {
-      "company": "Braveheart Bio, Inc.",
-      "stage": "priced",
-      "last_filing_id": "0001628280-26-054354",
-      "last_filed": "2026-08-06",
-      "missing_runs": 1
-    },
-    "0002058707": {
-      "company": "Attovia Therapeutics, Inc.",
-      "stage": "priced",
-      "last_filing_id": "0001193125-26-334997",
-      "last_filed": "2026-08-05",
-      "missing_runs": 1
     }
   }
 }
