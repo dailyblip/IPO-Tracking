@@ -52,6 +52,22 @@ jobs:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python public_feed_policy.py ../docs/data/filings.json
 
+      # Daily can be triggered by a resale-classifier repair before the serialized
+      # S-1 writer gets its turn. Apply the same deterministic S-1 release gates to
+      # the checked-in queue here so a known resale-only registration cannot be
+      # republished during that gap.
+      - name: Reconcile resale-only S-1 amendments by registration history
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_registration_history_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
+      - name: Reconcile resale-only S-1 registrations before daily regeneration
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python resale_registration_sanitizer.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
       - name: Run unit tests
         env:
           SKIP_LIVE_GOLDEN: '1'
