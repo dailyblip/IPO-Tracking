@@ -143,7 +143,10 @@ jobs:
         env:
           MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
-        run: python market_quote_identity.py ../docs/data/filings.json
+        # Current Price is secondary data. If Finnhub identity verification is
+        # unavailable after bounded retries, clear unverified quote-derived fields
+        # rather than blocking authoritative SEC IPO data from publication.
+        run: python market_quote_release_gate.py ../docs/data/filings.json
 
       # The startup unit-test pass validates code against the checked-in snapshot.
       # Run the same release-blocking suite again after regeneration and all
