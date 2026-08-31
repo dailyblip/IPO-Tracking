@@ -22,6 +22,15 @@ _SELLING_HOLDER_RE = re.compile(
     re.IGNORECASE,
 )
 _RESALE_ACTION_RE = re.compile(r"\b(?:resale|offer\s+and\s+sale)\b", re.IGNORECASE)
+_POST_LISTING_TRADING_RE = re.compile(
+    r"\b(?:our|the company(?:'s)?) common stock (?:began|commenced) trading\b",
+    re.IGNORECASE,
+)
+_NO_ISSUER_PROCEEDS_FROM_COVERED_SHARES_RE = re.compile(
+    r"\bwe (?:will|would) not receive any (?:of )?(?:the )?proceeds from the sale of "
+    r"(?:the )?shares(?: of (?:our )?common stock)? covered by this prospectus\b",
+    re.IGNORECASE,
+)
 
 
 def looks_like_resale_only_cover(filing_text: str) -> bool:
@@ -33,6 +42,13 @@ def looks_like_resale_only_cover(filing_text: str) -> bool:
     as the current underwritten offering. Requiring all four cover concepts keeps
     this fallback narrow while tolerating large iXBRL/layout insertions between
     them.
+
+    A second, equally deterministic variant covers post-listing registrations
+    filed after a merger or other transaction: the prospectus states that the
+    common stock already began/commenced trading, identifies selling holders, and
+    states that the issuer receives no proceeds from the shares covered by the
+    prospectus. Requiring all three facts avoids treating an ordinary IPO with a
+    secondary component as a resale-only registration.
     """
     normalized = " ".join(str(filing_text or "").split())
     if not normalized:
@@ -44,7 +60,7 @@ def looks_like_resale_only_cover(filing_text: str) -> bool:
     while True:
         position = lowered.find(anchor, start)
         if position < 0:
-            return False
+            break
         # The cover can contain long tagged lists of resale-share categories.
         # A bounded window prevents unrelated risk-factor references later in the
         # filing from being combined into a false resale classification.
@@ -57,6 +73,13 @@ def looks_like_resale_only_cover(filing_text: str) -> bool:
         ):
             return True
         start = position + len(anchor)
+
+    front_matter = normalized[:125_000]
+    return bool(
+        _POST_LISTING_TRADING_RE.search(front_matter)
+        and _SELLING_HOLDER_RE.search(front_matter)
+        and _NO_ISSUER_PROCEEDS_FROM_COVERED_SHARES_RE.search(front_matter)
+    )
 
 
 def _fetch_filing_text(record: dict) -> str:
