@@ -140,6 +140,16 @@ def _stanford_public_source(row: dict):
     return note
 
 
+def _stanford_grade(row: dict) -> int | None:
+    """Return the explicit 0-5 Stanford confidence grade when present."""
+    value = first_present(row, "Stanford Grade")
+    try:
+        grade = int(value)
+    except (TypeError, ValueError):
+        return None
+    return grade if 0 <= grade <= 5 else None
+
+
 def prospect_person_metadata(row: dict, name: str) -> dict:
     """Normalize fields useful to a prospect researcher when upstream provides them.
 
@@ -149,8 +159,15 @@ def prospect_person_metadata(row: dict, name: str) -> dict:
     an impossible researcher-facing metric. We deliberately do not swap or infer
     values; unverifiable fields stay blank until the SEC table is parsed correctly.
     """
-    stanford_confirmed = confirmed_boolean(
-        first_present(row, "Stanford Affiliation Confirmed", "Stanford University in Bio")
+    # Stanford highlighting is a confirmed-evidence state, not a keyword state.
+    # Require both an explicit affirmative confirmation flag and the canonical
+    # grade-5 confidence threshold. This prevents a raw "Stanford University"
+    # mention from turning a company/person Cardinal red by itself.
+    stanford_confirmed = bool(
+        confirmed_boolean(
+            first_present(row, "Stanford Affiliation Confirmed", "Stanford University in Bio")
+        )
+        and _stanford_grade(row) == 5
     )
     ownership_percent = valid_ownership_percent(
         first_present(row, "Ownership % After IPO", "Ownership %", "Percent Ownership", "Percent", "% Ownership")
