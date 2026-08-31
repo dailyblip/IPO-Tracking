@@ -102,7 +102,7 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn("Filing Price</th>", self.html)
         self.assertIn("Final IPO Price</th>", self.html)
         self.assertIn("Current Price</th>", self.html)
-        self.assertIn("filing.price_range||filing.filing_price", self.html)
+        self.assertIn("filing.filing_price||filing.price_range", self.html)
         self.assertIn("filing.offering_price", self.html)
         self.assertIn("filing.current_price", self.html)
         self.assertIn("Delayed quote", self.html)

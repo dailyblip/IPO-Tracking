@@ -476,7 +476,7 @@ def _csv_rows(filings):
                 "secondary_offering_shares": filing.get("secondary_offering_shares"),
                 "offering_size_source": filing.get("offering_size_source"),
                 "offering_size_confidence": filing.get("offering_size_confidence"),
-                "filing_price": filing.get("price_range") or filing.get("filing_price"),
+                "filing_price": filing.get("filing_price") or filing.get("price_range"),
                 "offering_price": filing.get("offering_price"),
                 "current_price": filing.get("current_price"),
                 "price_updated": filing.get("price_updated"),
