@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-08-31T13:34:45.312122+00:00",
+  "generated_at": "2026-08-31T14:18:24.932452+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -25,29 +25,6 @@
         "No preliminary price range or fixed offering price detected yet"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1779977/000121390026095175/0001213900-26-095175-index.htm"
-    },
-    {
-      "id": "0001193125-26-374729",
-      "company": "Obsidian Therapeutics, Inc.",
-      "ticker": "OBX",
-      "cik": "0002130606",
-      "accession_no": "0001193125-26-374729",
-      "form": "S-1",
-      "filed": "2026-08-28",
-      "stage": "Pre-pricing",
-      "priority": "Medium",
-      "price_range": null,
-      "filing_price": null,
-      "ipo_size": null,
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": null,
-      "secondary_offering_shares": null,
-      "signals": [
-        "Initial registration statement filed — IPO is pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2130606/000119312526374729/0001193125-26-374729-index.htm"
     },
     {
       "id": "0001193125-26-374259",
@@ -119,29 +96,6 @@
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526372368/0001193125-26-372368-index.htm"
     },
     {
-      "id": "0001520138-26-000375",
-      "company": "Youmi Inc.",
-      "ticker": "",
-      "cik": "0002137360",
-      "accession_no": "0001520138-26-000375",
-      "form": "S-1/A",
-      "filed": "2026-08-27",
-      "stage": "Pre-pricing",
-      "priority": "Medium",
-      "price_range": null,
-      "filing_price": null,
-      "ipo_size": null,
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": null,
-      "secondary_offering_shares": null,
-      "signals": [
-        "Registration statement amended — IPO remains pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2137360/000152013826000375/0001520138-26-000375-index.htm"
-    },
-    {
       "id": "0001193125-26-361496",
       "company": "Holtec Nuclear Corp",
       "ticker": "HNUC",
@@ -187,29 +141,6 @@
         "IPO size disclosed or derived at approximately $18,750,000"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026092565/0001213900-26-092565-index.htm"
-    },
-    {
-      "id": "0001213900-26-092695",
-      "company": "Game Your Game Inc.",
-      "ticker": "GYGY",
-      "cik": "0002111846",
-      "accession_no": "0001213900-26-092695",
-      "form": "S-1",
-      "filed": "2026-08-21",
-      "stage": "Pre-pricing",
-      "priority": "Medium",
-      "price_range": null,
-      "filing_price": null,
-      "ipo_size": null,
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": null,
-      "secondary_offering_shares": null,
-      "signals": [
-        "Initial registration statement filed — IPO is pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2111846/000121390026092695/0001213900-26-092695-index.htm"
     },
     {
       "id": "0001193125-26-361190",
