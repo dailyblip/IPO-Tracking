@@ -291,11 +291,10 @@ def recover_payload_filing_prices(
     Price values, provenance metadata lost during later lifecycle/export steps, and
     stale sources from an earlier registration by the same issuer.
 
-    If at least one registration statement is successfully inspected but no reliable
-    preliminary price exists, a genuinely blank row remains blank. An already-
-    populated but unprovenanced value is release-blocking if SEC history cannot
-    verify it; it is safer to stop publication than silently retain unsupported
-    pricing metadata.
+    A genuinely blank Filing Price is accepted only after every relevant statement
+    needed to establish that blank has been inspected successfully. If an S-1/S-1A
+    cannot be parsed before a reliable range is found, publication fails closed
+    rather than skipping the missing evidence and accepting a stale range or blank.
     """
     filings = payload.get("filings")
     if not isinstance(filings, list):
@@ -358,16 +357,17 @@ def recover_payload_filing_prices(
             continue
 
         checked += 1
-        inspected = 0
         found = None
-        failures = []
         for metadata in history:
             try:
                 parsed, source_url = registration_loader(cik, metadata)
-                inspected += 1
             except Exception as error:
-                failures.append(f"{metadata.get('accession_no')}: {error}")
-                continue
+                accession = metadata.get("accession_no") or "unknown accession"
+                raise FilingPriceHistoryError(
+                    f"Could not complete S-1/S-1A history review for "
+                    f"{filing.get('company') or filing.get('id')}; "
+                    f"{accession} could not be inspected: {error}"
+                ) from error
 
             price_range = (parsed or {}).get("price_range") or {}
             low = _number(price_range.get("range_low"))
@@ -376,12 +376,6 @@ def recover_payload_filing_prices(
                 continue
             found = (low, high, metadata, source_url)
             break
-
-        if inspected == 0:
-            detail = "; ".join(failures[:3]) or "no registration filing could be parsed"
-            raise FilingPriceHistoryError(
-                f"Could not inspect S-1/S-1A history for {filing.get('company') or filing.get('id')}: {detail}"
-            )
 
         normalized = dict(filing)
         if found:
