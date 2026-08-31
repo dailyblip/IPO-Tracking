@@ -22,6 +22,8 @@ class DashboardCsvExportTests(unittest.TestCase):
                 "Shares": 1000,
                 "Cash Value": 25_000,
                 "Stanford University in Bio": True,
+                "Stanford Affiliation Confirmed": True,
+                "Stanford Grade": 5,
                 "Last Updated": "2026-08-17",
                 "_cik": "1234567",
                 "_accession_no": "0001234567-26-000001",
