@@ -54,12 +54,27 @@ class ProspectResearchTests(unittest.TestCase):
         for value in (True, "true", "TRUE", "yes", "Y", "1", 1):
             self.assertTrue(confirmed_boolean(value), value)
 
-    def test_stanford_affiliation_requires_explicit_affirmative_value(self):
+    def test_stanford_affiliation_requires_explicit_affirmative_value_and_grade_five(self):
         for value in ("False", "No", "0"):
-            m=prospect_person_metadata({"Stanford Affiliation Confirmed": value}, "Jane Smith")
+            m=prospect_person_metadata({
+                "Stanford Affiliation Confirmed": value,
+                "Stanford Grade": 5,
+            }, "Jane Smith")
             self.assertFalse(m["stanford_affiliation_confirmed"], value)
             self.assertFalse(m["stanford_university_bio"], value)
-        m=prospect_person_metadata({"Stanford Affiliation Confirmed": "Yes"}, "Jane Smith")
+
+        for grade in (None, 0, 1, 2, 3, 4):
+            m=prospect_person_metadata({
+                "Stanford Affiliation Confirmed": "Yes",
+                "Stanford Grade": grade,
+            }, "Jane Smith")
+            self.assertFalse(m["stanford_affiliation_confirmed"], grade)
+            self.assertFalse(m["stanford_university_bio"], grade)
+
+        m=prospect_person_metadata({
+            "Stanford Affiliation Confirmed": "Yes",
+            "Stanford Grade": 5,
+        }, "Jane Smith")
         self.assertTrue(m["stanford_affiliation_confirmed"])
         self.assertTrue(m["stanford_university_bio"])
 
@@ -67,8 +82,22 @@ class ProspectResearchTests(unittest.TestCase):
         m=prospect_person_metadata({
             "Stanford Affiliation Confirmed": "No",
             "Stanford University in Bio": "Yes",
+            "Stanford Grade": 5,
         }, "Jane Smith")
         self.assertFalse(m["stanford_affiliation_confirmed"])
         self.assertFalse(m["stanford_university_bio"])
+
+    def test_legacy_bio_flag_also_requires_grade_five(self):
+        unconfirmed = prospect_person_metadata({
+            "Stanford University in Bio": "Yes",
+            "Stanford Grade": 4,
+        }, "Jane Smith")
+        self.assertFalse(unconfirmed["stanford_affiliation_confirmed"])
+
+        confirmed = prospect_person_metadata({
+            "Stanford University in Bio": "Yes",
+            "Stanford Grade": 5,
+        }, "Jane Smith")
+        self.assertTrue(confirmed["stanford_affiliation_confirmed"])
 
 if __name__ == "__main__": unittest.main()

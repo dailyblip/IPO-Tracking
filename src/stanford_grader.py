@@ -5,7 +5,7 @@ Public-evidence Stanford affiliation grader for Research Monitor.
 
 Order of operations:
 1. Skip legal entities / aggregate affiliate rows.
-2. Confirm explicit Stanford University mentions in person-specific SEC filing context.
+2. Confirm explicit Stanford University affiliations in person-specific SEC filing context.
 3. If filing evidence is silent, use the OpenAI Responses API with built-in web search.
 4. Fail closed: only unambiguous person-level evidence can receive grade 5.
 
@@ -27,10 +27,23 @@ import requests
 OPENAI_RESPONSES_API_URL = "https://api.openai.com/v1/responses"
 DEFAULT_OPENAI_MODEL = "gpt-5.6-luna"
 CACHE_SCHEMA_VERSION = 1
-GRADING_POLICY_VERSION = "2026-08-28-balanced-v1"
+GRADING_POLICY_VERSION = "2026-08-31-explicit-affiliation-v2"
 
 DIRECT_MENTION_PATTERN = re.compile(r"\bstanford\b", re.IGNORECASE)
 STANFORD_UNIVERSITY_PATTERN = re.compile(r"\bstanford\s+university\b", re.IGNORECASE)
+AFFILIATION_PATTERN = re.compile(
+    r"(?:\bholds?\b|\bearned\b|\breceived\b|\bgraduat(?:e|ed)\b|"
+    r"\battended\b|\bstudied\b|\bdegree\b|\bprofessor\b|\bfellow\b|"
+    r"\bteaches?\b|\bfaculty\b|\blecturer\b|\bstudent\b|"
+    r"\balumn(?:us|a|i|ae)\b|\bgraduate\s+of\b)",
+    re.IGNORECASE,
+)
+DEGREE_PATTERN = re.compile(
+    r"\b(?:B\.?A\.?|B\.?S\.?|M\.?A\.?|M\.?S\.?|M\.?B\.?A\.?|"
+    r"J\.?D\.?|M\.?D\.?|Ph\.?D\.?)\b",
+    re.IGNORECASE,
+)
+STRONG_SENTENCE_BOUNDARY_PATTERN = re.compile(r"[.!?]\s+[A-Z]")
 SEC_FOOTNOTE_SUFFIX_PATTERN = re.compile(r"(?:\s*\(\d+[a-z]?\))+$", re.IGNORECASE)
 ORGANIZATION_PATTERN = re.compile(
     r"\b(?:entities? affiliated|affiliates?|asset management|capital|ventures?|partners?|"
@@ -191,21 +204,46 @@ def _person_specific_filing_context(person_name: str, bio_text: str, radius: int
     return ""
 
 
+def _stanford_affiliation_sentence(context: str) -> str | None:
+    """Return the sentence only when it explicitly ties the person to Stanford.
+
+    A bare Stanford University mention can describe a customer, collaborator,
+    research site, or another person. It is not sufficient for grade 5. Keep
+    sentence boundaries conservative around degree abbreviations such as B.A.
+    """
+    text = " ".join(str(context or "").split())
+    for stanford in STANFORD_UNIVERSITY_PATTERN.finditer(text):
+        before = text[:stanford.start()]
+        boundaries = list(STRONG_SENTENCE_BOUNDARY_PATTERN.finditer(before))
+        start = boundaries[-1].end() if boundaries else 0
+        after = text[stanford.end():]
+        boundary = STRONG_SENTENCE_BOUNDARY_PATTERN.search(after)
+        end = stanford.end() + (boundary.start() if boundary else len(after))
+        sentence = text[start:end].strip()
+        if AFFILIATION_PATTERN.search(sentence) or DEGREE_PATTERN.search(sentence):
+            return sentence
+        if re.search(
+            r"\bserved\b.{0,100}\b(?:at|with)\s+Stanford\s+University\b",
+            sentence,
+            re.IGNORECASE,
+        ):
+            return sentence
+    return None
+
+
 def check_bio_for_stanford(bio_text: str, person_name: str = "") -> dict | None:
     context = _person_specific_filing_context(person_name, bio_text) if person_name else str(bio_text or "")
     if not context or not STANFORD_UNIVERSITY_PATTERN.search(context):
         return None
 
-    sentences = re.split(r"(?<=[.!?])\s+", context)
-    matching_sentence = next(
-        (sentence for sentence in sentences if STANFORD_UNIVERSITY_PATTERN.search(sentence)),
-        context[:400],
-    )
+    matching_sentence = _stanford_affiliation_sentence(context)
+    if not matching_sentence:
+        return None
     return {
         "grade": 5,
         "justification": (
             f'Direct Stanford University affiliation stated in SEC filing context for '
-            f'{_clean_person_name(person_name) or "holder"}: "{matching_sentence.strip()}"'
+            f'{_clean_person_name(person_name) or "holder"}: "{matching_sentence}"'
         ),
         "source": "filing_bio",
     }
