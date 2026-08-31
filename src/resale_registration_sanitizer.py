@@ -86,6 +86,22 @@ def looks_like_resale_only_cover(filing_text: str) -> bool:
     )
 
 
+def _visible_filing_text(soup) -> str:
+    """Return filing text without hidden inline-XBRL metadata.
+
+    Inline-XBRL filings can place a very large ``ix:header``/``ix:hidden`` block
+    ahead of visible prospectus cover language. BeautifulSoup includes that hidden
+    metadata in ``get_text()``, which can push otherwise adjacent cover concepts
+    outside the deliberately bounded resale-classifier windows. Remove only the
+    non-visible iXBRL header/hidden containers; do not drop visible filing text.
+    """
+    for tag in soup.find_all():
+        name = str(getattr(tag, "name", "") or "").casefold()
+        if name in {"ix:header", "ix:hidden"} or name.endswith(":header") or name.endswith(":hidden"):
+            tag.decompose()
+    return soup.get_text(" ", strip=True)
+
+
 def _fetch_filing_text(record: dict) -> str:
     index_url = str(record.get("sec_url") or "").strip()
     if not index_url:
@@ -94,7 +110,7 @@ def _fetch_filing_text(record: dict) -> str:
         index_url, expected_form_types=["S-1", "S-1/A"]
     )
     soup = filing_parser.fetch_document(document_url)
-    return soup.get_text(" ", strip=True)
+    return _visible_filing_text(soup)
 
 
 def _excluded_accessions(payload: dict) -> set[str]:

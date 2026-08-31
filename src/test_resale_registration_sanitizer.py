@@ -1,6 +1,12 @@
 import unittest
 
-from resale_registration_sanitizer import looks_like_resale_only_cover, sanitize_payload
+from bs4 import BeautifulSoup
+
+from resale_registration_sanitizer import (
+    _visible_filing_text,
+    looks_like_resale_only_cover,
+    sanitize_payload,
+)
 
 
 class ResaleRegistrationSanitizerTests(unittest.TestCase):
@@ -11,6 +17,20 @@ class ResaleRegistrationSanitizerTests(unittest.TestCase):
             + "from time to time, by the Selling Securityholders named in this "
             "prospectus or their permitted transferees of 3,915,995 Resale Shares."
         )
+        self.assertTrue(looks_like_resale_only_cover(filing_text))
+
+    def test_hidden_ixbrl_metadata_does_not_separate_resale_cover_language(self):
+        hidden_noise = "hidden tagged fact " * 3000
+        soup = BeautifulSoup(
+            "<html><body>"
+            "<p>This prospectus relates to the proposed offer and resale or other disposition</p>"
+            f"<ix:header><ix:hidden>{hidden_noise}</ix:hidden></ix:header>"
+            "<p>from time to time by the selling stockholders identified in this prospectus.</p>"
+            "</body></html>",
+            "lxml",
+        )
+        filing_text = _visible_filing_text(soup)
+        self.assertNotIn("hidden tagged fact", filing_text)
         self.assertTrue(looks_like_resale_only_cover(filing_text))
 
     def test_post_listing_selling_holder_resale_is_excluded(self):
