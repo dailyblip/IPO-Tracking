@@ -189,6 +189,10 @@ def process_filing(filing_meta: dict) -> list:
                 ticker = edgar_client.get_primary_ticker(cik)
             except Exception as error:
                 print(f"[main] Warning: could not resolve SEC ticker for {company_name}: {error}")
+        # An issuer can legitimately reach QC before a ticker is resolved. Keep the
+        # unresolved value as an empty string so completeness checks can flag it
+        # without crashing ticker-key normalization later in the batch.
+        ticker = str(ticker or "").strip().upper()
         actual_price = cover.get("offering_price")
 
         stockholder_count = len(parsed.get("principal_stockholders", []))
