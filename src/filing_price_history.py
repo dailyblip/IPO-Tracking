@@ -130,6 +130,21 @@ def _preliminary_price_value(filing):
     return str(filing.get("filing_price") or filing.get("price_range") or "").strip()
 
 
+def _synchronize_preliminary_price_aliases(filing, value):
+    """Keep the two public preliminary-price aliases identical after SEC review.
+
+    The dashboard historically reads ``price_range`` before ``filing_price``. A
+    lifecycle promotion can therefore preserve an older range in ``price_range``
+    even after S-1/S-1A history recovers a newer authoritative ``filing_price``.
+    Treat both fields as aliases once a priced row has passed the SEC history gate
+    so a stale value cannot outrank the recovered Filing Price in the UI.
+    """
+    normalized = dict(filing)
+    normalized["filing_price"] = value
+    normalized["price_range"] = value
+    return normalized
+
+
 def _has_authoritative_price_source(filing):
     source = filing.get("filing_price_source")
     if not isinstance(source, dict):
@@ -337,7 +352,9 @@ def recover_payload_filing_prices(
             )
 
         if existing_preliminary and _source_matches_registration_history(filing, history):
-            updated_filings.append(filing)
+            updated_filings.append(
+                _synchronize_preliminary_price_aliases(filing, existing_preliminary)
+            )
             continue
 
         checked += 1
@@ -369,7 +386,9 @@ def recover_payload_filing_prices(
         normalized = dict(filing)
         if found:
             low, high, metadata, source_url = found
-            normalized["filing_price"] = _format_range(low, high)
+            normalized = _synchronize_preliminary_price_aliases(
+                normalized, _format_range(low, high)
+            )
             normalized["filing_price_source"] = {
                 "source": "SEC EDGAR",
                 "form": metadata.get("form_type"),
