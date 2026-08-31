@@ -9,8 +9,9 @@ These are intentional product decisions, not suggestions. Future changes must pr
 3. Lifecycle correctness for priced/trading IPOs.
 4. In-company expandable beneficial-owner detail.
 5. Reliable Recent Activity ticker motion.
-6. Keep the preliminary UI stable; save the larger IPO Roll product redesign for a separate future product repository.
+6. Keep the preliminary UI stable; save the larger IPO Roll product redesign until the user explicitly requests the product/sellable pivot.
 7. Pagination only when the qualifying feed reaches roughly 50–75 records; add a Year filter only around 150–200+ records.
+8. Historical April/May backfill remains on hold until the user explicitly resumes it; do not launch a separate historical sub-$100M backfill solely because of the newer go-forward size policy.
 
 Do not skip a higher-priority unresolved item for opportunistic polish, refactors, or feature expansion.
 
@@ -40,6 +41,7 @@ The main queue contains exactly these columns, in this default order:
 - Public facts only.
 - Going forward, qualifying operating-company IPOs are included regardless of offering size/value; the former $100 million publication floor is retired for new/current ingestion.
 - Do not run a dedicated historical backfill solely to add small/minor IPOs omitted under the former size floor.
+- Historical April/May backfill is on hold until the user explicitly resumes it.
 - Keep offering-size filtering in the UI with `Any size` as the default and optional thresholds such as $100M+, $250M+, $500M+, $1B+, and $5B+.
 - If offering size cannot be established reliably from authoritative public evidence, leave the size blank rather than guessing. Unknown size alone is not a reason to exclude an otherwise confirmed operating-company IPO.
 - Omit SPACs, reverse SPACs, ETFs, ETNs, closed-end funds, interval funds, mutual funds, trusts, BDCs, commodity pools, unit investment trusts, grantor trusts, pooled investment vehicles, and other non-operating-company investment products.
@@ -65,7 +67,7 @@ The main queue contains exactly these columns, in this default order:
 - The company name is Cardinal red only when at least one confirmed beneficial owner has a confirmed Stanford affiliation.
 - The specific confirmed Stanford-affiliated beneficial owner is also Cardinal red in the company detail view.
 - Person detail may show a concise Stanford connection note and a 1–5 confidence score where supported.
-- Historical Stanford regrading/backfill from June 1, 2026 through the present is verified complete in the live feed. The June-present ownership refresh and SEC-confirmed Stanford recovery remain the canonical maintenance path for this coverage.
+- Historical Stanford regrading/backfill from June 1, 2026 through the present remains required until verified complete. The June-present ownership refresh and SEC-confirmed Stanford recovery remain the canonical maintenance path for this coverage.
 
 ## Person detail
 
@@ -81,9 +83,25 @@ The main queue contains exactly these columns, in this default order:
 - The ticker must continue reliably after mouse/keyboard interaction while respecting reduced-motion accessibility preferences.
 - The ticker is UI-only and must not alter ingestion/feed logic.
 
-## Stanford visual styling
+## Preliminary-version styling
 
-Use the current preliminary-version styling without a broad redesign. Preserve the function-first researcher workflow and the semantic meaning of Cardinal-red affiliation highlighting. Do not implement the future IPO Roll product mockup in this repository; that sellable product should be created later in a separate repository and consume a validated/versioned feed from this canonical research pipeline.
+Use the current preliminary-version styling without a broad redesign. Preserve the clean, function-first researcher workflow and the semantic meaning of Cardinal-red affiliation highlighting. Do not implement the future IPO Roll product mockup until the user explicitly requests the product/sellable pivot.
+
+## Saved IPO Roll product direction — do not implement yet
+
+When the user explicitly requests the product/sellable pivot, call the product **IPO Roll** and apply the approved direction incrementally rather than replacing the application wholesale:
+
+- Remove Stanford University branding from the application shell.
+- Use a universal slate/teal/blue product palette.
+- Reserve Stanford Cardinal red exclusively as a semantic signal for confirmed Stanford-connected companies/people.
+- Use left navigation with Overview, IPO Activity, Saved/Watchlist, Stanford Affiliations, and Methodology.
+- Add top summary cards for IPOs Tracked, Filed, Priced, Median Offering Size, and Total Capital Raised.
+- Present IPO Activity Over Time with polished axes, counts over bars, and a Filed/Priced legend.
+- Include a YTD Stanford Affiliated IPO count based on confirmed qualifying Stanford connections.
+- Retain the Recent Activity ticker and the established detailed IPO table, filters, and company/person accordion.
+- Add a concise Methodology view explaining inclusion/exclusion rules, SEC sourcing, lifecycle tracking, Stanford criteria, and data-quality standards.
+
+This saved direction must not distract from current data/pipeline work in the preliminary version.
 
 ## Scale strategy
 
