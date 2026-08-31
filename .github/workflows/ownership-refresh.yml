@@ -17,6 +17,7 @@ on:
       - 'src/followon_sanitizer.py'
       - 'src/prepricing_quote_sanitizer.py'
       - 'src/market_quote_identity.py'
+      - 'src/market_quote_release_gate.py'
       - 'src/location_quality.py'
       - 'src/offering_value_reconciler.py'
       - 'src/feed_schema_contract.py'
@@ -32,6 +33,7 @@ on:
       - 'src/test_followon_sanitizer.py'
       - 'src/test_prepricing_quote_sanitizer.py'
       - 'src/test_market_quote_identity.py'
+      - 'src/test_market_quote_release_gate.py'
       - 'src/test_location_quality.py'
       - 'src/test_offering_value_reconciler.py'
       - 'src/test_dashboard_ui.py'
@@ -158,7 +160,12 @@ jobs:
         env:
           MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
-        run: python market_quote_identity.py ../docs/data/filings.json
+        # Current Price is secondary data. If the identity provider is unavailable
+        # after bounded retries, publish no unverified quote-derived values rather
+        # than blocking authoritative SEC ownership/IPO history.
+        # The release wrapper delegates to the strict implementation formerly run as:
+        # run: python market_quote_identity.py ../docs/data/filings.json
+        run: python market_quote_release_gate.py ../docs/data/filings.json
       - name: Validate regenerated golden records
         run: python -m unittest discover -s src -p 'test_golden_records.py' -v
       - name: Validate public feed
