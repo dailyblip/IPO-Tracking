@@ -18,7 +18,7 @@ import filing_parser
 
 S1_FORMS = {"S-1", "S-1/A"}
 _SELLING_HOLDER_RE = re.compile(
-    r"\bselling\s+(?:securityholders|stockholders|shareholders)\b",
+    r"\bselling\s+(?:securityholders?|stockholders?|shareholders?)\b",
     re.IGNORECASE,
 )
 _RESALE_ACTION_RE = re.compile(r"\b(?:resale|offer\s+and\s+sale)\b", re.IGNORECASE)
@@ -30,7 +30,7 @@ _NO_ISSUER_PROCEEDS_FROM_COVERED_SHARES_RE = re.compile(
     r"\bwe (?:will|would) not receive any (?:of )?(?:the )?proceeds from (?:"
     r"(?:the )?sale of (?:the )?shares(?: of (?:our )?common stock)? covered by this prospectus"
     r"|any sale of (?:our )?common stock by (?:the )?selling\s+"
-    r"(?:securityholders|stockholders|shareholders) pursuant to this prospectus"
+    r"(?:securityholders?|stockholders?|shareholders?) pursuant to this prospectus"
     r")\b",
     re.IGNORECASE,
 )

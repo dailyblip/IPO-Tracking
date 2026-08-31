@@ -33,6 +33,15 @@ class ResaleRegistrationSanitizerTests(unittest.TestCase):
         self.assertNotIn("hidden tagged fact", filing_text)
         self.assertTrue(looks_like_resale_only_cover(filing_text))
 
+    def test_singular_selling_stockholder_resale_is_excluded(self):
+        filing_text = """
+        Preliminary Prospectus. This prospectus relates to the offer and sale from
+        time to time by Streeterville Capital, LLC, a Utah limited liability company
+        (the Selling Stockholder), of up to an aggregate of 22,222,200 shares of
+        Common Stock issuable upon conversion of preferred stock.
+        """
+        self.assertTrue(looks_like_resale_only_cover(filing_text))
+
     def test_post_listing_selling_holder_resale_is_excluded(self):
         filing_text = """
         Our common stock began trading on the Nasdaq Capital Market under the
