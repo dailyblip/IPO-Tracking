@@ -1,5 +1,6 @@
 import json
 import tempfile
+import time
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -71,6 +72,38 @@ class MarketQuoteReleaseGateTests(unittest.TestCase):
             self.assertEqual(person["shares_after_ipo"], 1000)
             for field in ("cash_value", "liquid_value", "locked_value", "valuation_as_of"):
                 self.assertNotIn(field, person)
+            csv_mock.assert_called_once()
+
+    def test_release_time_budget_clears_quotes_instead_of_stalling_publish(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "filings.json"
+            path.write_text(json.dumps(self._payload()), encoding="utf-8")
+
+            def slow_identity_gate(*args, **kwargs):
+                time.sleep(0.1)
+                return (1, 0)
+
+            with (
+                patch.object(
+                    market_quote_release_gate.identity,
+                    "sanitize_feed",
+                    side_effect=slow_identity_gate,
+                ),
+                patch.object(
+                    market_quote_release_gate.dashboard_export,
+                    "write_dashboard_csv",
+                ) as csv_mock,
+            ):
+                audited, cleared = market_quote_release_gate.enforce_release_gate(
+                    path,
+                    api_key="test-key",
+                    time_budget_seconds=0.01,
+                )
+
+            self.assertEqual((audited, cleared), (0, 1))
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            self.assertNotIn("current_price", payload["filings"][0])
+            self.assertNotIn("price_updated", payload["filings"][0])
             csv_mock.assert_called_once()
 
     def test_missing_market_data_key_remains_release_blocking(self):
