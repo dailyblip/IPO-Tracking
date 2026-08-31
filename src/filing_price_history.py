@@ -246,17 +246,26 @@ def _current_registration_history(history, *, pricing_day, initial_day=None):
 
 
 def _source_matches_registration_history(filing, history):
+    """Trust cached SEC provenance only when it is the newest relevant filing.
+
+    A source accession can still belong to the correct registration while being
+    stale if a later S-1/A changed the preliminary range. When a newer amendment
+    exists, force the normal newest-to-oldest inspection before accepting the
+    cached value.
+    """
     if not _has_authoritative_price_source(filing):
         return False
     source = filing.get("filing_price_source") or {}
     source_accession = _normalized_accession(source.get("accession_no"))
     if not source_accession:
         return False
-    return any(
-        _normalized_accession(metadata.get("accession_no")) == source_accession
-        for metadata in history
-        if isinstance(metadata, dict)
+    latest = next(
+        (metadata for metadata in history if isinstance(metadata, dict)),
+        None,
     )
+    if not latest:
+        return False
+    return _normalized_accession(latest.get("accession_no")) == source_accession
 
 
 def parse_s1_history_entry(cik, metadata):
