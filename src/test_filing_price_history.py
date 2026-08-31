@@ -128,9 +128,23 @@ class FilingPriceHistoryTests(unittest.TestCase):
                 registration_loader=lambda cik, metadata: (_ for _ in ()).throw(RuntimeError("SEC parse failed")),
             )
 
-    def test_existing_preliminary_price_with_sec_source_skips_history_lookup(self):
-        def should_not_run(*args, **kwargs):
-            raise AssertionError("history lookup should not run for sourced filing price")
+    def test_existing_preliminary_price_with_sec_source_validates_history_lineage(self):
+        history_calls = []
+        history = [
+            {
+                "form_type": "S-1/A",
+                "accession_no": "0001193125-26-123456",
+                "filing_date": "2026-08-18",
+                "file_number": "333-300001",
+            },
+        ]
+
+        def history_loader(cik, pricing_date):
+            history_calls.append((cik, pricing_date))
+            return history
+
+        def registration_should_not_run(*args, **kwargs):
+            raise AssertionError("matching sourced filing price should not be reparsed")
 
         payload, recovered, checked = filing_price_history.recover_payload_filing_prices(
             {"filings": [self.priced_row(
@@ -139,13 +153,14 @@ class FilingPriceHistoryTests(unittest.TestCase):
                     "source": "SEC EDGAR",
                     "form": "S-1/A",
                     "filing_date": "2026-08-18",
-                    "accession_no": "amend",
+                    "accession_no": "0001193125-26-123456",
                     "sec_url": "https://www.sec.gov/amend",
                 },
             )]},
-            history_loader=should_not_run,
-            registration_loader=should_not_run,
+            history_loader=history_loader,
+            registration_loader=registration_should_not_run,
         )
+        self.assertEqual(history_calls, [("0001234567", "2026-08-20")])
         self.assertEqual(payload["filings"][0]["filing_price"], "15-17")
         self.assertEqual((recovered, checked), (0, 0))
 
