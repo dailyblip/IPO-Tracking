@@ -26,6 +26,7 @@ _EXPLICIT_PROSPECTUS_DATE_PATTERNS = (
     re.compile(rf"\bthe\s+date\s+of\s+this\s+prospectus\s+is\s+{_DATE_TEXT}", re.I),
     re.compile(rf"\b(?:final\s+)?prospectus\s+dated(?:\s+as\s+of)?\s+{_DATE_TEXT}", re.I),
 )
+_STANDALONE_DATE_PATTERN = re.compile(rf"^{_DATE_TEXT}$", re.I)
 
 
 def _iso_date(value):
@@ -51,6 +52,44 @@ def _parse_month_date(value):
     return None
 
 
+def _candidate_is_plausible(candidate, filed):
+    if candidate is None:
+        return False
+    if filed is None:
+        return True
+    delta = (filed - candidate).days
+    return 0 <= delta <= 10
+
+
+def _extract_back_cover_date(raw_text, filed):
+    """Recover a final-prospectus date from a labeled back cover.
+
+    Some SEC HTML filings omit the words "Prospectus dated" around the final
+    date while preserving a back-cover PROSPECTUS label followed by a standalone
+    date. Limit this fallback to the document tail and a narrow line window after
+    the final PROSPECTUS marker so unrelated dates elsewhere are not promoted.
+    """
+    tail = str(raw_text or "")[-12000:]
+    lines = [" ".join(line.replace("\xa0", " ").split()) for line in tail.splitlines()]
+    lines = [line for line in lines if line]
+    marker_indexes = [
+        index for index, line in enumerate(lines) if line.strip().upper() == "PROSPECTUS"
+    ]
+    if not marker_indexes:
+        return None
+
+    marker_index = marker_indexes[-1]
+    following = lines[marker_index + 1 : marker_index + 81]
+    for line in reversed(following):
+        match = _STANDALONE_DATE_PATTERN.fullmatch(line)
+        if not match:
+            continue
+        candidate = _parse_month_date(match.group(1))
+        if _candidate_is_plausible(candidate, filed):
+            return candidate.isoformat()
+    return None
+
+
 def extract_authoritative_pricing_date(soup, sec_filing_date=None):
     """Return an ISO prospectus date only from explicit final-prospectus language.
 
@@ -58,20 +97,17 @@ def extract_authoritative_pricing_date(soup, sec_filing_date=None):
     The narrow ten-day window rejects historical prospectus references elsewhere in
     long registration documents while accommodating weekends and filing delays.
     """
-    text = " ".join(soup.get_text(" ", strip=True)[:120000].replace("\xa0", " ").split())
+    raw_text = soup.get_text("\n", strip=True).replace("\xa0", " ")
+    text = " ".join(raw_text[:120000].split())
     filed = _iso_date(sec_filing_date)
 
     for pattern in _EXPLICIT_PROSPECTUS_DATE_PATTERNS:
         for match in pattern.finditer(text):
             candidate = _parse_month_date(match.group(1))
-            if candidate is None:
-                continue
-            if filed is not None:
-                delta = (filed - candidate).days
-                if delta < 0 or delta > 10:
-                    continue
-            return candidate.isoformat()
-    return None
+            if _candidate_is_plausible(candidate, filed):
+                return candidate.isoformat()
+
+    return _extract_back_cover_date(raw_text, filed)
 
 
 def _load_final_soup(filing):

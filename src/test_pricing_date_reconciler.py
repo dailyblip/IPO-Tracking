@@ -18,6 +18,44 @@ class PricingDateReconcilerTests(unittest.TestCase):
             "2026-08-18",
         )
 
+    def test_extracts_standalone_date_from_labeled_back_cover(self):
+        filler = "<p>" + ("x" * 125000) + "</p>"
+        soup = BeautifulSoup(
+            "<html><body>"
+            + filler
+            + "<div>PROSPECTUS</div><div>August 18, 2026</div>"
+            + "</body></html>",
+            "html.parser",
+        )
+        self.assertEqual(
+            pricing_date_reconciler.extract_authoritative_pricing_date(
+                soup, "2026-08-19"
+            ),
+            "2026-08-18",
+        )
+
+    def test_rejects_unlabeled_standalone_date(self):
+        soup = BeautifulSoup(
+            "<html><body><div>August 18, 2026</div></body></html>",
+            "html.parser",
+        )
+        self.assertIsNone(
+            pricing_date_reconciler.extract_authoritative_pricing_date(
+                soup, "2026-08-19"
+            )
+        )
+
+    def test_rejects_stale_back_cover_date(self):
+        soup = BeautifulSoup(
+            "<html><body><div>PROSPECTUS</div><div>July 1, 2026</div></body></html>",
+            "html.parser",
+        )
+        self.assertIsNone(
+            pricing_date_reconciler.extract_authoritative_pricing_date(
+                soup, "2026-08-19"
+            )
+        )
+
     def test_reconciles_priced_424b4_to_explicit_prospectus_date(self):
         payload = {
             "filings": [
