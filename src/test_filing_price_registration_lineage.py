@@ -118,7 +118,7 @@ class FilingPriceRegistrationLineageTests(unittest.TestCase):
         self.assertIsNone(payload["filings"][0]["filing_price"])
         self.assertEqual((recovered, checked), (0, 1))
 
-    def test_existing_sec_source_is_validated_against_same_registration(self):
+    def test_existing_sec_source_is_rechecked_after_newer_same_registration_filing(self):
         history = [
             {
                 "form_type": "S-1/A",
@@ -146,6 +146,21 @@ class FilingPriceRegistrationLineageTests(unittest.TestCase):
             "accession_no": "0001104659-26-084856",
             "sec_url": "https://www.sec.gov/Archives/edgar/data/1787117/000110465926084856/0001104659-26-084856-index.htm",
         }
+        calls = []
+
+        def registration_loader(cik, metadata):
+            calls.append(metadata["accession_no"])
+            if metadata["accession_no"] == "0001104659-26-088001":
+                return (
+                    {"price_range": {"range_low": None, "range_high": None}},
+                    "https://www.sec.gov/current-amendment",
+                )
+            if metadata["accession_no"] == "0001104659-26-084856":
+                return (
+                    {"price_range": {"range_low": 15, "range_high": 17}},
+                    existing_source["sec_url"],
+                )
+            raise AssertionError("different registration must not be inspected")
 
         payload, recovered, checked = filing_price_history.recover_payload_filing_prices(
             {
@@ -157,14 +172,16 @@ class FilingPriceRegistrationLineageTests(unittest.TestCase):
                 ]
             },
             history_loader=lambda cik, pricing_date: history,
-            registration_loader=lambda *args: (_ for _ in ()).throw(
-                AssertionError("valid same-registration provenance should not be reparsed")
-            ),
+            registration_loader=registration_loader,
         )
 
+        self.assertEqual(
+            calls,
+            ["0001104659-26-088001", "0001104659-26-084856"],
+        )
         self.assertEqual(payload["filings"][0]["filing_price"], "15-17")
         self.assertEqual(payload["filings"][0]["filing_price_source"], existing_source)
-        self.assertEqual((recovered, checked), (0, 0))
+        self.assertEqual((recovered, checked), (1, 1))
 
 
 if __name__ == "__main__":
