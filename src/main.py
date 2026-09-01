@@ -28,6 +28,7 @@ import stanford_grader
 import qc_review
 import sheets_writer
 import dashboard_export
+from prepricing_quote_sanitizer import is_priced_ipo
 
 DASHBOARD_OUTPUT_PATH = Path(__file__).resolve().parents[1] / "docs" / "data" / "filings.json"
 
@@ -106,11 +107,13 @@ def _role_from_bio(bio_text):
 
 
 def _refresh_dashboard_prices(dashboard):
-    """Refresh delayed quotes for every trading ticker already in the public queue."""
+    """Refresh delayed quotes only for canonically priced IPOs in the public queue."""
     tickers = sorted({
         str(filing.get("ticker") or "").strip().upper()
         for filing in (dashboard or {}).get("filings", [])
-        if str(filing.get("ticker") or "").strip()
+        if isinstance(filing, dict)
+        and is_priced_ipo(filing)
+        and str(filing.get("ticker") or "").strip()
     })
     if not tickers:
         return dashboard
