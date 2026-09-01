@@ -25,6 +25,14 @@ class CompanyNameNormalizerTests(unittest.TestCase):
             "Example Corp.",
         )
         self.assertEqual(
+            normalize_company_name("Tailored Brands, Inc. / DE"),
+            "Tailored Brands, Inc.",
+        )
+        self.assertEqual(
+            normalize_company_name("EXAMPLE CORP. /NV"),
+            "Example Corp.",
+        )
+        self.assertEqual(
             normalize_company_name("Example/AI Labs"),
             "Example/AI Labs",
         )
