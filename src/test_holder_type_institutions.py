@@ -13,6 +13,18 @@ class InstitutionalHolderTypeTests(unittest.TestCase):
     def test_corporate_company_names_are_not_people(self):
         self.assertEqual(holder_type("Eli Lilly and Company"), "Entity")
         self.assertEqual(holder_type("The Boeing Company"), "Entity")
+        self.assertEqual(holder_type("Akastor ASA"), "Entity")
+        self.assertEqual(holder_type("Example GmbH"), "Entity")
+
+    def test_role_labeled_natural_people_are_not_misclassified_as_entities(self):
+        self.assertEqual(
+            holder_type("Scott W. Knoll, EVP, Corporate Strategy and Director"),
+            "Individual",
+        )
+        self.assertEqual(
+            holder_type("Travis Murdoch, M.D., Chief Executive Officer, President and Director"),
+            "Individual",
+        )
 
     def test_normal_person_name_remains_individual(self):
         self.assertEqual(holder_type("Jane Smith"), "Individual")
