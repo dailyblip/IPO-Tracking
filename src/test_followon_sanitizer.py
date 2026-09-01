@@ -17,6 +17,21 @@ class FollowOnSanitizerTests(unittest.TestCase):
             followon_sanitizer.has_prior_periodic_report(submissions, "2026-06-01")
         )
 
+    def test_prior_foreign_annual_report_proves_candidate_is_not_first_time_ipo(self):
+        for form in ("20-F", "40-F"):
+            with self.subTest(form=form):
+                submissions = {
+                    "filings": {
+                        "recent": {
+                            "form": [form, "424B4"],
+                            "filingDate": ["2026-05-14", "2026-06-01"],
+                        }
+                    }
+                }
+                self.assertTrue(
+                    followon_sanitizer.has_prior_periodic_report(submissions, "2026-06-01")
+                )
+
     def test_periodic_report_after_candidate_does_not_disqualify_historical_ipo(self):
         submissions = {
             "filings": {
@@ -38,6 +53,14 @@ class FollowOnSanitizerTests(unittest.TestCase):
                     "id": "followon",
                     "company": "Already Public, Inc.",
                     "cik": "1",
+                    "form": "424B4",
+                    "filed": "2026-06-01",
+                    "pricing_date": "2026-06-01",
+                },
+                {
+                    "id": "foreign-followon",
+                    "company": "Already Public Foreign Co.",
+                    "cik": "4",
                     "form": "424B4",
                     "filed": "2026-06-01",
                     "pricing_date": "2026-06-01",
@@ -77,13 +100,24 @@ class FollowOnSanitizerTests(unittest.TestCase):
                     }
                 }
             },
+            "4": {
+                "filings": {
+                    "recent": {
+                        "form": ["20-F"],
+                        "filingDate": ["2026-05-14"],
+                    }
+                }
+            },
         }
 
         updated, removed = followon_sanitizer.sanitize_payload(
             payload, submissions_loader=lambda cik: submissions[cik]
         )
 
-        self.assertEqual([item["id"] for item in removed], ["followon"])
+        self.assertEqual(
+            [item["id"] for item in removed],
+            ["followon", "foreign-followon"],
+        )
         self.assertEqual(
             [item["id"] for item in updated["filings"]],
             ["ipo", "prepricing"],
