@@ -86,6 +86,54 @@ class TrancheLiquidityTests(unittest.TestCase):
         self.assertIsNone(result["liquid_shares"])
         self.assertIn("quantity unresolved", result["liquidity_status"])
 
+    def test_same_release_date_corroborating_terms_are_not_staggered(self):
+        lockup = {
+            "terms": [
+                {
+                    "duration_value": 180,
+                    "duration_unit": "days",
+                    "end_date": "2027-02-03",
+                    "scope_tags": ["substantially_all_holders", "directors", "executive_officers"],
+                    "scope": "substantially all pre-IPO holders, directors, executive officers",
+                    "tranche_percent": None,
+                    "covers_full_position": True,
+                    "has_staggered_releases": False,
+                },
+                {
+                    "duration_value": 180,
+                    "duration_unit": "days",
+                    "end_date": "2027-02-03",
+                    "scope_tags": ["substantially_all_holders"],
+                    "scope": "substantially all pre-IPO holders",
+                    "tranche_percent": None,
+                    "covers_full_position": False,
+                    "has_staggered_releases": False,
+                },
+            ],
+            "scope_tags": ["substantially_all_holders"],
+            "text": "corroborating 180-day holder lock-up clauses",
+            "value": 180,
+            "unit": "days",
+            "end": "2027-02-03",
+        }
+        result = dashboard_export._person_liquidity(
+            1000,
+            100000,
+            18,
+            lockup,
+            "Entities affiliated with Westlake BioPartners",
+            {"role": None},
+            {},
+            as_of_date="2026-09-01",
+        )
+        self.assertEqual(result["liquidity_status"], "Locked")
+        self.assertEqual(result["locked_shares"], 1000)
+        self.assertEqual(result["liquid_shares"], 0)
+        self.assertEqual(result["locked_value"], 100000)
+        self.assertEqual(result["liquid_value"], 0)
+        self.assertNotIn("Staggered", result["liquidity_status"])
+        self.assertEqual(result["lockup_end_date"], "2027-02-03")
+
 
 if __name__ == "__main__":
     unittest.main()
