@@ -5,17 +5,20 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW_DIR = REPO_ROOT / ".github" / "workflows"
 DAILY_WORKFLOW = WORKFLOW_DIR / "daily.yml"
+BACKFILL_WORKFLOW = WORKFLOW_DIR / "backfill.yml"
 OWNERSHIP_WORKFLOW = WORKFLOW_DIR / "ownership-refresh.yml"
 S1_WORKFLOW = WORKFLOW_DIR / "s1-watch.yml"
 TEST_WORKFLOW = WORKFLOW_DIR / "test.yml"
 REPO_STEWARD_WORKFLOW = WORKFLOW_DIR / "repo-steward.yml"
 PUBLIC_FEED_POLICY_WORKFLOWS = [
     DAILY_WORKFLOW,
+    BACKFILL_WORKFLOW,
     S1_WORKFLOW,
     OWNERSHIP_WORKFLOW,
 ]
 PRETEST_POLICY_RECONCILIATION_WORKFLOWS = [
     DAILY_WORKFLOW,
+    BACKFILL_WORKFLOW,
     OWNERSHIP_WORKFLOW,
     TEST_WORKFLOW,
 ]
@@ -23,7 +26,7 @@ SHARED_FEED_WRITER_WORKFLOWS = [
     DAILY_WORKFLOW,
     S1_WORKFLOW,
     OWNERSHIP_WORKFLOW,
-    WORKFLOW_DIR / "backfill.yml",
+    BACKFILL_WORKFLOW,
     WORKFLOW_DIR / "stanford-backfill-once.yml",
 ]
 
@@ -82,6 +85,46 @@ class WorkflowContractTests(unittest.TestCase):
 
         positions = [workflow.index(step) for step in ordered_steps]
         self.assertEqual(positions, sorted(positions))
+
+    def test_manual_backfill_runs_current_release_safety_chain_before_publish(self):
+        workflow = _workflow(BACKFILL_WORKFLOW)
+        backfill_step = workflow.index("- name: Run backfill")
+        ordered_steps = [
+            "- name: Clear market quotes not refreshed in this run",
+            "- name: Reconcile final 424B4 lifecycle transitions",
+            "- name: Reconcile authoritative IPO pricing dates",
+            "- name: Sanitize impossible lifecycle dates",
+            "- name: Remove unresolved final pricing states",
+            "- name: Remove post-reporting follow-on/resale offerings",
+            "- name: Enforce public-feed eligibility policy",
+            "- name: Preserve authoritative final offering aggregates",
+            "- name: Recover authoritative preliminary filing-price ranges",
+            "- name: Remove market quotes from pre-pricing records",
+            "- name: Verify market quote issuer identity",
+            "- name: Run release-blocking regression suite on generated feed",
+            "- name: Validate generated lifecycle uniqueness",
+            "- name: Validate V1 public feed schema",
+            "- name: Validate refreshed golden records",
+            "- name: Publish Research Monitor data",
+        ]
+
+        positions = [workflow.index(step) for step in ordered_steps]
+        self.assertTrue(all(position > backfill_step for position in positions))
+        self.assertEqual(positions, sorted(positions))
+        self.assertIn("python filing_price_history.py ../docs/data/filings.json", workflow)
+        self.assertIn("python market_quote_release_gate.py ../docs/data/filings.json", workflow)
+        self.assertIn("python final_pricing_release_gate.py ../docs/data/filings.json", workflow)
+        self.assertNotIn("filing_fields = {", workflow)
+        self.assertIn("main advanced during this run; skipping stale backfill publication.", workflow)
+
+    def test_manual_backfill_remains_manual_only(self):
+        workflow = _workflow(BACKFILL_WORKFLOW)
+        trigger_block = workflow.split("permissions:", 1)[0]
+
+        self.assertIn("  workflow_dispatch:", trigger_block)
+        self.assertNotIn("  schedule:", trigger_block)
+        self.assertNotIn("  push:", trigger_block)
+        self.assertNotIn("  workflow_run:", trigger_block)
 
     def test_daily_writer_defers_live_golden_until_after_regeneration(self):
         workflow = _workflow(DAILY_WORKFLOW)
