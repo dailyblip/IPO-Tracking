@@ -68,15 +68,25 @@ class FinalPricingReleaseGateTests(unittest.TestCase):
             ["bad-stage", "bad-date", "bad-price"],
         )
 
-    def test_daily_workflow_runs_gate_after_pricing_reconciliation(self):
-        workflow = (
-            Path(__file__).resolve().parents[1] / ".github" / "workflows" / "daily.yml"
-        ).read_text(encoding="utf-8")
+    def _assert_writer_orders_final_gate(self, workflow_path):
+        workflow = workflow_path.read_text(encoding="utf-8")
         pricing = workflow.index("python pricing_date_reconciler.py ../docs/data/filings.json")
         final_gate = workflow.index("python final_pricing_release_gate.py ../docs/data/filings.json")
         release_policy = workflow.index("python public_feed_policy.py ../docs/data/filings.json", pricing)
         self.assertLess(pricing, final_gate)
         self.assertLess(final_gate, release_policy)
+
+    def test_daily_workflow_runs_gate_after_pricing_reconciliation(self):
+        root = Path(__file__).resolve().parents[1]
+        self._assert_writer_orders_final_gate(root / ".github" / "workflows" / "daily.yml")
+
+    def test_ownership_refresh_runs_gate_after_pricing_reconciliation(self):
+        root = Path(__file__).resolve().parents[1]
+        workflow_path = root / ".github" / "workflows" / "ownership-refresh.yml"
+        self._assert_writer_orders_final_gate(workflow_path)
+        workflow = workflow_path.read_text(encoding="utf-8")
+        self.assertIn("- 'src/final_pricing_release_gate.py'", workflow)
+        self.assertIn("- 'src/test_final_pricing_release_gate.py'", workflow)
 
 
 if __name__ == "__main__":
