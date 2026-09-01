@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T03:54:40.675738+00:00",
+  "updated_at": "2026-09-01T04:17:08.401297+00:00",
   "items": {
     "s1:0002149773": {
       "id": "s1:0002149773",
@@ -29,7 +29,7 @@
     "s1:0002045151": {
       "id": "s1:0002045151",
       "cik": "0002045151",
-      "company": "Tailored Brands, Inc. / DE",
+      "company": "Tailored Brands, Inc.",
       "form": "S-1/A",
       "filed": "2026-08-31",
       "stage": "pre-pricing",
@@ -619,7 +619,7 @@
       "missing_runs": 0
     },
     "0002045151": {
-      "company": "Tailored Brands, Inc. / DE",
+      "company": "Tailored Brands, Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002045151",
       "last_filed": "2026-08-31",
