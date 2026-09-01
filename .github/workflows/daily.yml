@@ -90,6 +90,10 @@ jobs:
         # after parser/data-quality improvements instead of aging out permanently.
         run: python main.py 14
 
+      - name: Clear market quotes not refreshed in this run
+        working-directory: src
+        run: python market_price_freshness_gate.py ../docs/data/filings.json
+
       - name: Reconcile final 424B4 lifecycle transitions
         working-directory: src
         env:
