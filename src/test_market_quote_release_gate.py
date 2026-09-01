@@ -137,10 +137,17 @@ class MarketQuoteReleaseGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "filings.json"
             path.write_text(json.dumps(self._payload()), encoding="utf-8")
-            with patch.object(
-                market_quote_release_gate.identity,
-                "sanitize_feed",
-                return_value=(1, 0),
+            with (
+                patch.dict(
+                    "os.environ",
+                    {"SEC_EDGAR_USER_AGENT": ""},
+                    clear=False,
+                ),
+                patch.object(
+                    market_quote_release_gate.identity,
+                    "sanitize_feed",
+                    return_value=(1, 0),
+                ),
             ):
                 self.assertEqual(
                     market_quote_release_gate.enforce_release_gate(
