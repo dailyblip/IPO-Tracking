@@ -1,9 +1,10 @@
 """Remove follow-on/resale 424B4 records from the public IPO feed.
 
 Research Monitor tracks company IPOs, not later registered offerings by companies
-that are already SEC reporting issuers. A prior Form 10-Q or 10-K before the
-candidate 424B4 is authoritative evidence that the company had already entered
-the periodic reporting system before this offering.
+that are already SEC reporting issuers. A prior domestic periodic report (Form
+10-Q or 10-K) or foreign annual report (Form 20-F or 40-F) before the candidate
+424B4 is authoritative evidence that the company had already entered the SEC
+reporting system before this offering.
 
 This pass is deliberately conservative and date-aware: reports filed after the
 candidate date do not disqualify a historical IPO. SEC lookup failure blocks the
@@ -20,7 +21,7 @@ import dashboard_export
 import edgar_client
 
 DEFAULT_PATH = Path(__file__).resolve().parents[1] / "docs" / "data" / "filings.json"
-PERIODIC_REPORT_FORMS = {"10-K", "10-Q"}
+PERIODIC_REPORT_FORMS = {"10-K", "10-Q", "20-F", "40-F"}
 
 
 def _iso_date(value):
@@ -35,7 +36,7 @@ def _iso_date(value):
 
 
 def has_prior_periodic_report(submissions: dict, candidate_date: str) -> bool:
-    """Return True when a 10-Q/10-K predates the candidate offering."""
+    """Return True when a domestic periodic or foreign annual report predates the offering."""
     cutoff = _iso_date(candidate_date)
     if cutoff is None:
         raise ValueError(f"Invalid candidate date: {candidate_date!r}")
