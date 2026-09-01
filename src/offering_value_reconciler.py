@@ -135,18 +135,18 @@ def reconcile_record(filing, aggregate, primary_shares=None):
     aggregate = _number(aggregate)
     if aggregate is not None:
         if current is None:
-            raise OfferingValueReconciliationError(
-                f"{filing.get('company')}: SEC aggregate {aggregate:,.2f} found but published offering value is blank"
-            )
-        difference = abs(current - aggregate)
-        if difference > ROUNDING_TOLERANCE_DOLLARS:
-            raise OfferingValueReconciliationError(
-                f"{filing.get('company')}: published offering value {current:,.2f} conflicts with "
-                f"authoritative SEC aggregate {aggregate:,.2f} by {difference:,.2f}"
-            )
-        if difference > 1e-9:
             filing["value"] = int(aggregate) if aggregate.is_integer() else aggregate
             changed = True
+        else:
+            difference = abs(current - aggregate)
+            if difference > ROUNDING_TOLERANCE_DOLLARS:
+                raise OfferingValueReconciliationError(
+                    f"{filing.get('company')}: published offering value {current:,.2f} conflicts with "
+                    f"authoritative SEC aggregate {aggregate:,.2f} by {difference:,.2f}"
+                )
+            if difference > 1e-9:
+                filing["value"] = int(aggregate) if aggregate.is_integer() else aggregate
+                changed = True
         if _append_source_marker(filing, SOURCE_MARKER):
             changed = True
 
