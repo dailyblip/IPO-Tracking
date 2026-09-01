@@ -8,6 +8,7 @@ DAILY_WORKFLOW = WORKFLOW_DIR / "daily.yml"
 BACKFILL_WORKFLOW = WORKFLOW_DIR / "backfill.yml"
 OWNERSHIP_WORKFLOW = WORKFLOW_DIR / "ownership-refresh.yml"
 S1_WORKFLOW = WORKFLOW_DIR / "s1-watch.yml"
+STANFORD_BACKFILL_WORKFLOW = WORKFLOW_DIR / "stanford-backfill-once.yml"
 TEST_WORKFLOW = WORKFLOW_DIR / "test.yml"
 REPO_STEWARD_WORKFLOW = WORKFLOW_DIR / "repo-steward.yml"
 PUBLIC_FEED_POLICY_WORKFLOWS = [
@@ -15,11 +16,13 @@ PUBLIC_FEED_POLICY_WORKFLOWS = [
     BACKFILL_WORKFLOW,
     S1_WORKFLOW,
     OWNERSHIP_WORKFLOW,
+    STANFORD_BACKFILL_WORKFLOW,
 ]
 PRETEST_POLICY_RECONCILIATION_WORKFLOWS = [
     DAILY_WORKFLOW,
     BACKFILL_WORKFLOW,
     OWNERSHIP_WORKFLOW,
+    STANFORD_BACKFILL_WORKFLOW,
     TEST_WORKFLOW,
 ]
 SHARED_FEED_WRITER_WORKFLOWS = [
@@ -27,7 +30,7 @@ SHARED_FEED_WRITER_WORKFLOWS = [
     S1_WORKFLOW,
     OWNERSHIP_WORKFLOW,
     BACKFILL_WORKFLOW,
-    WORKFLOW_DIR / "stanford-backfill-once.yml",
+    STANFORD_BACKFILL_WORKFLOW,
 ]
 
 
@@ -116,6 +119,42 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertIn("python final_pricing_release_gate.py ../docs/data/filings.json", workflow)
         self.assertNotIn("filing_fields = {", workflow)
         self.assertIn("main advanced during this run; skipping stale backfill publication.", workflow)
+
+    def test_stanford_backfill_runs_current_release_safety_chain_before_publish(self):
+        workflow = _workflow(STANFORD_BACKFILL_WORKFLOW)
+        backfill_step = workflow.index("- name: Run Stanford historical backfill")
+        ordered_steps = [
+            "- name: Clear market quotes not refreshed in this run",
+            "- name: Reconcile final 424B4 lifecycle transitions",
+            "- name: Reconcile authoritative IPO pricing dates",
+            "- name: Sanitize impossible lifecycle dates",
+            "- name: Remove unresolved final pricing states",
+            "- name: Remove post-reporting follow-on/resale offerings",
+            "- name: Recover SEC-confirmed Stanford beneficial-owner affiliations",
+            "- name: Enforce public-feed eligibility policy",
+            "- name: Preserve authoritative final offering aggregates",
+            "- name: Recover authoritative preliminary filing-price ranges",
+            "- name: Remove market quotes from pre-pricing records",
+            "- name: Verify market quote issuer identity",
+            "- name: Run release-blocking regression suite on generated feed",
+            "- name: Validate generated lifecycle uniqueness",
+            "- name: Validate V1 public feed schema",
+            "- name: Validate refreshed golden records",
+            "- name: Publish Research Monitor data",
+        ]
+
+        positions = [workflow.index(step) for step in ordered_steps]
+        self.assertTrue(all(position > backfill_step for position in positions))
+        self.assertEqual(positions, sorted(positions))
+        self.assertIn("python filing_price_history.py ../docs/data/filings.json", workflow)
+        self.assertIn("python market_quote_release_gate.py ../docs/data/filings.json", workflow)
+        self.assertIn("python final_pricing_release_gate.py ../docs/data/filings.json", workflow)
+        self.assertIn("python stanford_sec_backfill.py ../docs/data/filings.json", workflow)
+        self.assertIn(
+            "main advanced during this run; skipping stale Stanford backfill publication.",
+            workflow,
+        )
+        self.assertNotIn("git pull --rebase", workflow)
 
     def test_manual_backfill_remains_manual_only(self):
         workflow = _workflow(BACKFILL_WORKFLOW)
