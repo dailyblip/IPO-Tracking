@@ -61,6 +61,16 @@ class AuthoritativeOfferingValueTests(unittest.TestCase):
         self.assertEqual(filing["value"], 600_000_006)
         self.assertIn(SOURCE_MARKER, filing["offering_size_source"])
 
+    def test_fills_blank_value_from_authoritative_sec_aggregate(self):
+        filing = {
+            "company": "Complete Economics Co.",
+            "value": None,
+            "offering_size_source": "",
+        }
+        self.assertTrue(reconcile_record(filing, 123_456_789))
+        self.assertEqual(filing["value"], 123_456_789)
+        self.assertIn(SOURCE_MARKER, filing["offering_size_source"])
+
     def test_repairs_blank_primary_shares_without_inventing_secondary_shares(self):
         filing = {
             "company": "Scribe Therapeutics, Inc.",
