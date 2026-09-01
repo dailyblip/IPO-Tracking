@@ -151,10 +151,12 @@ def _excluded_accessions(payload: dict) -> set[str]:
         try:
             filing_text = _fetch_filing_text(record)
         except Exception as error:
-            # SEC/network/parser failures are transient. Preserve the published
-            # row rather than deleting it without a completed evidence check.
-            print(f"[resale_registration_sanitizer] Could not evaluate {accession}: {error}")
-            continue
+            # This classifier is the final release-time defense against resale-only
+            # registrations. If authoritative SEC evidence cannot be inspected, do
+            # not silently publish an unverified S-1/S-1A as a qualifying IPO.
+            raise RuntimeError(
+                f"Could not evaluate resale-registration status for {accession}"
+            ) from error
         if looks_like_resale_only_cover(filing_text):
             excluded.add(accession)
             print(f"[resale_registration_sanitizer] Excluding resale-only registration {accession}")
