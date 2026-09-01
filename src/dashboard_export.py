@@ -330,19 +330,34 @@ def _person_liquidity(shares, current_value, ipo_price, lockup, name, metadata, 
                 status = f"Staggered lock-up — {active_pct:g}% currently restricted"
             return {**base, "liquid_shares": liquid_shares, "liquid_value": liquid_value, "locked_shares": locked_shares, "locked_value": locked_value, "liquidity_status": status, "liquidity_confidence": "High — current restricted percentage derived from explicit prospectus tranches; disclosed exceptions or underwriter waivers may apply", "lockup_schedule": schedule, "lockup_end_date": final_end}
 
-    # A single term can support a whole-position classification only when the source
-    # explicitly says it covers the full disclosed position. Role membership alone is
-    # not enough: Rule 701/award-specific clauses often cover only a subset of shares.
-    if len(schedule) == 1 and schedule[0].get("covers_full_position") and schedule[0].get("end_date"):
+    # Multiple SEC clauses can corroborate the same holder lock-up. Treat them as
+    # one release schedule when they resolve to the same duration/end date; only
+    # distinct release points or explicit tranche language constitute a staggered
+    # schedule. A broad full-position clause can therefore support the same whole-
+    # position classification as a single clause without inventing quantities.
+    release_points = {
+        (item.get("duration_value"), item.get("duration_unit"), item.get("end_date"))
+        for item in schedule
+        if item.get("duration_value") and item.get("duration_unit")
+    }
+    explicitly_staggered = any(item.get("has_staggered_releases") for item in schedule)
+    uniform_full_position = bool(
+        not explicitly_staggered
+        and len(release_points) == 1
+        and len(set(end_dates)) == 1
+        and any(item.get("covers_full_position") for item in schedule)
+        and final_end
+    )
+    if uniform_full_position:
         try:
-            end_date = datetime.fromisoformat(str(schedule[0]["end_date"])[:10]).date()
+            end_date = datetime.fromisoformat(str(final_end)[:10]).date()
             active = end_date > today
         except ValueError:
             active = None
         if active is not None:
             return {**base, "liquid_shares": 0 if active else shares, "liquid_value": 0 if active else current_value, "locked_shares": shares if active else 0, "locked_value": current_value if active else 0, "liquidity_status": "Locked" if active else "Lock-up expired", "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply", "lockup_schedule": schedule, "lockup_end_date": final_end}
 
-    staged = len(schedule) > 1 or any(item.get("has_staggered_releases") for item in schedule)
+    staged = explicitly_staggered or len(release_points) > 1
     if staged:
         return {**base, "liquid_shares": None, "liquid_value": None, "locked_shares": None, "locked_value": None, "liquidity_status": "Staggered lock-up — tranche quantities unresolved", "liquidity_confidence": "Lock-up schedule found, but the filing does not support a complete quantitative allocation", "lockup_schedule": schedule, "lockup_end_date": final_end}
 
