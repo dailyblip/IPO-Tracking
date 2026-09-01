@@ -110,6 +110,13 @@ jobs:
         working-directory: src
         run: python lifecycle_date_sanitizer.py ../docs/data/filings.json
 
+      # A final 424B4 proves the issuer is no longer pre-pricing, but the row is
+      # publishable only after the preceding repair passes establish a canonical
+      # Pricing Date and positive Final IPO Price. Unknown size remains allowed.
+      - name: Remove unresolved final pricing states
+        working-directory: src
+        run: python final_pricing_release_gate.py ../docs/data/filings.json
+
       - name: Remove post-reporting follow-on/resale offerings
         working-directory: src
         env:
