@@ -10,16 +10,20 @@ import math
 import re
 
 ENTITY_MARKERS = (
-    " lp", " l.p.", " llc", " ltd", " limited", " inc", " corp", " corporation",
-    " company", " fund", " partners", " partnership", " scsp", " s.c.sp.", " capital", " ventures", " holdings",
-    " trust", " foundation", " bank", " management", " advisors", " nominees",
+    "lp", "l.p.", "llc", "ltd", "limited", "inc", "corp", "corporation",
+    "company", "scsp", "s.c.sp.", "holdings", "foundation", "bank", "management",
+    "advisors", "nominees", "asa", "plc", "gmbh", "a/s", "s.a.", "b.v.", "n.v.",
 )
 INSTITUTION_MARKERS = (
     "authority", "university", "college", "institute", "association", "pension",
     "retirement system", "endowment", "government", "ministry",
 )
-FUND_MARKERS = (" fund", " capital", " ventures", " partners", " partnership", " lp", " l.p.")
-TRUST_MARKERS = (" trust", " trustee")
+FUND_MARKERS = ("fund", "capital", "ventures", "partners", "partnership", "lp", "l.p.")
+TRUST_MARKERS = ("trust", "trustee")
+PERSON_ROLE_MARKERS = (
+    "chief", "officer", "director", "president", "chair", "chairman", "chairwoman",
+    "evp", "svp", "vice president", "general counsel", "founder",
+)
 AGGREGATE_ENTITY_MARKERS = (
     "entities affiliated with",
     "affiliated entities",
@@ -40,6 +44,22 @@ def _contains_phrase(value: str, phrase: str) -> bool:
     return bool(re.search(rf"(?<![a-z]){re.escape(phrase)}(?![a-z])", value))
 
 
+def _looks_like_person_with_role(value: str) -> bool:
+    """Recognize a named person followed by an explicit executive/board role.
+
+    SEC ownership tables sometimes concatenate a person's role into the holder
+    label. Role text such as ``Corporate Strategy`` must not make that natural
+    person look like a ``Corp`` entity via substring matching.
+    """
+    if "," not in value:
+        return False
+    name_part, role_part = value.split(",", 1)
+    name_tokens = re.findall(r"[a-z]+(?:[-'][a-z]+)?", name_part)
+    if not 2 <= len(name_tokens) <= 6:
+        return False
+    return any(_contains_phrase(role_part, marker) for marker in PERSON_ROLE_MARKERS)
+
+
 def holder_type(name: str) -> str:
     """Classify a beneficial-owner row without pretending entities are people."""
     value = " ".join(str(name or "").split()).lower()
@@ -50,6 +70,10 @@ def holder_type(name: str) -> str:
     # letting the natural-person token heuristic mislabel them as individuals.
     if value in GENERIC_HOLDER_LABELS:
         return "Unknown"
+    # SEC ownership tables sometimes append a role to a natural-person name.
+    # Use the explicit role as evidence before evaluating organization markers.
+    if _looks_like_person_with_role(value):
+        return "Individual"
     # SEC ownership tables often aggregate several affiliated legal entities into
     # one disclosure row. Treat those labels as entities regardless of whether
     # the underlying sponsor name contains words such as Capital or Ventures.
@@ -57,11 +81,11 @@ def holder_type(name: str) -> str:
         return "Entity"
     if any(_contains_phrase(value, marker) for marker in EXPLICIT_ENTITY_NOUNS):
         return "Entity"
-    if any(marker in value for marker in TRUST_MARKERS):
+    if any(_contains_phrase(value, marker) for marker in TRUST_MARKERS):
         return "Trust"
-    if any(marker in value for marker in FUND_MARKERS):
+    if any(_contains_phrase(value, marker) for marker in FUND_MARKERS):
         return "Fund"
-    if any(marker in value for marker in ENTITY_MARKERS):
+    if any(_contains_phrase(value, marker) for marker in ENTITY_MARKERS):
         return "Entity"
     if any(_contains_phrase(value, marker) for marker in INSTITUTION_MARKERS):
         return "Entity"
