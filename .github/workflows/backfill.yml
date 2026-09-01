@@ -44,7 +44,18 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # The checked-in feed can lag a newly merged release-policy repair. Normalize
+      # it before tests so a manual replay never starts from a state current code
+      # would refuse to publish.
+      - name: Reconcile checked-in feed with current release policy
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python public_feed_policy.py ../docs/data/filings.json
+
       - name: Run unit tests
+        env:
+          SKIP_LIVE_GOLDEN: '1'
         run: python -m unittest discover -s src -p 'test_*.py' -v
 
       - name: Resolve backfill range
@@ -73,14 +84,105 @@ jobs:
           --backfill-start "$BACKFILL_START"
           --backfill-end "$BACKFILL_END"
 
+      # Manual historical replacement must pass the same release-safety chain as
+      # daily regeneration. These steps repair authoritative fields where possible
+      # and fail closed on unsupported/stale secondary data; they do not widen the
+      # requested historical range or initiate any additional backfill.
+      - name: Clear market quotes not refreshed in this run
+        working-directory: src
+        run: python market_price_freshness_gate.py ../docs/data/filings.json
+
+      - name: Reconcile final 424B4 lifecycle transitions
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python lifecycle_reconciler.py ../docs/data/filings.json
+
+      - name: Reconcile authoritative IPO pricing dates
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python pricing_date_reconciler.py ../docs/data/filings.json
+
+      - name: Sanitize impossible lifecycle dates
+        working-directory: src
+        run: python lifecycle_date_sanitizer.py ../docs/data/filings.json
+
+      - name: Remove unresolved final pricing states
+        working-directory: src
+        run: python final_pricing_release_gate.py ../docs/data/filings.json
+
+      - name: Remove post-reporting follow-on/resale offerings
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python followon_sanitizer.py ../docs/data/filings.json
+
+      - name: Normalize issuer display names
+        working-directory: src
+        run: python company_name_normalizer.py ../docs/data/filings.json
+
+      - name: Enforce public-feed eligibility policy
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python public_feed_policy.py ../docs/data/filings.json
+
+      - name: Preserve authoritative final offering aggregates
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python offering_value_reconciler.py ../docs/data/filings.json
+
+      - name: Repair malformed issuer locations
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python location_quality.py ../docs/data/filings.json
+
+      - name: Recover authoritative preliminary filing-price ranges
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python filing_price_history.py ../docs/data/filings.json
+
+      - name: Remove market quotes from pre-pricing records
+        working-directory: src
+        run: python prepricing_quote_sanitizer.py ../docs/data/filings.json
+
+      - name: Verify market quote issuer identity
+        working-directory: src
+        env:
+          MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        # Current Price is secondary data. If identity verification is unavailable
+        # after bounded retries, clear unverified quote-derived fields rather than
+        # publishing a ticker/provider collision.
+        run: python market_quote_release_gate.py ../docs/data/filings.json
+
+      # Validate the exact post-backfill candidate feed, not only the snapshot that
+      # existed before regeneration.
+      - name: Run release-blocking regression suite on generated feed
+        env:
+          SKIP_LIVE_GOLDEN: '1'
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+
+      - name: Validate generated lifecycle uniqueness
+        run: python -m unittest discover -s src -p 'test_issuer_row_consistency.py' -v
+
+      - name: Validate V1 public feed schema
+        run: python src/feed_schema_contract.py docs/data/filings.json
+
+      - name: Validate refreshed golden records
+        run: python -m unittest discover -s src -p 'test_golden_records.py' -v
+
       - name: Refresh stateful research alerts
         run: python src/research_alerts.py
 
-      - name: Validate and summarize public feed
+      - name: Summarize public feed
         run: |
           python - <<'PY'
           import json
-          import csv
           import os
           from collections import Counter
           from pathlib import Path
@@ -90,59 +192,12 @@ jobs:
           if not isinstance(rows, list):
               raise SystemExit("docs/data/filings.json must contain a filings list")
 
-          filing_fields = {
-              "id", "company", "ticker", "cik", "accession_no", "form", "filed",
-              "priority", "status", "value", "value_label", "people_count",
-              "signals", "people", "sec_url", "stage", "price_range",
-              "filing_price", "offering_price", "current_price", "price_updated",
-          }
-          person_fields = {
-              "name", "shares", "cash_value", "stanford_university_bio",
-          }
-          seen_ids = set()
-          for filing in rows:
-              unexpected = set(filing) - filing_fields
-              if unexpected:
-                  raise SystemExit(f"Non-public filing fields found: {sorted(unexpected)}")
-              if not filing.get("id") or not filing.get("company"):
-                  raise SystemExit("Every published filing requires an id and company")
-              if filing.get("id") in seen_ids:
-                  raise SystemExit(f"Duplicate filing id: {filing['id']}")
-              seen_ids.add(filing["id"])
-              if filing.get("form") not in {"424B4", "S-1", "S-1/A"}:
-                  raise SystemExit(f"Unexpected form for {filing['id']}: {filing.get('form')}")
-              people = filing.get("people")
-              if not isinstance(people, list):
-                  raise SystemExit(f"People must be a list for {filing['id']}")
-              for person in people:
-                  unexpected = set(person) - person_fields
-                  if unexpected:
-                      raise SystemExit(f"Non-public person fields found: {sorted(unexpected)}")
-                  lowered = str(person.get("name", "")).lower()
-                  if (
-                      "as a group" in lowered
-                      and "director" in lowered
-                      and "executive officer" in lowered
-                  ):
-                      raise SystemExit(f"Aggregate ownership row published for {filing['id']}")
-
-          csv_path = Path("docs/data/filings.csv")
-          with csv_path.open(encoding="utf-8", newline="") as handle:
-              csv_fields = set(next(csv.reader(handle)))
-          required_csv_fields = {
-              "filing_price", "offering_price", "current_price",
-              "stanford_university_bio",
-          }
-          if not required_csv_fields <= csv_fields:
-              missing = sorted(required_csv_fields - csv_fields)
-              raise SystemExit(f"CSV is missing required public fields: {missing}")
-
           summary = os.environ["GITHUB_STEP_SUMMARY"]
           forms = Counter(row.get("form") for row in rows)
           with open(summary, "a", encoding="utf-8") as handle:
               handle.write("## Research Monitor backfill\n\n")
               handle.write(f"- Range: {os.environ['BACKFILL_START']} through {os.environ['BACKFILL_END']}\n")
-              handle.write(f"- Public feed filings after range replacement: {len(rows)}\n")
+              handle.write(f"- Public feed filings after range replacement and release gates: {len(rows)}\n")
               handle.write(f"- Forms: {dict(forms)}\n")
           print(f"Validated public feed with {len(rows)} qualifying filings.")
           PY
@@ -154,9 +209,17 @@ jobs:
             echo "Research Monitor data is unchanged."
             exit 0
           fi
+
+          # Do not rebase a stale historical reconstruction over newer main data.
+          # A skipped publish is safe and can be rerun against the new head.
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            echo "main advanced during this run; skipping stale backfill publication."
+            exit 0
+          fi
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv docs/data/stanford_research_cache.json docs/data/alerts.json docs/data/alerts_state.json
           git commit -m "Backfill Research Monitor data through $BACKFILL_END"
-          git pull --rebase origin main
           git push origin HEAD:main
