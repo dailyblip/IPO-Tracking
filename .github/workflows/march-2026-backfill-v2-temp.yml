@@ -1,0 +1,302 @@
+name: March 2026 Historical IPO Backfill v2
+
+on:
+  push:
+    branches:
+      - backfill/march-2026-v1
+    paths:
+      - '.github/workflows/march-2026-backfill-v2-temp.yml'
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: research-monitor-feed-writers
+  cancel-in-progress: false
+
+jobs:
+  backfill-march:
+    if: github.event.head_commit.message == 'Launch March 2026 historical backfill v2'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      BACKFILL_START: '2026-03-01'
+      BACKFILL_END: '2026-03-31'
+      HISTORICAL_MINIMUM_VALUE: '100000000'
+
+    steps:
+      - name: Check out March backfill branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Reconcile checked-in feed with current release policy
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python public_feed_policy.py ../docs/data/filings.json
+
+      - name: Reconcile resale-only S-1 amendments by registration history
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_registration_history_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
+      - name: Reconcile resale-only S-1 registrations before replay
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python resale_registration_sanitizer.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
+      - name: Run deterministic regression suite before replay
+        env:
+          SKIP_LIVE_GOLDEN: '1'
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+
+      - name: Backfill March qualifying IPO activity
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+          MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          STANFORD_RESEARCH_CACHE_PATH: ../docs/data/stanford_research_cache.json
+          SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+        run: python main.py --backfill-start "$BACKFILL_START" --backfill-end "$BACKFILL_END"
+
+      - name: Clear market quotes not refreshed in this replay
+        working-directory: src
+        run: python market_price_freshness_gate.py ../docs/data/filings.json
+
+      - name: Reconcile final 424B4 lifecycle transitions
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python lifecycle_reconciler.py ../docs/data/filings.json
+
+      - name: Reconcile authoritative IPO pricing dates
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python pricing_date_reconciler.py ../docs/data/filings.json
+
+      - name: Sanitize impossible lifecycle dates
+        working-directory: src
+        run: python lifecycle_date_sanitizer.py ../docs/data/filings.json
+
+      - name: Remove post-reporting follow-on and resale offerings
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python followon_sanitizer.py ../docs/data/filings.json
+
+      - name: Recover SEC-confirmed March Stanford beneficial-owner affiliations
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: >-
+          python stanford_sec_backfill.py ../docs/data/filings.json
+          --start "$BACKFILL_START" --end "$BACKFILL_END"
+
+      - name: Normalize issuer display names
+        working-directory: src
+        run: python company_name_normalizer.py ../docs/data/filings.json
+
+      - name: Enforce canonical public-feed eligibility policy
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python public_feed_policy.py ../docs/data/filings.json
+
+      - name: Preserve authoritative final offering aggregates
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python offering_value_reconciler.py ../docs/data/filings.json
+
+      - name: Apply historical March publication threshold to filed rows
+        working-directory: src
+        run: >-
+          python historical_backfill_policy.py ../docs/data/filings.json
+          --start "$BACKFILL_START"
+          --end "$BACKFILL_END"
+          --minimum-value "$HISTORICAL_MINIMUM_VALUE"
+
+      - name: Apply historical March threshold to March pricing activity
+        env:
+          PYTHONPATH: src
+        run: |
+          python - <<'PY'
+          import json
+          import math
+          import os
+          from pathlib import Path
+          from dashboard_export import write_dashboard_csv
+
+          start = os.environ['BACKFILL_START']
+          end = os.environ['BACKFILL_END']
+          minimum = float(os.environ['HISTORICAL_MINIMUM_VALUE'])
+          path = Path('docs/data/filings.json')
+          payload = json.loads(path.read_text(encoding='utf-8'))
+          kept, removed = [], []
+
+          def number(value):
+              if value is None or isinstance(value, bool):
+                  return None
+              try:
+                  parsed = float(str(value).replace(',', '').replace('$', '').strip())
+              except (TypeError, ValueError):
+                  return None
+              return parsed if math.isfinite(parsed) else None
+
+          for row in payload.get('filings', []):
+              pricing = str(row.get('pricing_date') or '')
+              if start <= pricing <= end:
+                  value = number(row.get('value'))
+                  if value is None or value < minimum:
+                      removed.append(str(row.get('company') or row.get('cik') or 'unknown'))
+                      continue
+              kept.append(row)
+
+          payload['filings'] = kept
+          path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+          write_dashboard_csv(kept, path)
+          print(f'Removed {len(removed)} March-pricing row(s) below historical threshold: {removed}')
+          PY
+
+      - name: Repair malformed issuer locations
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python location_quality.py ../docs/data/filings.json
+
+      - name: Recover authoritative preliminary Filing Price history
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python filing_price_history.py ../docs/data/filings.json
+
+      - name: Remove market quotes from pre-pricing records
+        working-directory: src
+        run: python prepricing_quote_sanitizer.py ../docs/data/filings.json
+
+      - name: Verify market quote issuer identity
+        working-directory: src
+        env:
+          MARKET_DATA_API_KEY: ${{ secrets.MARKET_DATA_API_KEY }}
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python market_quote_release_gate.py ../docs/data/filings.json
+
+      - name: Run release-blocking regression suite on generated feed
+        env:
+          SKIP_LIVE_GOLDEN: '1'
+        run: python -m unittest discover -s src -p 'test_*.py' -v
+
+      - name: Validate generated lifecycle uniqueness
+        run: python -m unittest discover -s src -p 'test_issuer_row_consistency.py' -v
+
+      - name: Validate V1 public feed schema
+        run: python src/feed_schema_contract.py docs/data/filings.json
+
+      - name: Validate refreshed golden records
+        run: python -m unittest discover -s src -p 'test_golden_records.py' -v
+
+      - name: March activity QA summary
+        run: |
+          python - <<'PY'
+          import json
+          import math
+          import os
+          from pathlib import Path
+
+          start = os.environ['BACKFILL_START']
+          end = os.environ['BACKFILL_END']
+          minimum = float(os.environ['HISTORICAL_MINIMUM_VALUE'])
+          rows = json.loads(Path('docs/data/filings.json').read_text())['filings']
+
+          def in_march(value):
+              raw = str(value or '')
+              return start <= raw <= end
+
+          def number(value):
+              if value is None or isinstance(value, bool):
+                  return None
+              try:
+                  parsed = float(str(value).replace(',', '').replace('$', '').strip())
+              except (TypeError, ValueError):
+                  return None
+              return parsed if math.isfinite(parsed) else None
+
+          activity = [r for r in rows if in_march(r.get('filed')) or in_march(r.get('pricing_date'))]
+          filed = [r for r in activity if in_march(r.get('filed'))]
+          priced = [r for r in activity if in_march(r.get('pricing_date'))]
+
+          if not activity:
+              raise SystemExit('March replay produced zero qualifying filed/priced activity after canonical filters')
+
+          for row in activity:
+              value = number(row.get('value'))
+              if value is None or value < minimum:
+                  raise SystemExit(
+                      f"Historical March activity violates $100M publication rule: "
+                      f"{row.get('company')} ({row.get('value')!r})"
+                  )
+              if str(row.get('form') or '').upper() not in {'S-1', 'S-1/A', '424B4'}:
+                  raise SystemExit(f"Unexpected March form: {row.get('company')} ({row.get('form')})")
+              stage = str(row.get('stage') or '').lower()
+              if stage in {'pre-pricing', 'prepricing', 'filed'} and row.get('current_price') not in (None, ''):
+                  raise SystemExit(f"Pre-pricing row has Current Price: {row.get('company')}")
+              if stage == 'priced':
+                  if row.get('offering_price') in (None, ''):
+                      raise SystemExit(f"Priced row missing Final IPO Price: {row.get('company')}")
+                  if row.get('pricing_date') in (None, ''):
+                      raise SystemExit(f"Priced row missing Pricing Date: {row.get('company')}")
+                  filing_price = row.get('filing_price')
+                  if filing_price not in (None, '') and not row.get('filing_price_source'):
+                      raise SystemExit(f"Filing Price lacks provenance: {row.get('company')}")
+
+          companies = [str(r.get('company') or '') for r in activity]
+          summary = Path(os.environ['GITHUB_STEP_SUMMARY'])
+          with summary.open('a', encoding='utf-8') as h:
+              h.write('## March 2026 historical backfill QA\n\n')
+              h.write(f'- March activity rows: {len(activity)}\n')
+              h.write(f'- Filed in March: {len(filed)}\n')
+              h.write(f'- Priced in March: {len(priced)}\n')
+              h.write(f'- Companies: {", ".join(companies)}\n')
+              h.write('- Historical publication rule: all March activity >= $100M\n')
+              h.write('- April/May historical hold remains unchanged\n')
+          print(f'March QA passed: {len(activity)} activity rows; filed={len(filed)} priced={len(priced)}; companies={companies}')
+          PY
+
+      - name: Guard ownership-history priority before generated-data commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          active="$(gh api "/repos/$GITHUB_REPOSITORY/actions/workflows/ownership-refresh.yml/runs?per_page=50" --jq '[.workflow_runs[] | select(.status == "queued" or .status == "in_progress" or .status == "pending" or .status == "waiting")] | length')"
+          if [ "$active" -ne 0 ]; then
+            echo "Refresh Prospect Ownership History is active or queued; refusing to commit generated March backfill data."
+            exit 1
+          fi
+
+      - name: Commit validated March data to backfill branch only
+        run: |
+          set -euo pipefail
+          if [ -z "$(git status --short -- docs/data/filings.json docs/data/filings.csv docs/data/stanford_research_cache.json)" ]; then
+            echo "March replay produced no publishable data changes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/filings.json docs/data/filings.csv docs/data/stanford_research_cache.json
+          git commit -m "Backfill March 2026 Research Monitor IPOs"
+          git push origin HEAD:backfill/march-2026-v1
