@@ -19,6 +19,7 @@ on:
       - 'src/prepricing_quote_sanitizer.py'
       - 'src/market_quote_identity.py'
       - 'src/market_quote_release_gate.py'
+      - 'src/market_price_freshness_gate.py'
       - 'src/location_quality.py'
       - 'src/offering_value_reconciler.py'
       - 'src/feed_schema_contract.py'
@@ -36,6 +37,7 @@ on:
       - 'src/test_prepricing_quote_sanitizer.py'
       - 'src/test_market_quote_identity.py'
       - 'src/test_market_quote_release_gate.py'
+      - 'src/test_market_price_freshness_gate.py'
       - 'src/test_location_quality.py'
       - 'src/test_offering_value_reconciler.py'
       - 'src/test_dashboard_ui.py'
@@ -98,6 +100,9 @@ jobs:
           END=$(date -u +%F)
           echo "Regrading ownership and Stanford affiliations from $START through $END"
           python main.py --backfill-start "$START" --backfill-end "$END"
+      - name: Clear market quotes not refreshed in this run
+        working-directory: src
+        run: python market_price_freshness_gate.py ../docs/data/filings.json
       - name: Reconcile final 424B4 lifecycle transitions
         working-directory: src
         env:
