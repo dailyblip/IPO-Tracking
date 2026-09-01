@@ -32,18 +32,33 @@ class LookbackTests(unittest.TestCase):
         ))
 
     @patch("main.dashboard_export.refresh_market_prices")
-    @patch("main.price_lookup.get_current_prices", return_value={"ACME": 31.25})
-    def test_refreshes_each_dashboard_ticker_once(self, get_prices, refresh):
+    @patch("main.price_lookup.get_current_prices", return_value={"ACME": 31.25, "BETA": 44.0})
+    def test_refreshes_only_canonically_priced_dashboard_tickers_once(self, get_prices, refresh):
+        priced = {
+            "form": "424B4",
+            "stage": "Priced",
+            "pricing_date": "2026-08-15",
+            "offering_price": 20.0,
+        }
         dashboard = {"filings": [
-            {"ticker": "ACME"},
-            {"ticker": "acme"},
+            {**priced, "ticker": "ACME"},
+            {**priced, "ticker": "acme"},
+            {**priced, "ticker": "BETA"},
+            {"form": "S-1/A", "stage": "Pre-pricing", "ticker": "COLL"},
+            {
+                "form": "424B4",
+                "stage": "Priced",
+                "pricing_date": "2026-08-15",
+                "offering_price": None,
+                "ticker": "INCOMPLETE",
+            },
             {"ticker": ""},
         ]}
         refresh.return_value = dashboard
 
         self.assertIs(main._refresh_dashboard_prices(dashboard), dashboard)
 
-        get_prices.assert_called_once_with(["ACME"])
+        get_prices.assert_called_once_with(["ACME", "BETA"])
         refresh.assert_called_once()
 
     @patch("main.filing_parser.parse_filing")
