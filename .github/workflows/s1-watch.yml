@@ -32,6 +32,7 @@ on:
       - 'src/test_lifecycle_date_sanitizer.py'
       - 'src/feed_schema_contract.py'
       - 'src/test_feed_schema_contract.py'
+      - 'src/test_s1_stale_publication_guard.py'
       - 'schemas/**'
       - 'requirements.txt'
       - '.github/workflows/s1-watch.yml'
@@ -69,7 +70,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run S-1 monitor tests
         working-directory: src
-        run: python -m unittest test_s1_monitor.py test_resale_registration_exclusion.py test_fullpac_real_proceeds_regression.py test_s1_registration_history_gate.py test_resale_registration_sanitizer.py test_cover_price_context.py test_filing_price_history.py test_public_feed_policy.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py test_feed_schema_contract.py -v
+        run: python -m unittest test_s1_monitor.py test_resale_registration_exclusion.py test_fullpac_real_proceeds_regression.py test_s1_registration_history_gate.py test_resale_registration_sanitizer.py test_cover_price_context.py test_filing_price_history.py test_public_feed_policy.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py test_feed_schema_contract.py test_s1_stale_publication_guard.py -v
 
   update-feed:
     if: ${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') }}
@@ -152,9 +153,18 @@ jobs:
             echo "S-1 watch and researcher queue data are unchanged."
             exit 0
           fi
+
+          # Generated feed files are not safe to rebase over a newer main. If main
+          # advanced while this serialized writer was processing, discard the stale
+          # candidate and let the next Daily/S-1 cycle regenerate from the new head.
+          git fetch origin main
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+            echo "main advanced during this run; skipping stale S-1 publication."
+            exit 0
+          fi
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv
           git commit -m "Update S-1 pre-pricing watch data"
-          git pull --rebase origin main
           git push origin HEAD:main
