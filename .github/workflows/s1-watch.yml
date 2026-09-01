@@ -22,6 +22,8 @@ on:
       - 'src/test_resale_registration_sanitizer.py'
       - 'src/filing_parser.py'
       - 'src/test_cover_price_context.py'
+      - 'src/filing_price_history.py'
+      - 'src/test_filing_price_history.py'
       - 'src/public_feed_policy.py'
       - 'src/test_public_feed_policy.py'
       - 'src/company_name_normalizer.py'
@@ -67,7 +69,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run S-1 monitor tests
         working-directory: src
-        run: python -m unittest test_s1_monitor.py test_resale_registration_exclusion.py test_fullpac_real_proceeds_regression.py test_s1_registration_history_gate.py test_resale_registration_sanitizer.py test_cover_price_context.py test_public_feed_policy.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py test_feed_schema_contract.py -v
+        run: python -m unittest test_s1_monitor.py test_resale_registration_exclusion.py test_fullpac_real_proceeds_regression.py test_s1_registration_history_gate.py test_resale_registration_sanitizer.py test_cover_price_context.py test_filing_price_history.py test_public_feed_policy.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py test_feed_schema_contract.py -v
 
   update-feed:
     if: ${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') }}
@@ -109,6 +111,11 @@ jobs:
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python public_feed_policy.py ../docs/data/filings.json
+      - name: Recover authoritative preliminary filing-price ranges
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python filing_price_history.py ../docs/data/filings.json
       - name: Normalize issuer display names
         working-directory: src
         run: python company_name_normalizer.py ../docs/data/filings.json
