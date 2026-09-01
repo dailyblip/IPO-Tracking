@@ -1,7 +1,67 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T01:33:00.092317+00:00",
+  "updated_at": "2026-09-01T02:10:02.502790+00:00",
   "items": {
+    "s1:0002149773": {
+      "id": "s1:0002149773",
+      "cik": "0002149773",
+      "company": "Xiasan Dynasty Co",
+      "form": "S-1",
+      "filed": "2026-08-31",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2149773/000214977326000008/0002149773-26-000008-index.htm"
+    },
+    "s1:0002125056": {
+      "id": "s1:0002125056",
+      "cik": "0002125056",
+      "company": "Wella Co",
+      "form": "S-1",
+      "filed": "2026-08-31",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2125056/000162828026059572/0001628280-26-059572-index.htm"
+    },
+    "s1:0002045151": {
+      "id": "s1:0002045151",
+      "cik": "0002045151",
+      "company": "Tailored Brands, Inc. / DE",
+      "form": "S-1/A",
+      "filed": "2026-08-31",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2045151/000121390026095715/0001213900-26-095715-index.htm"
+    },
+    "s1:0001718728": {
+      "id": "s1:0001718728",
+      "cik": "0001718728",
+      "company": "Syntiant Corp.",
+      "form": "S-1/A",
+      "filed": "2026-08-31",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1718728/000119312526376166/0001193125-26-376166-index.htm"
+    },
+    "s1:0002151905": {
+      "id": "s1:0002151905",
+      "cik": "0002151905",
+      "company": "La Beaute Inc.",
+      "form": "S-1",
+      "filed": "2026-08-31",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "High",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2151905/000215190526000001/0002151905-26-000001-index.htm"
+    },
     "s1:0001779977": {
       "id": "s1:0001779977",
       "cik": "0001779977",
@@ -544,6 +604,41 @@
     }
   },
   "ciks": {
+    "0002149773": {
+      "company": "Xiasan Dynasty Co",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002149773",
+      "last_filed": "2026-08-31",
+      "missing_runs": 0
+    },
+    "0002125056": {
+      "company": "Wella Co",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002125056",
+      "last_filed": "2026-08-31",
+      "missing_runs": 0
+    },
+    "0002045151": {
+      "company": "Tailored Brands, Inc. / DE",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002045151",
+      "last_filed": "2026-08-31",
+      "missing_runs": 0
+    },
+    "0001718728": {
+      "company": "Syntiant Corp.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001718728",
+      "last_filed": "2026-08-31",
+      "missing_runs": 0
+    },
+    "0002151905": {
+      "company": "La Beaute Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002151905",
+      "last_filed": "2026-08-31",
+      "missing_runs": 0
+    },
     "0001779977": {
       "company": "SeeQC, Inc.",
       "stage": "pre-pricing",
