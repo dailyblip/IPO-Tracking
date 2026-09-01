@@ -116,6 +116,15 @@ class AuthoritativeOfferingValueTests(unittest.TestCase):
         }
         self.assertFalse(_needs_check(filing, today=date(2026, 8, 29)))
 
+    def test_old_blank_value_is_checked_for_authoritative_recovery(self):
+        filing = {
+            "form": "424B4",
+            "stage": "Priced",
+            "pricing_date": "2026-06-01",
+            "value": None,
+        }
+        self.assertTrue(_needs_check(filing, today=date(2026, 8, 29)))
+
     def test_old_fractional_record_is_checked_for_rounding_repair(self):
         filing = {
             "form": "424B4",

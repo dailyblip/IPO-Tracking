@@ -116,7 +116,12 @@ def _needs_check(filing, today=None):
     if str(filing.get("stage") or "").casefold() != "priced":
         return False
     value = _number(filing.get("value"))
-    has_fractional_value = value is not None and abs(value - round(value)) > 1e-9
+    if value is None:
+        # Existing qualifying IPOs with unknown size remain publishable, but a
+        # blank value should still receive an authoritative SEC recovery attempt
+        # regardless of age. A failed fetch remains non-destructive below.
+        return True
+    has_fractional_value = abs(value - round(value)) > 1e-9
     return has_fractional_value or _recent_priced(filing, today=today)
 
 
