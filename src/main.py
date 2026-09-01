@@ -128,6 +128,50 @@ def _get_spreadsheet_id() -> str:
     return spreadsheet_id
 
 
+def _is_first_time_registrant_as_of(cik: str, filing_date: str = None) -> bool:
+    """Evaluate first-time status using only 10-Ks filed by the candidate IPO date.
+
+    Historical replays must not classify a genuine IPO as a follow-on merely because
+    the issuer filed its first annual report months after going public. When the
+    candidate 424B4 date is available, only a 10-K on or before that date proves the
+    issuer was already reporting. A missing candidate date preserves the existing
+    current-state check used by explicit test-mode calls.
+    """
+    cutoff_raw = str(filing_date or "").strip()
+    if not cutoff_raw:
+        return edgar_client.is_first_time_registrant(cik)
+
+    try:
+        cutoff = date.fromisoformat(cutoff_raw)
+    except ValueError as error:
+        raise ValueError(f"Non-canonical 424B4 filing date: {cutoff_raw!r}") from error
+    if cutoff.isoformat() != cutoff_raw:
+        raise ValueError(f"Non-canonical 424B4 filing date: {cutoff_raw!r}")
+
+    padded_cik = str(cik).zfill(10)
+    data = edgar_client._request_json(
+        edgar_client.EDGAR_SUBMISSIONS_URL.format(cik=padded_cik),
+        edgar_client._get_headers(),
+    )
+    recent = data.get("filings", {}).get("recent", {})
+    forms = recent.get("form") or []
+    filing_dates = recent.get("filingDate") or []
+
+    for form, filed_raw in zip(forms, filing_dates):
+        if str(form or "").strip().upper() != "10-K":
+            continue
+        filed_text = str(filed_raw or "").strip()
+        if not filed_text:
+            continue
+        try:
+            filed = date.fromisoformat(filed_text)
+        except ValueError:
+            continue
+        if filed.isoformat() == filed_text and filed <= cutoff:
+            return False
+    return True
+
+
 def process_filing(filing_meta: dict) -> list:
     """
     Process a single 424B4 filing end to end. Returns a list of row
@@ -145,7 +189,7 @@ def process_filing(filing_meta: dict) -> list:
             print(f"[main] Skipping {company_name}: not US-based")
             return []
 
-        if not edgar_client.is_first_time_registrant(cik):
+        if not _is_first_time_registrant_as_of(cik, filing_meta.get("filing_date")):
             print(
                 f"[main] Skipping {company_name}: already an SEC "
                 f"reporting company (has a prior 10-K) - this 424B4 is a "
