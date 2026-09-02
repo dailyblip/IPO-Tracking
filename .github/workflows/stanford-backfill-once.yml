@@ -217,8 +217,8 @@ jobs:
 
           git fetch origin main
           if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
-            echo "main advanced during this run; skipping stale Stanford backfill publication."
-            exit 0
+            echo "main advanced during this run; refusing stale Stanford backfill publication."
+            exit 1
           fi
 
           git config user.name "github-actions[bot]"
