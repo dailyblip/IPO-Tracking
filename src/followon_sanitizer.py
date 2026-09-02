@@ -1,14 +1,14 @@
 """Remove follow-on/resale 424B4 records from the public IPO feed.
 
 Research Monitor tracks company IPOs, not later registered offerings by companies
-that are already SEC reporting issuers. A prior domestic periodic report (Form
-10-Q or 10-K) or foreign annual report (Form 20-F or 40-F) before the candidate
-424B4 is authoritative evidence that the company had already entered the SEC
-reporting system before this offering.
+that are already SEC reporting issuers. A prior Exchange Act reporting form
+before the candidate 424B4 is authoritative evidence that the company had already
+entered the SEC reporting system before this offering. This includes domestic
+current/periodic reports and foreign-private-issuer reports, including amendments.
 
-This pass is deliberately conservative and date-aware: reports filed after the
-candidate date do not disqualify a historical IPO. SEC lookup failure blocks the
-sanitizer instead of silently publishing an unverified candidate.
+This pass is deliberately conservative and date-aware: reports filed after or on
+the same day as the candidate do not disqualify a historical IPO. SEC lookup
+failure blocks the sanitizer instead of silently publishing an unverified candidate.
 """
 
 from __future__ import annotations
@@ -21,7 +21,10 @@ import dashboard_export
 import edgar_client
 
 DEFAULT_PATH = Path(__file__).resolve().parents[1] / "docs" / "data" / "filings.json"
-PERIODIC_REPORT_FORMS = {"10-K", "10-Q", "20-F", "40-F"}
+REPORTING_FORMS = {
+    "8-K", "8-K/A", "10-Q", "10-Q/A", "10-K", "10-K/A",
+    "6-K", "6-K/A", "20-F", "20-F/A", "40-F", "40-F/A",
+}
 
 
 def _iso_date(value):
@@ -36,7 +39,7 @@ def _iso_date(value):
 
 
 def has_prior_periodic_report(submissions: dict, candidate_date: str) -> bool:
-    """Return True when a domestic periodic or foreign annual report predates the offering."""
+    """Return True when an authoritative SEC reporting form predates the offering."""
     cutoff = _iso_date(candidate_date)
     if cutoff is None:
         raise ValueError(f"Invalid candidate date: {candidate_date!r}")
@@ -46,7 +49,7 @@ def has_prior_periodic_report(submissions: dict, candidate_date: str) -> bool:
     dates = recent.get("filingDate", []) or []
     for form, filing_date in zip(forms, dates):
         report_date = _iso_date(filing_date)
-        if str(form or "").upper() in PERIODIC_REPORT_FORMS and report_date and report_date < cutoff:
+        if str(form or "").upper() in REPORTING_FORMS and report_date and report_date < cutoff:
             return True
     return False
 
@@ -60,7 +63,7 @@ def _load_submissions(cik: str) -> dict:
 
 
 def sanitize_payload(payload: dict, submissions_loader=_load_submissions):
-    """Remove final offerings proven to post-date periodic SEC reporting."""
+    """Remove final offerings proven to post-date prior SEC reporting history."""
     filings = payload.get("filings", []) if isinstance(payload, dict) else []
     kept = []
     removed = []
