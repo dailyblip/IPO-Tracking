@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-02T09:18:49.159379+00:00",
+  "generated_at": "2026-09-02T10:10:27.596722+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -13,19 +13,19 @@
       "filed": "2026-09-01",
       "stage": "Pre-pricing",
       "price_range": null,
-      "filing_price": "$1.50",
+      "filing_price": null,
       "offering_size_source": null,
       "offering_size_confidence": null,
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
-      "priority": "High",
+      "priority": "Medium",
       "status": "New",
       "value": null,
       "value_label": "—",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
-        "Fixed offering price disclosed at $1.50 per share"
+        "No preliminary price range or fixed offering price detected yet"
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026059639/0001628280-26-059639-index.htm"
@@ -175,19 +175,19 @@
       "filed": "2026-08-31",
       "stage": "Pre-pricing",
       "price_range": null,
-      "filing_price": "$5.00",
+      "filing_price": null,
       "offering_size_source": null,
       "offering_size_confidence": null,
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
-      "priority": "High",
+      "priority": "Medium",
       "status": "New",
       "value": null,
       "value_label": "—",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
-        "Fixed offering price disclosed at $5.00 per share"
+        "No preliminary price range or fixed offering price detected yet"
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2151905/000215190526000001/0002151905-26-000001-index.htm"
@@ -381,6 +381,33 @@
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2131613/000119312526361190/0001193125-26-361190-index.htm"
+    },
+    {
+      "id": "s1:0002091680",
+      "company": "Bitari Inc",
+      "ticker": "BIAI",
+      "cik": "0002091680",
+      "accession_no": "0001185185-26-003678",
+      "form": "S-1",
+      "filed": "2026-08-21",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "priority": "Medium",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 0,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526003678/0001185185-26-003678-index.htm"
     },
     {
       "id": "s1:0002124472",
