@@ -15,6 +15,14 @@ BITARI_COVER = (
     "stock in this offering."
 )
 
+LA_BEAUTE_COVER = (
+    "PRELIMINARY PROSPECTUS SUBJECT TO COMPLETION. "
+    "We are offering 10,000,000 ordinary shares, par value $0.0001 per share. "
+    "The offering price per share of the ordinary shares in this offering is to be fixed "
+    "at $5.00 per share. This is an initial public offering of our ordinary shares. "
+    "Prior to this offering, there has been no public market for our ordinary shares."
+)
+
 
 class ProposedPointPriceRecoveryTests(unittest.TestCase):
     def test_expected_cover_point_price_is_authoritative(self):
@@ -62,6 +70,75 @@ class ProposedPointPriceRecoveryTests(unittest.TestCase):
             "No preliminary price range or fixed offering price detected yet",
             result["signals"],
         )
+
+    def test_la_beaute_fixed_cover_wording_recovers_price_and_size(self):
+        filing = {
+            "id": "0002151905-26-000001",
+            "company": "La Beaute Inc.",
+            "cik": "0002151905",
+            "accession_no": "0002151905-26-000001",
+            "form": "S-1",
+            "stage": "Pre-pricing",
+            "priority": "Medium",
+            "price_range": None,
+            "filing_price": None,
+            "value": None,
+            "value_label": "—",
+            "offering_size_source": None,
+            "offering_size_confidence": None,
+            "primary_offering_shares": None,
+            "secondary_offering_shares": None,
+            "signals": [
+                "Initial registration statement filed — IPO is pre-pricing",
+                "No preliminary price range or fixed offering price detected yet",
+            ],
+            "sec_url": (
+                "https://www.sec.gov/Archives/edgar/data/2151905/"
+                "000215190526000001/0002151905-26-000001-index.htm"
+            ),
+        }
+        updated, invalid, checked = gate.review_watch_payload(
+            {"filings": [filing]}, text_loader=lambda _: LA_BEAUTE_COVER
+        )
+        result = updated["filings"][0]
+
+        self.assertEqual(checked, 1)
+        self.assertEqual(invalid, {})
+        self.assertEqual(result["filing_price"], "$5.00")
+        self.assertEqual(result["primary_offering_shares"], 10_000_000)
+        self.assertEqual(result["value"], 50_000_000)
+        self.assertEqual(result["value_label"], "$50,000,000")
+        self.assertEqual(result["offering_size_confidence"], "High")
+        self.assertIn("issuer-only", result["offering_size_source"])
+        self.assertIsNone(result["secondary_offering_shares"])
+
+    def test_fixed_cover_with_selling_stockholders_does_not_infer_issuer_only_size(self):
+        filing = {
+            "id": "mixed",
+            "company": "Mixed Offering Co.",
+            "cik": "0000004321",
+            "form": "S-1",
+            "stage": "Pre-pricing",
+            "filing_price": None,
+            "price_range": None,
+            "value": None,
+            "value_label": "—",
+            "primary_offering_shares": None,
+            "secondary_offering_shares": None,
+            "signals": ["No preliminary price range or fixed offering price detected yet"],
+            "sec_url": "https://www.sec.gov/test",
+        }
+        text = LA_BEAUTE_COVER + " Selling stockholders are also offering 1,000,000 shares."
+        updated, _, checked = gate.review_watch_payload(
+            {"filings": [filing]}, text_loader=lambda _: text
+        )
+        result = updated["filings"][0]
+
+        self.assertEqual(checked, 1)
+        self.assertEqual(result["filing_price"], "$5.00")
+        self.assertIsNone(result["primary_offering_shares"])
+        self.assertIsNone(result["value"])
+        self.assertIsNone(result["secondary_offering_shares"])
 
     def test_assumed_sensitivity_does_not_recover_blank_price(self):
         filing = {
