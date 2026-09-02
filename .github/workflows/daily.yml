@@ -100,6 +100,12 @@ jobs:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python s1_registration_history_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
 
+      - name: Verify fixed pre-pricing Filing Prices against SEC cover terms
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_preliminary_price_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
       - name: Clear market quotes not refreshed in this run
         working-directory: src
         run: python market_price_freshness_gate.py ../docs/data/filings.json
