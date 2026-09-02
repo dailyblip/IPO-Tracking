@@ -33,7 +33,7 @@
         "value": 345600000.0,
         "filing_price": "16-18",
         "offering_price": 18.0,
-        "lockup_end_date": "2027-02-03",
+        "lockup_end_date": "2027-02-02",
         "lockup_duration_days": 180,
         "people_count": 12
       },
@@ -44,7 +44,7 @@
             "stanford_university_bio": true,
             "shares_before_ipo": 2902419,
             "shares_after_ipo": 2902419,
-            "lockup_end_date": "2027-02-03",
+            "lockup_end_date": "2027-02-02",
             "lockup_duration_days": 180
           },
           "stanford_source_contains": [
@@ -165,7 +165,7 @@
         "value": 142200000.0,
         "filing_price": "18-20",
         "offering_price": 18.0,
-        "lockup_end_date": "2026-12-08",
+        "lockup_end_date": "2026-12-07",
         "lockup_duration_days": 180
       }
     },
@@ -182,7 +182,7 @@
         "stage": "Priced",
         "value": 600000006,
         "offering_price": 21.5,
-        "lockup_end_date": "2026-12-07",
+        "lockup_end_date": "2026-12-06",
         "lockup_duration_days": 180
       }
     },
