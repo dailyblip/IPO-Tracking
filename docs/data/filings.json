@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-02T19:12:02.981477+00:00",
+  "generated_at": "2026-09-02T19:16:48.828954+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -187,7 +187,7 @@
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
-        "Preliminary offering price disclosed at $5.00 per share"
+        "Fixed offering price disclosed at $5.00 per share"
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2151905/000215190526000001/0002151905-26-000001-index.htm"
