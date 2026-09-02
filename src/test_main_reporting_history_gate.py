@@ -45,6 +45,21 @@ class MainReportingHistoryGateTests(unittest.TestCase):
 
     @patch("main.edgar_client._get_headers", return_value={"User-Agent": "test"})
     @patch("main.edgar_client._request_json")
+    def test_transition_report_rejects_followon_before_document_parse_or_quote_lookup(
+        self, request_json, _headers
+    ):
+        for reporting_form in ("10-QT", "10-QT/A", "10-KT", "10-KT/A"):
+            with self.subTest(reporting_form=reporting_form):
+                request_json.return_value = self._submissions(
+                    ["424B4", reporting_form, "S-1/A"],
+                    ["2026-09-01", "2026-08-15", "2026-07-01"],
+                )
+                self.assertFalse(
+                    main._is_first_time_registrant_as_of("1234567", "2026-09-01")
+                )
+
+    @patch("main.edgar_client._get_headers", return_value={"User-Agent": "test"})
+    @patch("main.edgar_client._request_json")
     def test_same_day_reporting_form_does_not_guess_filing_order(
         self, request_json, _headers
     ):

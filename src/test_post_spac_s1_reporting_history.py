@@ -40,6 +40,17 @@ class PostSpacS1ReportingHistoryTests(unittest.TestCase):
 
     @patch("s1_registration_history_gate.edgar_client._get_headers", return_value={})
     @patch("s1_registration_history_gate.edgar_client._request_json")
+    def test_prior_transition_reports_prove_already_public(self, request_json, _headers):
+        for reporting_form in ("10-QT", "10-QT/A", "10-KT", "10-KT/A"):
+            with self.subTest(reporting_form=reporting_form):
+                request_json.return_value = self._submissions(
+                    ["S-1", reporting_form],
+                    ["2026-08-31", "2026-06-25"],
+                )
+                self.assertTrue(gate.already_reporting_before_registration(self._record()))
+
+    @patch("s1_registration_history_gate.edgar_client._get_headers", return_value={})
+    @patch("s1_registration_history_gate.edgar_client._request_json")
     def test_prior_foreign_issuer_reporting_forms_prove_already_public(self, request_json, _headers):
         for reporting_form in ("6-K", "6-K/A", "20-F", "20-F/A", "40-F", "40-F/A"):
             with self.subTest(reporting_form=reporting_form):
