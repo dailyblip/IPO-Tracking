@@ -27,6 +27,11 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v4
         with:
+          # This replay can sit behind another public-feed writer. Start from the
+          # latest committed feed after that queue drains, not the older push SHA.
+          # The publish-time stale guard below still fails closed if main advances
+          # again while this replay is running.
+          ref: main
           fetch-depth: 0
 
       - name: Set up Python
