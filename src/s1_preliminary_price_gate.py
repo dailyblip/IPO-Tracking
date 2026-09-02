@@ -304,6 +304,59 @@ def _clear_unverified_fixed_price(filing: dict) -> dict:
     return cleaned
 
 
+def _recover_verified_fixed_price_size(filing: dict, filing_text: str, price: float) -> dict:
+    """Fill missing issuer-only size after the same fixed Filing Price is SEC-verified.
+
+    A fixed Filing Price can already be present from the generic parser while its
+    cover-table share count is missing. Once that exact price has independently
+    passed the cover-term gate, use only an explicit issuer-only share count from
+    the same SEC cover to fill the otherwise blank base offering value. Conflicting
+    existing share counts are left untouched and selling-holder deals remain blank.
+    """
+    shares = _extract_authoritative_primary_share_count(filing_text)
+    if shares is None:
+        return filing
+
+    existing_shares = _number(filing.get("primary_offering_shares"))
+    if existing_shares is not None and int(round(existing_shares)) != shares:
+        return filing
+
+    offering_value = int(round(shares * price))
+    recovered = dict(filing)
+    changed = False
+    size_filled = False
+
+    if existing_shares is None:
+        recovered["primary_offering_shares"] = shares
+        changed = True
+
+    if "ipo_size" in recovered and _number(recovered.get("ipo_size")) is None:
+        recovered["ipo_size"] = offering_value
+        changed = True
+        size_filled = True
+    if "value" in recovered and _number(recovered.get("value")) is None:
+        recovered["value"] = offering_value
+        recovered["value_label"] = f"${offering_value:,.0f}"
+        changed = True
+        size_filled = True
+
+    if changed:
+        if not str(recovered.get("offering_size_source") or "").strip():
+            recovered["offering_size_source"] = (
+                "SEC preliminary prospectus cover: primary offering; issuer-only; verified point price"
+            )
+        if not str(recovered.get("offering_size_confidence") or "").strip():
+            recovered["offering_size_confidence"] = "High"
+        if size_filled:
+            signals = list(recovered.get("signals") or [])
+            size_prefix = "IPO size disclosed or derived at approximately "
+            if not any(str(signal or "").startswith(size_prefix) for signal in signals):
+                signals.append(f"{size_prefix}${offering_value:,.0f}")
+            recovered["signals"] = signals
+
+    return recovered
+
+
 def _recover_missing_preliminary_terms(filing: dict, filing_text: str) -> dict:
     """Fill only explicit SEC-cover point terms for an otherwise blank S-1 row."""
     if str(filing.get("filing_price") or "").strip():
@@ -398,7 +451,11 @@ def review_watch_payload(
             continue
 
         candidate_key = _fixed_price_candidate_key(filing)
-        if candidate_key is not None and candidate_key in skip_candidate_keys:
+        has_size = (
+            _number(filing.get("ipo_size")) is not None
+            or _number(filing.get("value")) is not None
+        )
+        if candidate_key is not None and candidate_key in skip_candidate_keys and has_size:
             updated_filings.append(filing)
             continue
 
@@ -419,7 +476,9 @@ def review_watch_payload(
             ) from error
 
         if has_authoritative_fixed_price(filing_text, expected):
-            updated_filings.append(filing)
+            updated_filings.append(
+                _recover_verified_fixed_price_size(filing, filing_text, expected)
+            )
             continue
 
         cik = re.sub(r"\D", "", str(filing.get("cik") or "")).zfill(10)
