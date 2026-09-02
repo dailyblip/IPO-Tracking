@@ -103,10 +103,11 @@ def _matches_expected_price(match, expected: float) -> bool:
 def _extract_authoritative_proposed_point_price(text: str):
     """Recover a direct issuer-proposed IPO point price from the prospectus cover.
 
-    An issuer statement such as "We expect the initial public offering price ...
-    to be $7.00 per share" is an authoritative preliminary Filing Price even
-    though final pricing has not occurred. Keep this deliberately narrower than
-    generic assumed/sensitivity language elsewhere in the filing.
+    Issuer statements such as "We expect the initial public offering price ...
+    to be $7.00 per share" and "The offering price per share ... is to be fixed
+    at $5.00 per share" are authoritative preliminary Filing Prices even though
+    final pricing has not occurred. Keep this deliberately narrower than generic
+    assumed/sensitivity language elsewhere in the filing.
     """
     cover = " ".join(str(text or "").split())[:COVER_TEXT_LIMIT]
     if _explicitly_undetermined(cover):
@@ -122,6 +123,9 @@ def _extract_authoritative_proposed_point_price(text: str):
         rf"(?:\s+of\s+[^.$]{{1,100}}?)?\s+is\s+(?:currently\s+)?"
         rf"(?:expected|estimated|anticipated)\s+to\s+be\s+"
         rf"\$\s*{number}\s+per\s+share\b",
+        rf"\bthe\s+(?:initial\s+public\s+)?offering\s+price\s+per\s+share"
+        rf"(?:\s+of\s+[^.$]{{1,160}}?)?(?:\s+in\s+this\s+offering)?"
+        rf"\s+is\s+to\s+be\s+fixed\s+at\s+\$\s*{number}\s+per\s+share\b",
     )
     for pattern in patterns:
         match = re.search(pattern, cover, re.IGNORECASE)
@@ -138,14 +142,16 @@ def _extract_authoritative_primary_share_count(text: str):
 
     This supports offering-value recovery only when the same cover identifies the
     transaction as the issuer's initial public offering and does not identify
-    selling stockholders in the nearby offer description. It intentionally ignores
+    selling stockholders in the nearby offer description. The bounded context
+    includes issuer-offer wording immediately before the formal IPO sentence,
+    because some SEC covers state the share count first. It intentionally ignores
     greenshoe/over-allotment quantities.
     """
     cover = " ".join(str(text or "").split())[:COVER_TEXT_LIMIT]
     start = re.search(r"\bthis\s+is\s+an\s+initial\s+public\s+offering\b", cover, re.IGNORECASE)
     if not start:
         return None
-    context = cover[start.start() : min(len(cover), start.start() + 1800)]
+    context = cover[max(0, start.start() - 1600) : min(len(cover), start.start() + 1800)]
     if re.search(
         r"\bselling\s+(?:stockholder|shareholder|securityholder)s?\b",
         context,
@@ -158,7 +164,14 @@ def _extract_authoritative_primary_share_count(text: str):
         re.IGNORECASE,
     ):
         return None
-    share_match = re.search(r"\bof\s+([\d,]{2,})\s+shares\b", context, re.IGNORECASE)
+    share_match = re.search(
+        r"\bwe\s+(?:are\s+)?offering\s+(?:for\s+sale\s+)?(?:a\s+total\s+of\s+)?"
+        r"(?:the\s+)?([\d,]{2,})\s+(?:[A-Za-z][A-Za-z0-9-]*\s+){0,5}shares\b",
+        context,
+        re.IGNORECASE,
+    )
+    if not share_match:
+        share_match = re.search(r"\bof\s+([\d,]{2,})\s+shares\b", context, re.IGNORECASE)
     if not share_match:
         return None
     try:
