@@ -20,6 +20,10 @@ class InstitutionalHolderTypeTests(unittest.TestCase):
         self.assertEqual(holder_type("MDP Funds"), "Fund")
         self.assertEqual(holder_type("Example Healthcare Funds"), "Fund")
 
+    def test_verified_standalone_sponsor_brands_are_entities(self):
+        self.assertEqual(holder_type("General Atlantic"), "Entity")
+        self.assertEqual(holder_type("Alpha Wave"), "Entity")
+
     def test_role_labeled_natural_people_are_not_misclassified_as_entities(self):
         self.assertEqual(
             holder_type("Scott W. Knoll, EVP, Corporate Strategy and Director"),
