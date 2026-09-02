@@ -1,11 +1,13 @@
-"""Fail-closed validation for fixed pre-pricing IPO prices.
+"""Fail-closed validation and recovery for pre-pricing IPO point prices.
 
 The generic SEC parser serves both final 424B4s and preliminary S-1/S-1A
 registrations. Preliminary filings can mention unrelated dollar amounts near IPO
-language, so a fixed Filing Price must be independently confirmed against explicit
+language, so a point Filing Price must be independently confirmed against explicit
 cover-page pricing language before publication. Unsupported values are cleared,
-along with any offering size derived from that value. SEC fetch failures block
-publication rather than accepting an unverified price.
+along with any offering size derived from that value. Conversely, when an S-1
+cover explicitly states an issuer-proposed per-share IPO price that the generic
+parser missed, recover that public fact conservatively rather than leaving Filing
+Price blank. SEC fetch failures never create or preserve an unverified value.
 """
 
 from __future__ import annotations
@@ -24,7 +26,7 @@ PLAIN_PRICE_TEXT_LIMIT = 12000
 
 
 class PreliminaryPriceGateError(RuntimeError):
-    """Raised when a published preliminary fixed price cannot be verified."""
+    """Raised when a published preliminary point price cannot be verified."""
 
 
 def _number(value):
@@ -41,12 +43,17 @@ def _fixed_price_label(value):
     return _number(match.group(1)) if match else None
 
 
+def _format_price_label(value):
+    number = _number(value)
+    return f"${number:,.2f}" if number is not None else None
+
+
 def _fixed_price_candidate_key(filing: dict):
-    """Return an exact filing identity for a fixed-price S-1 candidate.
+    """Return an exact filing identity for a point-price S-1 candidate.
 
     A CIK alone is not sufficient because multiple S-1 amendments for the same
     issuer can contain different pricing terms. Reuse a completed SEC validation
-    only when the exact filing source and fixed-price label match.
+    only when the exact filing source and point-price label match.
     """
     if not isinstance(filing, dict):
         return None
@@ -93,12 +100,83 @@ def _matches_expected_price(match, expected: float) -> bool:
     return candidate is not None and abs(candidate - expected) < 0.00001
 
 
+def _extract_authoritative_proposed_point_price(text: str):
+    """Recover a direct issuer-proposed IPO point price from the prospectus cover.
+
+    An issuer statement such as "We expect the initial public offering price ...
+    to be $7.00 per share" is an authoritative preliminary Filing Price even
+    though final pricing has not occurred. Keep this deliberately narrower than
+    generic assumed/sensitivity language elsewhere in the filing.
+    """
+    cover = " ".join(str(text or "").split())[:COVER_TEXT_LIMIT]
+    if _explicitly_undetermined(cover):
+        return None
+
+    number = r"(?P<price>\d{1,4}(?:\.\d{1,4})?)\b"
+    patterns = (
+        rf"\bwe\s+(?:currently\s+)?(?:expect|estimate|anticipate)\s+(?:that\s+)?"
+        rf"(?:the\s+)?initial\s+public\s+offering\s+price"
+        rf"(?:\s+of\s+[^.$]{{1,100}}?)?\s+(?:will\s+be|to\s+be)\s+"
+        rf"\$\s*{number}\s+per\s+share\b",
+        rf"\bthe\s+initial\s+public\s+offering\s+price"
+        rf"(?:\s+of\s+[^.$]{{1,100}}?)?\s+is\s+(?:currently\s+)?"
+        rf"(?:expected|estimated|anticipated)\s+to\s+be\s+"
+        rf"\$\s*{number}\s+per\s+share\b",
+    )
+    for pattern in patterns:
+        match = re.search(pattern, cover, re.IGNORECASE)
+        if not match or _assumption_context(cover, match.start()):
+            continue
+        price = _number(match.group("price"))
+        if price is not None:
+            return price
+    return None
+
+
+def _extract_authoritative_primary_share_count(text: str):
+    """Return an issuer-only base offering share count from explicit cover prose.
+
+    This supports offering-value recovery only when the same cover identifies the
+    transaction as the issuer's initial public offering and does not identify
+    selling stockholders in the nearby offer description. It intentionally ignores
+    greenshoe/over-allotment quantities.
+    """
+    cover = " ".join(str(text or "").split())[:COVER_TEXT_LIMIT]
+    start = re.search(r"\bthis\s+is\s+an\s+initial\s+public\s+offering\b", cover, re.IGNORECASE)
+    if not start:
+        return None
+    context = cover[start.start() : min(len(cover), start.start() + 1800)]
+    if re.search(
+        r"\bselling\s+(?:stockholder|shareholder|securityholder)s?\b",
+        context,
+        re.IGNORECASE,
+    ):
+        return None
+    if not re.search(
+        r"\b(?:we\s+(?:are\s+)?offering|offered\s+by\s+us)\b",
+        context,
+        re.IGNORECASE,
+    ):
+        return None
+    share_match = re.search(r"\bof\s+([\d,]{2,})\s+shares\b", context, re.IGNORECASE)
+    if not share_match:
+        return None
+    try:
+        shares = int(share_match.group(1).replace(",", ""))
+    except (TypeError, ValueError):
+        return None
+    return shares if shares > 0 else None
+
+
 def has_authoritative_fixed_price(text: str, expected_price: float) -> bool:
-    """Return True only for explicit prospective per-share/fixed IPO terms.
+    """Return True only for explicit prospective per-share IPO terms.
 
     Aggregate commitments such as "$1.5 billion ... at the IPO price" are not
     per-share offering prices. A statement that terms remain undetermined wins
-    over incidental dollar values elsewhere in the filing.
+    over incidental dollar values elsewhere in the filing. Direct issuer-proposed
+    cover prices are accepted even when the filing describes them as expected or
+    estimated, because they are authoritative preliminary terms rather than a
+    sensitivity assumption.
     """
     expected_price = _number(expected_price)
     if expected_price is None:
@@ -107,6 +185,10 @@ def has_authoritative_fixed_price(text: str, expected_price: float) -> bool:
     cover = " ".join(str(text or "").split())[:COVER_TEXT_LIMIT]
     if _explicitly_undetermined(cover):
         return False
+
+    proposed = _extract_authoritative_proposed_point_price(cover)
+    if proposed is not None and abs(proposed - expected_price) < 0.00001:
+        return True
 
     number = r"(?P<price>\d{1,4}(?:\.\d{1,4})?)\b"
     scaled = r"(?!\s*(?:thousand|million|billion)\b)"
@@ -165,7 +247,7 @@ def _load_sec_primary_text(filing: dict) -> str:
     form = str(filing.get("form") or "S-1").strip().upper()
     if not index_url:
         raise PreliminaryPriceGateError(
-            f"{filing.get('company') or filing.get('id')}: fixed Filing Price has no SEC source URL"
+            f"{filing.get('company') or filing.get('id')}: point Filing Price has no SEC source URL"
         )
     document_url = filing_parser.find_primary_document_url(
         index_url, expected_form_types=[form] if form in {"S-1", "S-1/A"} else ["S-1", "S-1/A"]
@@ -179,6 +261,8 @@ def _clean_signals(signals):
     for signal in signals or []:
         text = str(signal or "")
         if text.startswith("Fixed offering price disclosed at "):
+            continue
+        if text.startswith("Preliminary offering price disclosed at "):
             continue
         if text.startswith("IPO size disclosed or derived at approximately "):
             continue
@@ -207,12 +291,63 @@ def _clear_unverified_fixed_price(filing: dict) -> dict:
     return cleaned
 
 
+def _recover_missing_preliminary_terms(filing: dict, filing_text: str) -> dict:
+    """Fill only explicit SEC-cover point terms for an otherwise blank S-1 row."""
+    if str(filing.get("filing_price") or "").strip():
+        return filing
+    if str(filing.get("price_range") or "").strip():
+        return filing
+
+    price = _extract_authoritative_proposed_point_price(filing_text)
+    if price is None:
+        return filing
+
+    recovered = dict(filing)
+    price_label = _format_price_label(price)
+    recovered["filing_price"] = price_label
+    recovered["priority"] = "High"
+
+    cleaned_signals = []
+    for signal in recovered.get("signals") or []:
+        text = str(signal or "")
+        if text == "No preliminary price range or fixed offering price detected yet":
+            continue
+        if text.startswith("Fixed offering price disclosed at "):
+            continue
+        if text.startswith("Preliminary offering price disclosed at "):
+            continue
+        if text.startswith("IPO size disclosed or derived at approximately "):
+            continue
+        cleaned_signals.append(signal)
+    cleaned_signals.append(f"Preliminary offering price disclosed at {price_label} per share")
+
+    shares = _extract_authoritative_primary_share_count(filing_text)
+    if shares is not None:
+        offering_value = int(round(shares * price))
+        recovered["primary_offering_shares"] = shares
+        recovered["offering_size_source"] = (
+            "SEC preliminary prospectus cover: primary offering; issuer-only; proposed point price"
+        )
+        recovered["offering_size_confidence"] = "High"
+        if "ipo_size" in recovered:
+            recovered["ipo_size"] = offering_value
+        if "value" in recovered:
+            recovered["value"] = offering_value
+            recovered["value_label"] = f"${offering_value:,.0f}"
+        cleaned_signals.append(
+            f"IPO size disclosed or derived at approximately ${offering_value:,.0f}"
+        )
+
+    recovered["signals"] = cleaned_signals
+    return recovered
+
+
 def review_watch_payload(
     payload: dict,
     text_loader=_load_sec_primary_text,
     skip_candidate_keys=None,
 ):
-    """Verify fixed-price S-1 rows, optionally reusing exact prior checks."""
+    """Recover and verify point-price S-1 rows, reusing exact prior checks only."""
     filings = payload.get("filings")
     if not isinstance(filings, list):
         raise ValueError("S-1 payload must contain a filings list")
@@ -236,7 +371,17 @@ def review_watch_payload(
 
         raw_price = str(filing.get("filing_price") or "").strip()
         if not raw_price:
-            updated_filings.append(filing)
+            try:
+                filing_text = text_loader(filing)
+            except Exception:
+                # Missing preliminary terms may remain blank when SEC is unavailable;
+                # never manufacture a value merely to improve field completeness.
+                updated_filings.append(filing)
+                continue
+            recovered = _recover_missing_preliminary_terms(filing, filing_text)
+            if recovered != filing:
+                checked += 1
+            updated_filings.append(recovered)
             continue
 
         candidate_key = _fixed_price_candidate_key(filing)
@@ -267,7 +412,7 @@ def review_watch_payload(
         cik = re.sub(r"\D", "", str(filing.get("cik") or "")).zfill(10)
         if not cik.strip("0"):
             raise PreliminaryPriceGateError(
-                f"{filing.get('company') or filing.get('id')}: unsupported fixed price has no CIK"
+                f"{filing.get('company') or filing.get('id')}: unsupported point price has no CIK"
             )
         invalid_by_cik[cik] = raw_price
         updated_filings.append(_clear_unverified_fixed_price(filing))
@@ -324,23 +469,35 @@ def enforce_preliminary_fixed_prices(
     watch_payload = json.loads(watch_path.read_text(encoding="utf-8"))
     queue_payload = json.loads(queue_path.read_text(encoding="utf-8"))
 
+    text_cache = {}
+
+    def cached_text_loader(filing):
+        source_identity = str(
+            filing.get("accession_no") or filing.get("sec_url") or filing.get("id") or ""
+        ).strip()
+        if not source_identity:
+            return text_loader(filing)
+        if source_identity not in text_cache:
+            text_cache[source_identity] = text_loader(filing)
+        return text_cache[source_identity]
+
     updated_watch, watch_invalid, watch_checked = review_watch_payload(
         watch_payload,
-        text_loader=text_loader,
+        text_loader=cached_text_loader,
     )
     checked_watch_keys = {
         candidate_key
-        for filing in watch_payload.get("filings", [])
+        for filing in updated_watch.get("filings", [])
         if (candidate_key := _fixed_price_candidate_key(filing)) is not None
     }
 
     # The public queue can retain qualifying S-1 records that have rolled out of
     # s1_watch.json. First propagate any invalid watch result, then independently
-    # verify every remaining queue-only fixed Filing Price before publication.
+    # recover or verify every remaining queue-only point Filing Price before release.
     prechecked_queue = sanitize_queue_payload(queue_payload, watch_invalid)
     updated_queue, queue_invalid, queue_checked = review_watch_payload(
         prechecked_queue,
-        text_loader=text_loader,
+        text_loader=cached_text_loader,
         skip_candidate_keys=checked_watch_keys,
     )
 
@@ -364,6 +521,6 @@ if __name__ == "__main__":
     queue = Path(sys.argv[2]) if len(sys.argv) > 2 else Path("../docs/data/filings.json")
     _, _, invalid, checked = enforce_preliminary_fixed_prices(watch, queue)
     print(
-        f"Verified {checked} fixed pre-pricing Filing Price record(s); "
+        f"Reviewed {checked} pre-pricing point-price record(s); "
         f"cleared {len(invalid)} unsupported value(s)"
     )
