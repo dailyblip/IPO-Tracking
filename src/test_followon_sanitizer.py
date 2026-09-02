@@ -32,6 +32,21 @@ class FollowOnSanitizerTests(unittest.TestCase):
                     followon_sanitizer.has_prior_periodic_report(submissions, "2026-06-01")
                 )
 
+    def test_prior_transition_reports_prove_prior_reporting(self):
+        for form in ("10-QT", "10-QT/A", "10-KT", "10-KT/A"):
+            with self.subTest(form=form):
+                submissions = {
+                    "filings": {
+                        "recent": {
+                            "form": [form, "424B4"],
+                            "filingDate": ["2026-05-14", "2026-06-01"],
+                        }
+                    }
+                }
+                self.assertTrue(
+                    followon_sanitizer.has_prior_periodic_report(submissions, "2026-06-01")
+                )
+
     def test_prior_periodic_and_annual_report_amendments_prove_prior_reporting(self):
         for form in ("10-Q/A", "10-K/A", "20-F/A", "40-F/A"):
             with self.subTest(form=form):
