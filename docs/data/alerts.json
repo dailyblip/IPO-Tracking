@@ -1,8 +1,36 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-02T02:11:22.126417+00:00",
-  "count": 62,
+  "generated_at": "2026-09-02T02:21:57.710525+00:00",
+  "count": 64,
   "alerts": [
+    {
+      "type": "new_prepricing",
+      "company": "SB Energy, Inc.",
+      "cik": "0002133037",
+      "filing_id": "s1:0002133037",
+      "form": "S-1",
+      "filed": "2026-09-01",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026059639/0001628280-26-059639-index.htm",
+      "detected_at": "2026-09-02T02:21:57.710302+00:00",
+      "key": "new_prepricing|s1:0002133037|0002133037|2026-09-01|"
+    },
+    {
+      "type": "new_prepricing",
+      "company": "Entrata, Inc.",
+      "cik": "0002028464",
+      "filing_id": "s1:0002028464",
+      "form": "S-1/A",
+      "filed": "2026-09-01",
+      "stage": "pre-pricing",
+      "priority": "Medium",
+      "summary": "New pre-pricing S-1/A candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2028464/000162828026059692/0001628280-26-059692-index.htm",
+      "detected_at": "2026-09-02T02:21:57.710328+00:00",
+      "key": "new_prepricing|s1:0002028464|0002028464|2026-09-01|"
+    },
     {
       "type": "new_prepricing",
       "company": "StableCoinX Inc.",
