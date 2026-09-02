@@ -55,6 +55,22 @@ class LockupParserResearchGradeTests(unittest.TestCase):
         self.assertEqual(info["duration_unit"], "days")
         self.assertEqual([(t["duration_value"], t["duration_unit"]) for t in info["terms"]], [(180, "days")])
 
+    def test_reformation_accepts_explicit_restrict_the_sale_lockup_clause(self):
+        text = """
+        We, all of our directors, executive officers and the holders of substantially all of our outstanding securities,
+        including the selling stockholders and the stockholders participating in the Synthetic Secondary, are subject to
+        lock-up agreements with the underwriters that will, subject to certain customary exceptions, restrict the sale of
+        the shares of our common stock and certain other securities held by them for up to 180 days following the date of this prospectus.
+        """
+        info = extract_holder_lockup_info(text)
+        self.assertEqual(info["duration_value"], 180)
+        self.assertEqual(info["duration_unit"], "days")
+        self.assertEqual(info["confidence"], "High")
+        self.assertIn("substantially_all_holders", info["scope_tags"])
+        self.assertIn("directors", info["scope_tags"])
+        self.assertIn("executive_officers", info["scope_tags"])
+        self.assertIn("selling_stockholders", info["scope_tags"])
+
     def test_no_lockup_language_stays_unresolved(self):
         info = extract_holder_lockup_info("This prospectus discusses revenue and customers only.")
         self.assertIsNone(info["duration_value"])
