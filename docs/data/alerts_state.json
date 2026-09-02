@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-01T23:30:52.615691+00:00",
+  "updated_at": "2026-09-02T02:11:22.126379+00:00",
   "items": {
     "s1:0002149773": {
       "id": "s1:0002149773",
@@ -49,6 +49,18 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1718728/000119312526376166/0001193125-26-376166-index.htm"
+    },
+    "s1:0002080215": {
+      "id": "s1:0002080215",
+      "cik": "0002080215",
+      "company": "StableCoinX Inc.",
+      "form": "S-1",
+      "filed": "2026-08-31",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2080215/000121390026095808/0001213900-26-095808-index.htm"
     },
     "s1:0002151905": {
       "id": "s1:0002151905",
@@ -629,6 +641,13 @@
       "company": "Syntiant Corp.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0001718728",
+      "last_filed": "2026-08-31",
+      "missing_runs": 0
+    },
+    "0002080215": {
+      "company": "StableCoinX Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002080215",
       "last_filed": "2026-08-31",
       "missing_runs": 0
     },
