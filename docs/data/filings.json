@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-02T12:05:40.138830+00:00",
+  "generated_at": "2026-09-02T12:10:38.734392+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -381,34 +381,6 @@
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2131613/000119312526361190/0001193125-26-361190-index.htm"
-    },
-    {
-      "id": "s1:0002091680",
-      "company": "Bitari Inc",
-      "ticker": "BIAI",
-      "cik": "0002091680",
-      "accession_no": "0001185185-26-003678",
-      "form": "S-1",
-      "filed": "2026-08-21",
-      "stage": "Pre-pricing",
-      "price_range": null,
-      "filing_price": "$7.00",
-      "offering_size_source": "SEC preliminary prospectus cover: primary offering; issuer-only; proposed point price",
-      "offering_size_confidence": "High",
-      "primary_offering_shares": 4285715,
-      "secondary_offering_shares": null,
-      "priority": "High",
-      "status": "New",
-      "value": 30000005,
-      "value_label": "$30,000,005",
-      "people_count": 0,
-      "signals": [
-        "Initial registration statement filed — IPO is pre-pricing",
-        "Preliminary offering price disclosed at $7.00 per share",
-        "IPO size disclosed or derived at approximately $30,000,005"
-      ],
-      "people": [],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526003678/0001185185-26-003678-index.htm"
     },
     {
       "id": "s1:0002124472",
