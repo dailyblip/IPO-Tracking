@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-02T02:21:57.710525+00:00",
-  "count": 64,
+  "generated_at": "2026-09-02T02:22:14.049446+00:00",
+  "count": 63,
   "alerts": [
     {
       "type": "new_prepricing",
@@ -30,20 +30,6 @@
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2028464/000162828026059692/0001628280-26-059692-index.htm",
       "detected_at": "2026-09-02T02:21:57.710328+00:00",
       "key": "new_prepricing|s1:0002028464|0002028464|2026-09-01|"
-    },
-    {
-      "type": "new_prepricing",
-      "company": "StableCoinX Inc.",
-      "cik": "0002080215",
-      "filing_id": "s1:0002080215",
-      "form": "S-1",
-      "filed": "2026-08-31",
-      "stage": "pre-pricing",
-      "priority": "Medium",
-      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2080215/000121390026095808/0001213900-26-095808-index.htm",
-      "detected_at": "2026-09-02T02:11:22.126236+00:00",
-      "key": "new_prepricing|s1:0002080215|0002080215|2026-08-31|"
     },
     {
       "type": "new_prepricing",
