@@ -150,10 +150,18 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertIn("python market_quote_release_gate.py ../docs/data/filings.json", workflow)
         self.assertIn("python final_pricing_release_gate.py ../docs/data/filings.json", workflow)
         self.assertIn("python stanford_sec_backfill.py ../docs/data/filings.json", workflow)
+        publish_step = workflow.index("- name: Publish Research Monitor data")
+        publish_block = workflow[publish_step:]
+        stale_check = 'if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then'
+        stale_start = publish_block.index(stale_check)
+        stale_end = publish_block.index("\n          fi", stale_start)
+        stale_block = publish_block[stale_start:stale_end]
         self.assertIn(
-            "main advanced during this run; skipping stale Stanford backfill publication.",
-            workflow,
+            "main advanced during this run; refusing stale Stanford backfill publication.",
+            stale_block,
         )
+        self.assertIn("exit 1", stale_block)
+        self.assertNotIn("exit 0", stale_block)
         self.assertNotIn("git pull --rebase", workflow)
 
     def test_manual_backfill_remains_manual_only(self):
