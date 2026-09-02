@@ -124,8 +124,15 @@ def _direct_lockup_relation(context: str, duration_text: str) -> bool:
         lowered,
         re.I,
     ))
+    has_explicit_lockup_restriction = bool(re.search(
+        r"(?:subject to|bound by)\s+lock-?up agreements?[^.;]{0,500}?"
+        r"(?:restrict|prohibit)[^.;]{0,260}?"
+        r"(?:sale|sell|transfer|dispose|offer|pledge|hedge)",
+        lowered,
+        re.I,
+    ))
     has_lockup_label = "lock-up" in lowered or "lockup" in lowered or "market standoff" in lowered
-    if has_holder_restriction:
+    if has_holder_restriction or has_explicit_lockup_restriction:
         return True
     if has_lockup_label and re.search(r"staggered|early\s+lock-?up\s+release|lock-?up\s+release", lowered):
         return True
