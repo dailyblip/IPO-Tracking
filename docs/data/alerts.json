@@ -1,38 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-02T12:12:52.048637+00:00",
-  "count": 65,
+  "generated_at": "2026-09-02T15:44:49.108058+00:00",
+  "count": 63,
   "alerts": [
-    {
-      "type": "priority_escalation",
-      "company": "Bitari Inc",
-      "cik": "0002091680",
-      "filing_id": "s1:0002091680",
-      "form": "S-1",
-      "filed": "2026-08-21",
-      "stage": "pre-pricing",
-      "priority": "High",
-      "summary": "Research priority increased from Medium to High.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526003678/0001185185-26-003678-index.htm",
-      "detected_at": "2026-09-02T12:07:55.278751+00:00",
-      "old_value": "Medium",
-      "new_value": "High",
-      "key": "priority_escalation|s1:0002091680|0002091680|2026-08-21|High"
-    },
-    {
-      "type": "new_prepricing",
-      "company": "Bitari Inc",
-      "cik": "0002091680",
-      "filing_id": "s1:0002091680",
-      "form": "S-1",
-      "filed": "2026-08-21",
-      "stage": "pre-pricing",
-      "priority": "Medium",
-      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526003678/0001185185-26-003678-index.htm",
-      "detected_at": "2026-09-02T10:19:13.030714+00:00",
-      "key": "new_prepricing|s1:0002091680|0002091680|2026-08-21|"
-    },
     {
       "type": "new_prepricing",
       "company": "SB Energy, Inc.",
