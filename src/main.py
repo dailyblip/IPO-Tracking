@@ -23,6 +23,7 @@ from pathlib import Path
 
 import edgar_client
 import filing_parser
+import followon_sanitizer
 import price_lookup
 import stanford_grader
 import qc_review
@@ -132,13 +133,14 @@ def _get_spreadsheet_id() -> str:
 
 
 def _is_first_time_registrant_as_of(cik: str, filing_date: str = None) -> bool:
-    """Evaluate first-time status using only 10-Ks filed by the candidate IPO date.
+    """Evaluate first-time status against SEC reporting history as of the candidate date.
 
     Historical replays must not classify a genuine IPO as a follow-on merely because
-    the issuer filed its first annual report months after going public. When the
-    candidate 424B4 date is available, only a 10-K on or before that date proves the
-    issuer was already reporting. A missing candidate date preserves the existing
-    current-state check used by explicit test-mode calls.
+    the issuer filed Exchange Act reports after going public. When the candidate
+    424B4 date is available, any authoritative reporting form filed before that date
+    proves the issuer was already reporting. Same-day reports do not disqualify the
+    candidate because filing-time ordering is not established. A missing candidate
+    date preserves the existing current-state check used by explicit test-mode calls.
     """
     cutoff_raw = str(filing_date or "").strip()
     if not cutoff_raw:
@@ -156,23 +158,7 @@ def _is_first_time_registrant_as_of(cik: str, filing_date: str = None) -> bool:
         edgar_client.EDGAR_SUBMISSIONS_URL.format(cik=padded_cik),
         edgar_client._get_headers(),
     )
-    recent = data.get("filings", {}).get("recent", {})
-    forms = recent.get("form") or []
-    filing_dates = recent.get("filingDate") or []
-
-    for form, filed_raw in zip(forms, filing_dates):
-        if str(form or "").strip().upper() != "10-K":
-            continue
-        filed_text = str(filed_raw or "").strip()
-        if not filed_text:
-            continue
-        try:
-            filed = date.fromisoformat(filed_text)
-        except ValueError:
-            continue
-        if filed.isoformat() == filed_text and filed <= cutoff:
-            return False
-    return True
+    return not followon_sanitizer.has_prior_periodic_report(data, cutoff_raw)
 
 
 def process_filing(filing_meta: dict) -> list:
@@ -195,7 +181,7 @@ def process_filing(filing_meta: dict) -> list:
         if not _is_first_time_registrant_as_of(cik, filing_meta.get("filing_date")):
             print(
                 f"[main] Skipping {company_name}: already an SEC "
-                f"reporting company (has a prior 10-K) - this 424B4 is a "
+                f"reporting company (has a prior Exchange Act report) - this 424B4 is a "
                 f"follow-on/resale offering, not a first-time IPO"
             )
             return []
