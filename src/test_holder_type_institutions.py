@@ -20,9 +20,21 @@ class InstitutionalHolderTypeTests(unittest.TestCase):
         self.assertEqual(holder_type("MDP Funds"), "Fund")
         self.assertEqual(holder_type("Example Healthcare Funds"), "Fund")
 
-    def test_verified_standalone_sponsor_brands_are_entities(self):
-        self.assertEqual(holder_type("General Atlantic"), "Entity")
-        self.assertEqual(holder_type("Alpha Wave"), "Entity")
+    def test_verified_standalone_institutional_brands_are_entities(self):
+        for holder in (
+            "General Atlantic",
+            "Alpha Wave",
+            "Blackstone",
+            "Morningside",
+            "Shionogi",
+            "Electrum",
+            "Ospraie",
+        ):
+            with self.subTest(holder=holder):
+                self.assertEqual(holder_type(holder), "Entity")
+
+    def test_unverified_ambiguous_single_token_stays_unknown(self):
+        self.assertEqual(holder_type("Tao"), "Unknown")
 
     def test_role_labeled_natural_people_are_not_misclassified_as_entities(self):
         self.assertEqual(
