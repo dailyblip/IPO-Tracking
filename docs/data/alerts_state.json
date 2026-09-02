@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T12:07:55.278858+00:00",
+  "updated_at": "2026-09-02T12:12:52.048581+00:00",
   "items": {
     "s1:0002133037": {
       "id": "s1:0002133037",
@@ -169,18 +169,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2131613/000119312526361190/0001193125-26-361190-index.htm"
-    },
-    "s1:0002091680": {
-      "id": "s1:0002091680",
-      "cik": "0002091680",
-      "company": "Bitari Inc",
-      "form": "S-1",
-      "filed": "2026-08-21",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "High",
-      "value": 30000005,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526003678/0001185185-26-003678-index.htm"
     },
     "s1:0002124472": {
       "id": "s1:0002124472",
@@ -637,6 +625,18 @@
       "priority": "High",
       "value": 210400000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2021880/000119312526138102/0001193125-26-138102-index.htm"
+    },
+    "s1:0002091680": {
+      "id": "s1:0002091680",
+      "cik": "0002091680",
+      "company": "Bitari Inc",
+      "form": "S-1",
+      "filed": "2026-08-21",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "High",
+      "value": 30000005,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526003678/0001185185-26-003678-index.htm"
     }
   },
   "ciks": {
@@ -735,13 +735,6 @@
       "company": "CoVolt Power, Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002131613",
-      "last_filed": "2026-08-21",
-      "missing_runs": 0
-    },
-    "0002091680": {
-      "company": "Bitari Inc",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002091680",
       "last_filed": "2026-08-21",
       "missing_runs": 0
     },
@@ -1010,6 +1003,13 @@
       "last_filing_id": "0001193125-26-138102",
       "last_filed": "2026-04-01",
       "missing_runs": 0
+    },
+    "0002091680": {
+      "company": "Bitari Inc",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002091680",
+      "last_filed": "2026-08-21",
+      "missing_runs": 1
     }
   }
 }
