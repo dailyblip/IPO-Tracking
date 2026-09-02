@@ -135,6 +135,61 @@ class RegistrationHistoryGateTests(unittest.TestCase):
             [row["company"] for row in filtered_queue],
         )
 
+    def test_apply_gate_checks_queue_only_prepricing_candidate(self):
+        watch = {"filings": []}
+        queue = {
+            "filings": [
+                {
+                    "id": "s1:0002000100",
+                    "company": "Already Public Co",
+                    "cik": "0002000100",
+                    "accession_no": "0000000000-26-000100",
+                    "form": "S-1",
+                    "stage": "Pre-pricing",
+                    "filed": "2026-09-01",
+                },
+                {
+                    "id": "priced:0002000100",
+                    "company": "Already Public Co",
+                    "cik": "0002000100",
+                    "form": "424B4",
+                    "stage": "Priced",
+                    "filed": "2026-08-01",
+                },
+                {
+                    "id": "s1:0002000200",
+                    "company": "First-Time IPO Co",
+                    "cik": "0002000200",
+                    "accession_no": "0000000000-26-000200",
+                    "form": "S-1/A",
+                    "stage": "Pre-pricing",
+                    "filed": "2026-09-01",
+                },
+            ]
+        }
+        with tempfile.TemporaryDirectory() as temp_dir:
+            watch_path = Path(temp_dir) / "s1_watch.json"
+            queue_path = Path(temp_dir) / "filings.json"
+            watch_path.write_text(json.dumps(watch), encoding="utf-8")
+            queue_path.write_text(json.dumps(queue), encoding="utf-8")
+
+            with patch.object(
+                gate,
+                "already_reporting_before_registration",
+                side_effect=lambda row: row.get("company") == "Already Public Co",
+            ), patch.object(
+                gate, "amendment_inherits_resale_exclusion", return_value=False
+            ), patch.object(gate, "write_dashboard_csv"):
+                excluded = gate.apply_gate(watch_path, queue_path)
+
+            filtered_queue = json.loads(queue_path.read_text(encoding="utf-8"))["filings"]
+
+        self.assertEqual({"0002000100"}, excluded)
+        self.assertEqual(
+            ["priced:0002000100", "s1:0002000200"],
+            [row["id"] for row in filtered_queue],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
