@@ -90,6 +90,16 @@ jobs:
         # after parser/data-quality improvements instead of aging out permanently.
         run: python main.py 14
 
+      # main.py can regenerate queue rows that were not present in the checked-in
+      # S-1 watch snapshot. Re-run the SEC registration/reporting-history gate on
+      # the regenerated queue so an already-public or resale-lineage issuer cannot
+      # be reintroduced after the pre-regeneration safety pass.
+      - name: Reconcile regenerated S-1 registration history
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_registration_history_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
       - name: Clear market quotes not refreshed in this run
         working-directory: src
         run: python market_price_freshness_gate.py ../docs/data/filings.json
