@@ -11,10 +11,11 @@ import s1_preliminary_price_gate as gate
 
 LA_BEAUTE_COVER = (
     "PRELIMINARY PROSPECTUS SUBJECT TO COMPLETION. "
-    "We are offering 10,000,000 ordinary shares, par value $0.0001 per share. "
-    "The offering price per share of the ordinary shares in this offering is to be fixed "
-    "at $5.00 per share. This is an initial public offering of our ordinary shares. "
-    "Prior to this offering, there has been no public market for our ordinary shares."
+    "We are offering 10,000,000 ordinary shares of the Company pursuant to this Offering. "
+    "This is the initial public offering of ordinary shares of La Beaute Inc. "
+    "The offering price per share of our ordinary shares in this offering is to be fixed "
+    "at $5.00 per share. Prior to this offering, there has been no public market for our "
+    "ordinary shares."
 )
 
 
