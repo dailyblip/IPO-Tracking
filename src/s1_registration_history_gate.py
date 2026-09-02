@@ -15,6 +15,10 @@ they have a 10-K, including issuers whose prior Exchange Act reporting used
 foreign-private-issuer forms. Only reporting forms filed strictly before the
 candidate S-1/S-1A are used.
 
+Candidate coverage is the union of the S-1 watch payload and the public queue.
+That prevents a regenerated or otherwise queue-only pre-pricing row from bypassing
+the release gate merely because it is absent from ``s1_watch.json``.
+
 Network/parser failures never create an exclusion. Different registration file
 numbers are never inherited.
 """
@@ -220,6 +224,43 @@ def _write_payload(path: Path, payload: dict) -> None:
     temp.replace(path)
 
 
+def _is_prepricing_s1(record: dict) -> bool:
+    return (
+        isinstance(record, dict)
+        and str(record.get("stage") or "").strip().casefold() == "pre-pricing"
+        and str(record.get("form") or "").strip().upper() in FORM_TYPES
+    )
+
+
+def _candidate_identity(record: dict) -> tuple[str, str]:
+    cik = str(record.get("cik") or "").zfill(10)
+    accession = _normalized_accession(record.get("accession_no"))
+    if accession:
+        return cik, accession
+    form = str(record.get("form") or "").strip().upper()
+    filed = str(record.get("filed") or record.get("filing_date") or "").strip()
+    return cik, f"{form}:{filed}"
+
+
+def _candidate_records(*payloads: dict) -> list[dict]:
+    """Return unique pre-pricing S-1/S-1A rows across all supplied payloads."""
+    candidates = []
+    seen = set()
+    for payload in payloads:
+        filings = payload.get("filings", []) if isinstance(payload, dict) else []
+        if not isinstance(filings, list):
+            continue
+        for record in filings:
+            if not _is_prepricing_s1(record):
+                continue
+            identity = _candidate_identity(record)
+            if identity in seen:
+                continue
+            seen.add(identity)
+            candidates.append(record)
+    return candidates
+
+
 def apply_gate(s1_watch_path: Path, queue_path: Path) -> set[str]:
     """Remove confirmed already-public or resale-lineage rows from pre-pricing outputs."""
     s1_watch_path = Path(s1_watch_path)
@@ -228,7 +269,7 @@ def apply_gate(s1_watch_path: Path, queue_path: Path) -> set[str]:
     queue_payload = _load_payload(queue_path)
 
     excluded_ciks = set()
-    for record in watch_payload.get("filings", []):
+    for record in _candidate_records(watch_payload, queue_payload):
         already_reporting = already_reporting_before_registration(record)
         resale_history = False if already_reporting else amendment_inherits_resale_exclusion(record)
         if already_reporting or resale_history:
