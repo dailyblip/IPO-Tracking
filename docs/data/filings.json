@@ -1,8 +1,62 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-02T02:08:19.810499+00:00",
+  "generated_at": "2026-09-02T02:20:03.771642+00:00",
   "source": "SEC EDGAR",
   "filings": [
+    {
+      "id": "s1:0002133037",
+      "company": "SB Energy, Inc.",
+      "ticker": "SBE",
+      "cik": "0002133037",
+      "accession_no": "0001628280-26-059639",
+      "form": "S-1",
+      "filed": "2026-09-01",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": "$1.50",
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "priority": "High",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 0,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "Fixed offering price disclosed at $1.50 per share"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026059639/0001628280-26-059639-index.htm"
+    },
+    {
+      "id": "s1:0002028464",
+      "company": "Entrata, Inc.",
+      "ticker": "ENT",
+      "cik": "0002028464",
+      "accession_no": "0001628280-26-059692",
+      "form": "S-1/A",
+      "filed": "2026-09-01",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "priority": "Medium",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 0,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2028464/000162828026059692/0001628280-26-059692-index.htm"
+    },
     {
       "id": "s1:0002149773",
       "company": "Xiasan Dynasty Co",
@@ -110,33 +164,6 @@
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1718728/000119312526376166/0001193125-26-376166-index.htm"
-    },
-    {
-      "id": "s1:0002080215",
-      "company": "StableCoinX Inc.",
-      "ticker": "USDE",
-      "cik": "0002080215",
-      "accession_no": "0001213900-26-095808",
-      "form": "S-1",
-      "filed": "2026-08-31",
-      "stage": "Pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": null,
-      "secondary_offering_shares": null,
-      "priority": "Medium",
-      "status": "New",
-      "value": null,
-      "value_label": "—",
-      "people_count": 0,
-      "signals": [
-        "Initial registration statement filed — IPO is pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "people": [],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2080215/000121390026095808/0001213900-26-095808-index.htm"
     },
     {
       "id": "s1:0002151905",
