@@ -1,7 +1,31 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-02T02:11:22.126379+00:00",
+  "updated_at": "2026-09-02T02:21:57.710486+00:00",
   "items": {
+    "s1:0002133037": {
+      "id": "s1:0002133037",
+      "cik": "0002133037",
+      "company": "SB Energy, Inc.",
+      "form": "S-1",
+      "filed": "2026-09-01",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "High",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026059639/0001628280-26-059639-index.htm"
+    },
+    "s1:0002028464": {
+      "id": "s1:0002028464",
+      "cik": "0002028464",
+      "company": "Entrata, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-01",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2028464/000162828026059692/0001628280-26-059692-index.htm"
+    },
     "s1:0002149773": {
       "id": "s1:0002149773",
       "cik": "0002149773",
@@ -49,18 +73,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1718728/000119312526376166/0001193125-26-376166-index.htm"
-    },
-    "s1:0002080215": {
-      "id": "s1:0002080215",
-      "cik": "0002080215",
-      "company": "StableCoinX Inc.",
-      "form": "S-1",
-      "filed": "2026-08-31",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2080215/000121390026095808/0001213900-26-095808-index.htm"
     },
     "s1:0002151905": {
       "id": "s1:0002151905",
@@ -613,9 +625,35 @@
       "priority": "High",
       "value": 210400000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2021880/000119312526138102/0001193125-26-138102-index.htm"
+    },
+    "s1:0002080215": {
+      "id": "s1:0002080215",
+      "cik": "0002080215",
+      "company": "StableCoinX Inc.",
+      "form": "S-1",
+      "filed": "2026-08-31",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2080215/000121390026095808/0001213900-26-095808-index.htm"
     }
   },
   "ciks": {
+    "0002133037": {
+      "company": "SB Energy, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002133037",
+      "last_filed": "2026-09-01",
+      "missing_runs": 0
+    },
+    "0002028464": {
+      "company": "Entrata, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002028464",
+      "last_filed": "2026-09-01",
+      "missing_runs": 0
+    },
     "0002149773": {
       "company": "Xiasan Dynasty Co",
       "stage": "pre-pricing",
@@ -641,13 +679,6 @@
       "company": "Syntiant Corp.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0001718728",
-      "last_filed": "2026-08-31",
-      "missing_runs": 0
-    },
-    "0002080215": {
-      "company": "StableCoinX Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002080215",
       "last_filed": "2026-08-31",
       "missing_runs": 0
     },
@@ -972,6 +1003,13 @@
       "last_filing_id": "0001193125-26-138102",
       "last_filed": "2026-04-01",
       "missing_runs": 0
+    },
+    "0002080215": {
+      "company": "StableCoinX Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002080215",
+      "last_filed": "2026-08-31",
+      "missing_runs": 1
     }
   }
 }
