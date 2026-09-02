@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-02T19:16:48.822411+00:00",
+  "generated_at": "2026-09-02T20:17:30.747147+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -341,7 +341,7 @@
       "ipo_size": 30000005,
       "offering_size_source": "cover title preceding IPO statement",
       "offering_size_confidence": "High",
-      "primary_offering_shares": null,
+      "primary_offering_shares": 4285715,
       "secondary_offering_shares": null,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
