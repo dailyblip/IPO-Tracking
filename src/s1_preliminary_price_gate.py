@@ -41,6 +41,29 @@ def _fixed_price_label(value):
     return _number(match.group(1)) if match else None
 
 
+def _fixed_price_candidate_key(filing: dict):
+    """Return an exact filing identity for a fixed-price S-1 candidate.
+
+    A CIK alone is not sufficient because multiple S-1 amendments for the same
+    issuer can contain different pricing terms. Reuse a completed SEC validation
+    only when the exact filing source and fixed-price label match.
+    """
+    if not isinstance(filing, dict):
+        return None
+    form = str(filing.get("form") or "").strip().upper()
+    if form not in {"S-1", "S-1/A"}:
+        return None
+    if str(filing.get("price_range") or "").strip():
+        return None
+    raw_price = str(filing.get("filing_price") or "").strip()
+    if not raw_price:
+        return None
+    source_identity = str(filing.get("accession_no") or filing.get("sec_url") or "").strip()
+    if not source_identity:
+        return None
+    return form, source_identity, raw_price
+
+
 def _explicitly_undetermined(text: str) -> bool:
     cover = " ".join(str(text or "").split())[:COVER_TEXT_LIMIT]
     patterns = (
@@ -184,12 +207,17 @@ def _clear_unverified_fixed_price(filing: dict) -> dict:
     return cleaned
 
 
-def review_watch_payload(payload: dict, text_loader=_load_sec_primary_text):
-    """Verify every fixed-price pre-pricing row and clear unsupported values."""
+def review_watch_payload(
+    payload: dict,
+    text_loader=_load_sec_primary_text,
+    skip_candidate_keys=None,
+):
+    """Verify fixed-price S-1 rows, optionally reusing exact prior checks."""
     filings = payload.get("filings")
     if not isinstance(filings, list):
-        raise ValueError("S-1 watch payload must contain a filings list")
+        raise ValueError("S-1 payload must contain a filings list")
 
+    skip_candidate_keys = set(skip_candidate_keys or ())
     updated = dict(payload)
     updated_filings = []
     invalid_by_cik = {}
@@ -208,6 +236,11 @@ def review_watch_payload(payload: dict, text_loader=_load_sec_primary_text):
 
         raw_price = str(filing.get("filing_price") or "").strip()
         if not raw_price:
+            updated_filings.append(filing)
+            continue
+
+        candidate_key = _fixed_price_candidate_key(filing)
+        if candidate_key is not None and candidate_key in skip_candidate_keys:
             updated_filings.append(filing)
             continue
 
@@ -281,14 +314,39 @@ def _write_json_atomic(path: Path, payload: dict):
     temporary.replace(path)
 
 
-def enforce_preliminary_fixed_prices(watch_path, queue_path):
+def enforce_preliminary_fixed_prices(
+    watch_path,
+    queue_path,
+    text_loader=_load_sec_primary_text,
+):
     watch_path = Path(watch_path)
     queue_path = Path(queue_path)
     watch_payload = json.loads(watch_path.read_text(encoding="utf-8"))
     queue_payload = json.loads(queue_path.read_text(encoding="utf-8"))
 
-    updated_watch, invalid_by_cik, checked = review_watch_payload(watch_payload)
-    updated_queue = sanitize_queue_payload(queue_payload, invalid_by_cik)
+    updated_watch, watch_invalid, watch_checked = review_watch_payload(
+        watch_payload,
+        text_loader=text_loader,
+    )
+    checked_watch_keys = {
+        candidate_key
+        for filing in watch_payload.get("filings", [])
+        if (candidate_key := _fixed_price_candidate_key(filing)) is not None
+    }
+
+    # The public queue can retain qualifying S-1 records that have rolled out of
+    # s1_watch.json. First propagate any invalid watch result, then independently
+    # verify every remaining queue-only fixed Filing Price before publication.
+    prechecked_queue = sanitize_queue_payload(queue_payload, watch_invalid)
+    updated_queue, queue_invalid, queue_checked = review_watch_payload(
+        prechecked_queue,
+        text_loader=text_loader,
+        skip_candidate_keys=checked_watch_keys,
+    )
+
+    invalid_by_cik = dict(watch_invalid)
+    invalid_by_cik.update(queue_invalid)
+    checked = watch_checked + queue_checked
 
     if updated_watch != watch_payload:
         _write_json_atomic(watch_path, updated_watch)
