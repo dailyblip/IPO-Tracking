@@ -69,6 +69,17 @@ class TrancheLiquidityTests(unittest.TestCase):
         self.assertEqual(result["liquid_value"], 25000)
         self.assertIn("75%", result["liquidity_status"])
 
+    def test_lockup_status_survives_when_share_count_is_unavailable(self):
+        result = dashboard_export._person_liquidity(
+            None, None, 20, self._lockup(), "Jane Holder", {"role": None}, {}, as_of_date="2026-10-01"
+        )
+        self.assertEqual(result["liquidity_status"], "Lock-up applies — share quantity unavailable")
+        self.assertIn("share count is unavailable", result["liquidity_confidence"])
+        self.assertEqual(len(result["lockup_schedule"]), 4)
+        self.assertEqual(result["lockup_end_date"], "2028-06-01")
+        for field in ("liquid_shares", "liquid_value", "locked_shares", "locked_value", "ipo_value"):
+            self.assertIsNone(result[field])
+
     def test_role_specific_subset_clause_does_not_lock_entire_position(self):
         lockup = {
             "terms": [{
