@@ -1,8 +1,24 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-02T19:02:29.853639+00:00",
-  "count": 63,
+  "generated_at": "2026-09-02T19:19:07.450414+00:00",
+  "count": 64,
   "alerts": [
+    {
+      "type": "priority_escalation",
+      "company": "La Beaute Inc.",
+      "cik": "0002151905",
+      "filing_id": "s1:0002151905",
+      "form": "S-1",
+      "filed": "2026-08-31",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "Research priority increased from Medium to High.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2151905/000215190526000001/0002151905-26-000001-index.htm",
+      "detected_at": "2026-09-02T19:19:07.450225+00:00",
+      "old_value": "Medium",
+      "new_value": "High",
+      "key": "priority_escalation|s1:0002151905|0002151905|2026-08-31|High"
+    },
     {
       "type": "new_prepricing",
       "company": "SB Energy, Inc.",
