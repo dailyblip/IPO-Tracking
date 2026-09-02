@@ -13,6 +13,8 @@ on:
     paths:
       - 'src/s1_monitor.py'
       - 'src/test_s1_monitor.py'
+      - 'src/s1_preliminary_price_gate.py'
+      - 'src/test_s1_preliminary_price_gate.py'
       - 'src/edgar_client.py'
       - 'src/test_resale_registration_exclusion.py'
       - 'src/test_fullpac_real_proceeds_regression.py'
@@ -70,7 +72,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run S-1 monitor tests
         working-directory: src
-        run: python -m unittest test_s1_monitor.py test_resale_registration_exclusion.py test_fullpac_real_proceeds_regression.py test_s1_registration_history_gate.py test_resale_registration_sanitizer.py test_cover_price_context.py test_filing_price_history.py test_public_feed_policy.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py test_feed_schema_contract.py test_s1_stale_publication_guard.py -v
+        run: python -m unittest test_s1_monitor.py test_s1_preliminary_price_gate.py test_resale_registration_exclusion.py test_fullpac_real_proceeds_regression.py test_s1_registration_history_gate.py test_resale_registration_sanitizer.py test_cover_price_context.py test_filing_price_history.py test_public_feed_policy.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py test_feed_schema_contract.py test_s1_stale_publication_guard.py -v
 
   update-feed:
     if: ${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') }}
@@ -94,6 +96,11 @@ jobs:
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python s1_monitor.py 14
+      - name: Verify fixed pre-pricing Filing Prices against SEC cover terms
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_preliminary_price_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
       - name: Exclude resale-only S-1 amendments by registration history
         working-directory: src
         env:
