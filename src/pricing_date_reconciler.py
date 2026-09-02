@@ -5,14 +5,19 @@ are commonly filed the morning after a deal prices, so treating the 424B4 filing
 date as Pricing Date can shift the event by a day. This reconciler only replaces
 a stored date when the final 424B4 itself explicitly identifies its prospectus
 date. It never infers a pricing date from trading dates or filing chronology.
+
+Lock-up end dates are derived from the same pricing/prospectus date plus explicit
+SEC-disclosed durations. When Pricing Date is repaired, those derived dates must
+move with it instead of retaining stale filing-date arithmetic.
 """
 
 from __future__ import annotations
 
 import argparse
+import calendar
 import json
 import re
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 import edgar_client
@@ -110,6 +115,92 @@ def extract_authoritative_pricing_date(soup, sec_filing_date=None):
     return _extract_back_cover_date(raw_text, filed)
 
 
+def _add_duration(start_date, value, unit):
+    """Apply only an explicit lock-up duration to an authoritative pricing date."""
+    base = _iso_date(start_date)
+    if base is None or value in (None, "") or not str(unit or "").strip():
+        return None
+    try:
+        duration = int(value)
+    except (TypeError, ValueError):
+        return None
+    if duration <= 0:
+        return None
+
+    normalized_unit = str(unit).strip().casefold()
+    if normalized_unit == "days":
+        return (base + timedelta(days=duration)).isoformat()
+    if normalized_unit == "months":
+        month_index = base.month - 1 + duration
+        year = base.year + month_index // 12
+        month = month_index % 12 + 1
+        day = min(base.day, calendar.monthrange(year, month)[1])
+        return base.replace(year=year, month=month, day=day).isoformat()
+    if normalized_unit == "years":
+        try:
+            return base.replace(year=base.year + duration).isoformat()
+        except ValueError:
+            return base.replace(month=2, day=28, year=base.year + duration).isoformat()
+    return None
+
+
+def _retime_term(term, pricing_date):
+    if not isinstance(term, dict):
+        return False
+    end_date = _add_duration(
+        pricing_date,
+        term.get("duration_value"),
+        term.get("duration_unit"),
+    )
+    if not end_date or term.get("end_date") == end_date:
+        return False
+    term["end_date"] = end_date
+    return True
+
+
+def _reconcile_lockup_dates(filing, pricing_date):
+    """Keep derived filing/person lock-up dates aligned with authoritative Pricing Date."""
+    touched = False
+
+    filing_end = _add_duration(
+        pricing_date,
+        filing.get("lockup_duration_value"),
+        filing.get("lockup_duration_unit"),
+    )
+    if filing_end and filing.get("lockup_end_date") != filing_end:
+        filing["lockup_end_date"] = filing_end
+        touched = True
+
+    terms = filing.get("lockup_terms")
+    if isinstance(terms, list):
+        for term in terms:
+            touched = _retime_term(term, pricing_date) or touched
+
+    people = filing.get("people")
+    if not isinstance(people, list):
+        return touched
+
+    for person in people:
+        if not isinstance(person, dict):
+            continue
+
+        person_end = _add_duration(
+            pricing_date,
+            person.get("lockup_duration_value"),
+            person.get("lockup_duration_unit"),
+        )
+        if person_end and person.get("lockup_end_date") != person_end:
+            person["lockup_end_date"] = person_end
+            touched = True
+
+        schedule = person.get("lockup_schedule")
+        if isinstance(schedule, list):
+            for term in schedule:
+                touched = _retime_term(term, pricing_date) or touched
+
+    return touched
+
+
 def _load_final_soup(filing):
     cik = str(filing.get("cik") or "").strip()
     accession = str(filing.get("accession_no") or "").strip()
@@ -125,7 +216,7 @@ def _load_final_soup(filing):
 
 
 def reconcile_payload(payload, soup_loader=_load_final_soup):
-    """Replace stale/fallback Pricing Dates when the final prospectus proves a date."""
+    """Repair authoritative Pricing Date and any lock-up dates derived from it."""
     filings = payload.get("filings", []) if isinstance(payload, dict) else []
     changed = 0
     checked = 0
@@ -151,8 +242,19 @@ def reconcile_payload(payload, soup_loader=_load_final_soup):
             continue
 
         authoritative = extract_authoritative_pricing_date(soup, filing.get("filed"))
-        if authoritative and authoritative != str(filing.get("pricing_date") or "").strip():
+        if not authoritative:
+            continue
+
+        row_changed = False
+        if authoritative != str(filing.get("pricing_date") or "").strip():
             filing["pricing_date"] = authoritative
+            row_changed = True
+
+        # Existing rows may already have the corrected Pricing Date while retaining
+        # lock-up dates calculated earlier from the SEC filing date. Reconcile these
+        # on every authoritative review, not only on the first date correction.
+        row_changed = _reconcile_lockup_dates(filing, authoritative) or row_changed
+        if row_changed:
             changed += 1
 
     if changed:
@@ -177,13 +279,17 @@ def reconcile_file(path: Path = DEFAULT_PATH) -> tuple[int, int, list[str]]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Reconcile IPO Pricing Date from explicit final 424B4 prospectus dates"
+        description=(
+            "Reconcile IPO Pricing Date and pricing-date-derived lock-up dates "
+            "from explicit final 424B4 prospectus dates"
+        )
     )
     parser.add_argument("path", nargs="?", type=Path, default=DEFAULT_PATH)
     args = parser.parse_args()
     changed, checked, failures = reconcile_file(args.path)
     print(
-        f"Checked {checked} priced 424B4 filing(s); repaired {changed} authoritative Pricing Date(s)."
+        f"Checked {checked} priced 424B4 filing(s); repaired {changed} "
+        "authoritative Pricing Date/lock-up record(s)."
     )
     for failure in failures:
         print(f"[pricing_date_reconciler] SEC lookup unavailable: {failure}")
