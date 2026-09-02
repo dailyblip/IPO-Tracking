@@ -276,9 +276,10 @@ def _person_liquidity(shares, current_value, ipo_price, lockup, name, metadata, 
     shares = _number(shares); current_value = _number(current_value); ipo_price = _number(ipo_price)
     ipo_value = shares * ipo_price if shares is not None and ipo_price else None
     base = {"ipo_value": ipo_value, "cash_realized_ipo": None}
-    if shares is None:
-        return {**base, "liquid_shares": None, "liquid_value": None, "locked_shares": None, "locked_value": None, "liquidity_status": "Unknown", "liquidity_confidence": "Unknown — share count unavailable", "lockup_schedule": []}
 
+    # Lock-up coverage can be supported independently of a holder share count.
+    # Resolve holder applicability first so missing quantities do not erase a
+    # defensible filing-supported restriction. Numeric liquidity remains blank.
     applicable = _applicable_lockup(lockup, name, metadata, row)
     terms = applicable.get("terms") or []
     schedule = [
@@ -289,11 +290,27 @@ def _person_liquidity(shares, current_value, ipo_price, lockup, name, metadata, 
         )}
         for term in terms if term.get("duration_value")
     ]
+    end_dates = [item.get("end_date") for item in schedule if item.get("end_date")]
+    final_end = max(end_dates) if end_dates else None
+
+    if shares is None:
+        if schedule:
+            return {
+                **base,
+                "liquid_shares": None,
+                "liquid_value": None,
+                "locked_shares": None,
+                "locked_value": None,
+                "liquidity_status": "Lock-up applies — share quantity unavailable",
+                "liquidity_confidence": "Filing supports holder lock-up coverage, but the share count is unavailable; locked and liquid quantities are not shown",
+                "lockup_schedule": schedule,
+                "lockup_end_date": final_end,
+            }
+        return {**base, "liquid_shares": None, "liquid_value": None, "locked_shares": None, "locked_value": None, "liquidity_status": "Unknown", "liquidity_confidence": "Unknown — share count unavailable", "lockup_schedule": []}
+
     if not schedule:
         return {**base, "liquid_shares": None, "liquid_value": None, "locked_shares": None, "locked_value": None, "liquidity_status": "Unclassified", "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping", "lockup_schedule": []}
 
-    end_dates = [item.get("end_date") for item in schedule if item.get("end_date")]
-    final_end = max(end_dates) if end_dates else None
     today = _as_of_date(as_of_date or row.get("Last Updated"))
 
     # Explicit percentages are the gold-standard case: they let us translate the
