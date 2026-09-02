@@ -148,7 +148,11 @@ def _extract_authoritative_primary_share_count(text: str):
     greenshoe/over-allotment quantities.
     """
     cover = " ".join(str(text or "").split())[:COVER_TEXT_LIMIT]
-    start = re.search(r"\bthis\s+is\s+an\s+initial\s+public\s+offering\b", cover, re.IGNORECASE)
+    start = re.search(
+        r"\bthis\s+is\s+(?:an|the)\s+initial\s+public\s+offering\b",
+        cover,
+        re.IGNORECASE,
+    )
     if not start:
         return None
     context = cover[max(0, start.start() - 1600) : min(len(cover), start.start() + 1800)]
