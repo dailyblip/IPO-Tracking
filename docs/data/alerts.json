@@ -1,8 +1,22 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-02T10:06:29.255559+00:00",
-  "count": 63,
+  "generated_at": "2026-09-02T10:19:13.030899+00:00",
+  "count": 64,
   "alerts": [
+    {
+      "type": "new_prepricing",
+      "company": "Bitari Inc",
+      "cik": "0002091680",
+      "filing_id": "s1:0002091680",
+      "form": "S-1",
+      "filed": "2026-08-21",
+      "stage": "pre-pricing",
+      "priority": "Medium",
+      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526003678/0001185185-26-003678-index.htm",
+      "detected_at": "2026-09-02T10:19:13.030714+00:00",
+      "key": "new_prepricing|s1:0002091680|0002091680|2026-08-21|"
+    },
     {
       "type": "new_prepricing",
       "company": "SB Energy, Inc.",
