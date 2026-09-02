@@ -65,6 +65,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # This refresh can sit behind another public-feed writer. Start from the
+          # latest committed feed after that queue drains, not the older push SHA.
+          # The publish-time stale guard below still fails closed if main advances
+          # again while this refresh is running.
+          ref: main
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
@@ -229,8 +234,8 @@ jobs:
 
           git fetch origin main
           if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
-            echo "main advanced during this run; skipping stale ownership publication."
-            exit 0
+            echo "main advanced during this run; refusing stale ownership publication."
+            exit 1
           fi
 
           git config user.name "github-actions[bot]"
