@@ -6,6 +6,7 @@ on:
     paths:
       - 'src/ownership_parser.py'
       - 'src/filing_parser.py'
+      - 'src/lockup_parser.py'
       - 'src/main.py'
       - 'src/dashboard_export.py'
       - 'src/prospect_research.py'
@@ -43,6 +44,7 @@ on:
       - 'src/test_location_quality.py'
       - 'src/test_offering_value_reconciler.py'
       - 'src/test_dashboard_ui.py'
+      - 'src/test_lockup_parser.py'
       - 'src/company_name_normalizer.py'
       - 'src/public_feed_policy.py'
       - 'src/test_public_feed_policy.py'
