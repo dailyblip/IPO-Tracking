@@ -16,6 +16,10 @@ class InstitutionalHolderTypeTests(unittest.TestCase):
         self.assertEqual(holder_type("Akastor ASA"), "Entity")
         self.assertEqual(holder_type("Example GmbH"), "Entity")
 
+    def test_plural_fund_labels_are_not_people(self):
+        self.assertEqual(holder_type("MDP Funds"), "Fund")
+        self.assertEqual(holder_type("Example Healthcare Funds"), "Fund")
+
     def test_role_labeled_natural_people_are_not_misclassified_as_entities(self):
         self.assertEqual(
             holder_type("Scott W. Knoll, EVP, Corporate Strategy and Director"),
