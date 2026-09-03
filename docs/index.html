@@ -66,7 +66,7 @@ function normalized(filing){return {...filing,company:String(filing.company||"Un
 function filingDateValue(filing){return filing.filing_date||(String(filing.form).toUpperCase()==="424B4"?"":filing.filed)||""}
 function pricingDateValue(filing){return filing.pricing_date||""}
 function activityDateValue(filing){return pricingDateValue(filing)||filingDateValue(filing)||filing.filed||""}
-function isStanfordBeneficialOwner(person){const shares=Number(person.shares);return person.stanford_university_bio===true&&Number.isFinite(shares)&&shares>0}
+function isStanfordBeneficialOwner(person){return person.stanford_university_bio===true&&person.is_beneficial_owner===true}
 function stanfordResearch(person){const raw=String(person.stanford_source||"").trim(),match=raw.match(/^Confidence\s+([1-5])\/5\s+—\s+(.+)$/s);if(match)return{confidence:Number(match[1]),note:match[2].trim()};if(person.stanford_university_bio===true)return{confidence:5,note:raw||"Confirmed Stanford affiliation; source detail is not available in this historical record."};return null}
 function ownerName(person){const matched=isStanfordBeneficialOwner(person);const node=text(matched?"strong":"span",matched?"stanford-person":"",person.name||"Unnamed person");if(matched)node.title=person.stanford_source||"Confirmed Stanford-affiliated beneficial owner";return node}
 function hasStanfordBeneficialOwner(filing){return filing.people.some(isStanfordBeneficialOwner)}

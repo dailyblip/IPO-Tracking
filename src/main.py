@@ -355,6 +355,7 @@ def process_filing(filing_meta: dict) -> list:
                 "Location": business_location,
                 "Location Source": location_source,
                 "Holder Name": holder_name,
+                "Beneficial Owner": bool(holder_name),
                 "Role": _role_from_bio(person_bio_text),
                 "Shares": shares,
                 "Shares Before IPO": shares_before,
@@ -417,6 +418,7 @@ def process_filing(filing_meta: dict) -> list:
             template = dict(rows[0])
             template.update({
                 "Holder Name": person_name,
+                "Beneficial Owner": False,
                 "Role": _role_from_bio(person_bio_text),
                 "Shares": None,
                 "Shares Before IPO": None,

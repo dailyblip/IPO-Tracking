@@ -112,7 +112,7 @@ class DashboardUiTests(unittest.TestCase):
         self.assertIn(".stanford-company{color:var(--cardinal);font-weight:800}", self.html)
         self.assertIn(".stanford-person{color:var(--cardinal);font-weight:800}", self.html)
         self.assertIn(
-            "function isStanfordBeneficialOwner(person){const shares=Number(person.shares);return person.stanford_university_bio===true&&Number.isFinite(shares)&&shares>0}",
+            "function isStanfordBeneficialOwner(person){return person.stanford_university_bio===true&&person.is_beneficial_owner===true}",
             self.html,
         )
         self.assertIn(
