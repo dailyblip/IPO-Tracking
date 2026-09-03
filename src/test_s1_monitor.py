@@ -233,15 +233,11 @@ class S1MonitorTests(unittest.TestCase):
             "id": "new-accession",
             "company": "Acme Robotics, Inc.",
             "cik": "0001234567",
-            "accession_no": "new-accession",
-            "form": "S-1/A",
             "filed": "2026-08-17",
-            "priority": "High",
-            "signals": ["Preliminary offering range disclosed at $18.00–$20.00"],
-            "sec_url": "https://www.sec.gov/new",
+            "form": "S-1/A",
         }
         with tempfile.TemporaryDirectory() as tmp:
-            path = Path(tmp) / "filings.json"
+            path = Path(tmp) / "s1_watch.json"
             path.write_text(json.dumps({"filings": [old]}), encoding="utf-8")
             payload = s1_monitor.export_feed([new], path, processed_ciks={"1234567"})
             self.assertEqual([item["id"] for item in payload["filings"]], ["new-accession"])
