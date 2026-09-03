@@ -37,12 +37,17 @@ GENERIC_HOLDER_LABELS = {
     "selling stockholders",
     "selling shareholders",
 }
-# Some SEC ownership tables use a sponsor's public brand rather than its full
+# Some SEC ownership tables use an institution's public brand rather than its full
 # legal entity name. Keep this list deliberately narrow and evidence-backed so
 # short organization labels do not fall through to the natural-person heuristic.
 KNOWN_INSTITUTIONAL_HOLDER_NAMES = {
     "alpha wave",
+    "blackstone",
+    "electrum",
     "general atlantic",
+    "morningside",
+    "ospraie",
+    "shionogi",
 }
 
 
@@ -81,8 +86,8 @@ def holder_type(name: str) -> str:
     # Use the explicit role as evidence before evaluating organization markers.
     if _looks_like_person_with_role(value):
         return "Individual"
-    # Known sponsor brands can be shorter than their legal entity names and may
-    # otherwise look like two-word natural-person names.
+    # Known institutional brands can be shorter than their legal entity names and
+    # may otherwise look like natural-person names or unclassifiable single tokens.
     if value in KNOWN_INSTITUTIONAL_HOLDER_NAMES:
         return "Entity"
     # SEC ownership tables often aggregate several affiliated legal entities into
