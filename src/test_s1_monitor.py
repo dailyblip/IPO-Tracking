@@ -72,13 +72,23 @@ class S1MonitorTests(unittest.TestCase):
             120_000,
         ))
 
+    def test_explicit_nonlisting_gate_requires_otc_plan_not_generic_preipo_language(self):
+        self.assertFalse(s1_monitor._is_explicit_nonlisting_public_offering(
+            "There has been no public market for our common stock. We have applied to list "
+            "our common stock on the Nasdaq Global Market."
+        ))
+        self.assertTrue(s1_monitor._is_explicit_nonlisting_public_offering(
+            "Our common stock is not traded on any exchange or on the over-the-counter market. "
+            "We plan to contact a market maker and apply to have the shares quoted on the OTC Link LLC."
+        ))
+
     @patch("s1_monitor.filing_parser.parse_filing")
     @patch("s1_monitor.filing_parser.fetch_document")
     @patch("s1_monitor.filing_parser.find_primary_document_url")
     @patch("s1_monitor.edgar_client.get_primary_ticker")
     @patch("s1_monitor.edgar_client.is_first_time_registrant", return_value=True)
     @patch("s1_monitor.edgar_client.is_us_based", return_value=True)
-    def test_enrich_record_rejects_sensei_style_self_underwritten_nonexchange_offering(
+    def test_enrich_record_rejects_sensei_style_nonlisting_otc_public_offering(
         self, us_based, first_time, ticker, primary_doc, fetch_doc, parse_filing
     ):
         ticker.return_value = None
@@ -86,23 +96,11 @@ class S1MonitorTests(unittest.TestCase):
         soup = Mock()
         soup.get_text.return_value = (
             "Initial Public Offering. We are offering for sale a total of 6,000,000 shares "
-            "at a fixed price of $0.02 per share. The offering is being conducted on a "
-            "self-underwritten, best-efforts basis. There is no public trading market for "
-            "our common stock."
+            "at a fixed price of $0.02 per share. Our common stock is not traded on any exchange "
+            "or on the over-the-counter market. We plan to contact a market maker and apply to "
+            "have the shares quoted on the OTC Link LLC."
         )
         fetch_doc.return_value = soup
-        parse_filing.return_value = {
-            "price_range": {},
-            "cover_page": {
-                "exchange": None,
-                "offering_price": 0.02,
-                "offering_size_shares": 6_000_000,
-                "primary_offering_shares": 6_000_000,
-                "offering_size_source": "SEC cover: explicit fixed-price primary offering",
-                "offering_size_confidence": "High",
-                "offering_size_conflict": False,
-            },
-        }
 
         record = s1_monitor.enrich_record({
             "company_name": "Sensei Harbor Corp.",
@@ -113,6 +111,7 @@ class S1MonitorTests(unittest.TestCase):
         })
 
         self.assertIsNone(record)
+        parse_filing.assert_not_called()
         ticker.assert_not_called()
 
     @patch("s1_monitor.filing_parser.parse_filing")
