@@ -79,6 +79,7 @@
         "shares": {"type": ["number", "null"]},
         "cash_value": {"type": ["number", "null"]},
         "stanford_university_bio": {"type": "boolean"},
+        "is_beneficial_owner": {"type": "boolean"},
         "ipo_value": {"type": ["number", "null"]},
         "liquid_shares": {"type": ["number", "null"]},
         "liquid_value": {"type": ["number", "null"]},
