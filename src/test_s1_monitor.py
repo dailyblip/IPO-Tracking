@@ -72,6 +72,48 @@ class S1MonitorTests(unittest.TestCase):
             120_000,
         ))
 
+    def test_explicit_nonlisting_gate_requires_otc_plan_not_generic_preipo_language(self):
+        self.assertFalse(s1_monitor._is_explicit_nonlisting_public_offering(
+            "There has been no public market for our common stock. We have applied to list "
+            "our common stock on the Nasdaq Global Market."
+        ))
+        self.assertTrue(s1_monitor._is_explicit_nonlisting_public_offering(
+            "Our common stock is not traded on any exchange or on the over-the-counter market. "
+            "We plan to contact a market maker and apply to have the shares quoted on the OTC Link LLC."
+        ))
+
+    @patch("s1_monitor.filing_parser.parse_filing")
+    @patch("s1_monitor.filing_parser.fetch_document")
+    @patch("s1_monitor.filing_parser.find_primary_document_url")
+    @patch("s1_monitor.edgar_client.get_primary_ticker")
+    @patch("s1_monitor.edgar_client.is_first_time_registrant", return_value=True)
+    @patch("s1_monitor.edgar_client.is_us_based", return_value=True)
+    def test_enrich_record_rejects_sensei_style_nonlisting_otc_public_offering(
+        self, us_based, first_time, ticker, primary_doc, fetch_doc, parse_filing
+    ):
+        ticker.return_value = None
+        primary_doc.return_value = "https://sec.test/sensei-s1a.htm"
+        soup = Mock()
+        soup.get_text.return_value = (
+            "Initial Public Offering. We are offering for sale a total of 6,000,000 shares "
+            "at a fixed price of $0.02 per share. Our common stock is not traded on any exchange "
+            "or on the over-the-counter market. We plan to contact a market maker and apply to "
+            "have the shares quoted on the OTC Link LLC."
+        )
+        fetch_doc.return_value = soup
+
+        record = s1_monitor.enrich_record({
+            "company_name": "Sensei Harbor Corp.",
+            "cik": "2112634",
+            "form_type": "S-1/A",
+            "filing_date": "2026-09-02",
+            "accession_no": "0001683168-26-006875",
+        })
+
+        self.assertIsNone(record)
+        parse_filing.assert_not_called()
+        ticker.assert_not_called()
+
     @patch("s1_monitor.filing_parser.parse_filing")
     @patch("s1_monitor.filing_parser.fetch_document")
     @patch("s1_monitor.filing_parser.find_primary_document_url")
