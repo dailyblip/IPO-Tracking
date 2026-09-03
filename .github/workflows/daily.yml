@@ -139,6 +139,16 @@ jobs:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python followon_sanitizer.py ../docs/data/filings.json
 
+      # SEC's inline submissions block contains at least one year or 1,000 filings;
+      # older history is listed in additional JSON files. Check those SEC-listed
+      # archives before release so a long-history reporting issuer cannot masquerade
+      # as a first-time S-1 or 424B4 simply because its older reports aged out.
+      - name: Check archived SEC reporting history
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python archived_reporting_history_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
       - name: Normalize issuer display names
         working-directory: src
         run: python company_name_normalizer.py ../docs/data/filings.json
