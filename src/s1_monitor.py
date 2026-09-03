@@ -56,12 +56,13 @@ def _format_fixed_price(value) -> str | None:
 
 
 def _is_micro_self_underwritten_offering(filing_text: str, parsed: dict, ipo_size) -> bool:
-    """Legacy diagnostic retained for test/backward compatibility only.
+    """Identify the narrow micro self-underwritten/no-exchange non-IPO pattern.
 
-    This helper is intentionally NOT used as an eligibility gate. Under the current
-    Any-size policy, a qualifying operating-company IPO cannot be excluded merely
-    because it is small, self-underwritten, best-efforts, or lacks an exchange
-    listing.
+    The Any-size policy removes the old $100M publication threshold, but it does
+    not turn every Securities Act registration into a qualifying IPO. A tiny
+    self-underwritten, best-efforts offering with no exchange listing is the
+    established non-listing public-offering pattern this detector was created to
+    reject. A small IPO with an actual exchange listing remains eligible.
     """
     try:
         amount = float(ipo_size or 0)
@@ -309,6 +310,8 @@ def enrich_record(meta: dict, *, raise_errors: bool = False) -> dict | None:
         fixed_price_label = _format_fixed_price(cover.get("offering_price"))
         filing_price_label = range_label or fixed_price_label
         ipo_size = _extract_ipo_size(filing_text, parsed, price_range)
+        if _is_micro_self_underwritten_offering(filing_text, parsed, ipo_size):
+            return None
         offering_size_source, offering_size_confidence = _size_provenance(cover, ipo_size)
 
         ticker = str(cover.get("ticker") or "").strip().upper() or None
