@@ -102,6 +102,68 @@ class PersonEconomicAttributionGuardTests(unittest.TestCase):
         ):
             self.assertIsNone(person[field], field)
 
+    def test_latigo_vc_disclaimers_suppress_personal_fund_economics(self):
+        filing = {
+            "cik": "0002056611",
+            "accession_no": "0001193125-26-340329",
+            "company": "Latigo Biotherapeutics, Inc.",
+            "signals": ["Largest named holding currently valued at approximately $287M"],
+            "people": [
+                {
+                    "name": "Beth Seidenberg, M.D.",
+                    "shares": 13_199_669,
+                    "shares_before_ipo": 13_199_669,
+                    "shares_after_ipo": 13_199_669,
+                    "cash_value": 287_356_794.13,
+                    "ipo_value": 237_594_042.0,
+                    "locked_shares": 13_199_669,
+                    "locked_value": 287_356_794.13,
+                    "valuation_as_of": "2026-09-03",
+                    "is_beneficial_owner": True,
+                },
+                {
+                    "name": "James B. Tananbaum, M.D.",
+                    "shares": 9_041_328,
+                    "shares_before_ipo": 9_041_328,
+                    "shares_after_ipo": 9_041_328,
+                    "cash_value": 196_829_710.56,
+                    "ipo_value": 162_743_904.0,
+                    "locked_shares": 9_041_328,
+                    "locked_value": 196_829_710.56,
+                    "valuation_as_of": "2026-09-03",
+                    "is_beneficial_owner": True,
+                },
+                {
+                    "name": "Supported Holder",
+                    "shares": 3_000_000,
+                    "cash_value": 65_310_000.0,
+                    "ipo_value": 54_000_000.0,
+                },
+            ],
+        }
+
+        normalized = suppress_unsupported_person_economics(filing)
+
+        for person in normalized["people"][:2]:
+            self.assertTrue(person["is_beneficial_owner"])
+            self.assertIsNotNone(person["shares"])
+            self.assertIsNotNone(person["shares_before_ipo"])
+            self.assertIsNotNone(person["shares_after_ipo"])
+            for field in (
+                "cash_value",
+                "ipo_value",
+                "locked_shares",
+                "locked_value",
+                "valuation_as_of",
+            ):
+                self.assertIsNone(person[field], f"{person['name']} {field}")
+
+        self.assertEqual(normalized["people"][2]["cash_value"], 65_310_000.0)
+        self.assertEqual(
+            normalized["signals"],
+            ["Largest named holding currently valued at approximately $65M"],
+        )
+
     def test_exception_does_not_apply_when_authoritative_share_count_changes(self):
         filing = {
             "cik": "0001181412",
