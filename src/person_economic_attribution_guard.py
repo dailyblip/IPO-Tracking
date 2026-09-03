@@ -4,9 +4,12 @@ The Research Monitor may preserve an SEC-reported beneficial-ownership share cou
 while declining to turn that count into personal paper value, liquidity, or realized
 cash when the filing explicitly says the shares are held by other entities and the
 reporting person disclaims beneficial ownership except for an undisclosed pecuniary
-interest. It also rejects holder-level IPO sale economics that contradict the same
-holder's disclosed pre-IPO position. Incorrect personal economics are worse than a
-blank derived value.
+interest. The same fail-closed rule applies when an SEC beneficial-ownership table
+reports one household/group position under multiple people but does not establish
+that the full position is economically attributable to each person individually. It
+also rejects holder-level IPO sale economics that contradict the same holder's
+disclosed pre-IPO position. Incorrect personal economics are worse than a blank
+derived value.
 
 The issuer-specific registry is intentionally narrow. Each entry must be tied to a
 specific issuer, IPO accession, holder identity, disclosed share count, and primary
@@ -35,6 +38,15 @@ from ownership_parser import canonical_holder_name
 # OrbiMed Advisors management committee, including Dr. Gordon, disclaims beneficial
 # ownership. The SEC table may retain the reported beneficial-ownership count, but
 # the Monitor must not present the fund position's value as Dr. Gordon's economics.
+# The same 424B4 reports a single 3,973,138-share household/affiliate position for
+# married co-founders J. Jean Cui and Y. Peter Li and repeats that aggregate count
+# under each person. Footnote (1) says it combines Dr. Cui's direct shares, Dr. Li's
+# direct shares, a family trust over which both have voting/dispositive power, and
+# RongShan shares managed by Dr. Li; it also says each spouse may be deemed to own
+# the other's securities indirectly. The filing supports the SEC beneficial-owner
+# count for each person, but not treating the same full household position as each
+# person's separate paper value or liquidity. Preserve the counts and suppress the
+# duplicated person-level economics.
 # https://www.sec.gov/Archives/edgar/data/1839970/000119312526340215/d98958d424b4.htm
 #
 # Latigo Biotherapeutics' 2026-08-07 424B4 reports the Westlake and Foresite fund
@@ -68,6 +80,16 @@ _UNSUPPORTED_PERSON_ECONOMICS = {
         "0001193125-26-340215",
         canonical_holder_name("Carl L. Gordon, Ph.D., CFA"),
     ): 2_089_279,
+    (
+        "0001839970",
+        "0001193125-26-340215",
+        canonical_holder_name("J. Jean Cui, Ph.D."),
+    ): 3_973_138,
+    (
+        "0001839970",
+        "0001193125-26-340215",
+        canonical_holder_name("Y. Peter Li, Ph.D., MBA"),
+    ): 3_973_138,
     (
         "0002056611",
         "0001193125-26-340329",
