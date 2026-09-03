@@ -4,10 +4,13 @@ The Research Monitor may preserve an SEC-reported beneficial-ownership share cou
 while declining to turn that count into personal paper value, liquidity, or realized
 cash when the filing explicitly says the shares are held by other entities and the
 reporting person disclaims beneficial ownership except for an undisclosed pecuniary
-interest. Incorrect personal economics are worse than a blank derived value.
+interest. It also rejects holder-level IPO sale economics that contradict the same
+holder's disclosed pre-IPO position. Incorrect personal economics are worse than a
+blank derived value.
 
-This registry is intentionally narrow. Each entry must be tied to a specific issuer,
-IPO accession, holder identity, disclosed share count, and primary SEC evidence.
+The issuer-specific registry is intentionally narrow. Each entry must be tied to a
+specific issuer, IPO accession, holder identity, disclosed share count, and primary
+SEC evidence.
 """
 
 from __future__ import annotations
@@ -71,11 +74,15 @@ def _money(value):
 def suppress_unsupported_person_economics(filing: dict) -> dict:
     """Return a copy with unsupported person-level economic derivatives cleared.
 
-    The SEC-reported beneficial-owner share quantity is preserved as a public fact.
-    Only calculations that would imply the entire beneficially reported position is
-    the person's own economic interest are suppressed. A registry entry applies only
-    while the exact disclosed share count still matches, so later authoritative
-    ownership changes do not inherit a stale exception silently.
+    The SEC-reported beneficial-owner share quantity remains a public fact even when
+    economic attribution is unsupported. Separately, when the same holder has an
+    authoritative pre-IPO share count, a claimed IPO sale cannot exceed that position;
+    impossible sale/realized-cash fields fail closed while the underlying ownership
+    facts remain intact.
+
+    Issuer-specific registry entries apply only while the exact disclosed share count
+    still matches, so later authoritative ownership changes do not inherit a stale
+    exception silently.
     """
     if not isinstance(filing, dict):
         return filing
@@ -89,6 +96,7 @@ def suppress_unsupported_person_economics(filing: dict) -> dict:
     normalized = dict(filing)
     normalized_people = []
     changed = False
+    position_value_suppressed = False
 
     for person in people:
         if not isinstance(person, dict):
@@ -96,6 +104,20 @@ def suppress_unsupported_person_economics(filing: dict) -> dict:
             continue
 
         normalized_person = dict(person)
+
+        shares_before_ipo = _number(person.get("shares_before_ipo"))
+        shares_sold_ipo = _number(person.get("shares_sold_ipo"))
+        if (
+            shares_before_ipo is not None
+            and shares_before_ipo >= 0
+            and shares_sold_ipo is not None
+            and shares_sold_ipo > shares_before_ipo
+        ):
+            for field in ("shares_sold_ipo", "cash_realized_ipo"):
+                if normalized_person.get(field) not in (None, ""):
+                    normalized_person[field] = None
+                    changed = True
+
         key = (cik, accession, canonical_holder_name(person.get("name")))
         expected_shares = _UNSUPPORTED_PERSON_ECONOMICS.get(key)
         observed_shares = _number(person.get("shares"))
@@ -105,6 +127,7 @@ def suppress_unsupported_person_economics(filing: dict) -> dict:
                 if normalized_person.get(field) not in (None, ""):
                     normalized_person[field] = None
                     changed = True
+                    position_value_suppressed = True
 
         normalized_people.append(normalized_person)
 
@@ -113,28 +136,28 @@ def suppress_unsupported_person_economics(filing: dict) -> dict:
 
     normalized["people"] = normalized_people
 
-    # Keep the filing-level largest-holding signal synchronized if the excluded
-    # person's derived value had been the maximum. Recompute only from surviving,
-    # already-supported person-level cash_value fields; never infer a replacement.
-    signals = filing.get("signals")
-    if isinstance(signals, list):
-        prefix = "Largest named holding currently valued at approximately "
-        remaining_values = [
-            _number(person.get("cash_value"))
-            for person in normalized_people
-            if isinstance(person, dict)
-        ]
-        remaining_values = [value for value in remaining_values if value is not None and value > 0]
-        replacement = f"{prefix}{_money(max(remaining_values))}" if remaining_values else None
-        updated_signals = []
-        replaced = False
-        for signal in signals:
-            if isinstance(signal, str) and signal.startswith(prefix):
-                if replacement and not replaced:
-                    updated_signals.append(replacement)
-                    replaced = True
-                continue
-            updated_signals.append(signal)
-        normalized["signals"] = updated_signals
+    # Keep the filing-level largest-holding signal synchronized only when a holder's
+    # paper-value field was suppressed. Sale-only repairs do not alter current values.
+    if position_value_suppressed:
+        signals = filing.get("signals")
+        if isinstance(signals, list):
+            prefix = "Largest named holding currently valued at approximately "
+            remaining_values = [
+                _number(person.get("cash_value"))
+                for person in normalized_people
+                if isinstance(person, dict)
+            ]
+            remaining_values = [value for value in remaining_values if value is not None and value > 0]
+            replacement = f"{prefix}{_money(max(remaining_values))}" if remaining_values else None
+            updated_signals = []
+            replaced = False
+            for signal in signals:
+                if isinstance(signal, str) and signal.startswith(prefix):
+                    if replacement and not replaced:
+                        updated_signals.append(replacement)
+                        replaced = True
+                    continue
+                updated_signals.append(signal)
+            normalized["signals"] = updated_signals
 
     return normalized
