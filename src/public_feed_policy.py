@@ -11,6 +11,7 @@ from dashboard_export import write_dashboard_csv
 from edgar_client import INVESTMENT_PRODUCT_NAME_PATTERN, SPAC_NAME_PATTERN
 from followon_sanitizer import sanitize_payload as sanitize_followon_offerings
 from ownership_parser import looks_like_document_heading
+from person_economic_attribution_guard import suppress_unsupported_person_economics
 from prepricing_quote_sanitizer import sanitize_payload as sanitize_prepricing_quotes
 from prospect_research import holder_type, valid_ownership_percent, valid_share_count
 
@@ -555,6 +556,7 @@ def enforce_public_feed_policy(output_path, followon_submissions_loader=None):
         normalized = _sanitize_person_ipo_sales(normalized)
         normalized = _scrub_stanford_operational_errors(normalized)
         normalized = _normalize_market_value_consistency(normalized)
+        normalized = suppress_unsupported_person_economics(normalized)
         qualifying.append(normalized)
 
     removed = len(removed_followons) + len(filings) - len(qualifying)
