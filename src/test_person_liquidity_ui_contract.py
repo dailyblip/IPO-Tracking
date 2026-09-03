@@ -55,6 +55,21 @@ class PersonLiquidityUiContractTests(unittest.TestCase):
             self.assertIn(label, self.html)
         self.assertIn("if(value)facts.append(personFact(label,value))", self.html)
 
+    def test_person_accordion_summary_omits_unsupported_cash_value(self):
+        """Do not turn a suppressed/null person value into a visible dash in the summary."""
+        self.assertIn(
+            "currentValue=supportedMoney(person.cash_value)",
+            self.html,
+        )
+        self.assertIn(
+            '[`${shares.toLocaleString()} shares`,currentValue].filter(Boolean).join(" · ")',
+            self.html,
+        )
+        self.assertNotIn(
+            '`${shares.toLocaleString()} shares · ${money(person.cash_value)}`',
+            self.html,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
