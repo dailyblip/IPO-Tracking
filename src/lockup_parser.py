@@ -71,7 +71,17 @@ def _clause_context(text: str, start: int, end: int) -> str:
 def _scope_tags(context: str):
     lowered = context.lower()
     tags = []
-    if "substantially all" in lowered and any(x in lowered for x in ("shares", "securities", "stockholders", "holders", "capital stock")):
+    broad_holder_scope = bool(
+        (
+            "substantially all" in lowered
+            and any(x in lowered for x in ("shares", "securities", "stockholders", "holders", "capital stock"))
+        )
+        or re.search(
+            r"\ball(?:\s+of)?\s+our\s+(?:stockholders|shareholders|security\s+holders|securityholders|holders)\b",
+            lowered,
+        )
+    )
+    if broad_holder_scope:
         tags.append("substantially_all_holders")
     if "all other shares" in lowered or "all other stockholders" in lowered or "all other holders" in lowered:
         tags.append("all_other_holders")
