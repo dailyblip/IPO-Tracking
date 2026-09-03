@@ -56,13 +56,12 @@ def _format_fixed_price(value) -> str | None:
 
 
 def _is_micro_self_underwritten_offering(filing_text: str, parsed: dict, ipo_size) -> bool:
-    """Identify the narrow micro self-underwritten/no-exchange non-IPO pattern.
+    """Legacy diagnostic retained for test/backward compatibility only.
 
-    The Any-size policy removes the old $100M publication threshold, but it does
-    not turn every Securities Act registration into a qualifying IPO. A tiny
-    self-underwritten, best-efforts offering with no exchange listing is the
-    established non-listing public-offering pattern this detector was created to
-    reject. A small IPO with an actual exchange listing remains eligible.
+    This helper is intentionally NOT used as an eligibility gate. Under the current
+    Any-size policy, a qualifying operating-company IPO cannot be excluded merely
+    because it is small, self-underwritten, best-efforts, or lacks an exchange
+    listing.
     """
     try:
         amount = float(ipo_size or 0)
@@ -80,6 +79,34 @@ def _is_micro_self_underwritten_offering(filing_text: str, parsed: dict, ipo_siz
     cover = parsed.get("cover_page", {}) if isinstance(parsed, dict) else {}
     exchange = str(cover.get("exchange") or "").strip()
     return self_sold and not exchange
+
+
+def _is_explicit_nonlisting_public_offering(filing_text: str) -> bool:
+    """Reject an S-1 that explicitly describes an OTC-only future market plan.
+
+    Ordinary IPO prospectuses often say no public market existed before the
+    offering, so that statement alone is never enough. This gate requires both
+    an explicit statement that the security is not traded/listed on an exchange
+    and an issuer plan to seek OTC quotation through a market maker. It is
+    independent of offering size and underwriting method.
+    """
+    text = " ".join(str(filing_text or "").lower().split())[:140000]
+    no_exchange = bool(re.search(
+        r"\b(?:our\s+)?(?:common\s+stock|shares?|securities)\s+"
+        r"(?:is|are)\s+not\s+(?:currently\s+)?(?:traded|listed)\s+on\s+any\s+exchange\b",
+        text,
+    )) or "not registered on any market or public stock exchange" in text
+    if not no_exchange:
+        return False
+
+    otc_plan = bool(re.search(
+        r"\b(?:plan|intend|hope)\b.{0,700}\b(?:market maker|otc link|over-the-counter)\b",
+        text,
+    )) and bool(re.search(
+        r"\b(?:quoted|quotation|eligible for trading|apply)\b.{0,500}\b(?:otc link|over-the-counter)\b",
+        text,
+    ))
+    return otc_plan
 
 
 def _explicit_fixed_price_primary_terms(filing_text: str) -> dict:
@@ -284,6 +311,8 @@ def enrich_record(meta: dict, *, raise_errors: bool = False) -> dict | None:
             return None
         if edgar_client.check_direct_listing_indicators(filing_text):
             return None
+        if _is_explicit_nonlisting_public_offering(filing_text):
+            return None
 
         parsed = filing_parser.parse_filing(document_url, is_range_filing=True)
         price_range = parsed.get("price_range", {})
@@ -310,8 +339,6 @@ def enrich_record(meta: dict, *, raise_errors: bool = False) -> dict | None:
         fixed_price_label = _format_fixed_price(cover.get("offering_price"))
         filing_price_label = range_label or fixed_price_label
         ipo_size = _extract_ipo_size(filing_text, parsed, price_range)
-        if _is_micro_self_underwritten_offering(filing_text, parsed, ipo_size):
-            return None
         offering_size_source, offering_size_confidence = _size_provenance(cover, ipo_size)
 
         ticker = str(cover.get("ticker") or "").strip().upper() or None
