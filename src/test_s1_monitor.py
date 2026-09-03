@@ -78,6 +78,49 @@ class S1MonitorTests(unittest.TestCase):
     @patch("s1_monitor.edgar_client.get_primary_ticker")
     @patch("s1_monitor.edgar_client.is_first_time_registrant", return_value=True)
     @patch("s1_monitor.edgar_client.is_us_based", return_value=True)
+    def test_enrich_record_rejects_sensei_style_self_underwritten_nonexchange_offering(
+        self, us_based, first_time, ticker, primary_doc, fetch_doc, parse_filing
+    ):
+        ticker.return_value = None
+        primary_doc.return_value = "https://sec.test/sensei-s1a.htm"
+        soup = Mock()
+        soup.get_text.return_value = (
+            "Initial Public Offering. We are offering for sale a total of 6,000,000 shares "
+            "at a fixed price of $0.02 per share. The offering is being conducted on a "
+            "self-underwritten, best-efforts basis. There is no public trading market for "
+            "our common stock."
+        )
+        fetch_doc.return_value = soup
+        parse_filing.return_value = {
+            "price_range": {},
+            "cover_page": {
+                "exchange": None,
+                "offering_price": 0.02,
+                "offering_size_shares": 6_000_000,
+                "primary_offering_shares": 6_000_000,
+                "offering_size_source": "SEC cover: explicit fixed-price primary offering",
+                "offering_size_confidence": "High",
+                "offering_size_conflict": False,
+            },
+        }
+
+        record = s1_monitor.enrich_record({
+            "company_name": "Sensei Harbor Corp.",
+            "cik": "2112634",
+            "form_type": "S-1/A",
+            "filing_date": "2026-09-02",
+            "accession_no": "0001683168-26-006875",
+        })
+
+        self.assertIsNone(record)
+        ticker.assert_not_called()
+
+    @patch("s1_monitor.filing_parser.parse_filing")
+    @patch("s1_monitor.filing_parser.fetch_document")
+    @patch("s1_monitor.filing_parser.find_primary_document_url")
+    @patch("s1_monitor.edgar_client.get_primary_ticker")
+    @patch("s1_monitor.edgar_client.is_first_time_registrant", return_value=True)
+    @patch("s1_monitor.edgar_client.is_us_based", return_value=True)
     def test_enrich_record_captures_preliminary_range(
         self, us_based, first_time, ticker, primary_doc, fetch_doc, parse_filing
     ):
@@ -190,11 +233,15 @@ class S1MonitorTests(unittest.TestCase):
             "id": "new-accession",
             "company": "Acme Robotics, Inc.",
             "cik": "0001234567",
-            "filed": "2026-08-17",
+            "accession_no": "new-accession",
             "form": "S-1/A",
+            "filed": "2026-08-17",
+            "priority": "High",
+            "signals": ["Preliminary offering range disclosed at $18.00–$20.00"],
+            "sec_url": "https://www.sec.gov/new",
         }
         with tempfile.TemporaryDirectory() as tmp:
-            path = Path(tmp) / "s1_watch.json"
+            path = Path(tmp) / "filings.json"
             path.write_text(json.dumps({"filings": [old]}), encoding="utf-8")
             payload = s1_monitor.export_feed([new], path, processed_ciks={"1234567"})
             self.assertEqual([item["id"] for item in payload["filings"]], ["new-accession"])
