@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-03T18:12:26.258498+00:00",
+  "generated_at": "2026-09-03T18:58:35.607095+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -458,8 +458,8 @@
       "offering_size_confidence": "High",
       "filing_price": "19-22",
       "offering_price": 17.5,
-      "current_price": 13.02,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 12.94,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "Falls Church, VA",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2027-02-14",
@@ -514,14 +514,14 @@
         "Offering priced at $17.50 per share",
         "Offering raised approximately $298M",
         "44 named beneficial owners disclosed",
-        "Largest named holding currently valued at approximately $320M",
+        "Largest named holding currently valued at approximately $319M",
         "Lock-up terms captured for liquidity-event follow-up"
       ],
       "people": [
         {
           "name": "Trive Capital Fund IV LP",
           "shares": 24615647.0,
-          "cash_value": 320495723.94,
+          "cash_value": 318526472.18,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -566,7 +566,7 @@
         {
           "name": "Trive Capital Fund II LP",
           "shares": 22084595.0,
-          "cash_value": 287541426.9,
+          "cash_value": 285774659.3,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -611,7 +611,7 @@
         {
           "name": "Trive Capital Fund II (Offshore) LP",
           "shares": 11966544.0,
-          "cash_value": 155804402.88,
+          "cash_value": 154847079.35999998,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -656,7 +656,7 @@
         {
           "name": "Trive Capital Fund IV-A LP",
           "shares": 8961385.0,
-          "cash_value": 116677232.7,
+          "cash_value": 115960321.89999999,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -701,7 +701,7 @@
         {
           "name": "Brian Morrison",
           "shares": 1680767.0,
-          "cash_value": 21883586.34,
+          "cash_value": 21749124.98,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -746,7 +746,7 @@
         {
           "name": "Matthew Alty",
           "shares": 2147247.0,
-          "cash_value": 27957155.939999998,
+          "cash_value": 27785376.18,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -791,7 +791,7 @@
         {
           "name": "Tim Paulin",
           "shares": 496525.0,
-          "cash_value": 6464755.5,
+          "cash_value": 6425033.5,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -836,7 +836,7 @@
         {
           "name": "David Stinnett",
           "shares": 3459794.0,
-          "cash_value": 45046517.879999995,
+          "cash_value": 44769734.36,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -881,7 +881,7 @@
         {
           "name": "Brian Raduenz",
           "shares": 886015.0,
-          "cash_value": 11535915.299999999,
+          "cash_value": 11465034.1,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -926,7 +926,7 @@
         {
           "name": "Tanner Cope",
           "shares": 231987.0,
-          "cash_value": 3020470.7399999998,
+          "cash_value": 3001911.78,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -971,7 +971,7 @@
         {
           "name": "Jake Lansford",
           "shares": 65882.0,
-          "cash_value": 857783.64,
+          "cash_value": 852513.08,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1016,7 +1016,7 @@
         {
           "name": "Richard Penrose",
           "shares": 4735779.0,
-          "cash_value": 61659842.58,
+          "cash_value": 61280980.26,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1061,7 +1061,7 @@
         {
           "name": "Michael D. Frederickson",
           "shares": 2658043.0,
-          "cash_value": 34607719.86,
+          "cash_value": 34395076.42,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1106,7 +1106,7 @@
         {
           "name": "Carlos Persichetti",
           "shares": 1348470.0,
-          "cash_value": 17557079.4,
+          "cash_value": 17449201.8,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1151,7 +1151,7 @@
         {
           "name": "Jeffrey Ager",
           "shares": 1314152.0,
-          "cash_value": 17110259.04,
+          "cash_value": 17005126.88,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1196,7 +1196,7 @@
         {
           "name": "GPG Entities",
           "shares": 1260126.0,
-          "cash_value": 16406840.52,
+          "cash_value": 16306030.44,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1241,7 +1241,7 @@
         {
           "name": "ESW Clifford Holdings Co.",
           "shares": 1121540.0,
-          "cash_value": 14602450.799999999,
+          "cash_value": 14512727.6,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1286,7 +1286,7 @@
         {
           "name": "High Definition Goldfish Inc.",
           "shares": 637930.0,
-          "cash_value": 8305848.6,
+          "cash_value": 8254814.199999999,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1331,7 +1331,7 @@
         {
           "name": "Bruce Barshop",
           "shares": 620680.0,
-          "cash_value": 8081253.6,
+          "cash_value": 8031599.199999999,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1376,7 +1376,7 @@
         {
           "name": "Richard Moore",
           "shares": 605322.0,
-          "cash_value": 7881292.4399999995,
+          "cash_value": 7832866.68,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1421,7 +1421,7 @@
         {
           "name": "Bain Capital Entities",
           "shares": 531608.0,
-          "cash_value": 6921536.16,
+          "cash_value": 6879007.52,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1466,7 +1466,7 @@
         {
           "name": "Bryce Richard Persichetti",
           "shares": 477000.0,
-          "cash_value": 6210540.0,
+          "cash_value": 6172380.0,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1511,7 +1511,7 @@
         {
           "name": "Cara Jean Beauvais",
           "shares": 477000.0,
-          "cash_value": 6210540.0,
+          "cash_value": 6172380.0,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1556,7 +1556,7 @@
         {
           "name": "Arne Vogt",
           "shares": 422844.0,
-          "cash_value": 5505428.88,
+          "cash_value": 5471601.359999999,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1601,7 +1601,7 @@
         {
           "name": "James Mitchell",
           "shares": 422844.0,
-          "cash_value": 5505428.88,
+          "cash_value": 5471601.359999999,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1646,7 +1646,7 @@
         {
           "name": "Thomas Murphy",
           "shares": 378830.0,
-          "cash_value": 4932366.6,
+          "cash_value": 4902060.2,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1691,7 +1691,7 @@
         {
           "name": "Mike Betzer",
           "shares": 369487.0,
-          "cash_value": 4810720.74,
+          "cash_value": 4781161.78,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1736,7 +1736,7 @@
         {
           "name": "Daniel Gelyana",
           "shares": 365104.0,
-          "cash_value": 4753654.08,
+          "cash_value": 4724445.76,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1781,7 +1781,7 @@
         {
           "name": "MFI Foundation",
           "shares": 358392.0,
-          "cash_value": 4666263.84,
+          "cash_value": 4637592.4799999995,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1826,7 +1826,7 @@
         {
           "name": "Dale McIntosh",
           "shares": 342972.0,
-          "cash_value": 4465495.4399999995,
+          "cash_value": 4438057.68,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1871,7 +1871,7 @@
         {
           "name": "Ronald J. Lustig",
           "shares": 358162.0,
-          "cash_value": 4663269.24,
+          "cash_value": 4634616.28,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1916,7 +1916,7 @@
         {
           "name": "Matt Parisi",
           "shares": 295764.0,
-          "cash_value": 3850847.28,
+          "cash_value": 3827186.1599999997,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -1961,7 +1961,7 @@
         {
           "name": "Barbara Lucile Williams",
           "shares": 282041.0,
-          "cash_value": 3672173.82,
+          "cash_value": 3649610.54,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -2006,7 +2006,7 @@
         {
           "name": "Dylan Schmorrow",
           "shares": 267732.0,
-          "cash_value": 3485870.6399999997,
+          "cash_value": 3464452.08,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -2051,7 +2051,7 @@
         {
           "name": "Thomas Peter Hodge",
           "shares": 260615.0,
-          "cash_value": 3393207.3,
+          "cash_value": 3372358.1,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -2096,7 +2096,7 @@
         {
           "name": "Rebecca Jane Clewett",
           "shares": 260615.0,
-          "cash_value": 3393207.3,
+          "cash_value": 3372358.1,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -2141,7 +2141,7 @@
         {
           "name": "Susan Elizabeth Johnson",
           "shares": 260615.0,
-          "cash_value": 3393207.3,
+          "cash_value": 3372358.1,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -2186,7 +2186,7 @@
         {
           "name": "Richard Dart",
           "shares": 253706.0,
-          "cash_value": 3303252.12,
+          "cash_value": 3282955.6399999997,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -2231,7 +2231,7 @@
         {
           "name": "Andrew Nugent",
           "shares": 174862.0,
-          "cash_value": 2276703.2399999998,
+          "cash_value": 2262714.28,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -2276,7 +2276,7 @@
         {
           "name": "Mike Van Lent",
           "shares": 141763.0,
-          "cash_value": 1845754.26,
+          "cash_value": 1834413.22,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -2321,7 +2321,7 @@
         {
           "name": "Kenn Bevins",
           "shares": 125520.0,
-          "cash_value": 1634270.4,
+          "cash_value": 1624228.8,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -2366,7 +2366,7 @@
         {
           "name": "Danielle Tyler",
           "shares": 69989.0,
-          "cash_value": 911256.78,
+          "cash_value": 905657.6599999999,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -2411,7 +2411,7 @@
         {
           "name": "Adham Shaaban",
           "shares": 43631.0,
-          "cash_value": 568075.62,
+          "cash_value": 564585.14,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -2456,7 +2456,7 @@
         {
           "name": "Other selling stockholders",
           "shares": 980735.0,
-          "cash_value": 12769169.7,
+          "cash_value": 12690710.9,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-14",
           "lockup_scope": "holder-mapped",
@@ -2558,8 +2558,8 @@
       "offering_size_confidence": "High",
       "filing_price": "11-13",
       "offering_price": 13.0,
-      "current_price": 32.12,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 31.7,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "RALEIGH, NC",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-02-07",
@@ -2594,14 +2594,14 @@
       "signals": [
         "9 named beneficial owners disclosed",
         "Offering raised approximately $81M",
-        "Largest named holding currently valued at approximately $62M",
+        "Largest named holding currently valued at approximately $61M",
         "Lock-up terms captured for liquidity-event follow-up"
       ],
       "people": [
         {
           "name": "Richard Cheatham",
           "shares": 757222.0,
-          "cash_value": 24321970.639999997,
+          "cash_value": 24003937.4,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-07",
           "lockup_scope": "holder-mapped",
@@ -2625,7 +2625,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 757222.0,
-          "locked_value": 24321970.639999997,
+          "locked_value": 24003937.4,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -2646,7 +2646,7 @@
         {
           "name": "Lypul, Ltd.",
           "shares": 657895.0,
-          "cash_value": 21131587.4,
+          "cash_value": 20855271.5,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-07",
           "lockup_scope": "holder-mapped",
@@ -2670,7 +2670,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 657895.0,
-          "locked_value": 21131587.4,
+          "locked_value": 20855271.5,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -2691,7 +2691,7 @@
         {
           "name": "Maxim Partners LLC",
           "shares": 451873.0,
-          "cash_value": 14514160.759999998,
+          "cash_value": 14324374.1,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-07",
           "lockup_scope": "holder-mapped",
@@ -2715,7 +2715,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 451873.0,
-          "locked_value": 14514160.759999998,
+          "locked_value": 14324374.1,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -2736,7 +2736,7 @@
         {
           "name": "James Green",
           "shares": 1925555.0,
-          "cash_value": 61848826.599999994,
+          "cash_value": 61040093.5,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-07",
           "lockup_scope": "holder-mapped",
@@ -2760,7 +2760,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 1925555.0,
-          "locked_value": 61848826.599999994,
+          "locked_value": 61040093.5,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -2781,7 +2781,7 @@
         {
           "name": "William Wilkison",
           "shares": 1925555.0,
-          "cash_value": 61848826.599999994,
+          "cash_value": 61040093.5,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-07",
           "lockup_scope": "holder-mapped",
@@ -2805,7 +2805,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 1925555.0,
-          "locked_value": 61848826.599999994,
+          "locked_value": 61040093.5,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -2826,7 +2826,7 @@
         {
           "name": "Steven Delmar",
           "shares": 791667.0,
-          "cash_value": 25428344.04,
+          "cash_value": 25095843.9,
           "stanford_university_bio": true,
           "lockup_end_date": "2027-02-07",
           "lockup_scope": "holder-mapped",
@@ -2850,7 +2850,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 791667.0,
-          "locked_value": 25428344.04,
+          "locked_value": 25095843.9,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -2871,7 +2871,7 @@
         {
           "name": "Peter Pieraccini",
           "shares": 23332.0,
-          "cash_value": 749423.84,
+          "cash_value": 739624.4,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-07",
           "lockup_scope": "holder-mapped",
@@ -2895,7 +2895,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 23332.0,
-          "locked_value": 749423.84,
+          "locked_value": 739624.4,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -2916,7 +2916,7 @@
         {
           "name": "Timothy Boris",
           "shares": 23332.0,
-          "cash_value": 749423.84,
+          "cash_value": 739624.4,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-07",
           "lockup_scope": "holder-mapped",
@@ -2940,7 +2940,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 23332.0,
-          "locked_value": 749423.84,
+          "locked_value": 739624.4,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -2961,7 +2961,7 @@
         {
           "name": "Richard Gorman",
           "shares": 23332.0,
-          "cash_value": 749423.84,
+          "cash_value": 739624.4,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-07",
           "lockup_scope": "holder-mapped",
@@ -2985,7 +2985,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 23332.0,
-          "locked_value": 749423.84,
+          "locked_value": 739624.4,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -3035,8 +3035,8 @@
       "offering_size_confidence": "High",
       "filing_price": "16-18",
       "offering_price": 18.0,
-      "current_price": 22.14,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 22.46,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "THOUSAND OAKS, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-02-02",
@@ -3103,14 +3103,14 @@
       "signals": [
         "12 named beneficial owners disclosed",
         "Offering raised approximately $346M",
-        "Largest named holding currently valued at approximately $292M",
+        "Largest named holding currently valued at approximately $296M",
         "Lock-up terms captured for liquidity-event follow-up"
       ],
       "people": [
         {
           "name": "Entities affiliated with Westlake BioPartners",
           "shares": 13199669.0,
-          "cash_value": 292240671.66,
+          "cash_value": 296464565.74,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -3134,7 +3134,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 13199669.0,
-          "locked_value": 292240671.66,
+          "locked_value": 296464565.74,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -3167,7 +3167,7 @@
         {
           "name": "Entities affiliated with Foresite Capital",
           "shares": 9041328.0,
-          "cash_value": 200175001.92000002,
+          "cash_value": 203068226.88,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -3191,7 +3191,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 9041328.0,
-          "locked_value": 200175001.92000002,
+          "locked_value": 203068226.88,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -3224,7 +3224,7 @@
         {
           "name": "Entities affiliated with 5AM Ventures",
           "shares": 7325962.0,
-          "cash_value": 162196798.68,
+          "cash_value": 164541106.52,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -3248,7 +3248,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 7325962.0,
-          "locked_value": 162196798.68,
+          "locked_value": 164541106.52,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -3281,7 +3281,7 @@
         {
           "name": "Entities affiliated with Blue Owl Healthcare",
           "shares": 3146780.0,
-          "cash_value": 69669709.2,
+          "cash_value": 70676678.8,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -3305,7 +3305,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 3146780.0,
-          "locked_value": 69669709.2,
+          "locked_value": 70676678.8,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -3338,7 +3338,7 @@
         {
           "name": "Deep Track Biotechnology Master Fund, Ltd.",
           "shares": 2496656.0,
-          "cash_value": 55275963.84,
+          "cash_value": 56074893.760000005,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -3362,7 +3362,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 2496656.0,
-          "locked_value": 55275963.84,
+          "locked_value": 56074893.760000005,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -3395,7 +3395,7 @@
         {
           "name": "Nima Farzan",
           "shares": 2902419.0,
-          "cash_value": 64259556.660000004,
+          "cash_value": 65188330.74,
           "stanford_university_bio": true,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -3419,7 +3419,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 2902419.0,
-          "locked_value": 64259556.660000004,
+          "locked_value": 65188330.74,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -3452,7 +3452,7 @@
         {
           "name": "Timothy Lugo",
           "shares": 166354.0,
-          "cash_value": 3683077.56,
+          "cash_value": 3736310.8400000003,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -3476,7 +3476,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 166354.0,
-          "locked_value": 3683077.56,
+          "locked_value": 3736310.8400000003,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -3509,7 +3509,7 @@
         {
           "name": "Neil Singla, M.D.",
           "shares": 532795.0,
-          "cash_value": 11796081.3,
+          "cash_value": 11966575.700000001,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -3533,7 +3533,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 532795.0,
-          "locked_value": 11796081.3,
+          "locked_value": 11966575.700000001,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -3566,7 +3566,7 @@
         {
           "name": "Timothy P. Walbert",
           "shares": 329819.0,
-          "cash_value": 7302192.66,
+          "cash_value": 7407734.74,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -3590,7 +3590,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 329819.0,
-          "locked_value": 7302192.66,
+          "locked_value": 7407734.74,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -3623,7 +3623,7 @@
         {
           "name": "Sara Bonstein",
           "shares": 105542.0,
-          "cash_value": 2336699.88,
+          "cash_value": 2370473.3200000003,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -3647,7 +3647,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 105542.0,
-          "locked_value": 2336699.88,
+          "locked_value": 2370473.3200000003,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -3823,8 +3823,8 @@
       "offering_size_confidence": "High",
       "filing_price": "15-17",
       "offering_price": 16.0,
-      "current_price": 19.74,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 19.78,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "SAN DIEGO, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-02-02",
@@ -3891,14 +3891,14 @@
       "signals": [
         "14 named beneficial owners disclosed",
         "Offering raised approximately $150M",
-        "Largest named holding currently valued at approximately $78M",
+        "Largest named holding currently valued at approximately $79M",
         "Lock-up terms captured for liquidity-event follow-up"
       ],
       "people": [
         {
           "name": "J. Jean Cui, Ph.D. and Y. Peter Li, Ph.D., MBA and related affiliates",
           "shares": 3973138.0,
-          "cash_value": 78429744.11999999,
+          "cash_value": 78588669.64,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -3955,7 +3955,7 @@
         {
           "name": "Entities affiliated with Cormorant Asset Management LP",
           "shares": 3301534.0,
-          "cash_value": 65172281.16,
+          "cash_value": 65304342.52,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -4012,7 +4012,7 @@
         {
           "name": "OrbiMed Private Investments VIII, LP",
           "shares": 2089279.0,
-          "cash_value": 41242367.45999999,
+          "cash_value": 41325938.620000005,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -4069,7 +4069,7 @@
         {
           "name": "Vivo Innovation Fund II Holdings, L.P.",
           "shares": 1493740.0,
-          "cash_value": 29486427.599999998,
+          "cash_value": 29546177.200000003,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -4126,7 +4126,7 @@
         {
           "name": "Janus Henderson Biotech Innovation Master Fund Limited",
           "shares": 1134361.0,
-          "cash_value": 22392286.139999997,
+          "cash_value": 22437660.580000002,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -4297,7 +4297,7 @@
         {
           "name": "Geoff Oxnard, M.D.",
           "shares": 75861.0,
-          "cash_value": 1497496.14,
+          "cash_value": 1500530.58,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -4354,7 +4354,7 @@
         {
           "name": "Jason Keyes, MBA",
           "shares": 54818.0,
-          "cash_value": 1082107.3199999998,
+          "cash_value": 1084300.04,
           "stanford_university_bio": true,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -4411,7 +4411,7 @@
         {
           "name": "Sundeep Agrawal, M.D.",
           "shares": 589195.0,
-          "cash_value": 11630709.299999999,
+          "cash_value": 11654277.100000001,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -4468,7 +4468,7 @@
         {
           "name": "Bihua Chen, MBA",
           "shares": 3301534.0,
-          "cash_value": 65172281.16,
+          "cash_value": null,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -4476,7 +4476,7 @@
           "lockup_duration_value": 180,
           "lockup_duration_unit": "days",
           "lockup_text": "Substantially all of the remaining 21,268,660 shares of our common stock initially will be restricted as a result of securities laws, market standoff provisions or lock-up agreements, but will become eligible to be sold after this offering as described in the section titled “Shares eligible for future sale.” We, our directors, our officers and substantially all of the holders of our common stock or securities convertible into, exercisable for, or exchangeable for our common stock have entered into market standoff agreements with us and have entered or will enter into lock-up agreements under which we have agreed or will agree, subject to specific exceptions described in the section titled “Underwriting,” not to offer, sell, or transfer such securities for 180 days following the date of this prospectus",
-          "valuation_as_of": "2026-09-03",
+          "valuation_as_of": null,
           "holder_type": "Individual",
           "is_beneficial_owner": true,
           "role": null,
@@ -4487,7 +4487,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": 3301534,
           "stanford_source": null,
-          "ipo_value": 52824544.0,
+          "ipo_value": null,
           "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
@@ -4582,7 +4582,7 @@
         {
           "name": "Sheila Gujrathi, M.D.",
           "shares": 90160.0,
-          "cash_value": 1779758.4,
+          "cash_value": 1783364.8,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -4639,7 +4639,7 @@
         {
           "name": "John Schmid, MBA",
           "shares": 67620.0,
-          "cash_value": 1334818.7999999998,
+          "cash_value": 1337523.6,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-02",
           "lockup_scope": "holder-mapped",
@@ -4725,8 +4725,8 @@
       "offering_size_confidence": "High",
       "filing_price": "15-17",
       "offering_price": 18.0,
-      "current_price": 25.95,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 26.5,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "San Francisco, CA",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2027-02-01",
@@ -4761,14 +4761,14 @@
       "signals": [
         "12 named beneficial owners disclosed",
         "Offering raised approximately $382M",
-        "Largest named holding currently valued at approximately $473M",
+        "Largest named holding currently valued at approximately $483M",
         "Lock-up terms captured for liquidity-event follow-up"
       ],
       "people": [
         {
           "name": "AH Bio Fund IV, L.P.",
           "shares": 9132420.0,
-          "cash_value": 236986299.0,
+          "cash_value": 242009130.0,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-01",
           "lockup_scope": "holder-mapped",
@@ -4792,7 +4792,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 9132420.0,
-          "locked_value": 236986299.0,
+          "locked_value": 242009130.0,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -4813,7 +4813,7 @@
         {
           "name": "Entities affiliated with Forbion",
           "shares": 18226024.0,
-          "cash_value": 472965322.8,
+          "cash_value": 482989636.0,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-01",
           "lockup_scope": "holder-mapped",
@@ -4837,7 +4837,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 18226024.0,
-          "locked_value": 472965322.8,
+          "locked_value": 482989636.0,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -4858,7 +4858,7 @@
         {
           "name": "Jiangsu Hengrui Pharmaceuticals Co., Ltd.",
           "shares": 7420091.0,
-          "cash_value": 192551361.45,
+          "cash_value": 196632411.5,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-01",
           "lockup_scope": "holder-mapped",
@@ -4882,7 +4882,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 7420091.0,
-          "locked_value": 192551361.45,
+          "locked_value": 196632411.5,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -4903,7 +4903,7 @@
         {
           "name": "Orbimed Private Investments IX, LP",
           "shares": 10235159.0,
-          "cash_value": 265602376.04999998,
+          "cash_value": 271231713.5,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-01",
           "lockup_scope": "holder-mapped",
@@ -4927,7 +4927,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 10235159.0,
-          "locked_value": 265602376.04999998,
+          "locked_value": 271231713.5,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -4948,7 +4948,7 @@
         {
           "name": "ES Braveheart Aggregator, L.P.",
           "shares": 3424657.0,
-          "cash_value": 88869849.14999999,
+          "cash_value": 90753410.5,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-01",
           "lockup_scope": "holder-mapped",
@@ -4972,7 +4972,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 3424657.0,
-          "locked_value": 88869849.14999999,
+          "locked_value": 90753410.5,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -4993,7 +4993,7 @@
         {
           "name": "Frazier Life Sciences Public Fund, L.P.",
           "shares": 3424657.0,
-          "cash_value": 88869849.14999999,
+          "cash_value": 90753410.5,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-01",
           "lockup_scope": "holder-mapped",
@@ -5017,7 +5017,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 3424657.0,
-          "locked_value": 88869849.14999999,
+          "locked_value": 90753410.5,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -5038,7 +5038,7 @@
         {
           "name": "Travis Murdoch, M.D., Chief Executive Officer, President and Director",
           "shares": 8250304.0,
-          "cash_value": 214095388.79999998,
+          "cash_value": 218633056.0,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-01",
           "lockup_scope": "holder-mapped",
@@ -5062,7 +5062,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 8250304.0,
-          "locked_value": 214095388.79999998,
+          "locked_value": 218633056.0,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -5083,7 +5083,7 @@
         {
           "name": "Michele Anderson, Chief Development Officer",
           "shares": 331050.0,
-          "cash_value": 8590747.5,
+          "cash_value": 8772825.0,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-01",
           "lockup_scope": "holder-mapped",
@@ -5107,7 +5107,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 331050.0,
-          "locked_value": 8590747.5,
+          "locked_value": 8772825.0,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -5128,7 +5128,7 @@
         {
           "name": "J. Paul Rickey, Chief Financial Officer",
           "shares": 675798.0,
-          "cash_value": 17536958.099999998,
+          "cash_value": 17908647.0,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-01",
           "lockup_scope": "holder-mapped",
@@ -5152,7 +5152,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 675798.0,
-          "locked_value": 17536958.099999998,
+          "locked_value": 17908647.0,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -5173,7 +5173,7 @@
         {
           "name": "Christopher Viehbacher",
           "shares": 676524.0,
-          "cash_value": 17555797.8,
+          "cash_value": 17927886.0,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-01",
           "lockup_scope": "holder-mapped",
@@ -5197,7 +5197,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 676524.0,
-          "locked_value": 17555797.8,
+          "locked_value": 17927886.0,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -5218,7 +5218,7 @@
         {
           "name": "Jason Coloma, Ph.D., M.B.A.",
           "shares": 1100456.0,
-          "cash_value": 28556833.2,
+          "cash_value": 29162084.0,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-01",
           "lockup_scope": "holder-mapped",
@@ -5242,7 +5242,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 1100456.0,
-          "locked_value": 28556833.2,
+          "locked_value": 29162084.0,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -5263,7 +5263,7 @@
         {
           "name": "David Malek, M.B.A.",
           "shares": 1009131.0,
-          "cash_value": 26186949.45,
+          "cash_value": 26741971.5,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-02-01",
           "lockup_scope": "holder-mapped",
@@ -5287,7 +5287,7 @@
           "liquid_shares": 0,
           "liquid_value": 0.0,
           "locked_shares": 1009131.0,
-          "locked_value": 26186949.45,
+          "locked_value": 26741971.5,
           "liquidity_status": "Locked",
           "liquidity_confidence": "High — prospectus expressly maps the full covered position; disclosed exceptions or underwriter waivers may apply",
           "lockup_schedule": [
@@ -5337,8 +5337,8 @@
       "offering_size_confidence": "High",
       "filing_price": "17",
       "offering_price": 17.0,
-      "current_price": 24.42,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 24.77,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "SAN CARLOS, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-01-31",
@@ -5405,14 +5405,14 @@
       "signals": [
         "10 named beneficial owners disclosed",
         "Offering raised approximately $289M",
-        "Largest named holding currently valued at approximately $136M",
+        "Largest named holding currently valued at approximately $138M",
         "Lock-up terms captured for liquidity-event follow-up"
       ],
       "people": [
         {
           "name": "Frazier Life Sciences XI, L.P.",
           "shares": 5565980.0,
-          "cash_value": 135921231.60000002,
+          "cash_value": 137869324.6,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
           "lockup_scope": "holder-mapped",
@@ -5469,7 +5469,7 @@
         {
           "name": "Alamar HoldCo, LLC",
           "shares": 3229279.0,
-          "cash_value": 78858993.18,
+          "cash_value": 79989240.83,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
           "lockup_scope": "holder-mapped",
@@ -5526,7 +5526,7 @@
         {
           "name": "venBio Global Strategic Fund IV, L.P.",
           "shares": 3799016.0,
-          "cash_value": 92771970.72000001,
+          "cash_value": 94101626.32,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
           "lockup_scope": "holder-mapped",
@@ -5583,7 +5583,7 @@
         {
           "name": "Entities affiliated with Goldman Sachs & Co. LLC",
           "shares": 2435641.0,
-          "cash_value": 59478353.220000006,
+          "cash_value": 60330827.57,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
           "lockup_scope": "holder-mapped",
@@ -5640,7 +5640,7 @@
         {
           "name": "Deep Track Biotechnology Master Fund, Ltd",
           "shares": 1957139.0,
-          "cash_value": 47793334.38,
+          "cash_value": 48478333.03,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
           "lockup_scope": "holder-mapped",
@@ -5697,7 +5697,7 @@
         {
           "name": "Tao Fu",
           "shares": 893456.0,
-          "cash_value": 21818195.520000003,
+          "cash_value": 22130905.12,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
           "lockup_scope": "holder-mapped",
@@ -5754,7 +5754,7 @@
         {
           "name": "Petter Veiby",
           "shares": 212258.0,
-          "cash_value": 5183340.36,
+          "cash_value": 5257630.66,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
           "lockup_scope": "holder-mapped",
@@ -5811,7 +5811,7 @@
         {
           "name": "Hubert Chen",
           "shares": 153279.0,
-          "cash_value": 3743073.18,
+          "cash_value": 3796720.83,
           "stanford_university_bio": true,
           "lockup_end_date": "2027-01-31",
           "lockup_scope": "holder-mapped",
@@ -5868,7 +5868,7 @@
         {
           "name": "Mitchell Gold",
           "shares": 41873.0,
-          "cash_value": 1022538.66,
+          "cash_value": 1037194.21,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
           "lockup_scope": "holder-mapped",
@@ -5925,7 +5925,7 @@
         {
           "name": "Angie You",
           "shares": 59490.0,
-          "cash_value": 1452745.8,
+          "cash_value": 1473567.3,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
           "lockup_scope": "holder-mapped",
@@ -6011,8 +6011,8 @@
       "offering_size_confidence": "High",
       "filing_price": "21-25",
       "offering_price": 23.0,
-      "current_price": 19.92,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 19.93,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "Tinton Falls, NJ",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2027-01-25",
@@ -6177,7 +6177,7 @@
         {
           "name": "Charles R. Morrison",
           "shares": 93610.0,
-          "cash_value": 1864711.2000000002,
+          "cash_value": 1865647.3,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-25",
           "lockup_scope": "holder-mapped",
@@ -6222,7 +6222,7 @@
         {
           "name": "Michele Allen",
           "shares": 18718.0,
-          "cash_value": 372862.56000000006,
+          "cash_value": 373049.74,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-25",
           "lockup_scope": "holder-mapped",
@@ -6267,7 +6267,7 @@
         {
           "name": "Walter C. Tombs",
           "shares": 61640.0,
-          "cash_value": 1227868.8,
+          "cash_value": 1228485.2,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-25",
           "lockup_scope": "holder-mapped",
@@ -6312,7 +6312,7 @@
         {
           "name": "Nigel Travis",
           "shares": 52915.0,
-          "cash_value": 1054066.8,
+          "cash_value": 1054595.95,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-25",
           "lockup_scope": "holder-mapped",
@@ -6357,7 +6357,7 @@
         {
           "name": "Peter Cancro",
           "shares": 30346816.0,
-          "cash_value": 604508574.72,
+          "cash_value": 604812042.88,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-25",
           "lockup_scope": "holder-mapped",
@@ -6402,7 +6402,7 @@
         {
           "name": "Fran Horowitz",
           "shares": 25258.0,
-          "cash_value": 503139.36000000004,
+          "cash_value": 503391.94,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-25",
           "lockup_scope": "holder-mapped",
@@ -6476,8 +6476,8 @@
       "offering_size_confidence": "High",
       "filing_price": "14-16",
       "offering_price": 16.0,
-      "current_price": 28.02,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 28.16,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "CAMBRIDGE, MA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-01-26",
@@ -6547,14 +6547,14 @@
       "signals": [
         "12 named beneficial owners disclosed",
         "Offering raised approximately $192M",
-        "Largest named holding currently valued at approximately $198M",
+        "Largest named holding currently valued at approximately $199M",
         "Lock-up terms captured for liquidity-event follow-up"
       ],
       "people": [
         {
           "name": "Morningside",
           "shares": 6915837.0,
-          "cash_value": 193781752.74,
+          "cash_value": 194749969.92,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-26",
           "lockup_scope": "holder-mapped",
@@ -6611,7 +6611,7 @@
         {
           "name": "Alpha Wave",
           "shares": 7054954.0,
-          "cash_value": 197679811.07999998,
+          "cash_value": 198667504.64000002,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-26",
           "lockup_scope": "holder-mapped",
@@ -6668,7 +6668,7 @@
         {
           "name": "Shionogi",
           "shares": 2953817.0,
-          "cash_value": 82765952.34,
+          "cash_value": 83179486.72,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-26",
           "lockup_scope": "holder-mapped",
@@ -6725,7 +6725,7 @@
         {
           "name": "Columbia Fund",
           "shares": 4298843.0,
-          "cash_value": 120453580.86,
+          "cash_value": 121055418.88,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-26",
           "lockup_scope": "holder-mapped",
@@ -6782,7 +6782,7 @@
         {
           "name": "Tao",
           "shares": 1865638.0,
-          "cash_value": 52275176.76,
+          "cash_value": 52536366.08,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-26",
           "lockup_scope": "holder-mapped",
@@ -6839,7 +6839,7 @@
         {
           "name": "Lawrence G. Miller, M.D.",
           "shares": 2451036.0,
-          "cash_value": 68678028.72,
+          "cash_value": 69021173.76,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-26",
           "lockup_scope": "holder-mapped",
@@ -6896,7 +6896,7 @@
         {
           "name": "Dennis P. Molnar",
           "shares": 664452.0,
-          "cash_value": 18617945.04,
+          "cash_value": 18710968.32,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-26",
           "lockup_scope": "holder-mapped",
@@ -6953,7 +6953,7 @@
         {
           "name": "Ronald H. Farkas",
           "shares": 502298.0,
-          "cash_value": 14074389.959999999,
+          "cash_value": 14144711.68,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-26",
           "lockup_scope": "holder-mapped",
@@ -7010,7 +7010,7 @@
         {
           "name": "Joseph Avellone, M.D.",
           "shares": 155288.0,
-          "cash_value": 4351169.76,
+          "cash_value": 4372910.08,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-26",
           "lockup_scope": "holder-mapped",
@@ -7067,7 +7067,7 @@
         {
           "name": "Paul Fonteyne",
           "shares": 35674.0,
-          "cash_value": 999585.48,
+          "cash_value": 1004579.84,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-26",
           "lockup_scope": "holder-mapped",
@@ -7124,7 +7124,7 @@
         {
           "name": "Gary Sender",
           "shares": 22702.0,
-          "cash_value": 636110.04,
+          "cash_value": 639288.32,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-26",
           "lockup_scope": "holder-mapped",
@@ -7181,7 +7181,7 @@
         {
           "name": "Kevin R. Lind",
           "shares": 27798.0,
-          "cash_value": 778899.96,
+          "cash_value": 782791.68,
           "stanford_university_bio": true,
           "lockup_end_date": "2027-01-26",
           "lockup_scope": "holder-mapped",
@@ -7267,8 +7267,8 @@
       "offering_size_confidence": "High",
       "filing_price": "15-17",
       "offering_price": 15.0,
-      "current_price": 14.05,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 14.04,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "VERNON, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-01-25",
@@ -7789,8 +7789,8 @@
       "offering_size_confidence": "High",
       "filing_price": "13-15",
       "offering_price": 15.0,
-      "current_price": 30.75,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 30.09,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "ALAMEDA, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-01-23",
@@ -7857,14 +7857,14 @@
       "signals": [
         "10 named beneficial owners disclosed",
         "Offering raised approximately $129M",
-        "Largest named holding currently valued at approximately $85M",
+        "Largest named holding currently valued at approximately $83M",
         "Lock-up terms captured for liquidity-event follow-up"
       ],
       "people": [
         {
           "name": "Benjamin L. Oakes, Ph.D.",
           "shares": 660998.0,
-          "cash_value": 20325688.5,
+          "cash_value": 19889429.82,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-23",
           "lockup_scope": "holder-mapped",
@@ -7921,7 +7921,7 @@
         {
           "name": "David L. Parrot",
           "shares": 114860.0,
-          "cash_value": 3531945.0,
+          "cash_value": 3456137.4,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-23",
           "lockup_scope": "holder-mapped",
@@ -7978,7 +7978,7 @@
         {
           "name": "Svetlana Lucas, Ph.D.",
           "shares": 114345.0,
-          "cash_value": 3516108.75,
+          "cash_value": 3440641.05,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-23",
           "lockup_scope": "holder-mapped",
@@ -8149,7 +8149,7 @@
         {
           "name": "Entities affiliated with Andreessen Horowitz",
           "shares": 2749392.0,
-          "cash_value": 84543804.0,
+          "cash_value": 82729205.28,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-23",
           "lockup_scope": "holder-mapped",
@@ -8206,7 +8206,7 @@
         {
           "name": "Eli Lilly and Company",
           "shares": 1054828.0,
-          "cash_value": 32435961.0,
+          "cash_value": 31739774.52,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-23",
           "lockup_scope": "holder-mapped",
@@ -8263,7 +8263,7 @@
         {
           "name": "Entities affiliated with Avoro Life Sciences Fund LLC",
           "shares": 697650.0,
-          "cash_value": 21452737.5,
+          "cash_value": 20992288.5,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-23",
           "lockup_scope": "holder-mapped",
@@ -8320,7 +8320,7 @@
         {
           "name": "Jennifer A. Doudna",
           "shares": 603547.0,
-          "cash_value": 18559070.25,
+          "cash_value": 18160729.23,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-23",
           "lockup_scope": "holder-mapped",
@@ -8377,7 +8377,7 @@
         {
           "name": "Brett T. Staahl",
           "shares": 550056.0,
-          "cash_value": 16914222.0,
+          "cash_value": 16551185.04,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-23",
           "lockup_scope": "holder-mapped",
@@ -8463,8 +8463,8 @@
       "offering_size_confidence": "High",
       "filing_price": "18-21",
       "offering_price": 15.0,
-      "current_price": 14.41,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 14.61,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "OAK RIDGE, TN",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-01-11",
@@ -8516,14 +8516,14 @@
       "signals": [
         "10 named beneficial owners disclosed",
         "Offering raised approximately $150M",
-        "Largest named holding currently valued at approximately $365M",
+        "Largest named holding currently valued at approximately $370M",
         "Lock-up terms captured for liquidity-event follow-up"
       ],
       "people": [
         {
           "name": "Entities affiliated with Decisive Point Group",
           "shares": 25313314.0,
-          "cash_value": 364764854.74,
+          "cash_value": 369827517.53999996,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-11",
           "lockup_scope": "holder-mapped",
@@ -8580,7 +8580,7 @@
         {
           "name": "Larger Cross Partners I, LLC",
           "shares": 10384978.0,
-          "cash_value": 149647532.98,
+          "cash_value": 151724528.57999998,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-11",
           "lockup_scope": "holder-mapped",
@@ -8637,7 +8637,7 @@
         {
           "name": "Standard Nuclear Trust",
           "shares": 5824308.0,
-          "cash_value": 83928278.28,
+          "cash_value": 85093139.88,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-11",
           "lockup_scope": "holder-mapped",
@@ -8694,7 +8694,7 @@
         {
           "name": "Welara Capital Partners Series 3 LLC",
           "shares": 20243094.0,
-          "cash_value": 291702984.54,
+          "cash_value": 295751603.34,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-11",
           "lockup_scope": "holder-mapped",
@@ -8751,7 +8751,7 @@
         {
           "name": "Entities affiliated with Fundomo",
           "shares": 19877358.0,
-          "cash_value": 286432728.78000003,
+          "cash_value": 290408200.38,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-11",
           "lockup_scope": "holder-mapped",
@@ -8808,7 +8808,7 @@
         {
           "name": "Washington Harbour Triso LLC",
           "shares": 8562170.0,
-          "cash_value": 123380869.7,
+          "cash_value": 125093303.69999999,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-11",
           "lockup_scope": "holder-mapped",
@@ -8865,7 +8865,7 @@
         {
           "name": "Kurt Terrani",
           "shares": 3615084.0,
-          "cash_value": 52093360.44,
+          "cash_value": 52816377.239999995,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-11",
           "lockup_scope": "holder-mapped",
@@ -8922,7 +8922,7 @@
         {
           "name": "Keeley Marrocco",
           "shares": 3076034.0,
-          "cash_value": 44325649.94,
+          "cash_value": 44940856.739999995,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-11",
           "lockup_scope": "holder-mapped",
@@ -8979,7 +8979,7 @@
         {
           "name": "Thomas Hendrix",
           "shares": 11578308.0,
-          "cash_value": 166843418.28,
+          "cash_value": 169159079.88,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-11",
           "lockup_scope": "holder-mapped",
@@ -9036,7 +9036,7 @@
         {
           "name": "Alexander Matina",
           "shares": 79165.0,
-          "cash_value": 1140767.65,
+          "cash_value": 1156600.65,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-11",
           "lockup_scope": "holder-mapped",
@@ -9122,8 +9122,8 @@
       "offering_size_confidence": "High",
       "filing_price": "23-27",
       "offering_price": 21.0,
-      "current_price": 18.45,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 18.58,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "Coppell, TX",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2027-01-11",
@@ -9183,7 +9183,7 @@
         {
           "name": "Brookfield",
           "shares": 106887373.0,
-          "cash_value": 1972072031.85,
+          "cash_value": 1985967390.34,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-11",
           "lockup_scope": "holder-mapped",
@@ -9228,7 +9228,7 @@
         {
           "name": "Spencer Mullee",
           "shares": 714285.0,
-          "cash_value": 13178558.25,
+          "cash_value": 13271415.299999999,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-11",
           "lockup_scope": "holder-mapped",
@@ -9273,7 +9273,7 @@
         {
           "name": "Steven Cook",
           "shares": 95238.0,
-          "cash_value": 1757141.0999999999,
+          "cash_value": 1769522.0399999998,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-11",
           "lockup_scope": "holder-mapped",
@@ -9318,7 +9318,7 @@
         {
           "name": "Catherine Smith",
           "shares": 104761.0,
-          "cash_value": 1932840.45,
+          "cash_value": 1946459.38,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-11",
           "lockup_scope": "holder-mapped",
@@ -9363,7 +9363,7 @@
         {
           "name": "Sean Charnock",
           "shares": 66666.0,
-          "cash_value": 1229987.7,
+          "cash_value": 1238654.2799999998,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-11",
           "lockup_scope": "holder-mapped",
@@ -9437,8 +9437,8 @@
       "offering_size_confidence": "High",
       "filing_price": "24-26",
       "offering_price": 25.0,
-      "current_price": 40.69,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 39.79,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "SAN FRANCISCO, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-12-09",
@@ -9601,14 +9601,14 @@
       "signals": [
         "8 named beneficial owners disclosed",
         "Offering raised approximately $174M",
-        "Largest named holding currently valued at approximately $571M",
+        "Largest named holding currently valued at approximately $558M",
         "Lock-up terms captured for liquidity-event follow-up"
       ],
       "people": [
         {
           "name": "Wayne Ting",
           "shares": 1216341.0,
-          "cash_value": 49492915.29,
+          "cash_value": 48398208.39,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": "filing-level-unmapped",
@@ -9640,7 +9640,7 @@
         {
           "name": "Joseph Kraus",
           "shares": 507570.0,
-          "cash_value": 20653023.299999997,
+          "cash_value": 20196210.3,
           "stanford_university_bio": true,
           "lockup_end_date": null,
           "lockup_scope": "filing-level-unmapped",
@@ -9672,7 +9672,7 @@
         {
           "name": "Ann Gugino",
           "shares": 224616.0,
-          "cash_value": 9139625.04,
+          "cash_value": 8937470.64,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": "filing-level-unmapped",
@@ -9704,7 +9704,7 @@
         {
           "name": "Zhoujia Brad Bao",
           "shares": 931934.0,
-          "cash_value": 37920394.46,
+          "cash_value": 37081653.86,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": "filing-level-unmapped",
@@ -9736,7 +9736,7 @@
         {
           "name": "Uber",
           "shares": 14021438.0,
-          "cash_value": 570532312.2199999,
+          "cash_value": 557913018.02,
           "stanford_university_bio": false,
           "lockup_end_date": "2028-07-02",
           "lockup_scope": "holder-mapped",
@@ -9865,7 +9865,7 @@
         {
           "name": "Entities affiliated with Andreessen Horowitz",
           "shares": 2872018.0,
-          "cash_value": 116862412.41999999,
+          "cash_value": 114277596.22,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": "filing-level-unmapped",
@@ -9897,7 +9897,7 @@
         {
           "name": "Entities affiliated with Fidelity",
           "shares": 6621407.0,
-          "cash_value": 269425050.83,
+          "cash_value": 263465784.53,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": "filing-level-unmapped",
@@ -9929,7 +9929,7 @@
         {
           "name": "Entities affiliated with Sapphire",
           "shares": 9751385.0,
-          "cash_value": 396783855.65,
+          "cash_value": 388007609.15,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": "filing-level-unmapped",
@@ -9990,8 +9990,8 @@
       "offering_size_confidence": "High",
       "filing_price": "19-22",
       "offering_price": 16.0,
-      "current_price": 12.98,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 12.83,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "Fort Lauderdale, FL",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2026-12-27",
@@ -10044,14 +10044,14 @@
       "signals": [
         "11 named beneficial owners disclosed",
         "Offering raised approximately $312M",
-        "Largest named holding currently valued at approximately $569M",
+        "Largest named holding currently valued at approximately $562M",
         "Lock-up terms captured for liquidity-event follow-up"
       ],
       "people": [
         {
           "name": "OCM Power VI AIV Holdings (Delaware), L.P",
           "shares": 26005508.0,
-          "cash_value": 337551493.84000003,
+          "cash_value": 333650667.64,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-27",
           "lockup_scope": "holder-mapped",
@@ -10096,7 +10096,7 @@
         {
           "name": "OCM ITG Aggregator LLC",
           "shares": 31880101.0,
-          "cash_value": 413803710.98,
+          "cash_value": 409021695.83,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-27",
           "lockup_scope": "holder-mapped",
@@ -10141,7 +10141,7 @@
         {
           "name": "ITG Management Holdings, LLC",
           "shares": 43832585.0,
-          "cash_value": 568946953.3000001,
+          "cash_value": 562372065.55,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-27",
           "lockup_scope": "holder-mapped",
@@ -10186,7 +10186,7 @@
         {
           "name": "Christopher Perkins",
           "shares": 7224996.0,
-          "cash_value": 93780448.08,
+          "cash_value": 92696698.68,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-27",
           "lockup_scope": "holder-mapped",
@@ -10231,7 +10231,7 @@
         {
           "name": "Andrew D. Parrott",
           "shares": 15625.0,
-          "cash_value": 202812.5,
+          "cash_value": 200468.75,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-27",
           "lockup_scope": "holder-mapped",
@@ -10276,7 +10276,7 @@
         {
           "name": "Christopher H. Mecray",
           "shares": 5000.0,
-          "cash_value": 64900.0,
+          "cash_value": 64150.0,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-27",
           "lockup_scope": "holder-mapped",
@@ -10321,7 +10321,7 @@
         {
           "name": "Michael G. Brooks",
           "shares": 12234217.0,
-          "cash_value": 158800136.66,
+          "cash_value": 156965004.11,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-27",
           "lockup_scope": "holder-mapped",
@@ -10366,7 +10366,7 @@
         {
           "name": "Guilherme Elias",
           "shares": 1507875.0,
-          "cash_value": 19572217.5,
+          "cash_value": 19346036.25,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-27",
           "lockup_scope": "holder-mapped",
@@ -10411,7 +10411,7 @@
         {
           "name": "Peter A. Giacalone",
           "shares": 11408973.0,
-          "cash_value": 148088469.54,
+          "cash_value": 146377123.59,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-27",
           "lockup_scope": "holder-mapped",
@@ -10456,7 +10456,7 @@
         {
           "name": "William G. LaPerch",
           "shares": 215744.0,
-          "cash_value": 2800357.12,
+          "cash_value": 2767995.52,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-27",
           "lockup_scope": "holder-mapped",
@@ -10501,7 +10501,7 @@
         {
           "name": "Joel Rivas",
           "shares": 367714.0,
-          "cash_value": 4772927.72,
+          "cash_value": 4717770.62,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-27",
           "lockup_scope": "holder-mapped",
@@ -10575,8 +10575,8 @@
       "offering_size_confidence": "High",
       "filing_price": "14-16",
       "offering_price": 16.0,
-      "current_price": 20.7,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 20.72,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "Princeton, NJ",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2026-12-14",
@@ -10619,7 +10619,7 @@
         {
           "name": "Entities affiliated with ARCH",
           "shares": 14668075.0,
-          "cash_value": 303629152.5,
+          "cash_value": 303922514.0,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-14",
           "lockup_scope": "holder-mapped",
@@ -10664,7 +10664,7 @@
         {
           "name": "Entities affiliated with HRTG Partners",
           "shares": 14688074.0,
-          "cash_value": 304043131.8,
+          "cash_value": 304336893.28,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-14",
           "lockup_scope": "holder-mapped",
@@ -10709,7 +10709,7 @@
         {
           "name": "Entities affiliated with Perceptive",
           "shares": 8200661.0,
-          "cash_value": 169753682.7,
+          "cash_value": 169917695.92,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-14",
           "lockup_scope": "holder-mapped",
@@ -10754,7 +10754,7 @@
         {
           "name": "Entities affiliated with Fidelity",
           "shares": 4473086.0,
-          "cash_value": 92592880.2,
+          "cash_value": 92682341.92,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-14",
           "lockup_scope": "holder-mapped",
@@ -10799,7 +10799,7 @@
         {
           "name": "Tassos Gianakakos, Chief Executive Officer, Director, and Chair",
           "shares": 9806633.0,
-          "cash_value": 202997303.1,
+          "cash_value": 203193435.76,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-14",
           "lockup_scope": "holder-mapped",
@@ -10844,7 +10844,7 @@
         {
           "name": "Jay Edelberg, M.D., Ph.D., Chief Medical Officer",
           "shares": 4599237.0,
-          "cash_value": 95204205.89999999,
+          "cash_value": 95296190.64,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-14",
           "lockup_scope": "holder-mapped",
@@ -10889,7 +10889,7 @@
         {
           "name": "Brianne Puglisi, Chief Financial Officer",
           "shares": 184718.0,
-          "cash_value": 3823662.6,
+          "cash_value": 3827356.96,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-14",
           "lockup_scope": "holder-mapped",
@@ -10934,7 +10934,7 @@
         {
           "name": "Andy Pasternak, Chief Strategy Officer",
           "shares": 31339.0,
-          "cash_value": 648717.2999999999,
+          "cash_value": 649344.08,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-14",
           "lockup_scope": "holder-mapped",
@@ -10979,7 +10979,7 @@
         {
           "name": "Paul Berns",
           "shares": 53483.0,
-          "cash_value": 1107098.0999999999,
+          "cash_value": 1108167.76,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-14",
           "lockup_scope": "holder-mapped",
@@ -11024,7 +11024,7 @@
         {
           "name": "David Meeker, M.D.",
           "shares": 37358.0,
-          "cash_value": 773310.6,
+          "cash_value": 774057.76,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-14",
           "lockup_scope": "holder-mapped",
@@ -11069,7 +11069,7 @@
         {
           "name": "Douglas Giordano",
           "shares": 53483.0,
-          "cash_value": 1107098.0999999999,
+          "cash_value": 1108167.76,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-14",
           "lockup_scope": "holder-mapped",
@@ -11114,7 +11114,7 @@
         {
           "name": "Kim Popovits",
           "shares": 37358.0,
-          "cash_value": 773310.6,
+          "cash_value": 774057.76,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-14",
           "lockup_scope": "holder-mapped",
@@ -11188,8 +11188,8 @@
       "offering_size_confidence": "High",
       "filing_price": "14-16",
       "offering_price": 12.5,
-      "current_price": 12.79,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 12.77,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "Raleigh, NC",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2026-12-14",
@@ -11257,8 +11257,8 @@
       "offering_size_confidence": "High",
       "filing_price": "135",
       "offering_price": 135.0,
-      "current_price": 151.68,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 151.72,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "STARBASE, TX",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-12-08",
@@ -11334,14 +11334,14 @@
       "signals": [
         "7 named beneficial owners disclosed",
         "Offering raised approximately $75.0B",
-        "Largest named holding currently valued at approximately $973.6B",
+        "Largest named holding currently valued at approximately $973.8B",
         "Lock-up terms captured for liquidity-event follow-up"
       ],
       "people": [
         {
           "name": "Elon Musk",
           "shares": 6418547515.0,
-          "cash_value": 973565287075.2001,
+          "cash_value": 973822028975.8,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-08",
           "lockup_scope": "filing-level-unmapped",
@@ -11373,7 +11373,7 @@
         {
           "name": "Gwynne Shotwell",
           "shares": 12873160.0,
-          "cash_value": 1952600908.8000002,
+          "cash_value": 1953115835.2,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-08",
           "lockup_scope": "filing-level-unmapped",
@@ -11405,7 +11405,7 @@
         {
           "name": "Bret Johnsen",
           "shares": 9048565.0,
-          "cash_value": 1372486339.2,
+          "cash_value": 1372848281.8,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-08",
           "lockup_scope": "filing-level-unmapped",
@@ -11437,7 +11437,7 @@
         {
           "name": "Ira Ehrenpreis",
           "shares": 1373700.0,
-          "cash_value": 208362816.0,
+          "cash_value": 208417764.0,
           "stanford_university_bio": true,
           "lockup_end_date": "2026-12-08",
           "lockup_scope": "filing-level-unmapped",
@@ -11469,7 +11469,7 @@
         {
           "name": "Randy Glein",
           "shares": 277800.0,
-          "cash_value": 42136704.0,
+          "cash_value": 42147816.0,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-08",
           "lockup_scope": "filing-level-unmapped",
@@ -11533,7 +11533,7 @@
         {
           "name": "Luke Nosek",
           "shares": 32987360.0,
-          "cash_value": 5003522764.8,
+          "cash_value": 5004842259.2,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-08",
           "lockup_scope": "filing-level-unmapped",
@@ -11594,8 +11594,8 @@
       "offering_size_confidence": "High",
       "filing_price": "18-20",
       "offering_price": 18.0,
-      "current_price": 18.74,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 18.73,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "CHEVY CHASE, MD",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-12-07",
@@ -11792,8 +11792,8 @@
       "offering_size_confidence": "High",
       "filing_price": "17-19",
       "offering_price": 20.0,
-      "current_price": 39.77,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 39.86,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "Cambridge, MA",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2026-12-06",
@@ -11828,14 +11828,14 @@
       "signals": [
         "17 named beneficial owners disclosed",
         "Offering raised approximately $670M",
-        "Largest named holding currently valued at approximately $348M",
+        "Largest named holding currently valued at approximately $349M",
         "Lock-up terms captured for liquidity-event follow-up"
       ],
       "people": [
         {
           "name": "ARCH Venture Fund XII, L.P.",
           "shares": 6412780.0,
-          "cash_value": 255036260.60000002,
+          "cash_value": 255613410.79999998,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -11880,7 +11880,7 @@
         {
           "name": "Entities affiliated with Cormorant",
           "shares": 4365612.0,
-          "cash_value": 173620389.24,
+          "cash_value": 174013294.32,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -11925,7 +11925,7 @@
         {
           "name": "Entities affiliated with FMR LLC",
           "shares": 8757571.0,
-          "cash_value": 348288598.67,
+          "cash_value": 349076780.06,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -11970,7 +11970,7 @@
         {
           "name": "Entities affiliated with GV",
           "shares": 4833248.0,
-          "cash_value": 192218272.96,
+          "cash_value": 192653265.28,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -12015,7 +12015,7 @@
         {
           "name": "Milky Way Investments Group Limited",
           "shares": 4574328.0,
-          "cash_value": 181921024.56,
+          "cash_value": 182332714.07999998,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -12060,7 +12060,7 @@
         {
           "name": "Nextech VII Oncology SCSp",
           "shares": 4163176.0,
-          "cash_value": 165569509.52,
+          "cash_value": 165944195.35999998,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -12105,7 +12105,7 @@
         {
           "name": "Entities affiliated with RA Capital",
           "shares": 7744621.0,
-          "cash_value": 308003577.17,
+          "cash_value": 308700593.06,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -12150,7 +12150,7 @@
         {
           "name": "Entities affiliated with venBio",
           "shares": 5166697.0,
-          "cash_value": 205479539.69000003,
+          "cash_value": 205944542.42,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -12195,7 +12195,7 @@
         {
           "name": "Mathai Mammen, M.D., Ph.D., Chairman, Chief Executive Officer and President",
           "shares": 2786667.0,
-          "cash_value": 110825746.59,
+          "cash_value": 111076546.62,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -12240,7 +12240,7 @@
         {
           "name": "Fawzi Benzaghou, M.D., Chief Medical Officer",
           "shares": 20306.0,
-          "cash_value": 807569.6200000001,
+          "cash_value": 809397.16,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -12285,7 +12285,7 @@
         {
           "name": "Thomas Kotarakos, Chief Financial Officer",
           "shares": 173215.0,
-          "cash_value": 6888760.550000001,
+          "cash_value": 6904349.899999999,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -12330,7 +12330,7 @@
         {
           "name": "Rohin Mhatre, Ph.D., Chief Technical Operations Officer",
           "shares": 165159.0,
-          "cash_value": 6568373.430000001,
+          "cash_value": 6583237.74,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -12375,7 +12375,7 @@
         {
           "name": "Teresa Jurgensen, J.D., General Counsel",
           "shares": 111821.0,
-          "cash_value": 4447121.17,
+          "cash_value": 4457185.06,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -12420,7 +12420,7 @@
         {
           "name": "Alexis Borisy",
           "shares": 105414.0,
-          "cash_value": 4192314.7800000003,
+          "cash_value": 4201802.04,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -12465,7 +12465,7 @@
         {
           "name": "Edward Fitzgerald",
           "shares": 49885.0,
-          "cash_value": 1983926.4500000002,
+          "cash_value": 1988416.0999999999,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -12510,7 +12510,7 @@
         {
           "name": "Rick Klausner, M.D.",
           "shares": 39549.0,
-          "cash_value": 1572863.7300000002,
+          "cash_value": 1576423.14,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -12555,7 +12555,7 @@
         {
           "name": "Barbara Weber, M.D.",
           "shares": 35197.0,
-          "cash_value": 1399784.6900000002,
+          "cash_value": 1402952.42,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -12629,8 +12629,8 @@
       "offering_size_confidence": "High",
       "filing_price": "20-23",
       "offering_price": 21.5,
-      "current_price": 11.6,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 11.56,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "HOUSTON, TX",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-12-06",
@@ -12777,7 +12777,7 @@
         {
           "name": "John Carrington",
           "shares": 3293673.0,
-          "cash_value": 38206606.8,
+          "cash_value": 38074859.88,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -12912,7 +12912,7 @@
         {
           "name": "Paul Froutan",
           "shares": 3125525.0,
-          "cash_value": 36256090.0,
+          "cash_value": 36131069.0,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -12957,7 +12957,7 @@
         {
           "name": "Dan Brouillette",
           "shares": 207944.0,
-          "cash_value": 2412150.4,
+          "cash_value": 2403832.64,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -13047,7 +13047,7 @@
         {
           "name": "Mark Patterson",
           "shares": 207944.0,
-          "cash_value": 2412150.4,
+          "cash_value": 2403832.64,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-12-06",
           "lockup_scope": "holder-mapped",
@@ -13121,8 +13121,8 @@
       "offering_size_confidence": "High",
       "filing_price": "25-27",
       "offering_price": 26.0,
-      "current_price": 28.03,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 28.01,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "Philadelphia, PA",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2027-06-08",
@@ -13162,7 +13162,7 @@
         {
           "name": "Omega Capital Partners, LP",
           "shares": 3261216.0,
-          "cash_value": 91411884.48,
+          "cash_value": 91346660.16000001,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-06-08",
           "lockup_scope": "filing-level-unmapped",
@@ -13194,7 +13194,7 @@
         {
           "name": "Wayne Cooperman",
           "shares": 867280.0,
-          "cash_value": 24309858.400000002,
+          "cash_value": 24292512.8,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-06-08",
           "lockup_scope": "filing-level-unmapped",
@@ -13226,7 +13226,7 @@
         {
           "name": "Jeffrey Slotterback",
           "shares": 14369.0,
-          "cash_value": 402763.07,
+          "cash_value": 402475.69,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-06-08",
           "lockup_scope": "filing-level-unmapped",
@@ -13258,7 +13258,7 @@
         {
           "name": "Stephen Pilatzke",
           "shares": 5503.0,
-          "cash_value": 154249.09,
+          "cash_value": 154139.03,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-06-08",
           "lockup_scope": "filing-level-unmapped",
@@ -13290,7 +13290,7 @@
         {
           "name": "Michael Downs",
           "shares": 14369.0,
-          "cash_value": 402763.07,
+          "cash_value": 402475.69,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-06-08",
           "lockup_scope": "filing-level-unmapped",
@@ -13322,7 +13322,7 @@
         {
           "name": "Matthew Heinlein",
           "shares": 5584.0,
-          "cash_value": 156519.52000000002,
+          "cash_value": 156407.84,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-06-08",
           "lockup_scope": "filing-level-unmapped",
@@ -13354,7 +13354,7 @@
         {
           "name": "Jeffery Smith",
           "shares": 33212.0,
-          "cash_value": 930932.36,
+          "cash_value": 930268.12,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-06-08",
           "lockup_scope": "filing-level-unmapped",
@@ -13415,8 +13415,8 @@
       "offering_size_confidence": "High",
       "filing_price": "13.5-16.5",
       "offering_price": 13.5,
-      "current_price": 17.82,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 17.6,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "KELLOGG, ID",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": null,
@@ -13437,7 +13437,7 @@
         {
           "name": "Heather White",
           "shares": 75000.0,
-          "cash_value": 1336500.0,
+          "cash_value": 1320000.0,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": null,
@@ -13469,7 +13469,7 @@
         {
           "name": "André van Niekerk",
           "shares": 555833.0,
-          "cash_value": 9904944.06,
+          "cash_value": 9782660.8,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": null,
@@ -13501,7 +13501,7 @@
         {
           "name": "Thomas S. Kaplan",
           "shares": 96050348.0,
-          "cash_value": 1711617201.3600001,
+          "cash_value": 1690486124.8000002,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": null,
@@ -13533,7 +13533,7 @@
         {
           "name": "Ali Reza Erfan",
           "shares": 408660.0,
-          "cash_value": 7282321.2,
+          "cash_value": 7192416.000000001,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": null,
@@ -13565,7 +13565,7 @@
         {
           "name": "Douglas Groh",
           "shares": 187500.0,
-          "cash_value": 3341250.0,
+          "cash_value": 3300000.0000000005,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": null,
@@ -13597,7 +13597,7 @@
         {
           "name": "Daniel Muñiz Quintanilla",
           "shares": 1000000.0,
-          "cash_value": 17820000.0,
+          "cash_value": 17600000.0,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": null,
@@ -13629,7 +13629,7 @@
         {
           "name": "Electrum",
           "shares": 94330848.0,
-          "cash_value": 1680975711.3600001,
+          "cash_value": 1660222924.8000002,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": null,
@@ -13661,7 +13661,7 @@
         {
           "name": "Ospraie",
           "shares": 24758995.0,
-          "cash_value": 441205290.90000004,
+          "cash_value": 435758312.00000006,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": null,
@@ -13722,8 +13722,8 @@
       "offering_size_confidence": "High",
       "filing_price": "53-55",
       "offering_price": 60.0,
-      "current_price": 48.66,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 48.46,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "Broomfield, CO",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": null,
@@ -13738,13 +13738,13 @@
       "signals": [
         "3 named beneficial owners disclosed",
         "Offering raised approximately $1.7B",
-        "Largest named holding currently valued at approximately $6.1B"
+        "Largest named holding currently valued at approximately $6.0B"
       ],
       "people": [
         {
           "name": "The Honeywell Entities",
           "shares": 124628729.0,
-          "cash_value": 6064433953.139999,
+          "cash_value": 6039508207.34,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": null,
@@ -13776,7 +13776,7 @@
         {
           "name": "Entities affiliated with Cambridge Quantum",
           "shares": 82884823.0,
-          "cash_value": 4033175487.18,
+          "cash_value": 4016598522.58,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": null,
@@ -13808,7 +13808,7 @@
         {
           "name": "Dr. Rajeeb Hazra",
           "shares": 1042561.0,
-          "cash_value": 50731018.26,
+          "cash_value": 50522506.06,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": null,
@@ -13869,8 +13869,8 @@
       "offering_size_confidence": "High",
       "filing_price": "20-22",
       "offering_price": 23.0,
-      "current_price": 18.84,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 18.76,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "PALO ALTO, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-11-30",
@@ -13926,7 +13926,7 @@
         {
           "name": "Blackstone",
           "shares": 83831109.0,
-          "cash_value": 1579378093.56,
+          "cash_value": 1572671604.8400002,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-11-30",
           "lockup_scope": "filing-level-unmapped",
@@ -13958,7 +13958,7 @@
         {
           "name": "General Atlantic",
           "shares": 24011299.0,
-          "cash_value": 452372873.16,
+          "cash_value": 450451969.24,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-11-30",
           "lockup_scope": "filing-level-unmapped",
@@ -13990,7 +13990,7 @@
         {
           "name": "Mark Ellis",
           "shares": 9939671.0,
-          "cash_value": 187263401.64,
+          "cash_value": 186468227.96,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-11-30",
           "lockup_scope": "filing-level-unmapped",
@@ -14022,7 +14022,7 @@
         {
           "name": "Harry Robertson",
           "shares": 9663735.0,
-          "cash_value": 182064767.4,
+          "cash_value": 181291668.60000002,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-11-30",
           "lockup_scope": "filing-level-unmapped",
@@ -14054,7 +14054,7 @@
         {
           "name": "Jeremy Bondy",
           "shares": 1315000.0,
-          "cash_value": 24774600.0,
+          "cash_value": 24669400.000000004,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-11-30",
           "lockup_scope": "filing-level-unmapped",
@@ -14086,7 +14086,7 @@
         {
           "name": "Tarek Kutrieh",
           "shares": 437359.0,
-          "cash_value": 8239843.56,
+          "cash_value": 8204854.840000001,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-11-30",
           "lockup_scope": "filing-level-unmapped",
@@ -14118,7 +14118,7 @@
         {
           "name": "Andre Tutundjian",
           "shares": 469440.0,
-          "cash_value": 8844249.6,
+          "cash_value": 8806694.4,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-11-30",
           "lockup_scope": "filing-level-unmapped",
@@ -14150,7 +14150,7 @@
         {
           "name": "Simon R. Goldman",
           "shares": 68660.0,
-          "cash_value": 1293554.4,
+          "cash_value": 1288061.6,
           "stanford_university_bio": false,
           "lockup_end_date": "2026-11-30",
           "lockup_scope": "filing-level-unmapped",
@@ -14211,8 +14211,8 @@
       "offering_size_confidence": "High",
       "filing_price": "18-21",
       "offering_price": 20.0,
-      "current_price": 12.56,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 12.47,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "location": "Huntsville, AL",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": null,
@@ -14233,7 +14233,7 @@
         {
           "name": "AA&D Holdings, LP",
           "shares": 138243518.0,
-          "cash_value": 1736338586.0800002,
+          "cash_value": 1723896669.46,
           "stanford_university_bio": false,
           "lockup_end_date": null,
           "lockup_scope": null,
@@ -14353,7 +14353,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 80804002.94999999,
+          "cash_value": 80895384.35,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14382,7 +14382,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 45113939.82,
+          "cash_value": 45164959.26,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14411,7 +14411,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 74927949.47999999,
+          "cash_value": 75012685.63999999,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14440,7 +14440,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 117701951.58,
+          "cash_value": 117835060.93999998,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14469,7 +14469,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 79592969.52,
+          "cash_value": 79682981.36,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14498,7 +14498,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 97376934.77999999,
+          "cash_value": 97487058.53999999,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14527,7 +14527,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 45113939.82,
+          "cash_value": 45164959.26,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14556,7 +14556,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 45113939.82,
+          "cash_value": 45164959.26,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14585,7 +14585,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 34264263.059999995,
+          "cash_value": 34303012.58,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14614,7 +14614,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 5522777.909999999,
+          "cash_value": 5529023.63,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14643,7 +14643,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 5319824.85,
+          "cash_value": 5325841.05,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14672,7 +14672,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 6794859.96,
+          "cash_value": 6802544.279999999,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14701,7 +14701,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 1722129.93,
+          "cash_value": 1724077.4899999998,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14730,7 +14730,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 194216.66999999998,
+          "cash_value": 194436.30999999997,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14759,7 +14759,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 1359516.69,
+          "cash_value": 1361054.17,
           "valuation_as_of": "2026-09-03"
         }
       ],
@@ -14771,8 +14771,8 @@
         "accession_no": "0001193125-26-189477",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1540171/000119312526189477/0001193125-26-189477-index.htm"
       },
-      "current_price": 35.37,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 35.41,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "price_range": "16-18"
     },
     {
@@ -14838,7 +14838,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 1181114829.18,
+          "cash_value": 1175189503.95,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14867,7 +14867,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 248371854.9,
+          "cash_value": 247125842.25000003,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14896,7 +14896,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 245303863.74,
+          "cash_value": 244073242.35000002,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14925,7 +14925,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 9627626.58,
+          "cash_value": 9579327.450000001,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14954,7 +14954,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 70893121.26,
+          "cash_value": 70537470.15,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -14983,7 +14983,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 290974636.68,
+          "cash_value": 289514897.70000005,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -15012,7 +15012,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 72328805.64,
+          "cash_value": 71965952.10000001,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -15041,7 +15041,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 13966612.920000002,
+          "cash_value": 13896546.3,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -15070,7 +15070,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 9776618.280000001,
+          "cash_value": 9727571.700000001,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -15099,7 +15099,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 150031843.26000002,
+          "cash_value": 149279175.15,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -15128,7 +15128,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 2623671.18,
+          "cash_value": 2610508.95,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -15157,7 +15157,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 2623671.18,
+          "cash_value": 2610508.95,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -15186,7 +15186,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 2559266.58,
+          "cash_value": 2546427.45,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -15215,7 +15215,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 15214034.940000001,
+          "cash_value": 15137710.350000001,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -15244,7 +15244,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 1323774.6600000001,
+          "cash_value": 1317133.6500000001,
           "valuation_as_of": "2026-09-03"
         }
       ],
@@ -15256,8 +15256,8 @@
         "accession_no": "0001104659-26-045175",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2088896/000110465926045175/0001104659-26-045175-index.htm"
       },
-      "current_price": 17.94,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 17.85,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "price_range": "16-19"
     },
     {
@@ -15340,7 +15340,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 1099641176.19,
+          "cash_value": 1100099933.46,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -15398,7 +15398,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 2005234.3199999998,
+          "cash_value": 2006070.8800000001,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -15427,7 +15427,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 1847823.3299999998,
+          "cash_value": 1848594.22,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -15456,7 +15456,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 2570758.53,
+          "cash_value": 2571831.02,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -15485,7 +15485,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 550207.38,
+          "cash_value": 550436.92,
           "valuation_as_of": "2026-09-03"
         }
       ],
@@ -15497,8 +15497,8 @@
         "accession_no": "0001104659-26-044783",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1859836/000110465926044783/0001104659-26-044783-index.htm"
       },
-      "current_price": 23.97,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 23.98,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "price_range": "20-23"
     },
     {
@@ -15979,7 +15979,7 @@
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2101698/000121390026043190/0001213900-26-043190-index.htm"
       },
       "current_price": 16.23,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "price_range": "12-14"
     },
     {
@@ -16094,7 +16094,7 @@
               "covers_full_position": false
             }
           ],
-          "cash_value": 1398122947.44,
+          "cash_value": 1411387871.04,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -16136,7 +16136,7 @@
               "covers_full_position": false
             }
           ],
-          "cash_value": 93871875.0,
+          "cash_value": 94762500.0,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -16178,7 +16178,7 @@
               "covers_full_position": false
             }
           ],
-          "cash_value": 15159829.56,
+          "cash_value": 15303660.96,
           "valuation_as_of": "2026-09-03"
         }
       ],
@@ -16190,8 +16190,8 @@
         "accession_no": "0001193125-26-155986",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2096300/000119312526155986/0001193125-26-155986-index.htm"
       },
-      "current_price": 15.81,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 15.96,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "price_range": "18-21"
     },
     {
@@ -16274,7 +16274,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 8304124390.400001,
+          "cash_value": 8313855786.17,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -16303,7 +16303,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 314866227.2,
+          "cash_value": 315235211.06,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -16332,7 +16332,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 1147931417.6000001,
+          "cash_value": 1149276649.73,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -16361,7 +16361,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 28767001.6,
+          "cash_value": 28800712.93,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -16390,7 +16390,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 28420531.200000003,
+          "cash_value": 28453836.509999998,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -16419,7 +16419,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 8618990617.6,
+          "cash_value": 8629090997.23,
           "valuation_as_of": "2026-09-03"
         }
       ],
@@ -16431,8 +16431,8 @@
         "accession_no": "0001193125-26-142875",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2098430/000119312526142875/0001193125-26-142875-index.htm"
       },
-      "current_price": 25.6,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 25.63,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "price_range": "25-27"
     },
     {
@@ -16885,8 +16885,8 @@
         "accession_no": "0001193125-26-151904",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2096997/000119312526151904/0001193125-26-151904-index.htm"
       },
-      "current_price": 15.73,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 15.76,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "price_range": "14-16"
     },
     {
@@ -16999,7 +16999,7 @@
               "covers_full_position": false
             }
           ],
-          "cash_value": 323769356.32,
+          "cash_value": 323663410.85,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -17041,7 +17041,7 @@
               "covers_full_position": false
             }
           ],
-          "cash_value": 187281398.07999998,
+          "cash_value": 187220114.9,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -17083,7 +17083,7 @@
               "covers_full_position": false
             }
           ],
-          "cash_value": 146555461.28,
+          "cash_value": 146507504.65,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -17125,7 +17125,7 @@
               "covers_full_position": false
             }
           ],
-          "cash_value": 120129098.56,
+          "cash_value": 120089789.3,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -17167,7 +17167,7 @@
               "covers_full_position": false
             }
           ],
-          "cash_value": 90997442.39999999,
+          "cash_value": 90967665.75,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -17209,7 +17209,7 @@
               "covers_full_position": false
             }
           ],
-          "cash_value": 189711407.04,
+          "cash_value": 189649328.70000002,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -17251,7 +17251,7 @@
               "covers_full_position": false
             }
           ],
-          "cash_value": 62913780.32,
+          "cash_value": 62893193.35,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -17293,7 +17293,7 @@
               "covers_full_position": false
             }
           ],
-          "cash_value": 187281398.07999998,
+          "cash_value": 187220114.9,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -17335,7 +17335,7 @@
               "covers_full_position": false
             }
           ],
-          "cash_value": 1853616.7999999998,
+          "cash_value": 1853010.25,
           "valuation_as_of": "2026-09-03"
         }
       ],
@@ -17347,8 +17347,8 @@
         "accession_no": "0001193125-26-158122",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2104204/000119312526158122/0001193125-26-158122-index.htm"
       },
-      "current_price": 30.56,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 30.55,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "price_range": "15-17"
     },
     {
@@ -17532,8 +17532,8 @@
         "accession_no": "0001193125-26-151122",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2093536/000119312526151122/0001193125-26-151122-index.htm"
       },
-      "current_price": 52.99,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 53.2,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "price_range": "25-28"
     },
     {
@@ -17634,7 +17634,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 325123410.08000004,
+          "cash_value": 324797635.12,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -17663,7 +17663,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 325123410.08000004,
+          "cash_value": 324797635.12,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -17692,7 +17692,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 1798934.9200000002,
+          "cash_value": 1797132.3800000001,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -17721,7 +17721,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 1671789.72,
+          "cash_value": 1670114.58,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -17750,7 +17750,7 @@
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
           "lockup_schedule": [],
-          "cash_value": 1671789.72,
+          "cash_value": 1670114.58,
           "valuation_as_of": "2026-09-03"
         },
         {
@@ -17951,8 +17951,8 @@
         "accession_no": "0001193125-26-119714",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2021880/000119312526119714/0001193125-26-119714-index.htm"
       },
-      "current_price": 19.96,
-      "price_updated": "2026-09-03T18:05:03.794663+00:00",
+      "current_price": 19.94,
+      "price_updated": "2026-09-03T18:58:35.607095+00:00",
       "price_range": "19-22"
     }
   ]
