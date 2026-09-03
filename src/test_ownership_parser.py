@@ -85,7 +85,7 @@ class OwnershipParserTests(unittest.TestCase):
         <tr><td>Ira Ehrenpreis (4)</td><td>809,050</td><td></td><td>*</td><td>564,650</td><td></td><td>*</td><td>809,050</td><td></td><td>*</td><td>564,650</td><td></td><td>*</td></tr>
         </table>"""
         rows=parse_ownership_table(BeautifulSoup(html,'lxml').find('table'))
-        self.assertEqual([row['name'] for row in rows], ['Gwynne Shotwell (2)', 'Ira Ehrenpreis (4)'])
+        self.assertEqual([row['name'] for row in rows], ['Gwynne Shotwell', 'Ira Ehrenpreis'])
         self.assertEqual(rows[0]['shares_before'],12873160)
         self.assertEqual(rows[0]['shares_after'],12873160)
         self.assertEqual(rows[1]['shares_before'],1373700)
@@ -128,12 +128,23 @@ class OwnershipParserTests(unittest.TestCase):
         self.assertEqual(rows[0]['name'], 'IBM CORPORATION')
         self.assertEqual(rows[0]['shares_after'], 5000)
 
+    def test_holder_display_name_strips_numeric_sec_footnote_artifacts(self):
+        html="""<table>
+        <tr><th>Name of beneficial owner</th><th>Shares beneficially owned</th></tr>
+        <tr><td>AA&amp;D Holdings, LP (1) .</td><td>138,243,518</td></tr>
+        </table>"""
+        rows=parse_ownership_table(BeautifulSoup(html,'lxml').find('table'))
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]['name'], 'AA&D Holdings, LP')
+        self.assertEqual(rows[0]['shares_after'], 138243518)
+
 
 class HolderIdentityQaTests(unittest.TestCase):
     def test_canonical_holder_name_strips_sec_dot_leaders(self):
         import ownership_parser
         self.assertEqual(ownership_parser.canonical_holder_name("Gwynne Shotwell..................."), "gwynne shotwell")
         self.assertEqual(ownership_parser.canonical_holder_name("Gwynne Shotwell (12)"), "gwynne shotwell")
+        self.assertEqual(ownership_parser.canonical_holder_name("AA&D Holdings, LP (1) ."), "aa&d holdings, lp")
 
 
 if __name__=='__main__':
