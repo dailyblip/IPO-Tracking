@@ -91,6 +91,7 @@ jobs:
 
           sys.path.insert(0, str(Path('src').resolve()))
           from company_name_normalizer import normalize_company_name
+          from person_economic_attribution_guard import suppress_unsupported_person_economics
           from public_feed_policy import (
               _has_valid_filing_date,
               _normalize_market_value_consistency,
@@ -173,6 +174,7 @@ jobs:
                           failures.append(f'{label}: current-price timestamp is invalid')
 
               normalized = _normalize_market_value_consistency(_normalize_people_types(filing))
+              normalized = suppress_unsupported_person_economics(normalized)
               if normalized != filing:
                   normalization_drift.append(label)
 
