@@ -69,6 +69,18 @@ from ownership_parser import canonical_holder_name
 # Preserve the SEC-reported table counts, but suppress full fund-position value and
 # liquidity from the person records.
 # https://www.sec.gov/Archives/edgar/data/1853921/000119312526316503/d21355d424b4.htm
+#
+# Yesway's 2026-04-21 Form 4 and issuer-specific Form 3 for Thomas N. Trkla identify
+# large Brookwood-held positions as indirect. The Form 3 states that Mr. Trkla has a
+# controlling interest in Brookwood Financial Partners, LLC and therefore may be
+# deemed to share beneficial ownership of securities held of record by Brookwood;
+# other large positions are likewise reported through Brookwood aggregator entities.
+# The Monitor's 46,225,020-share Trkla row is an aggregate beneficial-ownership fact,
+# but the filings do not establish that the full Brookwood-controlled position is his
+# personal economic interest. Preserve the reported share count while suppressing the
+# full aggregate position's derived personal value/liquidity.
+# https://www.sec.gov/Archives/edgar/data/1859836/000110465926047051/xslF345X03/tm2612184-10_3seq1.xml
+# https://www.sec.gov/Archives/edgar/data/1859836/000110465926050375/xslF345X03/tm2612184-12_4seq1.xml
 _UNSUPPORTED_PERSON_ECONOMICS = {
     (
         "0001181412",
@@ -110,6 +122,11 @@ _UNSUPPORTED_PERSON_ECONOMICS = {
         "0001193125-26-316503",
         canonical_holder_name("Carl L. Gordon, Ph.D., CFA"),
     ): 348_825,
+    (
+        "0001859836",
+        "0001104659-26-047210",
+        canonical_holder_name("Thomas N. Trkla"),
+    ): 46_225_020,
 }
 
 _DERIVED_ECONOMIC_FIELDS = (
