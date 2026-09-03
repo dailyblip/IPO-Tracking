@@ -102,6 +102,66 @@ class PersonEconomicAttributionGuardTests(unittest.TestCase):
         ):
             self.assertIsNone(person[field], field)
 
+    def test_blossomhill_household_aggregate_suppresses_duplicate_person_economics(self):
+        filing = {
+            "cik": "0001839970",
+            "accession_no": "0001193125-26-340215",
+            "company": "BlossomHill Therapeutics, Inc.",
+            "people": [
+                {
+                    "name": "J. Jean Cui, Ph.D.",
+                    "shares": 3_973_138,
+                    "shares_before_ipo": 3_973_138,
+                    "shares_after_ipo": 3_973_138,
+                    "cash_value": 78_310_549.98,
+                    "ipo_value": 63_570_208.0,
+                    "locked_shares": 3_973_138,
+                    "locked_value": 78_310_549.98,
+                    "valuation_as_of": "2026-09-03",
+                    "is_beneficial_owner": True,
+                },
+                {
+                    "name": "Y. Peter Li, Ph.D., MBA",
+                    "shares": 3_973_138,
+                    "shares_before_ipo": 3_973_138,
+                    "shares_after_ipo": 3_973_138,
+                    "cash_value": 78_310_549.98,
+                    "ipo_value": 63_570_208.0,
+                    "locked_shares": 3_973_138,
+                    "locked_value": 78_310_549.98,
+                    "valuation_as_of": "2026-09-03",
+                    "is_beneficial_owner": True,
+                },
+                {
+                    "name": "J. Jean Cui, Ph.D. and Y. Peter Li, Ph.D., MBA and related affiliates",
+                    "shares": 3_973_138,
+                    "cash_value": 78_310_549.98,
+                    "ipo_value": 63_570_208.0,
+                },
+            ],
+        }
+
+        normalized = suppress_unsupported_person_economics(filing)
+
+        for person in normalized["people"][:2]:
+            self.assertTrue(person["is_beneficial_owner"])
+            self.assertEqual(person["shares"], 3_973_138)
+            self.assertEqual(person["shares_before_ipo"], 3_973_138)
+            self.assertEqual(person["shares_after_ipo"], 3_973_138)
+            for field in (
+                "cash_value",
+                "ipo_value",
+                "locked_shares",
+                "locked_value",
+                "valuation_as_of",
+            ):
+                self.assertIsNone(person[field], f"{person['name']} {field}")
+
+        # The combined household/affiliate record remains evidence-supported and is
+        # the correct place to retain the aggregate economic value.
+        self.assertEqual(normalized["people"][2]["cash_value"], 78_310_549.98)
+        self.assertEqual(normalized["people"][2]["ipo_value"], 63_570_208.0)
+
     def test_latigo_vc_disclaimers_suppress_personal_fund_economics(self):
         filing = {
             "cik": "0002056611",
