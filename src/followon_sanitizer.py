@@ -3,13 +3,14 @@
 Research Monitor tracks company IPOs, not later registered offerings by companies
 that are already SEC reporting issuers. A prior Exchange Act reporting form
 before the candidate 424B4 is authoritative evidence that the company had already
-entered the SEC reporting system before this offering. This includes domestic
-current/periodic/transition reports and foreign-private-issuer reports, including
-amendments.
+entered the SEC reporting system before this offering. A prior Form S-3 or F-3 is
+also affirmative reporting-history evidence because those short forms require
+Exchange Act reporting eligibility. This includes amendments.
 
-This pass is deliberately conservative and date-aware: reports filed after or on
-the same day as the candidate do not disqualify a historical IPO. SEC lookup
-failure blocks the sanitizer instead of silently publishing an unverified candidate.
+This pass is deliberately conservative and date-aware: reporting evidence filed
+after or on the same day as the candidate does not disqualify a historical IPO.
+SEC lookup failure blocks the sanitizer instead of silently publishing an
+unverified candidate.
 """
 
 from __future__ import annotations
@@ -30,6 +31,7 @@ REPORTING_FORMS = {
     "10-Q", "10-Q/A", "10-QT", "10-QT/A",
     "10-K", "10-K/A", "10-KT", "10-KT/A",
     "6-K", "6-K/A", "20-F", "20-F/A", "40-F", "40-F/A",
+    "S-3", "S-3/A", "F-3", "F-3/A",
 }
 
 
@@ -45,7 +47,7 @@ def _iso_date(value):
 
 
 def has_prior_periodic_report(submissions: dict, candidate_date: str) -> bool:
-    """Return True when an authoritative SEC reporting form predates the offering."""
+    """Return True when authoritative SEC reporting evidence predates the offering."""
     cutoff = _iso_date(candidate_date)
     if cutoff is None:
         raise ValueError(f"Invalid candidate date: {candidate_date!r}")
