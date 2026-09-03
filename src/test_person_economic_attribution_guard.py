@@ -65,7 +65,7 @@ class PersonEconomicAttributionGuardTests(unittest.TestCase):
         )
         self.assertIn("Offering raised approximately $75.0B", normalized["signals"])
 
-    def test_blصssomhill_orbimed_disclaimer_suppresses_personal_fund_economics(self):
+    def test_blossomhill_orbimed_disclaimer_suppresses_personal_fund_economics(self):
         filing = {
             "cik": "0001839970",
             "accession_no": "0001193125-26-340215",
