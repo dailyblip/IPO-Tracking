@@ -130,9 +130,49 @@ def _expand_row(row):
 
 
 def _matrix(table):
-    rows = [_expand_row(row) for row in table.find_all("tr")]
-    width = max((len(r) for r in rows), default=0)
-    return [r + [""] * (width - len(r)) for r in rows]
+    """Expand SEC table colspans and rowspans into a rectangular text grid."""
+    rows = []
+    active_rowspans = {}
+    for table_row in table.find_all("tr"):
+        values = {}
+        next_rowspans = {}
+
+        for column, (text, remaining) in active_rowspans.items():
+            values[column] = text
+            if remaining > 1:
+                next_rowspans[column] = (text, remaining - 1)
+
+        column = 0
+        for cell in table_row.find_all(["td", "th"], recursive=False):
+            while column in values:
+                column += 1
+
+            text = _clean(cell.get_text(" ", strip=True))
+            try:
+                colspan = max(1, int(cell.get("colspan", 1)))
+            except (TypeError, ValueError):
+                colspan = 1
+            try:
+                rowspan = max(1, int(cell.get("rowspan", 1)))
+            except (TypeError, ValueError):
+                rowspan = 1
+
+            placed = 0
+            while placed < colspan:
+                while column in values:
+                    column += 1
+                values[column] = text
+                if rowspan > 1:
+                    next_rowspans[column] = (text, rowspan - 1)
+                column += 1
+                placed += 1
+
+        active_rowspans = next_rowspans
+        width = max(values, default=-1) + 1
+        rows.append([values.get(index, "") for index in range(width)])
+
+    width = max((len(row) for row in rows), default=0)
+    return [row + [""] * (width - len(row)) for row in rows]
 
 
 def _looks_like_ownership(table):
