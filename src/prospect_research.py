@@ -43,11 +43,13 @@ GENERIC_HOLDER_LABELS = {
 KNOWN_INSTITUTIONAL_HOLDER_NAMES = {
     "alpha wave",
     "blackstone",
+    "brookfield",
     "electrum",
     "general atlantic",
     "morningside",
     "ospraie",
     "shionogi",
+    "uber",
 }
 
 
