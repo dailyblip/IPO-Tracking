@@ -36,6 +36,16 @@ from ownership_parser import canonical_holder_name
 # ownership. The SEC table may retain the reported beneficial-ownership count, but
 # the Monitor must not present the fund position's value as Dr. Gordon's economics.
 # https://www.sec.gov/Archives/edgar/data/1839970/000119312526340215/d98958d424b4.htm
+#
+# Latigo Biotherapeutics' 2026-08-07 424B4 reports the Westlake and Foresite fund
+# positions under directors Beth Seidenberg and James B. Tananbaum. Their issuer-
+# specific Forms 3 confirm that the securities are held of record by the underlying
+# venture funds and that each director disclaims beneficial ownership except to the
+# extent of an unquantified pecuniary interest. Preserve the SEC-reported beneficial-
+# ownership counts, but do not present the full venture-fund positions as personal
+# paper value or liquidity.
+# https://www.sec.gov/Archives/edgar/data/2056611/000110465926092240/xslF345X03/tm2622411-1_3seq1.xml
+# https://www.sec.gov/Archives/edgar/data/2056611/000158175426000003/xslF345X03/form3-08072026_120818.xml
 _UNSUPPORTED_PERSON_ECONOMICS = {
     (
         "0001181412",
@@ -47,6 +57,16 @@ _UNSUPPORTED_PERSON_ECONOMICS = {
         "0001193125-26-340215",
         canonical_holder_name("Carl L. Gordon, Ph.D., CFA"),
     ): 2_089_279,
+    (
+        "0002056611",
+        "0001193125-26-340329",
+        canonical_holder_name("Beth Seidenberg, M.D."),
+    ): 13_199_669,
+    (
+        "0002056611",
+        "0001193125-26-340329",
+        canonical_holder_name("James B. Tananbaum, M.D."),
+    ): 9_041_328,
 }
 
 _DERIVED_ECONOMIC_FIELDS = (
