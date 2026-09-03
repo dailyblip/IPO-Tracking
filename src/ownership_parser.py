@@ -78,11 +78,25 @@ def _clean(text):
     return value.strip()
 
 
+def _clean_holder_label(value):
+    """Remove SEC footnote/presentation artifacts without rewriting the identity."""
+    value = _clean(value)
+    # Numeric parentheticals at the end of ownership-table labels are SEC footnote
+    # references, not part of the person/entity name. Some filings leave a lone
+    # presentation dot after the marker (for example ``AA&D Holdings, LP (1) .``).
+    value = re.sub(
+        r"(?:\s*\(\d+[a-z]?\))+(?:\s*\.)?\s*$",
+        "",
+        value,
+        flags=re.I,
+    )
+    value = re.sub(r"[†‡*]+$", "", value).strip()
+    return value
+
+
 def canonical_holder_name(value):
     """Canonical identity key for holder deduplication, without guessing identity."""
-    value = _clean(value)
-    value = re.sub(r"(?:\s*\(\d+[a-z]?\))+$", "", value, flags=re.I)
-    value = re.sub(r"[†‡*]+$", "", value).strip()
+    value = _clean_holder_label(value)
     value = re.sub(r"\s*\.{2,}\s*", " ", value)
     return " ".join(value.lower().split())
 
@@ -323,7 +337,7 @@ def _name_from_row(row):
         ):
             if looks_like_document_heading(text):
                 return None
-            return text
+            return _clean_holder_label(text)
         if _numeric(text) is not None or _percent(text) is not None:
             break
     return None
