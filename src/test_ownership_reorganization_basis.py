@@ -35,9 +35,11 @@ class OwnershipReorganizationBasisTests(unittest.TestCase):
         self.assertIsNone(row["shares_before"])
         self.assertEqual(row["percent_before"], 50.0)
         self.assertEqual(row["shares_after"], 16288748)
-        self.assertEqual(row["percent_after"], 37.0)
+        # The 37% disclosures are Class B ownership / combined voting-power
+        # percentages. Neither is a class-agnostic total-equity ownership percent.
+        self.assertIsNone(row["percent_after"])
 
-    def test_combined_voting_power_number_is_not_published_as_shares(self):
+    def test_combined_voting_power_is_not_published_as_ownership(self):
         html = """
         <table>
           <tr>
@@ -48,11 +50,12 @@ class OwnershipReorganizationBasisTests(unittest.TestCase):
           <tr><td>Example Holdings LLC</td><td>25,000,000</td><td>37.0%</td></tr>
         </table>
         """
-        rows = parse_ownership_table(BeautifulSoup(html, "lxml").find("table"))
-        self.assertEqual(len(rows), 1)
-        row = rows[0]
-        self.assertIsNone(row["shares_after"])
-        self.assertEqual(row["percent_after"], 37.0)
+        # A voting-power-only row has no supported generic ownership metric, so
+        # the rich ownership parser must not publish either value as shares or %.
+        self.assertEqual(
+            parse_ownership_table(BeautifulSoup(html, "lxml").find("table")),
+            [],
+        )
 
 
 if __name__ == "__main__":
