@@ -46,6 +46,17 @@ from ownership_parser import canonical_holder_name
 # paper value or liquidity.
 # https://www.sec.gov/Archives/edgar/data/2056611/000110465926092240/xslF345X03/tm2622411-1_3seq1.xml
 # https://www.sec.gov/Archives/edgar/data/2056611/000158175426000003/xslF345X03/form3-08072026_120818.xml
+#
+# Scribe Therapeutics' 2026-07-23 424B4 reports 697,650 shares under director
+# Behzad Aghazadeh and 348,825 shares under director Carl L. Gordon. The accompanying
+# footnotes state that Dr. Aghazadeh's shares are held by Avoro funds and that he
+# disclaims beneficial ownership except to the extent of a pecuniary interest, if
+# any; Dr. Gordon's shares are held by OrbiMed Private Investments VIII, L.P., and
+# every member of the OrbiMed Advisors management committee, including Dr. Gordon,
+# disclaims beneficial ownership. Neither footnote quantifies personal economics.
+# Preserve the SEC-reported table counts, but suppress full fund-position value and
+# liquidity from the person records.
+# https://www.sec.gov/Archives/edgar/data/1853921/000119312526316503/d21355d424b4.htm
 _UNSUPPORTED_PERSON_ECONOMICS = {
     (
         "0001181412",
@@ -67,6 +78,16 @@ _UNSUPPORTED_PERSON_ECONOMICS = {
         "0001193125-26-340329",
         canonical_holder_name("James B. Tananbaum, M.D."),
     ): 9_041_328,
+    (
+        "0001853921",
+        "0001193125-26-316503",
+        canonical_holder_name("Behzad Aghazadeh, Ph.D."),
+    ): 697_650,
+    (
+        "0001853921",
+        "0001193125-26-316503",
+        canonical_holder_name("Carl L. Gordon, Ph.D., CFA"),
+    ): 348_825,
 }
 
 _DERIVED_ECONOMIC_FIELDS = (
