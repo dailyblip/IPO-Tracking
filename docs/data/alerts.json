@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-03T08:24:44.110735+00:00",
-  "count": 65,
+  "generated_at": "2026-09-03T08:25:06.270485+00:00",
+  "count": 63,
   "alerts": [
     {
       "type": "new_prepricing",
@@ -389,36 +389,6 @@
       "old_value": "Medium",
       "new_value": "High",
       "key": "priority_escalation|s1:0002104277|0002104277|2026-08-24|High"
-    },
-    {
-      "type": "priority_escalation",
-      "company": "Sensei Harbor Corp.",
-      "cik": "0002112634",
-      "filing_id": "s1:0002112634",
-      "form": "S-1/A",
-      "filed": "2026-08-18",
-      "stage": "pre-pricing",
-      "priority": "High",
-      "summary": "Research priority increased from Medium to High.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2112634/000168316826006561/0001683168-26-006561-index.htm",
-      "detected_at": "2026-08-30T00:12:09.562961+00:00",
-      "old_value": "Medium",
-      "new_value": "High",
-      "key": "priority_escalation|s1:0002112634|0002112634|2026-08-18|High"
-    },
-    {
-      "type": "new_prepricing",
-      "company": "Sensei Harbor Corp.",
-      "cik": "0002112634",
-      "filing_id": "s1:0002112634",
-      "form": "S-1/A",
-      "filed": "2026-08-18",
-      "stage": "pre-pricing",
-      "priority": "Medium",
-      "summary": "New pre-pricing S-1/A candidate entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2112634/000168316826006561/0001683168-26-006561-index.htm",
-      "detected_at": "2026-08-29T08:22:07.021138+00:00",
-      "key": "new_prepricing|s1:0002112634|0002112634|2026-08-18|"
     },
     {
       "type": "new_prepricing",
