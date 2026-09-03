@@ -49,6 +49,15 @@ from ownership_parser import canonical_holder_name
 # duplicated person-level economics.
 # https://www.sec.gov/Archives/edgar/data/1839970/000119312526340215/d98958d424b4.htm
 #
+# BlossomHill's issuer-specific 2026-08-06 Form 3 for Bihua Chen reports the same
+# Cormorant fund position through Cormorant Asset Management and its managed funds.
+# It identifies Ms. Chen as manager of Cormorant and the funds' general partners,
+# and every reporting person disclaims beneficial ownership except to the extent of
+# its or her pecuniary interest. That personal interest is not quantified. Preserve
+# the SEC-reported aggregate beneficial-ownership count, but do not present the full
+# Cormorant position's value or liquidity as Ms. Chen's personal economics.
+# https://www.sec.gov/Archives/edgar/data/1839970/000123191926000839/xslF345X06/form3-08072026_120822.xml
+#
 # Latigo Biotherapeutics' 2026-08-07 424B4 reports the Westlake and Foresite fund
 # positions under directors Beth Seidenberg and James B. Tananbaum. Their issuer-
 # specific Forms 3 confirm that the securities are held of record by the underlying
@@ -102,6 +111,11 @@ _UNSUPPORTED_PERSON_ECONOMICS = {
         "0001193125-26-340215",
         canonical_holder_name("Y. Peter Li, Ph.D., MBA"),
     ): 3_973_138,
+    (
+        "0001839970",
+        "0001193125-26-340215",
+        canonical_holder_name("Bihua Chen, MBA"),
+    ): 3_301_534,
     (
         "0002056611",
         "0001193125-26-340329",

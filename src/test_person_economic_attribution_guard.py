@@ -162,6 +162,54 @@ class PersonEconomicAttributionGuardTests(unittest.TestCase):
         self.assertEqual(normalized["people"][2]["cash_value"], 78_310_549.98)
         self.assertEqual(normalized["people"][2]["ipo_value"], 63_570_208.0)
 
+    def test_blossomhill_cormorant_disclaimer_suppresses_bihua_chen_personal_economics(self):
+        filing = {
+            "cik": "0001839970",
+            "accession_no": "0001193125-26-340215",
+            "company": "BlossomHill Therapeutics, Inc.",
+            "people": [
+                {
+                    "name": "Bihua Chen, MBA",
+                    "shares": 3_301_534,
+                    "shares_before_ipo": 3_301_534,
+                    "shares_after_ipo": 3_301_534,
+                    "cash_value": 65_172_281.16,
+                    "ipo_value": 52_824_544.0,
+                    "locked_shares": 3_301_534,
+                    "locked_value": 65_172_281.16,
+                    "valuation_as_of": "2026-09-03",
+                    "is_beneficial_owner": True,
+                },
+                {
+                    "name": "Entities affiliated with Cormorant Asset Management LP",
+                    "shares": 3_301_534,
+                    "cash_value": 65_172_281.16,
+                    "ipo_value": 52_824_544.0,
+                },
+            ],
+        }
+
+        normalized = suppress_unsupported_person_economics(filing)
+        person = normalized["people"][0]
+
+        self.assertTrue(person["is_beneficial_owner"])
+        self.assertEqual(person["shares"], 3_301_534)
+        self.assertEqual(person["shares_before_ipo"], 3_301_534)
+        self.assertEqual(person["shares_after_ipo"], 3_301_534)
+        for field in (
+            "cash_value",
+            "ipo_value",
+            "locked_shares",
+            "locked_value",
+            "valuation_as_of",
+        ):
+            self.assertIsNone(person[field], field)
+
+        # The explicit Cormorant aggregate remains the evidence-supported place for
+        # the fund position's economics.
+        self.assertEqual(normalized["people"][1]["cash_value"], 65_172_281.16)
+        self.assertEqual(normalized["people"][1]["ipo_value"], 52_824_544.0)
+
     def test_latigo_vc_disclaimers_suppress_personal_fund_economics(self):
         filing = {
             "cik": "0002056611",
