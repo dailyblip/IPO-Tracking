@@ -53,12 +53,12 @@ class PublishedFeedIntegrityTests(unittest.TestCase):
                     f"Confirmed Stanford owner lacks public source evidence: {label}",
                 )
 
-    def test_stanford_highlight_requires_confirmed_positive_beneficial_holding(self):
+    def test_stanford_highlight_requires_confirmed_beneficial_owner_provenance(self):
         """Affiliation research may cover management; red text must remain owner-only."""
         self.assertIn(
-            "function isStanfordBeneficialOwner(person){const shares=Number(person.shares);return person.stanford_university_bio===true&&Number.isFinite(shares)&&shares>0}",
+            "function isStanfordBeneficialOwner(person){return person.stanford_university_bio===true&&person.is_beneficial_owner===true}",
             self.dashboard,
-            "Dashboard Stanford highlighting must require confirmed affiliation and a positive disclosed holding.",
+            "Dashboard Stanford highlighting must require confirmed affiliation and beneficial-owner provenance.",
         )
         self.assertIn(
             "hasStanfordBeneficialOwner(filing)?\"company stanford-company\":\"company\"",
