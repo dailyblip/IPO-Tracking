@@ -191,10 +191,10 @@ def _kind(header):
     is_pct = "%" in h or "percent" in h or "percentage" in h
     if re.search(r"shares?\s+(?:being\s+)?(?:offered|sold)|offered\s+shares|secondary", h):
         return "shares_sold"
-    # A numeric "combined voting power" column is a vote count, not a share
-    # count. Percentage voting-power columns can still support a disclosed
-    # ownership percentage, but a raw vote count must never become shares.
-    if "voting power" in h and not is_pct:
+    # Voting power is a different metric from beneficial ownership percentage.
+    # Never flatten either a raw vote count or a voting-power percentage into the
+    # generic ownership fields exposed by the Research Monitor.
+    if "voting power" in h:
         return None
     if re.search(r"before|prior to|pre-offering|pre offering", h):
         return "percent_before" if is_pct else "shares_before"
@@ -346,16 +346,24 @@ def parse_ownership_table(table):
     # The public ownership schema currently has no share-class dimension. When a
     # table explicitly reports multiple common-stock classes, do not flatten a
     # class-specific count into generic before/after/share fields by position.
-    # Explicitly complete multi-class temporal groups are aggregated below. An
+    # Class-specific percentages are never safe to flatten, even when a continued
+    # SEC table happens to show only one of the issuer's classes. Explicitly
+    # complete multi-class temporal share groups are aggregated below. An
     # unqualified predecessor count is also suppressed when the opposite temporal
     # group is explicitly multi-class, because those security bases are not safely
     # comparable in the generic public schema.
     kinds = [
         None if (
-            multi_class
-            and (
+            (
                 _share_class(header)
-                or base_kinds[i] in unsafe_unqualified_temporal_kinds
+                and base_kinds[i] in {"percent", "percent_before", "percent_after"}
+            )
+            or (
+                multi_class
+                and (
+                    _share_class(header)
+                    or base_kinds[i] in unsafe_unqualified_temporal_kinds
+                )
             )
         ) else base_kinds[i]
         for i, header in enumerate(headers)
