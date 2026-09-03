@@ -1,32 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-03T06:20:01.422915+00:00",
+  "generated_at": "2026-09-03T08:22:19.040982+00:00",
   "source": "SEC EDGAR",
   "filings": [
-    {
-      "id": "0001683168-26-006875",
-      "company": "Sensei Harbor Corp.",
-      "ticker": "",
-      "cik": "0002112634",
-      "accession_no": "0001683168-26-006875",
-      "form": "S-1/A",
-      "filed": "2026-09-02",
-      "stage": "Pre-pricing",
-      "priority": "High",
-      "price_range": null,
-      "filing_price": "$0.02",
-      "ipo_size": 120000,
-      "offering_size_source": "primary offering; cover title adjacent to IPO statement",
-      "offering_size_confidence": "High",
-      "primary_offering_shares": 6000000,
-      "secondary_offering_shares": null,
-      "signals": [
-        "Registration statement amended — IPO remains pre-pricing",
-        "Fixed offering price disclosed at $0.02 per share",
-        "IPO size disclosed or derived at approximately $120,000"
-      ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2112634/000168316826006875/0001683168-26-006875-index.htm"
-    },
     {
       "id": "0001628280-26-060083",
       "company": "Accelevation Holdings Corp.",
