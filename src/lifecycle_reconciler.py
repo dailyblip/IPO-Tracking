@@ -244,6 +244,24 @@ def _promote_prepricing_record(record, filing_meta, soup):
     if promoted is None:
         return None
 
+    # A pre-pricing quote is never evidence of the post-IPO market price, even when
+    # the final prospectus confirms the same ticker. A reused/already-trading symbol
+    # can therefore not survive the S-1 -> 424B4 handoff as Current Price. The normal
+    # priced-IPO quote refresh may repopulate it later from a verified final state.
+    promoted.pop("current_price", None)
+    promoted.pop("price_updated", None)
+    promoted["signals"] = [
+        signal
+        for signal in promoted.get("signals") or []
+        if not (
+            isinstance(signal, str)
+            and (
+                "currently valued at approximately" in signal.casefold()
+                or "current market value" in signal.casefold()
+            )
+        )
+    ]
+
     # A pre-pricing ownership snapshot is not evidence of final post-IPO ownership or
     # liquidity. The fallback handoff deliberately removes those fields rather than
     # carrying preliminary facts into a final record.
