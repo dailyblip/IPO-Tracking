@@ -222,6 +222,7 @@ def prospect_person_metadata(row: dict, name: str) -> dict:
     )
     return {
         "holder_type": holder_type(name),
+        "is_beneficial_owner": confirmed_boolean(first_present(row, "Beneficial Owner")),
         "role": first_present(row, "Role", "Title", "Position", "Relationship"),
         "ownership_percent": ownership_percent,
         "ownership_percent_before": ownership_percent_before,

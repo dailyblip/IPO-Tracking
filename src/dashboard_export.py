@@ -25,7 +25,7 @@ PUBLIC_FILING_FIELDS = {
     "lockup_text", "lockup_scope", "lockup_terms", "lockup_confidence",
 }
 PUBLIC_PERSON_FIELDS = {
-    "name", "shares", "cash_value", "stanford_university_bio", "ipo_value",
+    "name", "is_beneficial_owner", "shares", "cash_value", "stanford_university_bio", "ipo_value",
     "liquid_shares", "liquid_value", "locked_shares", "locked_value",
     "cash_realized_ipo", "liquidity_status", "liquidity_confidence",
     "holder_type", "role", "ownership_percent", "ownership_percent_before", "ownership_percent_after", "shares_before_ipo",
@@ -40,7 +40,7 @@ CSV_FIELDS = (
     "current_price", "price_updated", "location", "location_source", "lockup_end_date", "holder_name", "shares",
     "cash_value", "ipo_value", "liquid_shares", "liquid_value", "locked_shares",
     "locked_value", "cash_realized_ipo", "liquidity_status", "liquidity_confidence",
-    "stanford_university_bio", "holder_type", "role", "ownership_percent", "ownership_percent_before", "ownership_percent_after",
+    "stanford_university_bio", "is_beneficial_owner", "holder_type", "role", "ownership_percent", "ownership_percent_before", "ownership_percent_after",
     "shares_before_ipo", "shares_sold_ipo", "shares_after_ipo", "stanford_source",
     "lockup_scope", "valuation_as_of", "sec_url",
 )
@@ -522,6 +522,7 @@ def _csv_rows(filings):
                 "locked_value": person.get("locked_value"), "cash_realized_ipo": person.get("cash_realized_ipo"),
                 "liquidity_status": person.get("liquidity_status"), "liquidity_confidence": person.get("liquidity_confidence"),
                 "stanford_university_bio": person.get("stanford_university_bio", False),
+                "is_beneficial_owner": person.get("is_beneficial_owner", False),
                 "holder_type": person.get("holder_type"), "role": person.get("role"),
                 "ownership_percent": person.get("ownership_percent"), "ownership_percent_before": person.get("ownership_percent_before"), "ownership_percent_after": person.get("ownership_percent_after"),
                 "shares_before_ipo": person.get("shares_before_ipo"),
