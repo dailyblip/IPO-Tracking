@@ -164,6 +164,52 @@ class PersonEconomicAttributionGuardTests(unittest.TestCase):
             ["Largest named holding currently valued at approximately $65M"],
         )
 
+    def test_scribe_fund_disclaimers_suppress_personal_economics(self):
+        filing = {
+            "cik": "0001853921",
+            "accession_no": "0001193125-26-316503",
+            "company": "Scribe Therapeutics, Inc.",
+            "people": [
+                {
+                    "name": "Behzad Aghazadeh, Ph.D.",
+                    "shares": 697_650,
+                    "shares_after_ipo": 697_650,
+                    "cash_value": 21_389_949.0,
+                    "ipo_value": 10_464_750.0,
+                    "locked_shares": 697_650,
+                    "locked_value": 21_389_949.0,
+                    "valuation_as_of": "2026-09-03",
+                    "is_beneficial_owner": True,
+                },
+                {
+                    "name": "Carl L. Gordon, Ph.D., CFA",
+                    "shares": 348_825,
+                    "shares_after_ipo": 348_825,
+                    "cash_value": 10_694_974.5,
+                    "ipo_value": 5_232_375.0,
+                    "locked_shares": 348_825,
+                    "locked_value": 10_694_974.5,
+                    "valuation_as_of": "2026-09-03",
+                    "is_beneficial_owner": True,
+                },
+            ],
+        }
+
+        normalized = suppress_unsupported_person_economics(filing)
+
+        for person in normalized["people"]:
+            self.assertTrue(person["is_beneficial_owner"])
+            self.assertIsNotNone(person["shares"])
+            self.assertIsNotNone(person["shares_after_ipo"])
+            for field in (
+                "cash_value",
+                "ipo_value",
+                "locked_shares",
+                "locked_value",
+                "valuation_as_of",
+            ):
+                self.assertIsNone(person[field], f"{person['name']} {field}")
+
     def test_exception_does_not_apply_when_authoritative_share_count_changes(self):
         filing = {
             "cik": "0001181412",
