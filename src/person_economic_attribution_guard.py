@@ -28,12 +28,25 @@ from ownership_parser import canonical_holder_name
 # pecuniary interest, so the Monitor must not publish the full position's value or
 # liquidity as Antonio Gracias's personal economics.
 # https://www.sec.gov/Archives/edgar/data/1495158/000162828026042633/xslF345X03/wk-form3_1781226087.xml
+#
+# BlossomHill Therapeutics' 2026-08-07 424B4 reports 2,089,279 shares for director
+# Carl L. Gordon, Ph.D., CFA solely through OrbiMed Private Investments VIII, LP.
+# Footnote (3) says the shares are held by OPI VIII and that each member of the
+# OrbiMed Advisors management committee, including Dr. Gordon, disclaims beneficial
+# ownership. The SEC table may retain the reported beneficial-ownership count, but
+# the Monitor must not present the fund position's value as Dr. Gordon's economics.
+# https://www.sec.gov/Archives/edgar/data/1839970/000119312526340215/d98958d424b4.htm
 _UNSUPPORTED_PERSON_ECONOMICS = {
     (
         "0001181412",
         "0001628280-26-042639",
         canonical_holder_name("Antonio J. Gracias"),
     ): 503_414_530,
+    (
+        "0001839970",
+        "0001193125-26-340215",
+        canonical_holder_name("Carl L. Gordon, Ph.D., CFA"),
+    ): 2_089_279,
 }
 
 _DERIVED_ECONOMIC_FIELDS = (
