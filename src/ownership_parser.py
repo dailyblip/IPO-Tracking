@@ -343,27 +343,20 @@ def parse_ownership_table(table):
         _unsafe_unqualified_temporal_kinds(headers, safe_multiclass_kinds)
         if multi_class else set()
     )
-    # The public ownership schema currently has no share-class dimension. When a
-    # table explicitly reports multiple common-stock classes, do not flatten a
-    # class-specific count into generic before/after/share fields by position.
-    # Class-specific percentages are never safe to flatten, even when a continued
-    # SEC table happens to show only one of the issuer's classes. Explicitly
-    # complete multi-class temporal share groups are aggregated below. An
-    # unqualified predecessor count is also suppressed when the opposite temporal
-    # group is explicitly multi-class, because those security bases are not safely
+    # The public ownership schema currently has no share-class dimension. Never
+    # flatten an explicitly class-specific count or percentage directly into a
+    # generic ownership field. Explicitly complete multi-class temporal share
+    # groups are aggregated below; isolated one-class continuation tables stay
+    # blank unless another table supplies class-agnostic support. An unqualified
+    # predecessor count is also suppressed when the opposite temporal group is
+    # explicitly multi-class, because those security bases are not safely
     # comparable in the generic public schema.
     kinds = [
         None if (
-            (
-                _share_class(header)
-                and base_kinds[i] in {"percent", "percent_before", "percent_after"}
-            )
+            _share_class(header)
             or (
                 multi_class
-                and (
-                    _share_class(header)
-                    or base_kinds[i] in unsafe_unqualified_temporal_kinds
-                )
+                and base_kinds[i] in unsafe_unqualified_temporal_kinds
             )
         ) else base_kinds[i]
         for i, header in enumerate(headers)
@@ -409,13 +402,13 @@ def parse_ownership_table(table):
                 data[aggregate_kind] = total
 
         # A lone numeric cell is only a safe share-count fallback when the row did
-        # not already yield a percentage. SEC ownership tables commonly split a
-        # percentage value and its "%" marker across cells/continuation tables;
-        # reusing that disclosed percentage as shares fabricates a holding value.
-        # Disable this fallback entirely for multi-class tables so an otherwise
-        # ambiguous class-specific position cannot leak back into generic shares.
+        # not already yield a percentage and the table has no explicit share-class
+        # dimension. SEC ownership tables commonly split a percentage value and
+        # its "%" marker across cells/continuation tables; reusing that disclosed
+        # percentage or an isolated class-specific count as shares fabricates a
+        # class-agnostic holding value.
         if (
-            not multi_class
+            not share_classes
             and all(data[k] is None for k in ("shares_before", "shares_sold", "shares_after", "shares"))
             and all(data[k] is None for k in ("percent_before", "percent_after", "percent"))
         ):
