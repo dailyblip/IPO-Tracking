@@ -164,42 +164,127 @@ def _has_authoritative_price_source(filing):
 
 
 def sec_s1_history(cik, pricing_date):
-    """Return S-1/S-1A metadata on or before the authoritative pricing date.
+    """Return complete S-1/S-1A metadata on/before the authoritative pricing date.
 
-    SEC submissions metadata is authoritative for form, accession, filing date,
-    and registration file number. Results are newest first so the current IPO's
-    SEC registration lineage can be selected before any preliminary range is used.
+    SEC submissions keeps at least one year or 1,000 filings in ``filings.recent``
+    and can move older submissions into SEC-listed archive JSON files. Inspect both
+    sources before accepting a blank Filing Price so an aged-out amendment cannot
+    be missed. Results are deduplicated and returned newest first for registration
+    lineage selection.
     """
     cik = _canonical_cik(cik)
     if not cik:
         return []
+
+    pricing_day = _canonical_date(pricing_date) if pricing_date else None
+    if pricing_date and pricing_day is None:
+        raise FilingPriceHistoryError(
+            f"Invalid pricing date for SEC S-1 history review: {pricing_date!r}"
+        )
+
+    headers = edgar_client._get_headers()
     data = edgar_client._request_json(
         edgar_client.EDGAR_SUBMISSIONS_URL.format(cik=cik),
-        edgar_client._get_headers(),
+        headers,
     )
-    recent = data.get("filings", {}).get("recent", {})
-    forms = recent.get("form") or []
-    accessions = recent.get("accessionNumber") or []
-    dates = recent.get("filingDate") or []
-    file_numbers = recent.get("fileNumber") or []
-    history = []
-    count = min(len(forms), len(accessions), len(dates))
-    for index in range(count):
-        form = str(forms[index] or "").strip().upper()
-        filed = str(dates[index] or "").strip()
-        accession = str(accessions[index] or "").strip()
-        file_number = str(file_numbers[index] or "").strip() if index < len(file_numbers) else ""
-        if form not in {"S-1", "S-1/A"} or not filed or not accession:
+    filings = data.get("filings", {}) if isinstance(data, dict) else {}
+    recent = filings.get("recent", {}) if isinstance(filings, dict) else {}
+    if not isinstance(recent, dict):
+        raise FilingPriceHistoryError(
+            f"SEC submissions history for CIK {cik} has no readable recent filing block"
+        )
+
+    blocks = [recent]
+    descriptors = filings.get("files", []) if isinstance(filings, dict) else []
+    descriptors = descriptors or []
+    if not isinstance(descriptors, list):
+        raise FilingPriceHistoryError(
+            f"SEC submissions history for CIK {cik} has malformed archive metadata"
+        )
+
+    for descriptor in descriptors:
+        if not isinstance(descriptor, dict):
+            raise FilingPriceHistoryError(
+                f"SEC submissions history for CIK {cik} returned a malformed archive descriptor"
+            )
+        name = str(descriptor.get("name") or "").strip()
+        if not name or name != Path(name).name or not name.lower().endswith(".json"):
+            raise FilingPriceHistoryError(
+                f"SEC submissions history returned an invalid archive filename: {name!r}"
+            )
+
+        filing_from_raw = str(descriptor.get("filingFrom") or "").strip()
+        filing_from = _canonical_date(filing_from_raw) if filing_from_raw else None
+        if pricing_day is not None and filing_from is not None and filing_from > pricing_day:
             continue
-        if pricing_date and filed > str(pricing_date):
-            continue
-        history.append({
-            "form_type": form,
-            "accession_no": accession,
-            "filing_date": filed,
-            "file_number": file_number,
-        })
-    history.sort(key=lambda item: item["filing_date"], reverse=True)
+
+        try:
+            archived = edgar_client._request_json(
+                f"https://data.sec.gov/submissions/{name}",
+                headers,
+            )
+        except Exception as error:
+            raise FilingPriceHistoryError(
+                f"Could not inspect SEC submissions archive {name!r} for CIK {cik}: {error}"
+            ) from error
+
+        if not isinstance(archived, dict):
+            raise FilingPriceHistoryError(
+                f"SEC submissions archive {name!r} for CIK {cik} was not a JSON object"
+            )
+        archived_filings = archived.get("filings")
+        if isinstance(archived_filings, dict) and isinstance(archived_filings.get("recent"), dict):
+            block = archived_filings.get("recent")
+        else:
+            block = archived
+        if not isinstance(block, dict):
+            raise FilingPriceHistoryError(
+                f"SEC submissions archive {name!r} for CIK {cik} has no readable filing block"
+            )
+        blocks.append(block)
+
+    history_by_accession = {}
+    for block in blocks:
+        forms = block.get("form") or []
+        accessions = block.get("accessionNumber") or []
+        dates = block.get("filingDate") or []
+        file_numbers = block.get("fileNumber") or []
+        count = min(len(forms), len(accessions), len(dates))
+        for index in range(count):
+            form = str(forms[index] or "").strip().upper()
+            if form not in {"S-1", "S-1/A"}:
+                continue
+            filed = str(dates[index] or "").strip()
+            accession = str(accessions[index] or "").strip()
+            if not filed or not accession:
+                raise FilingPriceHistoryError(
+                    f"SEC S-1 history for CIK {cik} contains incomplete filing metadata"
+                )
+            filed_day = _canonical_date(filed)
+            if filed_day is None:
+                raise FilingPriceHistoryError(
+                    f"SEC S-1 history for CIK {cik} contains invalid filing date {filed!r}"
+                )
+            if pricing_day is not None and filed_day > pricing_day:
+                continue
+            file_number = (
+                str(file_numbers[index] or "").strip()
+                if index < len(file_numbers)
+                else ""
+            )
+            key = _normalized_accession(accession) or accession
+            history_by_accession[key] = {
+                "form_type": form,
+                "accession_no": accession,
+                "filing_date": filed,
+                "file_number": file_number,
+            }
+
+    history = list(history_by_accession.values())
+    history.sort(
+        key=lambda item: (item["filing_date"], _normalized_accession(item["accession_no"])),
+        reverse=True,
+    )
     return history
 
 
