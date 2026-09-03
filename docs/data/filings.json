@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-03T01:03:40.543234+00:00",
+  "generated_at": "2026-09-03T01:20:34.711719+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -432,7 +432,7 @@
       "filing_price": "19-22",
       "offering_price": 17.5,
       "current_price": 13.15,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "Falls Church, VA",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2027-02-14",
@@ -2516,7 +2516,7 @@
       "filing_price": "11-13",
       "offering_price": 13.0,
       "current_price": 32.1,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "RALEIGH, NC",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-02-07",
@@ -2984,7 +2984,7 @@
       "filing_price": "16-18",
       "offering_price": 18.0,
       "current_price": 21.77,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "THOUSAND OAKS, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-02-02",
@@ -3760,7 +3760,7 @@
       "filing_price": "15-17",
       "offering_price": 16.0,
       "current_price": 19.38,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "SAN DIEGO, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-02-02",
@@ -4648,7 +4648,7 @@
       "filing_price": "15-17",
       "offering_price": 18.0,
       "current_price": 26.95,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "San Francisco, CA",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2027-02-01",
@@ -5248,7 +5248,7 @@
       "filing_price": "17",
       "offering_price": 17.0,
       "current_price": 23.13,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "SAN CARLOS, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-01-31",
@@ -5256,24 +5256,42 @@
       "lockup_duration_value": 180,
       "lockup_duration_unit": "days",
       "lockup_text": "Lock-Up Agreements We, our officers, directors and all of our stockholders have agreed with the underwriters that for a period of 180 days, after the date of this prospectus, among other things and subject to certain exceptions, we or they will not offer, pledge, sell, contract to sell, sell any option or contract to purchase, purchase any option or contract to sell, grant any option, right or warrant to sell, or otherwise dispose of or transfer any shares of common stock or any securities convertible into or exercisable or exchangeable for shares of common stock, request or demand that we file a registration statement related to our common stock or enter into any swap or other agreement that transfers to another, in whole or in part, directly or indirectly, the economic consequence of ownership of the common stock, or publicly declare an intention to do any of the foregoing",
-      "lockup_scope": "directors, executive officers",
+      "lockup_scope": "substantially all pre-IPO holders, directors, executive officers",
       "lockup_terms": [
         {
           "duration_value": 180,
           "duration_unit": "days",
           "duration_days": 180,
           "scope_tags": [
+            "substantially_all_holders",
             "directors",
             "executive_officers"
           ],
-          "scope": "directors, executive officers",
+          "scope": "substantially all pre-IPO holders, directors, executive officers",
+          "special_holder": null,
+          "tranche_percent": null,
+          "tranche_label": null,
+          "covers_full_position": false,
+          "has_staggered_releases": false,
+          "score": 24,
+          "source_text": "Lock-Up Agreements We, our officers, directors and all of our stockholders have agreed with the underwriters that for a period of 180 days, after the date of this prospectus, among other things and subject to certain exceptions, we or they will not offer, pledge, sell, contract to sell, sell any option or contract to purchase, purchase any option or contract to sell, grant any option, right or warrant to sell, or otherwise dispose of or transfer any shares of common stock or any securities convertible into or exercisable or exchangeable for shares of common stock, request or demand that we file a registration statement related to our common stock or enter into any swap or other agreement that transfers to another, in whole or in part, directly or indirectly, the economic consequence of ownership of the common stock, or publicly declare an intention to do any of the foregoing",
+          "end_date": "2027-01-31"
+        },
+        {
+          "duration_value": 180,
+          "duration_unit": "days",
+          "duration_days": 180,
+          "scope_tags": [
+            "substantially_all_holders"
+          ],
+          "scope": "substantially all pre-IPO holders",
           "special_holder": null,
           "tranche_percent": null,
           "tranche_label": null,
           "covers_full_position": false,
           "has_staggered_releases": false,
           "score": 18,
-          "source_text": "Lock-Up Agreements We, our officers, directors and all of our stockholders have agreed with the underwriters that for a period of 180 days, after the date of this prospectus, among other things and subject to certain exceptions, we or they will not offer, pledge, sell, contract to sell, sell any option or contract to purchase, purchase any option or contract to sell, grant any option, right or warrant to sell, or otherwise dispose of or transfer any shares of common stock or any securities convertible into or exercisable or exchangeable for shares of common stock, request or demand that we file a registration statement related to our common stock or enter into any swap or other agreement that transfers to another, in whole or in part, directly or indirectly, the economic consequence of ownership of the common stock, or publicly declare an intention to do any of the foregoing",
+          "source_text": "In addition, all of our security holders have entered into market standoff agreements with us or lock-up agreements with the underwriters under which they have agreed, subject to specific exceptions, not to sell any of our stock for at least 180 days following the date of this prospectus, as described below",
           "end_date": "2027-01-31"
         },
         {
@@ -5287,8 +5305,8 @@
           "tranche_label": null,
           "covers_full_position": false,
           "has_staggered_releases": false,
-          "score": 12,
-          "source_text": "In addition, all of our security holders have entered into market standoff agreements with us or lock-up agreements with the underwriters under which they have agreed, subject to specific exceptions, not to sell any of our stock for at least 180 days following the date of this prospectus, as described below",
+          "score": 6,
+          "source_text": "and RBC Capital Markets, LLC on behalf of the underwriters, we and they will not, and will not publicly disclose an intention to, during the period ending 180 days after the date of this prospectus (the restricted period): • offer, pledge, sell, contract to sell, sell any option or contract to purchase, purchase any option or contract to sell, grant any option, right or warrant to purchase, lend or otherwise transfer or dispose of, directly or indirectly, any shares of common stock or any securities convertible into or exercisable or exchangeable for shares of common stock",
           "end_date": "2027-01-31"
         }
       ],
@@ -5307,7 +5325,7 @@
           "cash_value": 128741117.39999999,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
-          "lockup_scope": "filing-level-unmapped",
+          "lockup_scope": "holder-mapped",
           "lockup_duration_days": 180,
           "lockup_duration_value": 180,
           "lockup_duration_unit": "days",
@@ -5328,9 +5346,34 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "liquidity_status": "Lock-up applies — covered quantity unresolved",
+          "liquidity_confidence": "Holder class is supported, but the filing does not establish that the entire disclosed position is covered",
+          "lockup_schedule": [
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders, directors, executive officers",
+              "special_holder": null,
+              "source_text": "Lock-Up Agreements We, our officers, directors and all of our stockholders have agreed with the underwriters that for a period of 180 days, after the date of this prospectus, among other things and subject to certain exceptions, we or they will not offer, pledge, sell, contract to sell, sell any option or contract to purchase, purchase any option or contract to sell, grant any option, right or warrant to sell, or otherwise dispose of or transfer any shares of common stock or any securities convertible into or exercisable or exchangeable for shares of common stock, request or demand that we file a registration statement related to our common stock or enter into any swap or other agreement that transfers to another, in whole or in part, directly or indirectly, the economic consequence of ownership of the common stock, or publicly declare an intention to do any of the foregoing",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our security holders have entered into market standoff agreements with us or lock-up agreements with the underwriters under which they have agreed, subject to specific exceptions, not to sell any of our stock for at least 180 days following the date of this prospectus, as described below",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            }
+          ]
         },
         {
           "name": "Alamar HoldCo, LLC",
@@ -5338,7 +5381,7 @@
           "cash_value": 74693223.27,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
-          "lockup_scope": "filing-level-unmapped",
+          "lockup_scope": "holder-mapped",
           "lockup_duration_days": 180,
           "lockup_duration_value": 180,
           "lockup_duration_unit": "days",
@@ -5359,9 +5402,34 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "liquidity_status": "Lock-up applies — covered quantity unresolved",
+          "liquidity_confidence": "Holder class is supported, but the filing does not establish that the entire disclosed position is covered",
+          "lockup_schedule": [
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders, directors, executive officers",
+              "special_holder": null,
+              "source_text": "Lock-Up Agreements We, our officers, directors and all of our stockholders have agreed with the underwriters that for a period of 180 days, after the date of this prospectus, among other things and subject to certain exceptions, we or they will not offer, pledge, sell, contract to sell, sell any option or contract to purchase, purchase any option or contract to sell, grant any option, right or warrant to sell, or otherwise dispose of or transfer any shares of common stock or any securities convertible into or exercisable or exchangeable for shares of common stock, request or demand that we file a registration statement related to our common stock or enter into any swap or other agreement that transfers to another, in whole or in part, directly or indirectly, the economic consequence of ownership of the common stock, or publicly declare an intention to do any of the foregoing",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our security holders have entered into market standoff agreements with us or lock-up agreements with the underwriters under which they have agreed, subject to specific exceptions, not to sell any of our stock for at least 180 days following the date of this prospectus, as described below",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            }
+          ]
         },
         {
           "name": "venBio Global Strategic Fund IV, L.P.",
@@ -5369,7 +5437,7 @@
           "cash_value": 87871240.08,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
-          "lockup_scope": "filing-level-unmapped",
+          "lockup_scope": "holder-mapped",
           "lockup_duration_days": 180,
           "lockup_duration_value": 180,
           "lockup_duration_unit": "days",
@@ -5390,9 +5458,34 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "liquidity_status": "Lock-up applies — covered quantity unresolved",
+          "liquidity_confidence": "Holder class is supported, but the filing does not establish that the entire disclosed position is covered",
+          "lockup_schedule": [
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders, directors, executive officers",
+              "special_holder": null,
+              "source_text": "Lock-Up Agreements We, our officers, directors and all of our stockholders have agreed with the underwriters that for a period of 180 days, after the date of this prospectus, among other things and subject to certain exceptions, we or they will not offer, pledge, sell, contract to sell, sell any option or contract to purchase, purchase any option or contract to sell, grant any option, right or warrant to sell, or otherwise dispose of or transfer any shares of common stock or any securities convertible into or exercisable or exchangeable for shares of common stock, request or demand that we file a registration statement related to our common stock or enter into any swap or other agreement that transfers to another, in whole or in part, directly or indirectly, the economic consequence of ownership of the common stock, or publicly declare an intention to do any of the foregoing",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our security holders have entered into market standoff agreements with us or lock-up agreements with the underwriters under which they have agreed, subject to specific exceptions, not to sell any of our stock for at least 180 days following the date of this prospectus, as described below",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            }
+          ]
         },
         {
           "name": "Entities affiliated with Goldman Sachs & Co. LLC",
@@ -5400,7 +5493,7 @@
           "cash_value": 56336376.33,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
-          "lockup_scope": "filing-level-unmapped",
+          "lockup_scope": "holder-mapped",
           "lockup_duration_days": 180,
           "lockup_duration_value": 180,
           "lockup_duration_unit": "days",
@@ -5421,9 +5514,34 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "liquidity_status": "Lock-up applies — covered quantity unresolved",
+          "liquidity_confidence": "Holder class is supported, but the filing does not establish that the entire disclosed position is covered",
+          "lockup_schedule": [
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders, directors, executive officers",
+              "special_holder": null,
+              "source_text": "Lock-Up Agreements We, our officers, directors and all of our stockholders have agreed with the underwriters that for a period of 180 days, after the date of this prospectus, among other things and subject to certain exceptions, we or they will not offer, pledge, sell, contract to sell, sell any option or contract to purchase, purchase any option or contract to sell, grant any option, right or warrant to sell, or otherwise dispose of or transfer any shares of common stock or any securities convertible into or exercisable or exchangeable for shares of common stock, request or demand that we file a registration statement related to our common stock or enter into any swap or other agreement that transfers to another, in whole or in part, directly or indirectly, the economic consequence of ownership of the common stock, or publicly declare an intention to do any of the foregoing",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our security holders have entered into market standoff agreements with us or lock-up agreements with the underwriters under which they have agreed, subject to specific exceptions, not to sell any of our stock for at least 180 days following the date of this prospectus, as described below",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            }
+          ]
         },
         {
           "name": "Deep Track Biotechnology Master Fund, Ltd",
@@ -5431,7 +5549,7 @@
           "cash_value": 45268625.07,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
-          "lockup_scope": "filing-level-unmapped",
+          "lockup_scope": "holder-mapped",
           "lockup_duration_days": 180,
           "lockup_duration_value": 180,
           "lockup_duration_unit": "days",
@@ -5452,9 +5570,34 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "liquidity_status": "Lock-up applies — covered quantity unresolved",
+          "liquidity_confidence": "Holder class is supported, but the filing does not establish that the entire disclosed position is covered",
+          "lockup_schedule": [
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders, directors, executive officers",
+              "special_holder": null,
+              "source_text": "Lock-Up Agreements We, our officers, directors and all of our stockholders have agreed with the underwriters that for a period of 180 days, after the date of this prospectus, among other things and subject to certain exceptions, we or they will not offer, pledge, sell, contract to sell, sell any option or contract to purchase, purchase any option or contract to sell, grant any option, right or warrant to sell, or otherwise dispose of or transfer any shares of common stock or any securities convertible into or exercisable or exchangeable for shares of common stock, request or demand that we file a registration statement related to our common stock or enter into any swap or other agreement that transfers to another, in whole or in part, directly or indirectly, the economic consequence of ownership of the common stock, or publicly declare an intention to do any of the foregoing",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our security holders have entered into market standoff agreements with us or lock-up agreements with the underwriters under which they have agreed, subject to specific exceptions, not to sell any of our stock for at least 180 days following the date of this prospectus, as described below",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            }
+          ]
         },
         {
           "name": "Tao Fu",
@@ -5462,7 +5605,7 @@
           "cash_value": 20665637.279999997,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
-          "lockup_scope": "filing-level-unmapped",
+          "lockup_scope": "holder-mapped",
           "lockup_duration_days": 180,
           "lockup_duration_value": 180,
           "lockup_duration_unit": "days",
@@ -5483,9 +5626,34 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "liquidity_status": "Lock-up applies — covered quantity unresolved",
+          "liquidity_confidence": "Holder class is supported, but the filing does not establish that the entire disclosed position is covered",
+          "lockup_schedule": [
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders, directors, executive officers",
+              "special_holder": null,
+              "source_text": "Lock-Up Agreements We, our officers, directors and all of our stockholders have agreed with the underwriters that for a period of 180 days, after the date of this prospectus, among other things and subject to certain exceptions, we or they will not offer, pledge, sell, contract to sell, sell any option or contract to purchase, purchase any option or contract to sell, grant any option, right or warrant to sell, or otherwise dispose of or transfer any shares of common stock or any securities convertible into or exercisable or exchangeable for shares of common stock, request or demand that we file a registration statement related to our common stock or enter into any swap or other agreement that transfers to another, in whole or in part, directly or indirectly, the economic consequence of ownership of the common stock, or publicly declare an intention to do any of the foregoing",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our security holders have entered into market standoff agreements with us or lock-up agreements with the underwriters under which they have agreed, subject to specific exceptions, not to sell any of our stock for at least 180 days following the date of this prospectus, as described below",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            }
+          ]
         },
         {
           "name": "Petter Veiby",
@@ -5493,7 +5661,7 @@
           "cash_value": 4909527.54,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
-          "lockup_scope": "filing-level-unmapped",
+          "lockup_scope": "holder-mapped",
           "lockup_duration_days": 180,
           "lockup_duration_value": 180,
           "lockup_duration_unit": "days",
@@ -5514,9 +5682,34 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "liquidity_status": "Lock-up applies — covered quantity unresolved",
+          "liquidity_confidence": "Holder class is supported, but the filing does not establish that the entire disclosed position is covered",
+          "lockup_schedule": [
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders, directors, executive officers",
+              "special_holder": null,
+              "source_text": "Lock-Up Agreements We, our officers, directors and all of our stockholders have agreed with the underwriters that for a period of 180 days, after the date of this prospectus, among other things and subject to certain exceptions, we or they will not offer, pledge, sell, contract to sell, sell any option or contract to purchase, purchase any option or contract to sell, grant any option, right or warrant to sell, or otherwise dispose of or transfer any shares of common stock or any securities convertible into or exercisable or exchangeable for shares of common stock, request or demand that we file a registration statement related to our common stock or enter into any swap or other agreement that transfers to another, in whole or in part, directly or indirectly, the economic consequence of ownership of the common stock, or publicly declare an intention to do any of the foregoing",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our security holders have entered into market standoff agreements with us or lock-up agreements with the underwriters under which they have agreed, subject to specific exceptions, not to sell any of our stock for at least 180 days following the date of this prospectus, as described below",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            }
+          ]
         },
         {
           "name": "Hubert Chen",
@@ -5524,7 +5717,7 @@
           "cash_value": 3545343.27,
           "stanford_university_bio": true,
           "lockup_end_date": "2027-01-31",
-          "lockup_scope": "filing-level-unmapped",
+          "lockup_scope": "holder-mapped",
           "lockup_duration_days": 180,
           "lockup_duration_value": 180,
           "lockup_duration_unit": "days",
@@ -5545,9 +5738,34 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "liquidity_status": "Lock-up applies — covered quantity unresolved",
+          "liquidity_confidence": "Holder class is supported, but the filing does not establish that the entire disclosed position is covered",
+          "lockup_schedule": [
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders, directors, executive officers",
+              "special_holder": null,
+              "source_text": "Lock-Up Agreements We, our officers, directors and all of our stockholders have agreed with the underwriters that for a period of 180 days, after the date of this prospectus, among other things and subject to certain exceptions, we or they will not offer, pledge, sell, contract to sell, sell any option or contract to purchase, purchase any option or contract to sell, grant any option, right or warrant to sell, or otherwise dispose of or transfer any shares of common stock or any securities convertible into or exercisable or exchangeable for shares of common stock, request or demand that we file a registration statement related to our common stock or enter into any swap or other agreement that transfers to another, in whole or in part, directly or indirectly, the economic consequence of ownership of the common stock, or publicly declare an intention to do any of the foregoing",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our security holders have entered into market standoff agreements with us or lock-up agreements with the underwriters under which they have agreed, subject to specific exceptions, not to sell any of our stock for at least 180 days following the date of this prospectus, as described below",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            }
+          ]
         },
         {
           "name": "Mitchell Gold",
@@ -5555,7 +5773,7 @@
           "cash_value": 968522.49,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
-          "lockup_scope": "filing-level-unmapped",
+          "lockup_scope": "holder-mapped",
           "lockup_duration_days": 180,
           "lockup_duration_value": 180,
           "lockup_duration_unit": "days",
@@ -5576,9 +5794,34 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "liquidity_status": "Lock-up applies — covered quantity unresolved",
+          "liquidity_confidence": "Holder class is supported, but the filing does not establish that the entire disclosed position is covered",
+          "lockup_schedule": [
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders, directors, executive officers",
+              "special_holder": null,
+              "source_text": "Lock-Up Agreements We, our officers, directors and all of our stockholders have agreed with the underwriters that for a period of 180 days, after the date of this prospectus, among other things and subject to certain exceptions, we or they will not offer, pledge, sell, contract to sell, sell any option or contract to purchase, purchase any option or contract to sell, grant any option, right or warrant to sell, or otherwise dispose of or transfer any shares of common stock or any securities convertible into or exercisable or exchangeable for shares of common stock, request or demand that we file a registration statement related to our common stock or enter into any swap or other agreement that transfers to another, in whole or in part, directly or indirectly, the economic consequence of ownership of the common stock, or publicly declare an intention to do any of the foregoing",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our security holders have entered into market standoff agreements with us or lock-up agreements with the underwriters under which they have agreed, subject to specific exceptions, not to sell any of our stock for at least 180 days following the date of this prospectus, as described below",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            }
+          ]
         },
         {
           "name": "Angie You",
@@ -5586,7 +5829,7 @@
           "cash_value": 1376003.7,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-01-31",
-          "lockup_scope": "filing-level-unmapped",
+          "lockup_scope": "holder-mapped",
           "lockup_duration_days": 180,
           "lockup_duration_value": 180,
           "lockup_duration_unit": "days",
@@ -5607,9 +5850,34 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "liquidity_status": "Lock-up applies — covered quantity unresolved",
+          "liquidity_confidence": "Holder class is supported, but the filing does not establish that the entire disclosed position is covered",
+          "lockup_schedule": [
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders, directors, executive officers",
+              "special_holder": null,
+              "source_text": "Lock-Up Agreements We, our officers, directors and all of our stockholders have agreed with the underwriters that for a period of 180 days, after the date of this prospectus, among other things and subject to certain exceptions, we or they will not offer, pledge, sell, contract to sell, sell any option or contract to purchase, purchase any option or contract to sell, grant any option, right or warrant to sell, or otherwise dispose of or transfer any shares of common stock or any securities convertible into or exercisable or exchangeable for shares of common stock, request or demand that we file a registration statement related to our common stock or enter into any swap or other agreement that transfers to another, in whole or in part, directly or indirectly, the economic consequence of ownership of the common stock, or publicly declare an intention to do any of the foregoing",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-31",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our security holders have entered into market standoff agreements with us or lock-up agreements with the underwriters under which they have agreed, subject to specific exceptions, not to sell any of our stock for at least 180 days following the date of this prospectus, as described below",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            }
+          ]
         }
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2058707/000119312526334997/0001193125-26-334997-index.htm",
@@ -5644,7 +5912,7 @@
       "filing_price": "21-25",
       "offering_price": 23.0,
       "current_price": 20.65,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "Tinton Falls, NJ",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2027-01-25",
@@ -6101,7 +6369,7 @@
       "filing_price": "14-16",
       "offering_price": 16.0,
       "current_price": 27.83,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "CAMBRIDGE, MA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-01-26",
@@ -6880,7 +7148,7 @@
       "filing_price": "15-17",
       "offering_price": 15.0,
       "current_price": 14.13,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "VERNON, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-01-25",
@@ -7392,7 +7660,7 @@
       "filing_price": "13-15",
       "offering_price": 15.0,
       "current_price": 30.9,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "ALAMEDA, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-01-23",
@@ -8055,7 +8323,7 @@
       "filing_price": "18-21",
       "offering_price": 15.0,
       "current_price": 14.66,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "OAK RIDGE, TN",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-01-11",
@@ -8088,14 +8356,16 @@
           "duration_value": 180,
           "duration_unit": "days",
           "duration_days": 180,
-          "scope_tags": [],
-          "scope": null,
+          "scope_tags": [
+            "substantially_all_holders"
+          ],
+          "scope": "substantially all pre-IPO holders",
           "special_holder": null,
           "tranche_percent": null,
           "tranche_label": null,
           "covers_full_position": false,
           "has_staggered_releases": false,
-          "score": 6,
+          "score": 12,
           "source_text": "In addition, all of our securityholders have entered into market standoff agreements with us or lock -up agreements with the underwriters under which they agreed, subject to specific exceptions, not to sell any of their stock for at least 180 days following the date of this prospectus",
           "end_date": "2027-01-11"
         }
@@ -8150,6 +8420,18 @@
               "tranche_percent": null,
               "tranche_label": null,
               "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-11",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our securityholders have entered into market standoff agreements with us or lock -up agreements with the underwriters under which they agreed, subject to specific exceptions, not to sell any of their stock for at least 180 days following the date of this prospectus",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
             }
           ]
         },
@@ -8190,6 +8472,18 @@
               "scope": "substantially all pre-IPO holders, directors, executive officers",
               "special_holder": null,
               "source_text": "No Sales of Similar Securities We and our executive officers, directors and substantially all of our other existing security holders have agreed not to sell or transfer any common stock or securities convertible into, exchangeable for, exercisable for, or repayable with common stock, for 180 days after the date of this prospectus (the “restricted period”) without first obtaining the written consent of the representatives",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-11",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our securityholders have entered into market standoff agreements with us or lock -up agreements with the underwriters under which they agreed, subject to specific exceptions, not to sell any of their stock for at least 180 days following the date of this prospectus",
               "has_staggered_releases": false,
               "tranche_percent": null,
               "tranche_label": null,
@@ -8238,6 +8532,18 @@
               "tranche_percent": null,
               "tranche_label": null,
               "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-11",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our securityholders have entered into market standoff agreements with us or lock -up agreements with the underwriters under which they agreed, subject to specific exceptions, not to sell any of their stock for at least 180 days following the date of this prospectus",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
             }
           ]
         },
@@ -8278,6 +8584,18 @@
               "scope": "substantially all pre-IPO holders, directors, executive officers",
               "special_holder": null,
               "source_text": "No Sales of Similar Securities We and our executive officers, directors and substantially all of our other existing security holders have agreed not to sell or transfer any common stock or securities convertible into, exchangeable for, exercisable for, or repayable with common stock, for 180 days after the date of this prospectus (the “restricted period”) without first obtaining the written consent of the representatives",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-11",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our securityholders have entered into market standoff agreements with us or lock -up agreements with the underwriters under which they agreed, subject to specific exceptions, not to sell any of their stock for at least 180 days following the date of this prospectus",
               "has_staggered_releases": false,
               "tranche_percent": null,
               "tranche_label": null,
@@ -8326,6 +8644,18 @@
               "tranche_percent": null,
               "tranche_label": null,
               "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-11",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our securityholders have entered into market standoff agreements with us or lock -up agreements with the underwriters under which they agreed, subject to specific exceptions, not to sell any of their stock for at least 180 days following the date of this prospectus",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
             }
           ]
         },
@@ -8366,6 +8696,18 @@
               "scope": "substantially all pre-IPO holders, directors, executive officers",
               "special_holder": null,
               "source_text": "No Sales of Similar Securities We and our executive officers, directors and substantially all of our other existing security holders have agreed not to sell or transfer any common stock or securities convertible into, exchangeable for, exercisable for, or repayable with common stock, for 180 days after the date of this prospectus (the “restricted period”) without first obtaining the written consent of the representatives",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-11",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our securityholders have entered into market standoff agreements with us or lock -up agreements with the underwriters under which they agreed, subject to specific exceptions, not to sell any of their stock for at least 180 days following the date of this prospectus",
               "has_staggered_releases": false,
               "tranche_percent": null,
               "tranche_label": null,
@@ -8414,6 +8756,18 @@
               "tranche_percent": null,
               "tranche_label": null,
               "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-11",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our securityholders have entered into market standoff agreements with us or lock -up agreements with the underwriters under which they agreed, subject to specific exceptions, not to sell any of their stock for at least 180 days following the date of this prospectus",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
             }
           ]
         },
@@ -8454,6 +8808,18 @@
               "scope": "substantially all pre-IPO holders, directors, executive officers",
               "special_holder": null,
               "source_text": "No Sales of Similar Securities We and our executive officers, directors and substantially all of our other existing security holders have agreed not to sell or transfer any common stock or securities convertible into, exchangeable for, exercisable for, or repayable with common stock, for 180 days after the date of this prospectus (the “restricted period”) without first obtaining the written consent of the representatives",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-11",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our securityholders have entered into market standoff agreements with us or lock -up agreements with the underwriters under which they agreed, subject to specific exceptions, not to sell any of their stock for at least 180 days following the date of this prospectus",
               "has_staggered_releases": false,
               "tranche_percent": null,
               "tranche_label": null,
@@ -8502,6 +8868,18 @@
               "tranche_percent": null,
               "tranche_label": null,
               "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-11",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our securityholders have entered into market standoff agreements with us or lock -up agreements with the underwriters under which they agreed, subject to specific exceptions, not to sell any of their stock for at least 180 days following the date of this prospectus",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
             }
           ]
         },
@@ -8546,6 +8924,18 @@
               "tranche_percent": null,
               "tranche_label": null,
               "covers_full_position": false
+            },
+            {
+              "duration_value": 180,
+              "duration_unit": "days",
+              "end_date": "2027-01-11",
+              "scope": "substantially all pre-IPO holders",
+              "special_holder": null,
+              "source_text": "In addition, all of our securityholders have entered into market standoff agreements with us or lock -up agreements with the underwriters under which they agreed, subject to specific exceptions, not to sell any of their stock for at least 180 days following the date of this prospectus",
+              "has_staggered_releases": false,
+              "tranche_percent": null,
+              "tranche_label": null,
+              "covers_full_position": false
             }
           ]
         }
@@ -8582,7 +8972,7 @@
       "filing_price": "23-27",
       "offering_price": 21.0,
       "current_price": 18.0,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "Coppell, TX",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2027-01-11",
@@ -8892,7 +9282,7 @@
       "filing_price": "24-26",
       "offering_price": 25.0,
       "current_price": 41.63,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "SAN FRANCISCO, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-12-09",
@@ -9437,7 +9827,7 @@
       "filing_price": "19-22",
       "offering_price": 16.0,
       "current_price": 12.88,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "Fort Lauderdale, FL",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2026-12-27",
@@ -10011,7 +10401,7 @@
       "filing_price": "14-16",
       "offering_price": 16.0,
       "current_price": 21.92,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "Princeton, NJ",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2026-12-14",
@@ -10612,7 +11002,7 @@
       "filing_price": "14-16",
       "offering_price": 12.5,
       "current_price": 12.73,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "Raleigh, NC",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2026-12-14",
@@ -10681,7 +11071,7 @@
       "filing_price": "135",
       "offering_price": 135.0,
       "current_price": 140.71,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "STARBASE, TX",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-12-08",
@@ -11011,7 +11401,7 @@
       "filing_price": "18-20",
       "offering_price": 18.0,
       "current_price": 18.34,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "CHEVY CHASE, MD",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-12-07",
@@ -11422,7 +11812,7 @@
       "filing_price": "17-19",
       "offering_price": 20.0,
       "current_price": 40.11,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "Cambridge, MA",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2026-12-06",
@@ -12242,7 +12632,7 @@
       "filing_price": "20-23",
       "offering_price": 21.5,
       "current_price": 11.21,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "HOUSTON, TX",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-12-06",
@@ -12725,7 +13115,7 @@
       "filing_price": "25-27",
       "offering_price": 26.0,
       "current_price": 27.83,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "Philadelphia, PA",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2027-06-08",
@@ -13074,7 +13464,7 @@
       "filing_price": "13.5-16.5",
       "offering_price": 13.5,
       "current_price": 17.82,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "KELLOGG, ID",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": null,
@@ -13373,7 +13763,7 @@
       "filing_price": "53-55",
       "offering_price": 60.0,
       "current_price": 48.0,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "Broomfield, CO",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": null,
@@ -13517,7 +13907,7 @@
       "filing_price": "20-22",
       "offering_price": 23.0,
       "current_price": 18.7,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "PALO ALTO, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-11-30",
@@ -13851,7 +14241,7 @@
       "filing_price": "18-21",
       "offering_price": 20.0,
       "current_price": 12.2,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "location": "Huntsville, AL",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": null,
@@ -14410,7 +14800,7 @@
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1540171/000119312526189477/0001193125-26-189477-index.htm"
       },
       "current_price": 35.58,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "price_range": "16-18"
     },
     {
@@ -14895,7 +15285,7 @@
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2088896/000110465926045175/0001104659-26-045175-index.htm"
       },
       "current_price": 18.1,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "price_range": "16-19"
     },
     {
@@ -15136,7 +15526,7 @@
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1859836/000110465926044783/0001104659-26-044783-index.htm"
       },
       "current_price": 24.07,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "price_range": "20-23"
     },
     {
@@ -15617,7 +16007,7 @@
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2101698/000121390026043190/0001213900-26-043190-index.htm"
       },
       "current_price": 15.86,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "price_range": "12-14"
     },
     {
@@ -15829,7 +16219,7 @@
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2096300/000119312526155986/0001193125-26-155986-index.htm"
       },
       "current_price": 15.74,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "price_range": "18-21"
     },
     {
@@ -16070,7 +16460,7 @@
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2098430/000119312526142875/0001193125-26-142875-index.htm"
       },
       "current_price": 25.67,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "price_range": "25-27"
     },
     {
@@ -16524,7 +16914,7 @@
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2096997/000119312526151904/0001193125-26-151904-index.htm"
       },
       "current_price": 15.85,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "price_range": "14-16"
     },
     {
@@ -16986,7 +17376,7 @@
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2104204/000119312526158122/0001193125-26-158122-index.htm"
       },
       "current_price": 30.49,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "price_range": "15-17"
     },
     {
@@ -17171,7 +17561,7 @@
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2093536/000119312526151122/0001193125-26-151122-index.htm"
       },
       "current_price": 51.16,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "price_range": "25-28"
     },
     {
@@ -17590,7 +17980,7 @@
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2021880/000119312526119714/0001193125-26-119714-index.htm"
       },
       "current_price": 19.66,
-      "price_updated": "2026-09-03T01:03:40.543234+00:00",
+      "price_updated": "2026-09-03T01:19:12.564816+00:00",
       "price_range": "19-22"
     }
   ]
