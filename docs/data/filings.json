@@ -1,8 +1,63 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-03T02:22:34.886407+00:00",
+  "generated_at": "2026-09-03T02:28:58.737354+00:00",
   "source": "SEC EDGAR",
   "filings": [
+    {
+      "id": "s1:0002112634",
+      "company": "Sensei Harbor Corp.",
+      "ticker": "",
+      "cik": "0002112634",
+      "accession_no": "0001683168-26-006875",
+      "form": "S-1/A",
+      "filed": "2026-09-02",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": "$0.02",
+      "offering_size_source": "primary offering; cover title adjacent to IPO statement",
+      "offering_size_confidence": "High",
+      "primary_offering_shares": 6000000,
+      "secondary_offering_shares": null,
+      "priority": "High",
+      "status": "New",
+      "value": 120000,
+      "value_label": "$120,000",
+      "people_count": 0,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "Fixed offering price disclosed at $0.02 per share",
+        "IPO size disclosed or derived at approximately $120,000"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2112634/000168316826006875/0001683168-26-006875-index.htm"
+    },
+    {
+      "id": "s1:0002141406",
+      "company": "Accelevation Holdings Corp.",
+      "ticker": "ACCV",
+      "cik": "0002141406",
+      "accession_no": "0001628280-26-060083",
+      "form": "S-1",
+      "filed": "2026-09-02",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "priority": "Medium",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 0,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026060083/0001628280-26-060083-index.htm"
+    },
     {
       "id": "s1:0002133037",
       "company": "SB Energy, Inc.",
@@ -2437,34 +2492,6 @@
         "accession_no": "0001193125-26-346328",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526346328/0001193125-26-346328-index.htm"
       }
-    },
-    {
-      "id": "s1:0002112634",
-      "company": "Sensei Harbor Corp.",
-      "ticker": "",
-      "cik": "0002112634",
-      "accession_no": "0001683168-26-006561",
-      "form": "S-1/A",
-      "filed": "2026-08-18",
-      "stage": "Pre-pricing",
-      "price_range": null,
-      "filing_price": "$0.02",
-      "offering_size_source": "primary offering; cover title adjacent to IPO statement",
-      "offering_size_confidence": "High",
-      "primary_offering_shares": 6000000,
-      "secondary_offering_shares": null,
-      "priority": "High",
-      "status": "New",
-      "value": 120000,
-      "value_label": "$120,000",
-      "people_count": 0,
-      "signals": [
-        "Registration statement amended — IPO remains pre-pricing",
-        "Fixed offering price disclosed at $0.02 per share",
-        "IPO size disclosed or derived at approximately $120,000"
-      ],
-      "people": [],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2112634/000168316826006561/0001683168-26-006561-index.htm"
     },
     {
       "id": "s1:0001880995",
