@@ -47,7 +47,7 @@ class OwnershipClassSemanticsTests(unittest.TestCase):
         self.assertIsNone(row["percent_before"])
         self.assertIsNone(row["percent_after"])
 
-    def test_single_class_continuation_percent_does_not_leak_into_generic_percent(self):
+    def test_single_class_continuation_does_not_leak_into_generic_ownership(self):
         """A one-class continuation table cannot erase the wider table's class context."""
         html = """<table>
         <tr>
@@ -58,11 +58,19 @@ class OwnershipClassSemanticsTests(unittest.TestCase):
         <tr><td>Thomas Hendrix (3)(9)</td><td>11,578,308</td><td>100</td></tr>
         </table>"""
         rows = parse_ownership_table(BeautifulSoup(html, "lxml").find("table"))
-        self.assertEqual(len(rows), 1)
-        row = rows[0]
-        self.assertEqual(row["shares_after"], 11578308)
-        self.assertIsNone(row["percent"])
-        self.assertIsNone(row["percent_after"])
+        self.assertEqual(rows, [])
+
+    def test_single_class_count_cannot_reenter_through_numeric_fallback(self):
+        """An isolated class-specific count is not a class-agnostic share total."""
+        html = """<table>
+        <tr>
+          <th>Name of beneficial owner</th>
+          <th>Class B Common Stock shares beneficially owned after offering</th>
+        </tr>
+        <tr><td>Thomas Hendrix (3)(9)</td><td>11,578,308</td></tr>
+        </table>"""
+        rows = parse_ownership_table(BeautifulSoup(html, "lxml").find("table"))
+        self.assertEqual(rows, [])
 
 
 if __name__ == "__main__":
