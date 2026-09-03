@@ -65,6 +65,43 @@ class PersonEconomicAttributionGuardTests(unittest.TestCase):
         )
         self.assertIn("Offering raised approximately $75.0B", normalized["signals"])
 
+    def test_blossomhill_orbimed_disclaimer_suppresses_personal_fund_economics(self):
+        filing = {
+            "cik": "0001839970",
+            "accession_no": "0001193125-26-340215",
+            "company": "BlossomHill Therapeutics, Inc.",
+            "people": [
+                {
+                    "name": "Carl L. Gordon, Ph.D., CFA",
+                    "shares": 2_089_279,
+                    "shares_before_ipo": 2_089_279,
+                    "shares_after_ipo": 2_089_279,
+                    "cash_value": 40_490_227.02,
+                    "ipo_value": 33_428_464.0,
+                    "locked_shares": 2_089_279,
+                    "locked_value": 40_490_227.02,
+                    "valuation_as_of": "2026-09-03",
+                    "is_beneficial_owner": True,
+                }
+            ],
+        }
+
+        normalized = suppress_unsupported_person_economics(filing)
+        person = normalized["people"][0]
+
+        self.assertEqual(person["shares"], 2_089_279)
+        self.assertEqual(person["shares_before_ipo"], 2_089_279)
+        self.assertEqual(person["shares_after_ipo"], 2_089_279)
+        self.assertTrue(person["is_beneficial_owner"])
+        for field in (
+            "cash_value",
+            "ipo_value",
+            "locked_shares",
+            "locked_value",
+            "valuation_as_of",
+        ):
+            self.assertIsNone(person[field], field)
+
     def test_exception_does_not_apply_when_authoritative_share_count_changes(self):
         filing = {
             "cik": "0001181412",
