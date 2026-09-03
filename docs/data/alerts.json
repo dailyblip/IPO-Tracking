@@ -1,8 +1,22 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-03T02:26:32.623135+00:00",
-  "count": 64,
+  "generated_at": "2026-09-03T02:31:08.785838+00:00",
+  "count": 65,
   "alerts": [
+    {
+      "type": "new_prepricing",
+      "company": "Accelevation Holdings Corp.",
+      "cik": "0002141406",
+      "filing_id": "s1:0002141406",
+      "form": "S-1",
+      "filed": "2026-09-02",
+      "stage": "pre-pricing",
+      "priority": "Medium",
+      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026060083/0001628280-26-060083-index.htm",
+      "detected_at": "2026-09-03T02:31:08.785686+00:00",
+      "key": "new_prepricing|s1:0002141406|0002141406|2026-09-02|"
+    },
     {
       "type": "priority_escalation",
       "company": "La Beaute Inc.",

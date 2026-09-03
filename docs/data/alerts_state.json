@@ -1,7 +1,31 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-03T02:26:32.623096+00:00",
+  "updated_at": "2026-09-03T02:31:08.785808+00:00",
   "items": {
+    "s1:0002112634": {
+      "id": "s1:0002112634",
+      "cik": "0002112634",
+      "company": "Sensei Harbor Corp.",
+      "form": "S-1/A",
+      "filed": "2026-09-02",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "High",
+      "value": 120000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2112634/000168316826006875/0001683168-26-006875-index.htm"
+    },
+    "s1:0002141406": {
+      "id": "s1:0002141406",
+      "cik": "0002141406",
+      "company": "Accelevation Holdings Corp.",
+      "form": "S-1",
+      "filed": "2026-09-02",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026060083/0001628280-26-060083-index.htm"
+    },
     "s1:0002133037": {
       "id": "s1:0002133037",
       "cik": "0002133037",
@@ -193,18 +217,6 @@
       "priority": "High",
       "value": 297500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm"
-    },
-    "s1:0002112634": {
-      "id": "s1:0002112634",
-      "cik": "0002112634",
-      "company": "Sensei Harbor Corp.",
-      "form": "S-1/A",
-      "filed": "2026-08-18",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "High",
-      "value": 120000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2112634/000168316826006561/0001683168-26-006561-index.htm"
     },
     "s1:0001880995": {
       "id": "s1:0001880995",
@@ -628,6 +640,20 @@
     }
   },
   "ciks": {
+    "0002112634": {
+      "company": "Sensei Harbor Corp.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002112634",
+      "last_filed": "2026-09-02",
+      "missing_runs": 0
+    },
+    "0002141406": {
+      "company": "Accelevation Holdings Corp.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002141406",
+      "last_filed": "2026-09-02",
+      "missing_runs": 0
+    },
     "0002133037": {
       "company": "SB Energy, Inc.",
       "stage": "pre-pricing",
@@ -738,13 +764,6 @@
       "stage": "priced",
       "last_filing_id": "0001193125-26-356916",
       "last_filed": "2026-08-19",
-      "missing_runs": 0
-    },
-    "0002112634": {
-      "company": "Sensei Harbor Corp.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002112634",
-      "last_filed": "2026-08-18",
       "missing_runs": 0
     },
     "0001880995": {
