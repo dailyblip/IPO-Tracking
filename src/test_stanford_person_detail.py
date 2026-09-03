@@ -38,7 +38,7 @@ class StanfordPersonDetailTests(unittest.TestCase):
         self.assertIn('stanford.className="stanford-connection"', html)
         self.assertIn("Confidence ${research.confidence}/5", html)
         self.assertIn("stanfordResearch(person)", html)
-        self.assertIn("person.stanford_university_bio===true&&Number.isFinite(shares)&&shares>0", html)
+        self.assertIn("person.stanford_university_bio===true&&person.is_beneficial_owner===true", html)
 
 
 if __name__ == "__main__":
