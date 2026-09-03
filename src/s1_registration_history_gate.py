@@ -36,6 +36,9 @@ import filing_parser
 FORM_TYPES = {"S-1", "S-1/A"}
 REPORTING_FORMS = {
     "8-K", "8-K/A",
+    "8-K12B", "8-K12B/A",
+    "8-K12G3", "8-K12G3/A",
+    "8-K15D5", "8-K15D5/A",
     "10-Q", "10-Q/A", "10-QT", "10-QT/A",
     "10-K", "10-K/A", "10-KT", "10-KT/A",
     "6-K", "6-K/A", "20-F", "20-F/A", "40-F", "40-F/A",
@@ -91,10 +94,11 @@ def _recent_submission_rows(cik: str) -> list[dict]:
 def already_reporting_before_registration(record: dict) -> bool:
     """Return True when SEC history proves the issuer reported before this S-1.
 
-    A prior 8-K, 10-Q, 10-K, 10-QT, 10-KT, 6-K, 20-F, or 40-F (including
-    amendments) is affirmative evidence that the issuer was already subject to
-    Exchange Act reporting. Requiring a strictly earlier filing date avoids
-    inferring event order from same-day accessions.
+    A prior 8-K (including successor/assumption variants), 10-Q, 10-K, 10-QT,
+    10-KT, 6-K, 20-F, or 40-F (including amendments) is affirmative evidence
+    that the issuer was already subject to Exchange Act reporting. Requiring a
+    strictly earlier filing date avoids inferring event order from same-day
+    accessions.
     """
     if str(record.get("form") or "").strip().upper() not in FORM_TYPES:
         return False
