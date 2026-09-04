@@ -1,6 +1,11 @@
 import unittest
+from pathlib import Path
 
 import archived_reporting_history_gate as gate
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+OWNERSHIP_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "ownership-refresh.yml"
 
 
 class ArchivedReportingHistoryGateTests(unittest.TestCase):
@@ -216,6 +221,27 @@ class ArchivedReportingHistoryGateTests(unittest.TestCase):
                 submissions_loader=lambda _cik: submissions,
                 archive_loader=lambda _name: (_ for _ in ()).throw(RuntimeError("SEC unavailable")),
             )
+
+    def test_ownership_refresh_applies_archive_gate_before_publication(self):
+        workflow = OWNERSHIP_WORKFLOW.read_text(encoding="utf-8")
+        followon = workflow.index("- name: Remove post-reporting follow-on/resale offerings")
+        archived = workflow.index("- name: Check archived SEC reporting history")
+        validation = workflow.index("- name: Validate public feed")
+        publish = workflow.index("- name: Publish refreshed ownership data")
+
+        self.assertLess(followon, archived)
+        self.assertLess(archived, validation)
+        self.assertLess(archived, publish)
+        self.assertIn(
+            "python archived_reporting_history_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json",
+            workflow,
+        )
+
+    def test_ownership_refresh_reacts_to_archive_gate_changes(self):
+        workflow = OWNERSHIP_WORKFLOW.read_text(encoding="utf-8")
+
+        self.assertIn("- 'src/archived_reporting_history_gate.py'", workflow)
+        self.assertIn("- 'src/test_archived_reporting_history_gate.py'", workflow)
 
 
 if __name__ == "__main__":
