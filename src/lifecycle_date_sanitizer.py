@@ -2,9 +2,12 @@
 
 Never infer a replacement date. The stored ``filing_date`` is the lifecycle's
 initial S-1 date, so it cannot occur after either the SEC filing date of the
-current public row or an already-priced IPO's pricing date. Clear only that bad
-initial date and keep the authoritative row/pricing facts intact. CSV output is
-regenerated so the public exports remain synchronized.
+current public row or an already-priced IPO's pricing date. Likewise, a final
+424B4 Pricing Date cannot occur after that final prospectus was filed. Clear only
+an impossible date and keep the remaining authoritative lifecycle facts intact;
+the final-pricing release gate will fail closed if a priced row is left without a
+valid Pricing Date. CSV output is regenerated so the public exports remain
+synchronized.
 """
 
 from __future__ import annotations
@@ -39,6 +42,23 @@ def sanitize_payload(payload: dict) -> tuple[dict, int]:
         filed_date = _iso_date(filing.get("filed"))
         pricing_date = _iso_date(filing.get("pricing_date"))
         filing_date = _iso_date(filing.get("filing_date"))
+        form = str(filing.get("form") or "").strip().upper()
+        stage = str(filing.get("stage") or "").strip().casefold()
+
+        # A company cannot price after the final 424B4 that reports that pricing.
+        # Do not move the date to a plausible value: clear the conflict so the
+        # final-pricing release gate can omit the row until authoritative recovery.
+        if (
+            form == "424B4"
+            and stage == "priced"
+            and filed_date is not None
+            and pricing_date is not None
+            and pricing_date > filed_date
+        ):
+            filing["pricing_date"] = None
+            pricing_date = None
+            changed += 1
+
         if filing_date is None:
             continue
         if (
