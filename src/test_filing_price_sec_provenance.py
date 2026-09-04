@@ -1,6 +1,7 @@
 import json
 import re
 import unittest
+from datetime import date
 from pathlib import Path
 
 
@@ -13,6 +14,17 @@ SEC_ARCHIVES_CIK_PATTERN = re.compile(r"/Archives/edgar/data/(\d+)/", re.IGNOREC
 def _normalize_cik(value):
     digits = re.sub(r"\D", "", str(value or ""))
     return int(digits) if digits else None
+
+
+def _canonical_date(value):
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = date.fromisoformat(raw)
+    except ValueError:
+        return None
+    return parsed if parsed.isoformat() == raw else None
 
 
 def _filing_price_source_failures(filing):
@@ -29,6 +41,8 @@ def _filing_price_source_failures(filing):
     row_cik = _normalize_cik(filing.get("cik"))
     sec_cik_match = SEC_ARCHIVES_CIK_PATTERN.search(sec_url)
     sec_url_cik = int(sec_cik_match.group(1)) if sec_cik_match else None
+    source_date = _canonical_date(source.get("filing_date"))
+    pricing_date = _canonical_date(filing.get("pricing_date"))
 
     failures = []
     if str(source.get("source") or "").strip().casefold() != "sec edgar":
@@ -37,6 +51,15 @@ def _filing_price_source_failures(filing):
         failures.append("Filing Price source is not S-1/S-1A")
     if not ACCESSION_PATTERN.fullmatch(accession):
         failures.append(f"Filing Price source lacks a canonical SEC accession number: {accession!r}")
+    if source_date is None:
+        failures.append("Filing Price source lacks a valid SEC filing date")
+    if str(filing.get("pricing_date") or "").strip() and pricing_date is None:
+        failures.append("priced row has an invalid Pricing Date for Filing Price chronology")
+    if source_date is not None and pricing_date is not None and source_date > pricing_date:
+        failures.append(
+            f"Filing Price source date {source_date.isoformat()} postdates Pricing Date "
+            f"{pricing_date.isoformat()}"
+        )
 
     if not sec_url.startswith(SEC_ARCHIVES_PREFIX):
         failures.append("Filing Price source does not link to an SEC Archives filing")
@@ -63,7 +86,7 @@ class FilingPriceSECProvenanceTests(unittest.TestCase):
         cls.filings = payload.get("filings", []) if isinstance(payload, dict) else payload
 
     def test_published_filing_prices_are_anchored_to_same_issuer_sec_history(self):
-        """A preserved preliminary range must remain tied to this issuer's S-1/S-1A."""
+        """A preserved preliminary range must remain tied to this issuer's preceding S-1/S-1A."""
         failures = []
         checked = 0
 
@@ -131,6 +154,55 @@ class FilingPriceSECProvenanceTests(unittest.TestCase):
             any("does not match accession" in reason for reason in failures),
             f"expected accession mismatch failure, got: {failures}",
         )
+
+    def test_post_pricing_s1_source_is_rejected(self):
+        accession = "0001234567-26-000002"
+        filing = {
+            "cik": "0001234567",
+            "form": "424B4",
+            "stage": "Priced",
+            "pricing_date": "2026-08-18",
+            "filing_price": "14-16",
+            "filing_price_source": {
+                "source": "SEC EDGAR",
+                "form": "S-1/A",
+                "filing_date": "2026-08-19",
+                "accession_no": accession,
+                "sec_url": (
+                    "https://www.sec.gov/Archives/edgar/data/1234567/"
+                    "000123456726000002/example-s1a.htm"
+                ),
+            },
+        }
+
+        failures = _filing_price_source_failures(filing)
+        self.assertTrue(
+            any("postdates Pricing Date" in reason for reason in failures),
+            f"expected post-pricing Filing Price provenance failure, got: {failures}",
+        )
+
+    def test_invalid_source_filing_date_is_rejected(self):
+        accession = "0001234567-26-000003"
+        filing = {
+            "cik": "0001234567",
+            "form": "424B4",
+            "stage": "Priced",
+            "pricing_date": "2026-08-18",
+            "filing_price": "14-16",
+            "filing_price_source": {
+                "source": "SEC EDGAR",
+                "form": "S-1/A",
+                "filing_date": "08/17/2026",
+                "accession_no": accession,
+                "sec_url": (
+                    "https://www.sec.gov/Archives/edgar/data/1234567/"
+                    "000123456726000003/example-s1a.htm"
+                ),
+            },
+        }
+
+        failures = _filing_price_source_failures(filing)
+        self.assertIn("Filing Price source lacks a valid SEC filing date", failures)
 
 
 if __name__ == "__main__":
