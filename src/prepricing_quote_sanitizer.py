@@ -55,8 +55,21 @@ def is_priced_ipo(filing: dict) -> bool:
         return False
     if str(filing.get("stage") or "").strip().casefold() != "priced":
         return False
-    if _canonical_nonfuture_date(filing.get("pricing_date")) is None:
+    pricing_date = _canonical_nonfuture_date(filing.get("pricing_date"))
+    if pricing_date is None:
         return False
+
+    # ``filed`` is the SEC filing date of the current public row. ``filing_date``
+    # is the original S-1 date and must not be used for this comparison. When the
+    # final 424B4 filing date is present, a pricing date after it is impossible and
+    # must not be allowed to retain a live quote even if an earlier sanitizer was
+    # bypassed or its ordering changes.
+    filed_raw = str(filing.get("filed") or "").strip()
+    if filed_raw:
+        filed_date = _canonical_nonfuture_date(filed_raw)
+        if filed_date is None or pricing_date > filed_date:
+            return False
+
     final_price = _number(filing.get("offering_price"))
     return final_price is not None and final_price > 0
 
