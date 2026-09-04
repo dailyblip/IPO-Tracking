@@ -1,8 +1,22 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-04T03:20:27.013954+00:00",
-  "count": 63,
+  "generated_at": "2026-09-04T03:26:06.810308+00:00",
+  "count": 64,
   "alerts": [
+    {
+      "type": "new_prepricing",
+      "company": "Oura Inc.",
+      "cik": "0002133022",
+      "filing_id": "s1:0002133022",
+      "form": "S-1",
+      "filed": "2026-09-03",
+      "stage": "pre-pricing",
+      "priority": "Medium",
+      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133022/000119312526381855/0001193125-26-381855-index.htm",
+      "detected_at": "2026-09-04T03:26:06.810097+00:00",
+      "key": "new_prepricing|s1:0002133022|0002133022|2026-09-03|"
+    },
     {
       "type": "new_prepricing",
       "company": "Accelevation Holdings Corp.",
