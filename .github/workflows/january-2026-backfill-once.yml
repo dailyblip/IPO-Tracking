@@ -15,7 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Replay January with the current hardened historical writer. The historical
-      # publication policy keeps the pre-June $100M threshold intact.
+      # publication policy keeps the pre-June $100M threshold intact. Relaunch
+      # after authoritative whole-share offering rounding repair in PR #297.
       - name: Dispatch validated January 2026 historical backfill
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
