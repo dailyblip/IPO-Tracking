@@ -18,6 +18,7 @@ on:
       - 'src/lifecycle_date_sanitizer.py'
       - 'src/final_pricing_release_gate.py'
       - 'src/followon_sanitizer.py'
+      - 'src/archived_reporting_history_gate.py'
       - 'src/prepricing_quote_sanitizer.py'
       - 'src/market_quote_identity.py'
       - 'src/market_quote_release_gate.py'
@@ -37,6 +38,7 @@ on:
       - 'src/test_lifecycle_date_sanitizer.py'
       - 'src/test_final_pricing_release_gate.py'
       - 'src/test_followon_sanitizer.py'
+      - 'src/test_archived_reporting_history_gate.py'
       - 'src/test_prepricing_quote_sanitizer.py'
       - 'src/test_market_quote_identity.py'
       - 'src/test_market_quote_release_gate.py'
@@ -133,6 +135,14 @@ jobs:
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python followon_sanitizer.py ../docs/data/filings.json
+      # SEC's inline submissions block can age older reporting evidence into
+      # filings.files. Ownership replay must apply the same archive-aware gate as
+      # Daily so a long-history reporting issuer cannot be republished as an IPO.
+      - name: Check archived SEC reporting history
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python archived_reporting_history_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
       - name: Recover SEC-confirmed Stanford beneficial-owner affiliations
         working-directory: src
         env:
