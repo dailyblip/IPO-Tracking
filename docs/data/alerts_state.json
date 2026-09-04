@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-04T08:02:47.206442+00:00",
+  "updated_at": "2026-09-04T09:07:04.829369+00:00",
   "items": {
     "s1:0002133022": {
       "id": "s1:0002133022",
@@ -805,6 +805,114 @@
       "priority": "High",
       "value": 560000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2062583/000162828026015648/0001628280-26-015648-index.htm"
+    },
+    "0001193125-26-083190": {
+      "id": "0001193125-26-083190",
+      "cik": "0002100782",
+      "company": "Generate Biomedicines, Inc.",
+      "form": "424B4",
+      "filed": "2026-02-27",
+      "stage": "priced",
+      "price_range": "15-17",
+      "priority": "High",
+      "value": 400000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2100782/000119312526083190/0001193125-26-083190-index.htm"
+    },
+    "0001193125-26-049767": {
+      "id": "0001193125-26-049767",
+      "cik": "0002080921",
+      "company": "ARKO Petroleum Corp.",
+      "form": "424B4",
+      "filed": "2026-02-13",
+      "stage": "priced",
+      "price_range": "18-20",
+      "priority": "Medium",
+      "value": 199999998.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2080921/000119312526049767/0001193125-26-049767-index.htm"
+    },
+    "0001193125-26-046879": {
+      "id": "0001193125-26-046879",
+      "cik": "0002065636",
+      "company": "SOLV Energy, Inc.",
+      "form": "424B4",
+      "filed": "2026-02-11",
+      "stage": "priced",
+      "price_range": "22-25",
+      "priority": "High",
+      "value": 512500000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2065636/000119312526046879/0001193125-26-046879-index.htm"
+    },
+    "0001193125-26-041885": {
+      "id": "0001193125-26-041885",
+      "cik": "0001696556",
+      "company": "Once Upon a Farm, PBC",
+      "form": "424B4",
+      "filed": "2026-02-09",
+      "stage": "priced",
+      "price_range": "17-19",
+      "priority": "Medium",
+      "value": 197949762.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1696556/000119312526041885/0001193125-26-041885-index.htm"
+    },
+    "0001628280-26-006068": {
+      "id": "0001628280-26-006068",
+      "cik": "0001778922",
+      "company": "SpyGlass Pharma, Inc.",
+      "form": "424B4",
+      "filed": "2026-02-06",
+      "stage": "priced",
+      "price_range": "15-17",
+      "priority": "Medium",
+      "value": 150000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1778922/000162828026006068/0001628280-26-006068-index.htm"
+    },
+    "0001193125-26-040029": {
+      "id": "0001193125-26-040029",
+      "cik": "0002080126",
+      "company": "Forgent Power Solutions, Inc.",
+      "form": "424B4",
+      "filed": "2026-02-06",
+      "stage": "priced",
+      "price_range": "25-29",
+      "priority": "High",
+      "value": 1512000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2080126/000119312526040029/0001193125-26-040029-index.htm"
+    },
+    "0001193125-26-039375": {
+      "id": "0001193125-26-039375",
+      "cik": "0001861123",
+      "company": "Eikon Therapeutics, Inc.",
+      "form": "424B4",
+      "filed": "2026-02-05",
+      "stage": "priced",
+      "price_range": "16-18",
+      "priority": "Medium",
+      "value": 381196800.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1861123/000119312526039375/0001193125-26-039375-index.htm"
+    },
+    "0001628280-26-005868": {
+      "id": "0001628280-26-005868",
+      "cik": "0002085187",
+      "company": "Bob's Discount Furniture, Inc.",
+      "form": "424B4",
+      "filed": "2026-02-05",
+      "stage": "priced",
+      "price_range": "17-19",
+      "priority": "High",
+      "value": 330650000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2085187/000162828026005868/0001628280-26-005868-index.htm"
+    },
+    "0001628280-26-005505": {
+      "id": "0001628280-26-005505",
+      "cik": "0001827635",
+      "company": "Veradermics, Inc",
+      "form": "424B4",
+      "filed": "2026-02-04",
+      "stage": "priced",
+      "price_range": "14-16",
+      "priority": "High",
+      "value": 256319999.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1827635/000162828026005505/0001628280-26-005505-index.htm"
     }
   },
   "ciks": {
@@ -1275,6 +1383,69 @@
       "stage": "priced",
       "last_filing_id": "0001628280-26-015648",
       "last_filed": "2026-03-06",
+      "missing_runs": 0
+    },
+    "0002100782": {
+      "company": "Generate Biomedicines, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-083190",
+      "last_filed": "2026-02-27",
+      "missing_runs": 0
+    },
+    "0002080921": {
+      "company": "ARKO Petroleum Corp.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-049767",
+      "last_filed": "2026-02-13",
+      "missing_runs": 0
+    },
+    "0002065636": {
+      "company": "SOLV Energy, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-046879",
+      "last_filed": "2026-02-11",
+      "missing_runs": 0
+    },
+    "0001696556": {
+      "company": "Once Upon a Farm, PBC",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-041885",
+      "last_filed": "2026-02-09",
+      "missing_runs": 0
+    },
+    "0001778922": {
+      "company": "SpyGlass Pharma, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-006068",
+      "last_filed": "2026-02-06",
+      "missing_runs": 0
+    },
+    "0002080126": {
+      "company": "Forgent Power Solutions, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-040029",
+      "last_filed": "2026-02-06",
+      "missing_runs": 0
+    },
+    "0001861123": {
+      "company": "Eikon Therapeutics, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-039375",
+      "last_filed": "2026-02-05",
+      "missing_runs": 0
+    },
+    "0002085187": {
+      "company": "Bob's Discount Furniture, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-005868",
+      "last_filed": "2026-02-05",
+      "missing_runs": 0
+    },
+    "0001827635": {
+      "company": "Veradermics, Inc",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-005505",
+      "last_filed": "2026-02-04",
       "missing_runs": 0
     }
   }
