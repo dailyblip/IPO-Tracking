@@ -1,7 +1,19 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-04T03:20:27.013912+00:00",
+  "updated_at": "2026-09-04T03:26:06.810264+00:00",
   "items": {
+    "s1:0002133022": {
+      "id": "s1:0002133022",
+      "cik": "0002133022",
+      "company": "Oura Inc.",
+      "form": "S-1",
+      "filed": "2026-09-03",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133022/000119312526381855/0001193125-26-381855-index.htm"
+    },
     "s1:0002141406": {
       "id": "s1:0002141406",
       "cik": "0002141406",
@@ -628,6 +640,13 @@
     }
   },
   "ciks": {
+    "0002133022": {
+      "company": "Oura Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002133022",
+      "last_filed": "2026-09-03",
+      "missing_runs": 0
+    },
     "0002141406": {
       "company": "Accelevation Holdings Corp.",
       "stage": "pre-pricing",
