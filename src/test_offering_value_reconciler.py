@@ -63,6 +63,27 @@ class AuthoritativeOfferingValueTests(unittest.TestCase):
         self.assertIn(SOURCE_MARKER, filing["offering_size_source"])
         self.assertEqual(filing["offering_size_confidence"], "High")
 
+    def test_preserves_authoritative_whole_share_target_rounding(self):
+        filing = {
+            "company": "Buda Juice, Inc.",
+            "value": 20_000_002.5,
+            "offering_price": 7.5,
+            "offering_size_source": "exact base shares × final IPO price",
+            "offering_size_confidence": "High",
+        }
+        self.assertTrue(reconcile_record(filing, 20_000_000))
+        self.assertEqual(filing["value"], 20_000_000)
+        self.assertIn(SOURCE_MARKER, filing["offering_size_source"])
+
+    def test_near_conflict_not_explainable_by_same_share_count_fails_closed(self):
+        filing = {
+            "company": "Bad Near-Rounding Co.",
+            "value": 20_000_010,
+            "offering_price": 7.5,
+        }
+        with self.assertRaises(OfferingValueReconciliationError):
+            reconcile_record(filing, 20_000_000)
+
     def test_fills_blank_value_from_authoritative_sec_aggregate(self):
         filing = {
             "company": "Complete Economics Co.",
