@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-04T09:07:04.829369+00:00",
+  "updated_at": "2026-09-04T12:09:06.468556+00:00",
   "items": {
     "s1:0002133022": {
       "id": "s1:0002133022",
@@ -913,6 +913,66 @@
       "priority": "High",
       "value": 256319999.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1827635/000162828026005505/0001628280-26-005505-index.htm"
+    },
+    "0001193125-26-030469": {
+      "id": "0001193125-26-030469",
+      "cik": "0002086587",
+      "company": "Yellowstone Midco Holdings II, LLC",
+      "form": "424B4",
+      "filed": "2026-01-30",
+      "stage": "priced",
+      "price_range": "30-34",
+      "priority": "High",
+      "value": 629000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2086587/000119312526030469/0001193125-26-030469-index.htm"
+    },
+    "0001193125-26-029993": {
+      "id": "0001193125-26-029993",
+      "cik": "0001788451",
+      "company": "Ethos Technologies Inc.",
+      "form": "424B4",
+      "filed": "2026-01-30",
+      "stage": "priced",
+      "price_range": "18-20",
+      "priority": "High",
+      "value": 199999985.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1788451/000119312526029993/0001193125-26-029993-index.htm"
+    },
+    "0001628280-26-003334": {
+      "id": "0001628280-26-003334",
+      "cik": "0001693736",
+      "company": "EquipmentShare.com Inc",
+      "form": "424B4",
+      "filed": "2026-01-26",
+      "stage": "priced",
+      "price_range": "23.5-25.5",
+      "priority": "High",
+      "value": 747250000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1693736/000162828026003334/0001628280-26-003334-index.htm"
+    },
+    "0001628280-26-003180": {
+      "id": "0001628280-26-003180",
+      "cik": "0001740604",
+      "company": "Bitgo Holdings, Inc.",
+      "form": "424B4",
+      "filed": "2026-01-23",
+      "stage": "priced",
+      "price_range": "15-17",
+      "priority": "Medium",
+      "value": 212788710.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1740604/000162828026003180/0001628280-26-003180-index.htm"
+    },
+    "0001193125-26-009078": {
+      "id": "0001193125-26-009078",
+      "cik": "0002035832",
+      "company": "Aktis Oncology, Inc.",
+      "form": "424B4",
+      "filed": "2026-01-09",
+      "stage": "priced",
+      "price_range": "16-18",
+      "priority": "Medium",
+      "value": 317700000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2035832/000119312526009078/0001193125-26-009078-index.htm"
     }
   },
   "ciks": {
@@ -1446,6 +1506,41 @@
       "stage": "priced",
       "last_filing_id": "0001628280-26-005505",
       "last_filed": "2026-02-04",
+      "missing_runs": 0
+    },
+    "0002086587": {
+      "company": "Yellowstone Midco Holdings II, LLC",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-030469",
+      "last_filed": "2026-01-30",
+      "missing_runs": 0
+    },
+    "0001788451": {
+      "company": "Ethos Technologies Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-029993",
+      "last_filed": "2026-01-30",
+      "missing_runs": 0
+    },
+    "0001693736": {
+      "company": "EquipmentShare.com Inc",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-003334",
+      "last_filed": "2026-01-26",
+      "missing_runs": 0
+    },
+    "0001740604": {
+      "company": "Bitgo Holdings, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-003180",
+      "last_filed": "2026-01-23",
+      "missing_runs": 0
+    },
+    "0002035832": {
+      "company": "Aktis Oncology, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-009078",
+      "last_filed": "2026-01-09",
       "missing_runs": 0
     }
   }
