@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 
 from lifecycle_reconciler import (
     _promote_prepricing_record,
+    _repair_final_record,
     extract_final_offering_terms,
     reconcile_payload,
 )
@@ -247,6 +248,63 @@ class LifecycleReconcilerTests(unittest.TestCase):
         self.assertEqual(promoted["ticker"], "LYNX")
         self.assertNotIn("current_price", promoted)
         self.assertNotIn("price_updated", promoted)
+
+    def test_final_ticker_change_clears_holder_quote_derivatives(self):
+        final = _final_record(
+            ticker="OLD",
+            value=None,
+            value_label=None,
+            current_price=22.0,
+            price_updated="2026-08-19T15:00:00+00:00",
+            people=[{
+                "name": "Final Holder",
+                "shares": 750_000,
+                "cash_value": 16_500_000,
+                "liquid_value": 4_000_000,
+                "locked_value": 12_500_000,
+                "valuation_as_of": "2026-08-19",
+            }],
+            signals=[
+                "Offering priced at $17.50 per share",
+                "Current market value is approximately $16.5M",
+            ],
+        )
+
+        repaired = _repair_final_record(final, _final_meta(), _lyntris_final_soup())
+
+        self.assertIsNotNone(repaired)
+        self.assertEqual(repaired["ticker"], "LYNX")
+        self.assertNotIn("current_price", repaired)
+        self.assertNotIn("price_updated", repaired)
+        holder = repaired["people"][0]
+        self.assertEqual(holder["shares"], 750_000)
+        self.assertNotIn("cash_value", holder)
+        self.assertNotIn("liquid_value", holder)
+        self.assertNotIn("locked_value", holder)
+        self.assertNotIn("valuation_as_of", holder)
+        self.assertNotIn("current market value", " ".join(repaired["signals"]).casefold())
+
+    def test_same_final_ticker_preserves_existing_verified_quote_derivatives_during_repair(self):
+        final = _final_record(
+            value=None,
+            value_label=None,
+            current_price=22.0,
+            price_updated="2026-08-19T15:00:00+00:00",
+            people=[{
+                "name": "Final Holder",
+                "shares": 750_000,
+                "cash_value": 16_500_000,
+                "valuation_as_of": "2026-08-19",
+            }],
+        )
+
+        repaired = _repair_final_record(final, _final_meta(), _lyntris_final_soup())
+
+        self.assertIsNotNone(repaired)
+        self.assertEqual(repaired["ticker"], "LYNX")
+        self.assertEqual(repaired["current_price"], 22.0)
+        self.assertEqual(repaired["people"][0]["cash_value"], 16_500_000)
+        self.assertEqual(repaired["people"][0]["valuation_as_of"], "2026-08-19")
 
 
 if __name__ == "__main__":

@@ -153,6 +153,46 @@ def _has_release_grade_final_size(filing):
     )
 
 
+def _clear_market_quote_derivatives(record):
+    """Clear market values when final SEC ticker identity changes.
+
+    A final-ticker change invalidates not only the top-level Current Price but every
+    person-level value derived from that quote. Preserve SEC ownership facts while
+    removing quote-derived economics and market-value signals so a stale symbol can
+    never survive lifecycle repair indirectly through beneficial-owner fields.
+    """
+    record.pop("current_price", None)
+    record.pop("price_updated", None)
+
+    people = record.get("people")
+    if isinstance(people, list):
+        cleaned_people = []
+        for person in people:
+            if not isinstance(person, dict):
+                cleaned_people.append(person)
+                continue
+            cleaned = dict(person)
+            for field in ("cash_value", "liquid_value", "locked_value", "valuation_as_of"):
+                cleaned.pop(field, None)
+            cleaned_people.append(cleaned)
+        record["people"] = cleaned_people
+
+    signals = record.get("signals")
+    if isinstance(signals, list):
+        record["signals"] = [
+            signal
+            for signal in signals
+            if not (
+                isinstance(signal, str)
+                and (
+                    "currently valued at approximately" in signal.casefold()
+                    or "current market value" in signal.casefold()
+                )
+            )
+        ]
+    return record
+
+
 def _apply_final_terms(record, filing_meta, soup):
     """Apply authoritative SEC final terms without fabricating unavailable size facts."""
     cover = filing_parser.extract_cover_page_data(soup)
@@ -201,10 +241,10 @@ def _apply_final_terms(record, filing_meta, soup):
     })
 
     # Existing market data is safe to carry across the lifecycle handoff only when
-    # the final SEC prospectus confirms the same ticker identity.
+    # the final SEC prospectus confirms the same ticker identity. A mismatch clears
+    # both the quote and every holder value derived from that stale quote.
     if not final_ticker or final_ticker != old_ticker:
-        updated.pop("current_price", None)
-        updated.pop("price_updated", None)
+        _clear_market_quote_derivatives(updated)
 
     filing_date = str(updated.get("filing_date") or "").strip()
     if filing_date and pricing_date and filing_date > pricing_date:
