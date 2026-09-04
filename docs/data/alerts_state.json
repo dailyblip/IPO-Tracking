@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-04T12:09:06.468556+00:00",
+  "updated_at": "2026-09-04T13:10:10.537839+00:00",
   "items": {
     "s1:0002133022": {
       "id": "s1:0002133022",
@@ -973,6 +973,42 @@
       "priority": "Medium",
       "value": 317700000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2035832/000119312526009078/0001193125-26-009078-index.htm"
+    },
+    "0001193125-25-322948": {
+      "id": "0001193125-25-322948",
+      "cik": "0002065708",
+      "company": "Andersen Group Inc.",
+      "form": "424B4",
+      "filed": "2025-12-17",
+      "stage": "priced",
+      "price_range": "14-16",
+      "priority": "High",
+      "value": 176000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2065708/000119312525322948/0001193125-25-322948-index.htm"
+    },
+    "0001193125-25-316455": {
+      "id": "0001193125-25-316455",
+      "cik": "0002071288",
+      "company": "Lumexa Imaging Holdings, Inc.",
+      "form": "424B4",
+      "filed": "2025-12-12",
+      "stage": "priced",
+      "price_range": "17-20",
+      "priority": "High",
+      "value": 462500000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2071288/000119312525316455/0001193125-25-316455-index.htm"
+    },
+    "0001213900-25-120076": {
+      "id": "0001213900-25-120076",
+      "cik": "0002079999",
+      "company": "Cardinal Infrastructure Group Inc.",
+      "form": "424B4",
+      "filed": "2025-12-10",
+      "stage": "priced",
+      "price_range": "20-22",
+      "priority": "High",
+      "value": 241500000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
     }
   },
   "ciks": {
@@ -1541,6 +1577,27 @@
       "stage": "priced",
       "last_filing_id": "0001193125-26-009078",
       "last_filed": "2026-01-09",
+      "missing_runs": 0
+    },
+    "0002065708": {
+      "company": "Andersen Group Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-25-322948",
+      "last_filed": "2025-12-17",
+      "missing_runs": 0
+    },
+    "0002071288": {
+      "company": "Lumexa Imaging Holdings, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-25-316455",
+      "last_filed": "2025-12-12",
+      "missing_runs": 0
+    },
+    "0002079999": {
+      "company": "Cardinal Infrastructure Group Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001213900-25-120076",
+      "last_filed": "2025-12-10",
       "missing_runs": 0
     }
   }
