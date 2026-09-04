@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-04T06:25:17.317476+00:00",
+  "updated_at": "2026-09-04T07:20:26.156145+00:00",
   "items": {
     "s1:0002133022": {
       "id": "s1:0002133022",
@@ -13,6 +13,18 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2133022/000119312526381855/0001193125-26-381855-index.htm"
+    },
+    "s1:0002055301": {
+      "id": "s1:0002055301",
+      "cik": "0002055301",
+      "company": "Aura Consolidated Group, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-02",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2055301/000162828026060183/0001628280-26-060183-index.htm"
     },
     "s1:0002141406": {
       "id": "s1:0002141406",
@@ -34,7 +46,7 @@
       "filed": "2026-09-01",
       "stage": "pre-pricing",
       "price_range": null,
-      "priority": "Medium",
+      "priority": "High",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026059639/0001628280-26-059639-index.htm"
     },
@@ -98,6 +110,18 @@
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1718728/000119312526376166/0001193125-26-376166-index.htm"
     },
+    "s1:0002080215": {
+      "id": "s1:0002080215",
+      "cik": "0002080215",
+      "company": "StableCoinX Inc.",
+      "form": "S-1",
+      "filed": "2026-08-31",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2080215/000121390026095808/0001213900-26-095808-index.htm"
+    },
     "s1:0002151905": {
       "id": "s1:0002151905",
       "cik": "0002151905",
@@ -107,7 +131,7 @@
       "stage": "pre-pricing",
       "price_range": null,
       "priority": "High",
-      "value": 50000000,
+      "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2151905/000215190526000001/0002151905-26-000001-index.htm"
     },
     "s1:0001779977": {
@@ -518,6 +542,138 @@
       "value": 650000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2118195/000119312526256356/0001193125-26-256356-index.htm"
     },
+    "0001628280-26-037044": {
+      "id": "0001628280-26-037044",
+      "cik": "0001925283",
+      "company": "Lincoln International, Inc.",
+      "form": "424B4",
+      "filed": "2026-05-21",
+      "stage": "priced",
+      "price_range": "18-20",
+      "priority": "Medium",
+      "value": 420999760.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1925283/000162828026037044/0001628280-26-037044-index.htm"
+    },
+    "0001104659-26-060835": {
+      "id": "0001104659-26-060835",
+      "cik": "0001898718",
+      "company": "GMR Solutions Inc.",
+      "form": "424B4",
+      "filed": "2026-05-14",
+      "stage": "priced",
+      "price_range": "15",
+      "priority": "High",
+      "value": 478723395.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1898718/000110465926060835/0001104659-26-060835-index.htm"
+    },
+    "0001628280-26-034849": {
+      "id": "0001628280-26-034849",
+      "cik": "0001853868",
+      "company": "Fervo Energy Co",
+      "form": "424B4",
+      "filed": "2026-05-14",
+      "stage": "priced",
+      "price_range": "25-26",
+      "priority": "High",
+      "value": 1890000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1853868/000162828026034849/0001628280-26-034849-index.htm"
+    },
+    "0001193125-26-224302": {
+      "id": "0001193125-26-224302",
+      "cik": "0002104882",
+      "company": "EagleRock Land, LLC",
+      "form": "424B4",
+      "filed": "2026-05-14",
+      "stage": "priced",
+      "price_range": "17-20",
+      "priority": "High",
+      "value": 320050000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2104882/000119312526224302/0001193125-26-224302-index.htm"
+    },
+    "0001628280-26-035214": {
+      "id": "0001628280-26-035214",
+      "cik": "0002021728",
+      "company": "Cerebras Systems Inc.",
+      "form": "424B4",
+      "filed": "2026-05-14",
+      "stage": "priced",
+      "price_range": "150-160",
+      "priority": "High",
+      "value": 277500000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2021728/000162828026035214/0001628280-26-035214-index.htm"
+    },
+    "0001104659-26-057504": {
+      "id": "0001104659-26-057504",
+      "cik": "0001934114",
+      "company": "Suja Life, Inc.",
+      "form": "424B4",
+      "filed": "2026-05-08",
+      "stage": "priced",
+      "price_range": "21-24",
+      "priority": "Medium",
+      "value": 186666669.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1934114/000110465926057504/0001104659-26-057504-index.htm"
+    },
+    "0001193125-26-214819": {
+      "id": "0001193125-26-214819",
+      "cik": "0001882782",
+      "company": "Odyssey Therapeutics, Inc.",
+      "form": "424B4",
+      "filed": "2026-05-08",
+      "stage": "priced",
+      "price_range": "16-18",
+      "priority": "Medium",
+      "value": 279000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1882782/000119312526214819/0001193125-26-214819-index.htm"
+    },
+    "0001628280-26-032843": {
+      "id": "0001628280-26-032843",
+      "cik": "0001489993",
+      "company": "Mobia Medical, Inc.",
+      "form": "424B4",
+      "filed": "2026-05-08",
+      "stage": "priced",
+      "price_range": "14-16",
+      "priority": "Medium",
+      "value": 150000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1489993/000162828026032843/0001628280-26-032843-index.htm"
+    },
+    "0001628280-26-032207": {
+      "id": "0001628280-26-032207",
+      "cik": "0001750704",
+      "company": "HawkEye 360, Inc.",
+      "form": "424B4",
+      "filed": "2026-05-07",
+      "stage": "priced",
+      "price_range": "24-26",
+      "priority": "Medium",
+      "value": 416000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1750704/000162828026032207/0001628280-26-032207-index.htm"
+    },
+    "0001193125-26-201758": {
+      "id": "0001193125-26-201758",
+      "cik": "0002042347",
+      "company": "Seaport Therapeutics, Inc.",
+      "form": "424B4",
+      "filed": "2026-05-01",
+      "stage": "priced",
+      "price_range": "16-18",
+      "priority": "High",
+      "value": 254880000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2042347/000119312526201758/0001193125-26-201758-index.htm"
+    },
+    "0001193125-26-201458": {
+      "id": "0001193125-26-201458",
+      "cik": "0002114044",
+      "company": "Hemab Therapeutics Holdings, Inc.",
+      "form": "424B4",
+      "filed": "2026-05-01",
+      "stage": "priced",
+      "price_range": "16-18",
+      "priority": "Medium",
+      "value": 301500000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2114044/000119312526201458/0001193125-26-201458-index.htm"
+    },
     "0001193125-26-197686": {
       "id": "0001193125-26-197686",
       "cik": "0001540171",
@@ -647,6 +803,13 @@
       "last_filed": "2026-09-03",
       "missing_runs": 0
     },
+    "0002055301": {
+      "company": "Aura Consolidated Group, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002055301",
+      "last_filed": "2026-09-02",
+      "missing_runs": 0
+    },
     "0002141406": {
       "company": "Accelevation Holdings Corp.",
       "stage": "pre-pricing",
@@ -693,6 +856,13 @@
       "company": "Syntiant Corp.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0001718728",
+      "last_filed": "2026-08-31",
+      "missing_runs": 0
+    },
+    "0002080215": {
+      "company": "StableCoinX Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002080215",
       "last_filed": "2026-08-31",
       "missing_runs": 0
     },
@@ -939,6 +1109,83 @@
       "stage": "priced",
       "last_filing_id": "0001193125-26-256356",
       "last_filed": "2026-06-04",
+      "missing_runs": 0
+    },
+    "0001925283": {
+      "company": "Lincoln International, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-037044",
+      "last_filed": "2026-05-21",
+      "missing_runs": 0
+    },
+    "0001898718": {
+      "company": "GMR Solutions Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001104659-26-060835",
+      "last_filed": "2026-05-14",
+      "missing_runs": 0
+    },
+    "0001853868": {
+      "company": "Fervo Energy Co",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-034849",
+      "last_filed": "2026-05-14",
+      "missing_runs": 0
+    },
+    "0002104882": {
+      "company": "EagleRock Land, LLC",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-224302",
+      "last_filed": "2026-05-14",
+      "missing_runs": 0
+    },
+    "0002021728": {
+      "company": "Cerebras Systems Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-035214",
+      "last_filed": "2026-05-14",
+      "missing_runs": 0
+    },
+    "0001934114": {
+      "company": "Suja Life, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001104659-26-057504",
+      "last_filed": "2026-05-08",
+      "missing_runs": 0
+    },
+    "0001882782": {
+      "company": "Odyssey Therapeutics, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-214819",
+      "last_filed": "2026-05-08",
+      "missing_runs": 0
+    },
+    "0001489993": {
+      "company": "Mobia Medical, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-032843",
+      "last_filed": "2026-05-08",
+      "missing_runs": 0
+    },
+    "0001750704": {
+      "company": "HawkEye 360, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-032207",
+      "last_filed": "2026-05-07",
+      "missing_runs": 0
+    },
+    "0002042347": {
+      "company": "Seaport Therapeutics, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-201758",
+      "last_filed": "2026-05-01",
+      "missing_runs": 0
+    },
+    "0002114044": {
+      "company": "Hemab Therapeutics Holdings, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-201458",
+      "last_filed": "2026-05-01",
       "missing_runs": 0
     },
     "0001540171": {

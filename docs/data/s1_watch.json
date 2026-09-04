@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-04T06:22:32.813659+00:00",
+  "generated_at": "2026-09-04T06:56:44.972258+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -25,6 +25,52 @@
         "No preliminary price range or fixed offering price detected yet"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2133022/000119312526381855/0001193125-26-381855-index.htm"
+    },
+    {
+      "id": "0001493152-26-041268",
+      "company": "First Breach, Inc.",
+      "ticker": "FBDT",
+      "cik": "0001892704",
+      "accession_no": "0001493152-26-041268",
+      "form": "S-1",
+      "filed": "2026-09-02",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1892704/000149315226041268/0001493152-26-041268-index.htm"
+    },
+    {
+      "id": "0001628280-26-060183",
+      "company": "Aura Consolidated Group, Inc.",
+      "ticker": "AXQ",
+      "cik": "0002055301",
+      "accession_no": "0001628280-26-060183",
+      "form": "S-1/A",
+      "filed": "2026-09-02",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2055301/000162828026060183/0001628280-26-060183-index.htm"
     },
     {
       "id": "0001628280-26-060083",
@@ -58,9 +104,9 @@
       "form": "S-1",
       "filed": "2026-09-01",
       "stage": "Pre-pricing",
-      "priority": "Medium",
+      "priority": "High",
       "price_range": null,
-      "filing_price": null,
+      "filing_price": "$1.50",
       "ipo_size": null,
       "offering_size_source": null,
       "offering_size_confidence": null,
@@ -68,7 +114,7 @@
       "secondary_offering_shares": null,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
+        "Fixed offering price disclosed at $1.50 per share"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026059639/0001628280-26-059639-index.htm"
     },
@@ -188,6 +234,29 @@
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1718728/000119312526376166/0001193125-26-376166-index.htm"
     },
     {
+      "id": "0001213900-26-095808",
+      "company": "StableCoinX Inc.",
+      "ticker": "USDE",
+      "cik": "0002080215",
+      "accession_no": "0001213900-26-095808",
+      "form": "S-1",
+      "filed": "2026-08-31",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2080215/000121390026095808/0001213900-26-095808-index.htm"
+    },
+    {
       "id": "0002151905-26-000001",
       "company": "La Beaute Inc.",
       "ticker": "LABI",
@@ -199,15 +268,14 @@
       "priority": "High",
       "price_range": null,
       "filing_price": "$5.00",
-      "ipo_size": 50000000,
-      "offering_size_source": "SEC preliminary prospectus cover: primary offering; issuer-only; verified point price",
-      "offering_size_confidence": "High",
-      "primary_offering_shares": 10000000,
+      "ipo_size": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
       "secondary_offering_shares": null,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
-        "Fixed offering price disclosed at $5.00 per share",
-        "IPO size disclosed or derived at approximately $50,000,000"
+        "Fixed offering price disclosed at $5.00 per share"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2151905/000215190526000001/0002151905-26-000001-index.htm"
     },
