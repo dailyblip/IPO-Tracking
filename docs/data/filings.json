@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-04T06:00:39.843749+00:00",
+  "generated_at": "2026-09-04T06:16:18.515794+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -486,7 +486,7 @@
       "filing_price": "19-22",
       "offering_price": 17.5,
       "current_price": 13.08,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "Falls Church, VA",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2027-02-14",
@@ -2586,7 +2586,7 @@
       "filing_price": "11-13",
       "offering_price": 13.0,
       "current_price": 32.15,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "RALEIGH, NC",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-02-07",
@@ -3063,7 +3063,7 @@
       "filing_price": "16-18",
       "offering_price": 18.0,
       "current_price": 22.48,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "THOUSAND OAKS, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-02-02",
@@ -3851,7 +3851,7 @@
       "filing_price": "15-17",
       "offering_price": 16.0,
       "current_price": 20.02,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "SAN DIEGO, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-02-02",
@@ -4753,7 +4753,7 @@
       "filing_price": "15-17",
       "offering_price": 18.0,
       "current_price": 26.27,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "San Francisco, CA",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2027-02-01",
@@ -5365,7 +5365,7 @@
       "filing_price": "17",
       "offering_price": 17.0,
       "current_price": 24.2,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "SAN CARLOS, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-01-31",
@@ -6039,7 +6039,7 @@
       "filing_price": "21-25",
       "offering_price": 23.0,
       "current_price": 20.07,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "Tinton Falls, NJ",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2027-01-25",
@@ -6504,7 +6504,7 @@
       "filing_price": "14-16",
       "offering_price": 16.0,
       "current_price": 27.81,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "CAMBRIDGE, MA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-01-26",
@@ -7295,7 +7295,7 @@
       "filing_price": "15-17",
       "offering_price": 15.0,
       "current_price": 13.64,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "VERNON, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-01-25",
@@ -7817,7 +7817,7 @@
       "filing_price": "13-15",
       "offering_price": 15.0,
       "current_price": 30.81,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "ALAMEDA, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-01-23",
@@ -8491,7 +8491,7 @@
       "filing_price": "18-21",
       "offering_price": 15.0,
       "current_price": 14.7,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "OAK RIDGE, TN",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-01-11",
@@ -9150,7 +9150,7 @@
       "filing_price": "23-27",
       "offering_price": 21.0,
       "current_price": 18.36,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "Coppell, TX",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2027-01-11",
@@ -9465,7 +9465,7 @@
       "filing_price": "24-26",
       "offering_price": 25.0,
       "current_price": 38.825,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "SAN FRANCISCO, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-12-09",
@@ -10018,7 +10018,7 @@
       "filing_price": "19-22",
       "offering_price": 16.0,
       "current_price": 12.93,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "Fort Lauderdale, FL",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2026-12-27",
@@ -10603,7 +10603,7 @@
       "filing_price": "14-16",
       "offering_price": 16.0,
       "current_price": 20.74,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "Princeton, NJ",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2026-12-14",
@@ -11216,7 +11216,7 @@
       "filing_price": "14-16",
       "offering_price": 12.5,
       "current_price": 12.74,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "Raleigh, NC",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2026-12-14",
@@ -11285,7 +11285,7 @@
       "filing_price": "135",
       "offering_price": 135.0,
       "current_price": 149.74,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "STARBASE, TX",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-12-08",
@@ -11622,7 +11622,7 @@
       "filing_price": "18-20",
       "offering_price": 18.0,
       "current_price": 19.09,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "CHEVY CHASE, MD",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-12-07",
@@ -11820,7 +11820,7 @@
       "filing_price": "17-19",
       "offering_price": 20.0,
       "current_price": 40.75,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "Cambridge, MA",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": "2026-12-06",
@@ -12657,7 +12657,7 @@
       "filing_price": "20-23",
       "offering_price": 21.5,
       "current_price": 11.71,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "HOUSTON, TX",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-12-06",
@@ -13149,7 +13149,7 @@
       "filing_price": "25-27",
       "offering_price": 26.0,
       "current_price": 28.14,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "Philadelphia, PA",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2027-06-08",
@@ -13443,7 +13443,7 @@
       "filing_price": "13.5-16.5",
       "offering_price": 13.5,
       "current_price": 17.85,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "KELLOGG, ID",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": null,
@@ -13750,7 +13750,7 @@
       "filing_price": "53-55",
       "offering_price": 60.0,
       "current_price": 48.7,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "Broomfield, CO",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": null,
@@ -13897,7 +13897,7 @@
       "filing_price": "20-22",
       "offering_price": 23.0,
       "current_price": 18.72,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "PALO ALTO, CA",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2026-11-30",
@@ -14239,7 +14239,7 @@
       "filing_price": "18-21",
       "offering_price": 20.0,
       "current_price": 12.53,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00",
+      "price_updated": "2026-09-04T06:15:02.656673+00:00",
       "location": "Huntsville, AL",
       "location_source": "424B4 principal executive office",
       "lockup_end_date": null,
@@ -14800,7 +14800,7 @@
       },
       "price_range": "16-18",
       "current_price": 35.44,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00"
+      "price_updated": "2026-09-04T06:15:02.656673+00:00"
     },
     {
       "id": "0001104659-26-049515",
@@ -15285,7 +15285,7 @@
       },
       "price_range": "16-19",
       "current_price": 17.88,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00"
+      "price_updated": "2026-09-04T06:15:02.656673+00:00"
     },
     {
       "id": "0001104659-26-047210",
@@ -15526,7 +15526,7 @@
       },
       "price_range": "20-23",
       "current_price": 24.03,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00"
+      "price_updated": "2026-09-04T06:15:02.656673+00:00"
     },
     {
       "id": "0001213900-26-047144",
@@ -16007,7 +16007,7 @@
       },
       "price_range": "12-14",
       "current_price": 16.37,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00"
+      "price_updated": "2026-09-04T06:15:02.656673+00:00"
     },
     {
       "id": "0001193125-26-162601",
@@ -16219,7 +16219,7 @@
       },
       "price_range": "18-21",
       "current_price": 16.32,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00"
+      "price_updated": "2026-09-04T06:15:02.656673+00:00"
     },
     {
       "id": "0001193125-26-160250",
@@ -16460,7 +16460,7 @@
       },
       "price_range": "25-27",
       "current_price": 25.68,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00"
+      "price_updated": "2026-09-04T06:15:02.656673+00:00"
     },
     {
       "id": "0001193125-26-161521",
@@ -16914,7 +16914,7 @@
       },
       "price_range": "14-16",
       "current_price": 15.74,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00"
+      "price_updated": "2026-09-04T06:15:02.656673+00:00"
     },
     {
       "id": "0001193125-26-161647",
@@ -17376,7 +17376,7 @@
       },
       "price_range": "15-17",
       "current_price": 30.57,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00"
+      "price_updated": "2026-09-04T06:15:02.656673+00:00"
     },
     {
       "id": "0001193125-26-159369",
@@ -17561,7 +17561,7 @@
       },
       "price_range": "25-28",
       "current_price": 53.24,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00"
+      "price_updated": "2026-09-04T06:15:02.656673+00:00"
     },
     {
       "id": "0001193125-26-138102",
@@ -17980,7 +17980,7 @@
       },
       "price_range": "19-22",
       "current_price": 20.02,
-      "price_updated": "2026-09-04T06:00:39.843749+00:00"
+      "price_updated": "2026-09-04T06:15:02.656673+00:00"
     }
   ]
 }
