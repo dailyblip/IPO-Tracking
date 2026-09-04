@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-04T14:22:37.674615+00:00",
-  "count": 96,
+  "generated_at": "2026-09-04T14:22:56.439369+00:00",
+  "count": 94,
   "alerts": [
     {
       "type": "new_424b4",
@@ -274,20 +274,6 @@
       "key": "new_424b4|0001628280-26-015648|0002062583|2026-03-06|$560M"
     },
     {
-      "type": "new_prepricing",
-      "company": "Aura Consolidated Group, Inc.",
-      "cik": "0002055301",
-      "filing_id": "s1:0002055301",
-      "form": "S-1/A",
-      "filed": "2026-09-02",
-      "stage": "pre-pricing",
-      "priority": "Medium",
-      "summary": "New pre-pricing S-1/A candidate entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2055301/000162828026060183/0001628280-26-060183-index.htm",
-      "detected_at": "2026-09-04T07:20:26.155857+00:00",
-      "key": "new_prepricing|s1:0002055301|0002055301|2026-09-02|"
-    },
-    {
       "type": "priority_escalation",
       "company": "SB Energy, Inc.",
       "cik": "0002133037",
@@ -302,20 +288,6 @@
       "old_value": "Medium",
       "new_value": "High",
       "key": "priority_escalation|s1:0002133037|0002133037|2026-09-01|High"
-    },
-    {
-      "type": "new_prepricing",
-      "company": "StableCoinX Inc.",
-      "cik": "0002080215",
-      "filing_id": "s1:0002080215",
-      "form": "S-1",
-      "filed": "2026-08-31",
-      "stage": "pre-pricing",
-      "priority": "Medium",
-      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2080215/000121390026095808/0001213900-26-095808-index.htm",
-      "detected_at": "2026-09-04T07:20:26.155909+00:00",
-      "key": "new_prepricing|s1:0002080215|0002080215|2026-08-31|"
     },
     {
       "type": "new_424b4",
