@@ -1,9 +1,10 @@
 """Remove impossible lifecycle dates from the public Research Monitor feed.
 
-Never infer a replacement date. If a stored initial S-1 filing date occurs after
-an already-priced IPO's pricing date, clear the bad initial filing date and keep
-the authoritative pricing/424B4 facts intact. CSV output is regenerated so the
-public exports remain synchronized.
+Never infer a replacement date. The stored ``filing_date`` is the lifecycle's
+initial S-1 date, so it cannot occur after either the SEC filing date of the
+current public row or an already-priced IPO's pricing date. Clear only that bad
+initial date and keep the authoritative row/pricing facts intact. CSV output is
+regenerated so the public exports remain synchronized.
 """
 
 from __future__ import annotations
@@ -35,9 +36,15 @@ def sanitize_payload(payload: dict) -> tuple[dict, int]:
     for filing in filings:
         if not isinstance(filing, dict):
             continue
+        filed_date = _iso_date(filing.get("filed"))
         pricing_date = _iso_date(filing.get("pricing_date"))
         filing_date = _iso_date(filing.get("filing_date"))
-        if pricing_date and filing_date and filing_date > pricing_date:
+        if filing_date is None:
+            continue
+        if (
+            (filed_date and filing_date > filed_date)
+            or (pricing_date and filing_date > pricing_date)
+        ):
             filing["filing_date"] = None
             changed += 1
     return payload, changed
