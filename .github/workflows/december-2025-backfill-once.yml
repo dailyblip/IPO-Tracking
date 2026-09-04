@@ -1,0 +1,28 @@
+name: Launch December 2025 Research Monitor Backfill
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/december-2025-backfill-once.yml'
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      # Continue the validated reverse historical replay with the current hardened
+      # writer. December predates the any-size policy, so the historical $100M
+      # publication threshold remains intact; this does not backfill small IPOs.
+      - name: Dispatch validated December 2025 historical backfill
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+          gh workflow run backfill.yml
+          --repo "$GITHUB_REPOSITORY"
+          --ref main
+          -f start_date=2025-12-01
+          -f end_date=2025-12-31
