@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-04T13:10:10.537839+00:00",
+  "updated_at": "2026-09-04T14:22:37.674553+00:00",
   "items": {
     "s1:0002133022": {
       "id": "s1:0002133022",
@@ -13,18 +13,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2133022/000119312526381855/0001193125-26-381855-index.htm"
-    },
-    "s1:0002055301": {
-      "id": "s1:0002055301",
-      "cik": "0002055301",
-      "company": "Aura Consolidated Group, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-09-02",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2055301/000162828026060183/0001628280-26-060183-index.htm"
     },
     "s1:0002141406": {
       "id": "s1:0002141406",
@@ -46,7 +34,7 @@
       "filed": "2026-09-01",
       "stage": "pre-pricing",
       "price_range": null,
-      "priority": "High",
+      "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026059639/0001628280-26-059639-index.htm"
     },
@@ -110,18 +98,6 @@
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1718728/000119312526376166/0001193125-26-376166-index.htm"
     },
-    "s1:0002080215": {
-      "id": "s1:0002080215",
-      "cik": "0002080215",
-      "company": "StableCoinX Inc.",
-      "form": "S-1",
-      "filed": "2026-08-31",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2080215/000121390026095808/0001213900-26-095808-index.htm"
-    },
     "s1:0002151905": {
       "id": "s1:0002151905",
       "cik": "0002151905",
@@ -131,7 +107,7 @@
       "stage": "pre-pricing",
       "price_range": null,
       "priority": "High",
-      "value": null,
+      "value": 50000000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2151905/000215190526000001/0002151905-26-000001-index.htm"
     },
     "s1:0001779977": {
@@ -1009,6 +985,30 @@
       "priority": "High",
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
+    },
+    "s1:0002055301": {
+      "id": "s1:0002055301",
+      "cik": "0002055301",
+      "company": "Aura Consolidated Group, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-02",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2055301/000162828026060183/0001628280-26-060183-index.htm"
+    },
+    "s1:0002080215": {
+      "id": "s1:0002080215",
+      "cik": "0002080215",
+      "company": "StableCoinX Inc.",
+      "form": "S-1",
+      "filed": "2026-08-31",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2080215/000121390026095808/0001213900-26-095808-index.htm"
     }
   },
   "ciks": {
@@ -1017,13 +1017,6 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002133022",
       "last_filed": "2026-09-03",
-      "missing_runs": 0
-    },
-    "0002055301": {
-      "company": "Aura Consolidated Group, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002055301",
-      "last_filed": "2026-09-02",
       "missing_runs": 0
     },
     "0002141406": {
@@ -1072,13 +1065,6 @@
       "company": "Syntiant Corp.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0001718728",
-      "last_filed": "2026-08-31",
-      "missing_runs": 0
-    },
-    "0002080215": {
-      "company": "StableCoinX Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002080215",
       "last_filed": "2026-08-31",
       "missing_runs": 0
     },
@@ -1599,6 +1585,20 @@
       "last_filing_id": "0001213900-25-120076",
       "last_filed": "2025-12-10",
       "missing_runs": 0
+    },
+    "0002055301": {
+      "company": "Aura Consolidated Group, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002055301",
+      "last_filed": "2026-09-02",
+      "missing_runs": 1
+    },
+    "0002080215": {
+      "company": "StableCoinX Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002080215",
+      "last_filed": "2026-08-31",
+      "missing_runs": 1
     }
   }
 }
