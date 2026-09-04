@@ -153,6 +153,13 @@ def _has_release_grade_final_size(filing):
     )
 
 
+def _final_metadata_ticker_mismatch(filing, filing_meta):
+    """Return True when authoritative SEC final metadata contradicts stored ticker."""
+    sec_ticker = str(filing_meta.get("ticker") or "").strip().upper()
+    stored_ticker = str(filing.get("ticker") or "").strip().upper()
+    return bool(sec_ticker and sec_ticker != stored_ticker)
+
+
 def _clear_market_quote_derivatives(record):
     """Clear market values when final SEC ticker identity changes.
 
@@ -395,7 +402,10 @@ def reconcile_payload(payload, final_filings, soup_loader):
             continue
 
         if existing_final is not None:
-            if _has_release_grade_final_size(existing_final):
+            if (
+                _has_release_grade_final_size(existing_final)
+                and not _final_metadata_ticker_mismatch(existing_final, final_meta)
+            ):
                 states[cik] = {
                     "meta": final_meta,
                     "existing": existing_final,
@@ -480,9 +490,11 @@ def reconcile_feed(output_path, days_back=60):
     output_path = Path(output_path)
     payload = json.loads(output_path.read_text(encoding="utf-8"))
     filings = [f for f in payload.get("filings", []) if isinstance(f, dict)]
+    # Every final row gets a cheap SEC metadata identity check. The full 424B4 is
+    # refetched only when final terms are incomplete or authoritative metadata
+    # contradicts the stored ticker.
     needs_reconciliation = any(
-        _is_prepricing(filing)
-        or (_is_final_record(filing) and not _has_release_grade_final_size(filing))
+        _is_prepricing(filing) or _is_final_record(filing)
         for filing in filings
     )
     if not needs_reconciliation:
