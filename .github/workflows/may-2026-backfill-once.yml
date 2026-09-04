@@ -1,0 +1,25 @@
+name: Launch May 2026 Research Monitor Backfill
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/may-2026-backfill-once.yml'
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch validated May 2026 historical backfill
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+          gh workflow run backfill.yml
+          --repo "$GITHUB_REPOSITORY"
+          --ref main
+          -f start_date=2026-05-01
+          -f end_date=2026-05-31
