@@ -31,6 +31,23 @@ class LifecycleDateSanitizerTests(unittest.TestCase):
         self.assertIsNone(cleaned["filings"][0]["filing_date"])
         self.assertEqual(cleaned["filings"][0]["filed"], "2026-08-15")
 
+    def test_clears_final_pricing_date_that_occurs_after_424b4_filing(self):
+        payload = {"filings": [{
+            "company": "Impossible Final IPO",
+            "form": "424B4",
+            "stage": "Priced",
+            "filed": "2026-08-19",
+            "filing_date": "2026-08-10",
+            "pricing_date": "2026-08-20",
+            "offering_price": 17.5,
+        }]}
+        cleaned, changed = sanitizer.sanitize_payload(payload)
+        self.assertEqual(changed, 1)
+        self.assertIsNone(cleaned["filings"][0]["pricing_date"])
+        self.assertEqual(cleaned["filings"][0]["filed"], "2026-08-19")
+        self.assertEqual(cleaned["filings"][0]["filing_date"], "2026-08-10")
+        self.assertEqual(cleaned["filings"][0]["offering_price"], 17.5)
+
     def test_preserves_valid_chronology(self):
         payload = {"filings": [{
             "company": "Valid IPO",
