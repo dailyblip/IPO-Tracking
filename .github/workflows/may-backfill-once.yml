@@ -1,0 +1,26 @@
+name: Relaunch May 2026 Backfill Once
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/may-backfill-once.yml'
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch-may-backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch validated May 2026 historical replay
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh workflow run backfill.yml
+          --repo "${{ github.repository }}"
+          --ref main
+          -f start_date=2026-05-01
+          -f end_date=2026-05-31
