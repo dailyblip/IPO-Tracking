@@ -34,6 +34,10 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v4
         with:
+          # A manual backfill can sit behind Daily or another feed writer. Start
+          # from the latest committed main after that queue drains, rather than
+          # reconstructing history from the older workflow-dispatch SHA.
+          ref: main
           fetch-depth: 0
 
       - name: Set up Python
@@ -224,11 +228,12 @@ jobs:
           fi
 
           # Do not rebase a stale historical reconstruction over newer main data.
-          # A skipped publish is safe and can be rerun against the new head.
+          # A stale candidate must fail visibly so the replay can be retried from
+          # the newer head rather than reporting a false successful publication.
           git fetch origin main
           if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
-            echo "main advanced during this run; skipping stale backfill publication."
-            exit 0
+            echo "main advanced during this run; refusing stale backfill publication."
+            exit 1
           fi
 
           git config user.name "github-actions[bot]"

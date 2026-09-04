@@ -32,6 +32,21 @@ class HistoricalBackfillWorkflowTests(unittest.TestCase):
         self.assertIn('if [[ "$BACKFILL_START" < "2026-06-01" ]]; then', block)
         self.assertIn("Backfill starts under the any-size policy; no historical minimum applied.", block)
 
+    def test_queued_backfill_starts_from_latest_main_and_fails_closed_if_main_moves_again(self):
+        workflow = BACKFILL_WORKFLOW.read_text(encoding="utf-8")
+        checkout_step = workflow.index("- name: Check out repo")
+        setup_step = workflow.index("\n      - name: Set up Python", checkout_step)
+        checkout_block = workflow[checkout_step:setup_step]
+
+        self.assertIn("ref: main", checkout_block)
+        self.assertIn("fetch-depth: 0", checkout_block)
+
+        publish_step = workflow.index("- name: Publish Research Monitor data")
+        publish_block = workflow[publish_step:]
+        self.assertIn("main advanced during this run; refusing stale backfill publication.", publish_block)
+        self.assertIn("exit 1", publish_block)
+        self.assertNotIn("main advanced during this run; skipping stale backfill publication.", publish_block)
+
 
 if __name__ == "__main__":
     unittest.main()
