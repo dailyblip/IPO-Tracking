@@ -1,8 +1,23 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-04T07:20:26.156191+00:00",
-  "count": 78,
+  "generated_at": "2026-09-04T08:02:47.206489+00:00",
+  "count": 79,
   "alerts": [
+    {
+      "type": "new_424b4",
+      "company": "MiniMed Group, Inc.",
+      "cik": "0002062583",
+      "filing_id": "0001628280-26-015648",
+      "form": "424B4",
+      "filed": "2026-03-06",
+      "stage": "priced",
+      "priority": "High",
+      "summary": "New 424B4 entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2062583/000162828026015648/0001628280-26-015648-index.htm",
+      "detected_at": "2026-09-04T08:02:47.206409+00:00",
+      "new_value": "$560M",
+      "key": "new_424b4|0001628280-26-015648|0002062583|2026-03-06|$560M"
+    },
     {
       "type": "new_prepricing",
       "company": "Aura Consolidated Group, Inc.",

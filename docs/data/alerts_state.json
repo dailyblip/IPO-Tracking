@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-04T07:20:26.156145+00:00",
+  "updated_at": "2026-09-04T08:02:47.206442+00:00",
   "items": {
     "s1:0002133022": {
       "id": "s1:0002133022",
@@ -793,6 +793,18 @@
       "priority": "High",
       "value": 210400000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2021880/000119312526138102/0001193125-26-138102-index.htm"
+    },
+    "0001628280-26-015648": {
+      "id": "0001628280-26-015648",
+      "cik": "0002062583",
+      "company": "MiniMed Group, Inc.",
+      "form": "424B4",
+      "filed": "2026-03-06",
+      "stage": "priced",
+      "price_range": "25-28",
+      "priority": "High",
+      "value": 560000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2062583/000162828026015648/0001628280-26-015648-index.htm"
     }
   },
   "ciks": {
@@ -1256,6 +1268,13 @@
       "stage": "priced",
       "last_filing_id": "0001193125-26-138102",
       "last_filed": "2026-04-01",
+      "missing_runs": 0
+    },
+    "0002062583": {
+      "company": "MiniMed Group, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-015648",
+      "last_filed": "2026-03-06",
       "missing_runs": 0
     }
   }
