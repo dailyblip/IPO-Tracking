@@ -97,6 +97,29 @@ class PrepricingQuoteSanitizerTests(unittest.TestCase):
             ],
         )
 
+    def test_removes_all_market_value_signal_wording_without_quote(self):
+        payload = {
+            "filings": [{
+                "id": "stale-signal-wording",
+                "form": "424B4",
+                "stage": "Priced",
+                "pricing_date": "2026-08-26",
+                "offering_price": 18.0,
+                "signals": [
+                    "Founder current market value is approximately $5M",
+                    "Sponsor currently valued at approximately $7M",
+                    "Offering priced at $18.00 per share",
+                ],
+            }]
+        }
+        sanitized, changed = sanitize_payload(payload)
+        filing = sanitized["filings"][0]
+        self.assertEqual(changed, 1)
+        self.assertEqual(
+            filing["signals"],
+            ["Offering priced at $18.00 per share"],
+        )
+
     def test_removes_quote_from_424b4_with_prepricing_stage(self):
         payload = {
             "filings": [{

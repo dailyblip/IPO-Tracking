@@ -17,7 +17,7 @@ from datetime import date
 from pathlib import Path
 
 
-_MARKET_VALUE_SIGNAL_PREFIX = "Largest named holding currently valued at approximately "
+_MARKET_VALUE_SIGNAL_MARKERS = ("currently valued", "current market value")
 _MARKET_DERIVED_PERSON_FIELDS = (
     "cash_value",
     "liquid_value",
@@ -92,7 +92,8 @@ def sanitize_payload(payload: dict) -> tuple[dict, int]:
                     touched = True
 
         # A stale public signal can imply that a current quote still exists even
-        # after the quote itself is absent. Remove only this market-derived signal.
+        # after the quote itself is absent. Remove every known market-value wording,
+        # not only the legacy "Largest named holding" sentence.
         signals = filing.get("signals")
         if isinstance(signals, list):
             filtered_signals = [
@@ -100,7 +101,10 @@ def sanitize_payload(payload: dict) -> tuple[dict, int]:
                 for signal in signals
                 if not (
                     isinstance(signal, str)
-                    and signal.startswith(_MARKET_VALUE_SIGNAL_PREFIX)
+                    and any(
+                        marker in signal.casefold()
+                        for marker in _MARKET_VALUE_SIGNAL_MARKERS
+                    )
                 )
             ]
             if len(filtered_signals) != len(signals):
