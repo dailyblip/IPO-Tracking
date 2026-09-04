@@ -1,10 +1,12 @@
 """Preserve authoritative final 424B4 aggregate IPO values and share terms.
 
 The core parser derives gross offering value from base IPO shares × final price.
-Final prospectuses sometimes publish a rounded authoritative aggregate that can
-differ by cents from that arithmetic. This release-stage reconciler preserves
-the SEC table value when it agrees within a strict rounding tolerance and fails
-closed on larger conflicts so bad economics cannot be silently published.
+Final prospectuses sometimes publish an authoritative aggregate that can differ
+slightly from that arithmetic because the disclosed total is rounded while the
+share count must remain whole. This release-stage reconciler preserves the SEC
+table value only when the difference is either within the strict dollar tolerance
+or is exactly explainable by the same nearest whole-share count at the final price;
+larger conflicts fail closed so bad economics cannot be silently published.
 
 It also repairs a narrower completeness case: when the final prospectus explicitly
 states that the issuer itself is offering a specific number of shares but the
@@ -133,6 +135,37 @@ def _append_source_marker(filing, marker):
     return False
 
 
+def _same_nearest_whole_share_count(current, aggregate, price):
+    """Allow only tiny total-rounding differences that imply the same share count.
+
+    Some final covers publish a rounded aggregate even though the disclosed base
+    share count times the exact final price lands a few dollars away. Accept that
+    authoritative total only when the current value itself is exact whole-share
+    arithmetic and rounding the SEC aggregate back to the nearest whole share at
+    the same final price yields that identical count. The half-share bound prevents
+    this from masking a one-share (or larger) economics error.
+    """
+    current = _number(current)
+    aggregate = _number(aggregate)
+    price = _number(price)
+    if current is None or aggregate is None or price is None:
+        return False
+    if current <= 0 or aggregate <= 0 or price <= 0:
+        return False
+
+    current_shares = int((current / price) + 0.5)
+    if current_shares <= 0:
+        return False
+    if abs(current - (current_shares * price)) > 0.01:
+        return False
+
+    aggregate_shares = int((aggregate / price) + 0.5)
+    if aggregate_shares != current_shares:
+        return False
+
+    return abs(current - aggregate) <= (price / 2.0) + 0.01
+
+
 def reconcile_record(filing, aggregate, primary_shares=None):
     """Reconcile SEC cover economics and explicit issuer-primary share disclosure."""
     changed = False
@@ -144,7 +177,11 @@ def reconcile_record(filing, aggregate, primary_shares=None):
             changed = True
         else:
             difference = abs(current - aggregate)
-            if difference > ROUNDING_TOLERANCE_DOLLARS:
+            if difference > ROUNDING_TOLERANCE_DOLLARS and not _same_nearest_whole_share_count(
+                current,
+                aggregate,
+                filing.get("offering_price"),
+            ):
                 raise OfferingValueReconciliationError(
                     f"{filing.get('company')}: published offering value {current:,.2f} conflicts with "
                     f"authoritative SEC aggregate {aggregate:,.2f} by {difference:,.2f}"
