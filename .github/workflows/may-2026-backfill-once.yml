@@ -14,6 +14,8 @@ jobs:
   dispatch:
     runs-on: ubuntu-latest
     steps:
+      # Retrigger the May replay after the manual writer is hardened to start from
+      # the latest committed main when it reaches the shared feed-writer queue.
       - name: Dispatch validated May 2026 historical backfill
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
