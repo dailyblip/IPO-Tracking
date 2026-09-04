@@ -1,0 +1,27 @@
+name: Launch February 2026 Research Monitor Backfill
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/february-2026-backfill-once.yml'
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      # Replay February with the current hardened historical writer. The historical
+      # publication policy keeps the pre-June $100M threshold intact.
+      - name: Dispatch validated February 2026 historical backfill
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >
+          gh workflow run backfill.yml
+          --repo "$GITHUB_REPOSITORY"
+          --ref main
+          -f start_date=2026-02-01
+          -f end_date=2026-02-28
