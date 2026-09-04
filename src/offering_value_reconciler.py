@@ -154,6 +154,13 @@ def reconcile_record(filing, aggregate, primary_shares=None):
                 changed = True
         if _append_source_marker(filing, SOURCE_MARKER):
             changed = True
+        # A final 424B4 cover aggregate matched to the row's final IPO price is
+        # release-grade SEC evidence. Repair stale/legacy confidence alongside the
+        # value and source so authoritative reconciliation cannot leave a populated
+        # offering value marked Unresolved.
+        if filing.get("offering_size_confidence") != "High":
+            filing["offering_size_confidence"] = "High"
+            changed = True
 
     explicit_primary = _number(primary_shares)
     if explicit_primary is not None:
@@ -201,6 +208,8 @@ def _sync_csv(csv_path, updates):
             continue
         row["offering_value"] = str(update["value"])
         row["offering_size_source"] = update["offering_size_source"]
+        if "offering_size_confidence" in (fieldnames or []):
+            row["offering_size_confidence"] = update["offering_size_confidence"]
         if update.get("primary_offering_shares") is not None:
             row["primary_offering_shares"] = str(update["primary_offering_shares"])
         changed = True
@@ -243,6 +252,7 @@ def reconcile_feed(path, today=None):
                 "value": filing.get("value"),
                 "primary_offering_shares": filing.get("primary_offering_shares"),
                 "offering_size_source": filing.get("offering_size_source") or "",
+                "offering_size_confidence": filing.get("offering_size_confidence") or "",
             }
             if aggregate is not None:
                 print(
