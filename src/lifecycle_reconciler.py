@@ -163,9 +163,17 @@ def _apply_final_terms(record, filing_meta, soup):
         return None
 
     offering_value = float(price) * int(total_shares) if total_shares else None
-    pricing_date = str(filing_meta.get("filing_date") or record.get("pricing_date") or "").strip()
+    final_filed = str(filing_meta.get("filing_date") or "").strip()
+    # The SEC 424B4 filing date is not itself evidence of the IPO Pricing Date.
+    # Preserve a date only on an already-final row; newly promoted S-1/S-1A rows
+    # remain blank until pricing_date_reconciler verifies the final prospectus date.
+    pricing_date = (
+        str(record.get("pricing_date") or "").strip()
+        if _is_final_record(record)
+        else ""
+    )
     accession = str(filing_meta.get("accession_no") or record.get("accession_no") or "").strip()
-    if not pricing_date or not accession:
+    if not final_filed or not accession:
         return None
 
     updated = dict(record)
@@ -177,8 +185,8 @@ def _apply_final_terms(record, filing_meta, soup):
         "accession_no": accession,
         "form": "424B4",
         "stage": "Priced",
-        "filed": pricing_date,
-        "pricing_date": pricing_date,
+        "filed": final_filed,
+        "pricing_date": pricing_date or None,
         "offering_price": float(price),
         "value": offering_value,
         "value_label": _money(offering_value) if offering_value is not None else None,
@@ -199,7 +207,7 @@ def _apply_final_terms(record, filing_meta, soup):
         updated.pop("price_updated", None)
 
     filing_date = str(updated.get("filing_date") or "").strip()
-    if filing_date and filing_date > pricing_date:
+    if filing_date and pricing_date and filing_date > pricing_date:
         updated["filing_date"] = None
     return updated
 
