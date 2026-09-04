@@ -6,12 +6,12 @@ S-1 and 424B4 reporting-history gates inspect the inline block. This additive ga
 checks those SEC-listed historical files before an issuer can remain published as
 a first-time operating-company IPO.
 
-A prior Exchange Act reporting form, or a prior S-3/F-3 short-form registration
-that itself requires Exchange Act reporting eligibility, must be filed strictly
-before the candidate. Same-day evidence does not establish event order. Archive
-lookup failures block final 424B4 publication; for pre-pricing S-1/S-1A rows they
-do not invent an exclusion, matching the existing pre-pricing gate's conservative
-failure behavior.
+A prior Exchange Act reporting form or registration statement, or a prior S-3/F-3
+short-form registration that itself requires Exchange Act reporting eligibility,
+must be filed strictly before the candidate. Same-day evidence does not establish
+event order. Archive lookup failures block final 424B4 publication; for pre-pricing
+S-1/S-1A rows they do not invent an exclusion, matching the existing pre-pricing
+gate's conservative failure behavior.
 """
 
 from __future__ import annotations
@@ -30,6 +30,7 @@ REPORTING_FORMS = {
     "8-K12B", "8-K12B/A",
     "8-K12G3", "8-K12G3/A",
     "8-K15D5", "8-K15D5/A",
+    "10-12B", "10-12B/A", "10-12G", "10-12G/A",
     "10-Q", "10-Q/A", "10-QT", "10-QT/A",
     "10-K", "10-K/A", "10-KT", "10-KT/A",
     "6-K", "6-K/A", "20-F", "20-F/A", "40-F", "40-F/A",
