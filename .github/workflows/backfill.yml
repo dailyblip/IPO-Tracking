@@ -134,6 +134,19 @@ jobs:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python offering_value_reconciler.py ../docs/data/filings.json
 
+      - name: Preserve pre-any-size historical publication threshold
+        working-directory: src
+        run: |
+          if [[ "$BACKFILL_START" < "2026-06-01" ]]; then
+            HISTORICAL_END="$BACKFILL_END"
+            if [[ "$HISTORICAL_END" > "2026-05-31" ]]; then
+              HISTORICAL_END="2026-05-31"
+            fi
+            python historical_backfill_policy.py ../docs/data/filings.json --start "$BACKFILL_START" --end "$HISTORICAL_END"
+          else
+            echo "Backfill starts under the any-size policy; no historical minimum applied."
+          fi
+
       - name: Repair malformed issuer locations
         working-directory: src
         env:
