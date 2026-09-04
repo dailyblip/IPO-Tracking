@@ -56,20 +56,35 @@ class AuthoritativeOfferingValueTests(unittest.TestCase):
             "company": "ERock, Inc.",
             "value": 600_000_005.5,
             "offering_size_source": "cover share title; explicit issuer-only cover statement matches total",
+            "offering_size_confidence": "Unresolved",
         }
         self.assertTrue(reconcile_record(filing, 600_000_006))
         self.assertEqual(filing["value"], 600_000_006)
         self.assertIn(SOURCE_MARKER, filing["offering_size_source"])
+        self.assertEqual(filing["offering_size_confidence"], "High")
 
     def test_fills_blank_value_from_authoritative_sec_aggregate(self):
         filing = {
             "company": "Complete Economics Co.",
             "value": None,
             "offering_size_source": "",
+            "offering_size_confidence": "Unresolved",
         }
         self.assertTrue(reconcile_record(filing, 123_456_789))
         self.assertEqual(filing["value"], 123_456_789)
         self.assertIn(SOURCE_MARKER, filing["offering_size_source"])
+        self.assertEqual(filing["offering_size_confidence"], "High")
+
+    def test_repairs_high_confidence_when_sec_aggregate_already_matches(self):
+        filing = {
+            "company": "EagleRock Land, LLC",
+            "value": 320_050_000,
+            "offering_size_source": SOURCE_MARKER,
+            "offering_size_confidence": "Unresolved",
+        }
+        self.assertTrue(reconcile_record(filing, 320_050_000))
+        self.assertEqual(filing["value"], 320_050_000)
+        self.assertEqual(filing["offering_size_confidence"], "High")
 
     def test_repairs_blank_primary_shares_without_inventing_secondary_shares(self):
         filing = {
