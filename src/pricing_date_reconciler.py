@@ -3,8 +3,8 @@
 The SEC filing date is not necessarily the IPO pricing date. Final prospectuses
 are commonly filed the morning after a deal prices, so treating the 424B4 filing
 date as Pricing Date can shift the event by a day. This reconciler only replaces
-a stored date when the final 424B4 itself explicitly identifies its prospectus
-date. It never infers a pricing date from trading dates or filing chronology.
+a stored date when the final 424B4 itself identifies its prospectus date. It never
+infers a pricing date from trading dates or filing chronology.
 
 Lock-up end dates are derived from the same pricing/prospectus date plus explicit
 SEC-disclosed durations. When Pricing Date is repaired, those derived dates must
@@ -95,6 +95,63 @@ def _extract_back_cover_date(raw_text, filed):
     return None
 
 
+def _extract_front_cover_date(raw_text, filed):
+    """Recover an unlabeled final-prospectus date from a structured IPO cover.
+
+    Some final 424B4 covers disclose the prospectus date as a standalone line
+    beneath the underwriters rather than as "Prospectus dated ...". Accept that
+    layout only when it follows both the initial-public-offering price language
+    and the expected-delivery sentence, and only before the first subsequent
+    table-of-contents marker. Multiple plausible dates fail closed.
+    """
+    lines = [
+        " ".join(line.replace("\xa0", " ").split())
+        for line in str(raw_text or "").splitlines()
+    ]
+    lines = [line for line in lines if line]
+    cover = lines[:260]
+
+    offering_index = next(
+        (
+            index
+            for index, line in enumerate(cover)
+            if "initial public offering price" in line.casefold()
+        ),
+        None,
+    )
+    if offering_index is None:
+        return None
+
+    delivery_index = next(
+        (
+            index
+            for index, line in enumerate(cover[offering_index + 1 :], offering_index + 1)
+            if "expect to deliver" in line.casefold()
+            or "delivery of the shares" in line.casefold()
+            or "delivery of shares" in line.casefold()
+        ),
+        None,
+    )
+    if delivery_index is None:
+        return None
+
+    candidates = []
+    for line in cover[delivery_index + 1 : delivery_index + 81]:
+        if line.strip().upper() == "TABLE OF CONTENTS":
+            break
+        match = _STANDALONE_DATE_PATTERN.fullmatch(line)
+        if not match:
+            continue
+        candidate = _parse_month_date(match.group(1))
+        if not _candidate_is_plausible(candidate, filed):
+            continue
+        iso = candidate.isoformat()
+        if iso not in candidates:
+            candidates.append(iso)
+
+    return candidates[0] if len(candidates) == 1 else None
+
+
 def extract_authoritative_pricing_date(soup, sec_filing_date=None):
     """Return an ISO prospectus date only from explicit final-prospectus language.
 
@@ -112,6 +169,9 @@ def extract_authoritative_pricing_date(soup, sec_filing_date=None):
             if _candidate_is_plausible(candidate, filed):
                 return candidate.isoformat()
 
+    front_cover = _extract_front_cover_date(raw_text, filed)
+    if front_cover:
+        return front_cover
     return _extract_back_cover_date(raw_text, filed)
 
 
