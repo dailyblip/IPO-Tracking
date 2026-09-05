@@ -43,6 +43,95 @@ class S1TickerSourceTests(unittest.TestCase):
         self.assertEqual(record["ticker"], "ORIN")
         sec_ticker.assert_not_called()
 
+    def test_carries_forward_unambiguous_ticker_to_later_amendment(self):
+        history = [{
+            "id": "0001628280-26-059639",
+            "cik": "0002133037",
+            "form": "S-1",
+            "filed": "2026-09-01",
+            "ticker": "SBE",
+        }]
+        records = [{
+            "id": "0001628280-26-060761",
+            "cik": "0002133037",
+            "form": "S-1/A",
+            "filed": "2026-09-04",
+            "ticker": "",
+        }]
+
+        s1_monitor._preserve_unambiguous_ticker_lineage(records, history)
+
+        self.assertEqual(records[0]["ticker"], "SBE")
+
+    def test_conflicting_prior_tickers_leave_amendment_blank(self):
+        history = [
+            {
+                "id": "old-1",
+                "cik": "0002133037",
+                "form": "S-1",
+                "filed": "2026-09-01",
+                "ticker": "SBE",
+            },
+            {
+                "id": "old-2",
+                "cik": "0002133037",
+                "form": "S-1/A",
+                "filed": "2026-09-02",
+                "ticker": "SBEN",
+            },
+        ]
+        records = [{
+            "id": "new",
+            "cik": "0002133037",
+            "form": "S-1/A",
+            "filed": "2026-09-04",
+            "ticker": "",
+        }]
+
+        s1_monitor._preserve_unambiguous_ticker_lineage(records, history)
+
+        self.assertEqual(records[0]["ticker"], "")
+
+    def test_same_day_ticker_is_not_used_to_infer_order(self):
+        history = [{
+            "id": "same-day",
+            "cik": "0002133037",
+            "form": "S-1",
+            "filed": "2026-09-04",
+            "ticker": "SBE",
+        }]
+        records = [{
+            "id": "new",
+            "cik": "0002133037",
+            "form": "S-1/A",
+            "filed": "2026-09-04",
+            "ticker": "",
+        }]
+
+        s1_monitor._preserve_unambiguous_ticker_lineage(records, history)
+
+        self.assertEqual(records[0]["ticker"], "")
+
+    def test_existing_amendment_ticker_is_never_overwritten(self):
+        history = [{
+            "id": "old",
+            "cik": "0002133037",
+            "form": "S-1",
+            "filed": "2026-09-01",
+            "ticker": "SBE",
+        }]
+        records = [{
+            "id": "new",
+            "cik": "0002133037",
+            "form": "S-1/A",
+            "filed": "2026-09-04",
+            "ticker": "SBEX",
+        }]
+
+        s1_monitor._preserve_unambiguous_ticker_lineage(records, history)
+
+        self.assertEqual(records[0]["ticker"], "SBEX")
+
 
 if __name__ == "__main__":
     unittest.main()
