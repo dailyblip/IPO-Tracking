@@ -2,10 +2,11 @@
 
 Lifecycle reconciliation and pricing-date recovery get the first opportunity to
 repair final prospectus records. After those passes, a 424B4 is release-grade only
-when it is explicitly Priced, has a canonical non-future Pricing Date, and carries
-a positive authoritative Final IPO Price. Offering size and preliminary Filing
-Price are deliberately not required here: qualifying IPOs may have unknown size,
-and preliminary price history is repaired by the separate S-1/S-1A history pass.
+when it is explicitly Priced, has canonical non-future final filing and Pricing
+Dates in possible chronology, and carries a positive authoritative Final IPO
+Price. Offering size and preliminary Filing Price are deliberately not required
+here: qualifying IPOs may have unknown size, and preliminary price history is
+repaired by the separate S-1/S-1A history pass.
 """
 
 from __future__ import annotations
@@ -49,8 +50,14 @@ def is_release_grade_final(filing: dict) -> bool:
         return True
     if str(filing.get("stage") or "").strip().casefold() != "priced":
         return False
-    if _canonical_nonfuture_date(filing.get("pricing_date")) is None:
+
+    pricing_date = _canonical_nonfuture_date(filing.get("pricing_date"))
+    filed_date = _canonical_nonfuture_date(filing.get("filed"))
+    if pricing_date is None or filed_date is None:
         return False
+    if pricing_date > filed_date:
+        return False
+
     final_price = _number(filing.get("offering_price"))
     return final_price is not None and final_price > 0
 
