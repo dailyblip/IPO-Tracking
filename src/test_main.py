@@ -37,6 +37,7 @@ class LookbackTests(unittest.TestCase):
         priced = {
             "form": "424B4",
             "stage": "Priced",
+            "filed": "2026-08-16",
             "pricing_date": "2026-08-15",
             "offering_price": 20.0,
         }
