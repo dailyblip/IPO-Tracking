@@ -34,6 +34,10 @@ jobs:
       - name: Check out repo
         uses: actions/checkout@v4
         with:
+          # This writer can sit behind S-1/ownership publication in the shared
+          # queue. Start from the latest committed main after that queue drains,
+          # not the older event SHA that originally triggered this run.
+          ref: main
           fetch-depth: 0
 
       - name: Set up Python
