@@ -1,5 +1,8 @@
+from datetime import datetime, timezone
 import unittest
+from unittest.mock import patch
 
+import prepricing_quote_sanitizer
 from prepricing_quote_sanitizer import sanitize_payload
 
 
@@ -132,6 +135,42 @@ class PrepricingQuoteSanitizerTests(unittest.TestCase):
                 self.assertNotIn("price_updated", result)
                 self.assertNotIn("cash_value", result["people"][0])
                 self.assertNotIn("valuation_as_of", result["people"][0])
+
+    def test_removes_quote_with_future_clock_time_on_same_utc_date(self):
+        class FixedDateTime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                fixed = datetime(2026, 9, 5, 12, 0, tzinfo=timezone.utc)
+                return fixed.astimezone(tz) if tz else fixed.replace(tzinfo=None)
+
+        payload = {
+            "filings": [{
+                "id": "same-day-future-quote",
+                "form": "424B4",
+                "stage": "Priced",
+                "filed": "2026-08-20",
+                "pricing_date": "2026-08-19",
+                "offering_price": 18.0,
+                "current_price": 24.13,
+                "price_updated": "2026-09-05T18:00:00+00:00",
+                "people": [{
+                    "name": "Holder",
+                    "cash_value": 100.0,
+                    "valuation_as_of": "2026-09-05",
+                }],
+            }]
+        }
+
+        with patch.object(prepricing_quote_sanitizer, "datetime", FixedDateTime):
+            sanitized, changed = sanitize_payload(payload)
+
+        filing = sanitized["filings"][0]
+        person = filing["people"][0]
+        self.assertEqual(changed, 1)
+        self.assertNotIn("current_price", filing)
+        self.assertNotIn("price_updated", filing)
+        self.assertNotIn("cash_value", person)
+        self.assertNotIn("valuation_as_of", person)
 
     def test_priced_record_without_current_quote_clears_stale_market_derivatives(self):
         payload = {

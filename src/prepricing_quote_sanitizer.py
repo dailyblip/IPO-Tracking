@@ -54,9 +54,10 @@ def _canonical_quote_date(value):
 
     ``price_updated`` is the provenance marker for Current Price. A quote without a
     parseable timezone-aware timestamp cannot establish when the market value was
-    observed, so it must fail closed. Comparing the normalized UTC date with the
-    authoritative IPO Pricing Date also prevents a stale pre-pricing ticker quote
-    from surviving after the issuer later reaches a valid 424B4/Priced state.
+    observed, so it must fail closed. The normalized UTC timestamp itself must not
+    be in the future, including later on the same UTC date. Returning its UTC date
+    then lets the release gate compare it with the authoritative IPO Pricing Date
+    and reject stale pre-pricing ticker quotes.
     """
     raw = str(value or "").strip()
     if not raw:
@@ -67,10 +68,10 @@ def _canonical_quote_date(value):
         return None
     if parsed.tzinfo is None:
         return None
-    quote_date = parsed.astimezone(timezone.utc).date()
-    if quote_date > datetime.now(timezone.utc).date():
+    quote_time = parsed.astimezone(timezone.utc)
+    if quote_time > datetime.now(timezone.utc):
         return None
-    return quote_date
+    return quote_time.date()
 
 
 def is_priced_ipo(filing: dict) -> bool:
