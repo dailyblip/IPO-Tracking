@@ -133,7 +133,9 @@ jobs:
         run: python filing_price_history.py ../docs/data/filings.json
       - name: Normalize issuer display names
         working-directory: src
-        run: python company_name_normalizer.py ../docs/data/filings.json
+        run: |
+          python company_name_normalizer.py ../docs/data/s1_watch.json
+          python company_name_normalizer.py ../docs/data/filings.json
       - name: Block weak offering-size provenance before publication
         run: |
           python - <<'PY'
