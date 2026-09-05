@@ -274,6 +274,40 @@ def _extract_explicit_ipo_price_from_tables(soup: BeautifulSoup):
     return None
 
 
+def _extract_listing_ticker(cover_text: str):
+    """Extract an IPO ticker while preferring explicit exchange-listing evidence.
+
+    Prospectuses can mention unrelated symbols elsewhere in the first page text.
+    A generic first ``symbol`` match can therefore attach a stale or unrelated
+    ticker to the issuer. Prefer listing/trading-specific disclosures, fail closed
+    if those authoritative signals conflict, and retain the legacy generic matcher
+    only when no listing-specific evidence is present.
+    """
+    listing_patterns = [
+        r"\b(?:list|listed|listing|trade|traded|trading|quote|quoted|quotation)\b.{0,300}?"
+        r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"“]?([A-Z]{1,6})[\"”]?",
+        r"\bunder\s+(?:the\s+)?ticker\s+symbol\s*[\"“]?([A-Z]{1,6})[\"”]?",
+        r"\btrading\s+symbol\s*[:\-]?\s*[\"“]?([A-Z]{1,6})[\"”]?",
+    ]
+    listing_tickers = set()
+    for pattern in listing_patterns:
+        for match in re.finditer(pattern, cover_text, re.IGNORECASE):
+            ticker = match.group(1)
+            if ticker == ticker.upper():
+                listing_tickers.add(ticker)
+
+    if len(listing_tickers) == 1:
+        return next(iter(listing_tickers))
+    if len(listing_tickers) > 1:
+        return None
+
+    generic_match = re.search(
+        r"(?:symbol|ticker)[\s\"“]*[:\-]?\s*[\"“]?([A-Z]{1,6})[\"”]?",
+        cover_text,
+    )
+    return generic_match.group(1) if generic_match else None
+
+
 def extract_cover_page_data(soup: BeautifulSoup) -> dict:
     """
     Extract company name, ticker, exchange, and offering price from the
@@ -283,10 +317,7 @@ def extract_cover_page_data(soup: BeautifulSoup) -> dict:
     full_text = soup.get_text(" ", strip=True)
     cover_text = full_text[:100000]
 
-    ticker_match = re.search(
-        r"(?:symbol|ticker)[\s\"“]*[:\-]?\s*[\"“]?([A-Z]{1,6})[\"”]?",
-        cover_text,
-    )
+    ticker = _extract_listing_ticker(cover_text)
     # Fixed IPO prices must be tied to explicit IPO/public-offering language.
     # Prospectuses contain many unrelated per-share amounts (option exercise
     # prices, fair values, earnings per share, etc.), so a generic "$X per
@@ -325,7 +356,7 @@ def extract_cover_page_data(soup: BeautifulSoup) -> dict:
     )
 
     return {
-        "ticker": ticker_match.group(1) if ticker_match else None,
+        "ticker": ticker,
         "offering_price": float(price_match.group(1)) if price_match else table_price,
         "exchange": exchange_match.group(1) if exchange_match else None,
     }
