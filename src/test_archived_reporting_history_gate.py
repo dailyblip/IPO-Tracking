@@ -34,6 +34,30 @@ class ArchivedReportingHistoryGateTests(unittest.TestCase):
             )
         )
 
+    def test_automatic_shelf_registration_proves_prior_reporting(self):
+        for form in ("S-3ASR", "S-3ASR/A", "F-3ASR", "F-3ASR/A"):
+            with self.subTest(form=form):
+                submissions = {
+                    "filings": {
+                        "recent": {"form": ["S-1"], "filingDate": ["2026-09-01"]},
+                        "files": [
+                            {
+                                "name": "CIK0000000001-submissions-001.json",
+                                "filingFrom": "2020-01-01",
+                                "filingTo": "2025-12-31",
+                            }
+                        ],
+                    }
+                }
+                archived = {"form": [form], "filingDate": ["2025-04-10"]}
+                self.assertTrue(
+                    gate.has_prior_reporting_history(
+                        submissions,
+                        "2026-09-01",
+                        archive_loader=lambda _name: archived,
+                    )
+                )
+
     def test_same_day_archived_report_does_not_guess_event_order(self):
         submissions = {
             "filings": {
