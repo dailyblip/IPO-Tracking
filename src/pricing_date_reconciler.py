@@ -243,6 +243,16 @@ def reconcile_payload(payload, soup_loader=_load_final_soup):
 
         authoritative = extract_authoritative_pricing_date(soup, filing.get("filed"))
         if not authoritative:
+            # main.py historically seeded the SEC 424B4 filing date into Pricing Date.
+            # When the final prospectus can be read but supplies no authoritative date,
+            # an identical stored value is therefore an unverified filing-date fallback,
+            # not pricing evidence. Clear it so the downstream release gate fails closed
+            # rather than publishing an inferred Pricing Date.
+            stored = str(filing.get("pricing_date") or "").strip()
+            filed = str(filing.get("filed") or "").strip()
+            if stored and filed and stored == filed:
+                filing["pricing_date"] = None
+                changed += 1
             continue
 
         row_changed = False

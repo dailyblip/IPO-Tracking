@@ -85,6 +85,64 @@ class PricingDateReconcilerTests(unittest.TestCase):
         self.assertEqual(reconciled["filings"][0]["pricing_date"], "2026-08-18")
         self.assertIn("generated_at", reconciled)
 
+    def test_clears_unverified_sec_filing_date_fallback(self):
+        payload = {
+            "filings": [
+                {
+                    "id": "no-explicit-date-final",
+                    "company": "Example Inc.",
+                    "form": "424B4",
+                    "stage": "Priced",
+                    "filed": "2026-08-19",
+                    "pricing_date": "2026-08-19",
+                    "offering_price": 17.5,
+                }
+            ]
+        }
+        soup = BeautifulSoup(
+            "<html><body>Final prospectus with no explicit prospectus date.</body></html>",
+            "html.parser",
+        )
+
+        reconciled, changed, checked, failures = pricing_date_reconciler.reconcile_payload(
+            payload, soup_loader=lambda filing: soup
+        )
+
+        self.assertEqual(changed, 1)
+        self.assertEqual(checked, 1)
+        self.assertEqual(failures, [])
+        self.assertIsNone(reconciled["filings"][0]["pricing_date"])
+        self.assertIn("generated_at", reconciled)
+
+    def test_preserves_distinct_existing_pricing_date_when_prospectus_date_unresolved(self):
+        payload = {
+            "filings": [
+                {
+                    "id": "external-date-final",
+                    "company": "Example Inc.",
+                    "form": "424B4",
+                    "stage": "Priced",
+                    "filed": "2026-08-19",
+                    "pricing_date": "2026-08-18",
+                    "offering_price": 17.5,
+                }
+            ]
+        }
+        soup = BeautifulSoup(
+            "<html><body>Final prospectus with no explicit prospectus date.</body></html>",
+            "html.parser",
+        )
+
+        reconciled, changed, checked, failures = pricing_date_reconciler.reconcile_payload(
+            payload, soup_loader=lambda filing: soup
+        )
+
+        self.assertEqual(changed, 0)
+        self.assertEqual(checked, 1)
+        self.assertEqual(failures, [])
+        self.assertEqual(reconciled["filings"][0]["pricing_date"], "2026-08-18")
+        self.assertNotIn("generated_at", reconciled)
+
     def test_retimes_lockup_dates_when_pricing_date_is_reconciled(self):
         payload = {
             "filings": [
