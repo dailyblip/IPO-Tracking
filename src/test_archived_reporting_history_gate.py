@@ -58,6 +58,28 @@ class ArchivedReportingHistoryGateTests(unittest.TestCase):
                     )
                 )
 
+    def test_prior_424b4_in_archive_proves_prior_public_offering(self):
+        submissions = {
+            "filings": {
+                "recent": {"form": ["S-1"], "filingDate": ["2026-09-01"]},
+                "files": [
+                    {
+                        "name": "CIK0000000001-submissions-001.json",
+                        "filingFrom": "2020-01-01",
+                        "filingTo": "2025-12-31",
+                    }
+                ],
+            }
+        }
+        archived = {"form": ["424B4"], "filingDate": ["2025-04-10"]}
+        self.assertTrue(
+            gate.has_prior_reporting_history(
+                submissions,
+                "2026-09-01",
+                archive_loader=lambda _name: archived,
+            )
+        )
+
     def test_same_day_archived_report_does_not_guess_event_order(self):
         submissions = {
             "filings": {
@@ -65,14 +87,16 @@ class ArchivedReportingHistoryGateTests(unittest.TestCase):
                 "files": [{"name": "CIK0000000001-submissions-001.json"}],
             }
         }
-        archived = {"form": ["8-K"], "filingDate": ["2026-09-01"]}
-        self.assertFalse(
-            gate.has_prior_reporting_history(
-                submissions,
-                "2026-09-01",
-                archive_loader=lambda _name: archived,
-            )
-        )
+        for form in ("8-K", "424B4"):
+            with self.subTest(form=form):
+                archived = {"form": [form], "filingDate": ["2026-09-01"]}
+                self.assertFalse(
+                    gate.has_prior_reporting_history(
+                        submissions,
+                        "2026-09-01",
+                        archive_loader=lambda _name, archived=archived: archived,
+                    )
+                )
 
     def test_recent_prior_report_short_circuits_archive_fetch(self):
         submissions = {

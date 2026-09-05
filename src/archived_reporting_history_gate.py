@@ -8,10 +8,11 @@ a first-time operating-company IPO.
 
 A prior Exchange Act reporting form or registration statement, or a prior S-3/F-3
 short-form registration that itself requires Exchange Act reporting eligibility,
-must be filed strictly before the candidate. Same-day evidence does not establish
-event order. Archive lookup failures block final 424B4 publication; for pre-pricing
-S-1/S-1A rows they do not invent an exclusion, matching the existing pre-pricing
-gate's conservative failure behavior.
+must be filed strictly before the candidate. A prior 424B4 is separately
+conclusive that the issuer already completed an earlier public offering prospectus.
+Same-day evidence does not establish event order. Archive lookup failures block
+final 424B4 publication; for pre-pricing S-1/S-1A rows they do not invent an
+exclusion, matching the existing pre-pricing gate's conservative failure behavior.
 """
 
 from __future__ import annotations
@@ -36,6 +37,7 @@ REPORTING_FORMS = {
     "6-K", "6-K/A", "20-F", "20-F/A", "40-F", "40-F/A",
     "S-3", "S-3/A", "S-3ASR", "S-3ASR/A", "S-3MEF",
     "F-3", "F-3/A", "F-3ASR", "F-3ASR/A", "F-3MEF",
+    "424B4",
 }
 SUBMISSIONS_BASE_URL = "https://data.sec.gov/submissions"
 
@@ -105,7 +107,7 @@ def _load_archive(name):
 
 
 def has_prior_reporting_history(submissions, candidate_date, archive_loader=_load_archive):
-    """Check current plus SEC-listed historical submission blocks for prior reporting."""
+    """Check current plus SEC-listed history for prior reporting/public-offering evidence."""
     cutoff = _iso_date(candidate_date)
     if cutoff is None:
         raise ValueError(f"Invalid candidate date: {candidate_date!r}")
@@ -162,7 +164,7 @@ def sanitize_payloads(
     submissions_loader=_load_submissions,
     archive_loader=_load_archive,
 ):
-    """Remove rows whose older SEC submissions prove the issuer already reported."""
+    """Remove rows whose older SEC submissions prove the issuer already reported/offered."""
     cache = {}
     archive_cache = {}
     excluded_prepricing_ciks = set()
@@ -285,7 +287,7 @@ def apply_gate(watch_path, queue_path):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Exclude IPO candidates with prior reporting forms in archived SEC submissions history"
+        description="Exclude IPO candidates with prior reporting/public-offering forms in archived SEC submissions history"
     )
     parser.add_argument("s1_watch")
     parser.add_argument("queue")
