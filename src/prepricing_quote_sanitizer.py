@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import json
 import math
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 
@@ -49,6 +49,30 @@ def _canonical_nonfuture_date(value):
     return parsed
 
 
+def _canonical_quote_date(value):
+    """Return the UTC date for an explicit, non-future quote timestamp.
+
+    ``price_updated`` is the provenance marker for Current Price. A quote without a
+    parseable timezone-aware timestamp cannot establish when the market value was
+    observed, so it must fail closed. Comparing the normalized UTC date with the
+    authoritative IPO Pricing Date also prevents a stale pre-pricing ticker quote
+    from surviving after the issuer later reaches a valid 424B4/Priced state.
+    """
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return None
+    quote_date = parsed.astimezone(timezone.utc).date()
+    if quote_date > datetime.now(timezone.utc).date():
+        return None
+    return quote_date
+
+
 def is_priced_ipo(filing: dict) -> bool:
     """Return True only for a release-safe final priced lifecycle state."""
     if str(filing.get("form") or "").strip().upper() != "424B4":
@@ -74,11 +98,16 @@ def is_priced_ipo(filing: dict) -> bool:
 
 
 def has_release_safe_market_quote(filing: dict) -> bool:
-    """Require both a safely priced lifecycle and a positive published quote."""
+    """Require a safely priced lifecycle plus a chronologically valid live quote."""
     if not is_priced_ipo(filing):
         return False
     current_price = _number(filing.get("current_price"))
-    return current_price is not None and current_price > 0
+    if current_price is None or current_price <= 0:
+        return False
+
+    pricing_date = _canonical_nonfuture_date(filing.get("pricing_date"))
+    quote_date = _canonical_quote_date(filing.get("price_updated"))
+    return bool(pricing_date and quote_date and quote_date >= pricing_date)
 
 
 def sanitize_payload(payload: dict) -> tuple[dict, int]:
