@@ -173,7 +173,7 @@ def _lockup_metadata(rows):
     scope = next((row.get("Lock-Up Scope") for row in rows if row.get("Lock-Up Scope")), None)
     tags_raw = next((row.get("Lock-Up Scope Tags") for row in rows if row.get("Lock-Up Scope Tags")), "")
     tags = [tag.strip() for tag in str(tags_raw).split(",") if tag.strip()]
-    terms = _parse_terms(next((row.get("Lock-Up Terms JSON") for row in rows if row.get("Lock-Up Terms JSON")), "[]"))
+    terms = _parse_terms(next((row.get("Lock-Up Terms JSON") for row in rows if row.get("Lock-Up Terms JSON") not in (None, "", "[]")), "[]"))
     confidence = next((row.get("Lock-Up Confidence") for row in rows if row.get("Lock-Up Confidence")), None)
 
     # Backward compatibility for historical rows generated before structured fields.
@@ -549,6 +549,17 @@ def write_dashboard_csv(filings, output_path):
     return _write_csv(filings, Path(output_path))
 
 
+def _quote_updated_at(quote, fallback):
+    """Return the provider quote time when available, otherwise the retrieval time."""
+    quote_timestamp = getattr(quote, "quote_timestamp", None)
+    if quote_timestamp is None:
+        return fallback
+    try:
+        return datetime.fromtimestamp(float(quote_timestamp), tz=timezone.utc).isoformat()
+    except (TypeError, ValueError, OSError, OverflowError):
+        return fallback
+
+
 def refresh_market_prices(output_path, market_prices, updated_at=None):
     """Refresh delayed quotes and holder cash values in the public feed."""
     output_path = Path(output_path)
@@ -561,15 +572,18 @@ def refresh_market_prices(output_path, market_prices, updated_at=None):
     changed = False
     for filing in payload.get("filings", []):
         ticker = str(filing.get("ticker") or "").strip().upper()
-        price = _number(market_prices.get(ticker)) if ticker else None
+        quote = market_prices.get(ticker) if ticker else None
+        price = _number(quote)
         if price is None or price <= 0:
             continue
+        price_updated = _quote_updated_at(quote, updated_at)
         filing["current_price"] = price
-        filing["price_updated"] = updated_at
+        filing["price_updated"] = price_updated
         for person in filing.get("people", []):
             shares = _number(person.get("shares"))
             if shares is not None:
                 person["cash_value"] = shares * price
+                person["valuation_as_of"] = price_updated
                 if _number(person.get("liquid_shares")) is not None: person["liquid_value"] = _number(person.get("liquid_shares")) * price
                 if _number(person.get("locked_shares")) is not None: person["locked_value"] = _number(person.get("locked_shares")) * price
         changed = True
