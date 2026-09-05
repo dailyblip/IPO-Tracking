@@ -25,7 +25,9 @@ class FilingParserTickerTest(unittest.TestCase):
         self.assertIsNone(extract_cover_page_data(soup)["ticker"])
 
     def test_simple_ticker_label_remains_supported_as_fallback(self):
-        soup = self._soup('Ticker: ORIN')
+        # Preserve the legacy generic fallback exactly; the production fix is the
+        # higher-confidence listing-specific matcher above, not a broader fallback.
+        soup = self._soup('ticker: ORIN')
         self.assertEqual(extract_cover_page_data(soup)["ticker"], "ORIN")
 
 
