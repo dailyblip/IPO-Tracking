@@ -24,6 +24,7 @@ class PublicPersonShareDerivativeTests(unittest.TestCase):
                         "value": 150_000_000,
                         "offering_price": 15.0,
                         "current_price": 18.81,
+                        "price_updated": "2026-07-16T20:05:29+00:00",
                         "people": [person],
                     }
                 ],

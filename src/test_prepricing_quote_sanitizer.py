@@ -75,6 +75,64 @@ class PrepricingQuoteSanitizerTests(unittest.TestCase):
         self.assertNotIn("cash_value", filing["people"][0])
         self.assertNotIn("valuation_as_of", filing["people"][0])
 
+    def test_removes_quote_when_quote_timestamp_predates_pricing(self):
+        payload = {
+            "filings": [{
+                "id": "stale-prepricing-quote",
+                "form": "424B4",
+                "stage": "Priced",
+                "filed": "2026-08-27",
+                "pricing_date": "2026-08-26",
+                "offering_price": 18.0,
+                "current_price": 24.13,
+                "price_updated": "2026-08-25T23:59:59+00:00",
+                "people": [{
+                    "cash_value": 100,
+                    "valuation_as_of": "2026-08-25",
+                }],
+            }]
+        }
+        sanitized, changed = sanitize_payload(payload)
+        filing = sanitized["filings"][0]
+        self.assertEqual(changed, 1)
+        self.assertNotIn("current_price", filing)
+        self.assertNotIn("price_updated", filing)
+        self.assertNotIn("cash_value", filing["people"][0])
+        self.assertNotIn("valuation_as_of", filing["people"][0])
+
+    def test_removes_quote_without_release_safe_quote_timestamp(self):
+        for index, timestamp in enumerate((
+            None,
+            "",
+            "not-a-timestamp",
+            "2026-08-27T20:05:29",
+            "2099-01-01T00:00:00+00:00",
+        )):
+            with self.subTest(timestamp=timestamp):
+                filing = {
+                    "id": f"invalid-quote-time-{index}",
+                    "form": "424B4",
+                    "stage": "Priced",
+                    "filed": "2026-08-27",
+                    "pricing_date": "2026-08-26",
+                    "offering_price": 18.0,
+                    "current_price": 24.13,
+                    "people": [{
+                        "cash_value": 100,
+                        "valuation_as_of": "2026-08-27",
+                    }],
+                }
+                if timestamp is not None:
+                    filing["price_updated"] = timestamp
+                payload = {"filings": [filing]}
+                sanitized, changed = sanitize_payload(payload)
+                result = sanitized["filings"][0]
+                self.assertEqual(changed, 1)
+                self.assertNotIn("current_price", result)
+                self.assertNotIn("price_updated", result)
+                self.assertNotIn("cash_value", result["people"][0])
+                self.assertNotIn("valuation_as_of", result["people"][0])
+
     def test_priced_record_without_current_quote_clears_stale_market_derivatives(self):
         payload = {
             "filings": [{
