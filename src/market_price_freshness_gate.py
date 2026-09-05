@@ -1,25 +1,27 @@
-"""Clear Current Price values that were not refreshed in the current pipeline run.
+"""Clear Current Price values whose provider timestamp is not release-fresh.
 
-The quote fetcher deliberately returns ``None`` for a ticker when Finnhub returns a
-stale/invalid quote or a ticker-specific lookup fails. ``dashboard_export`` preserves
-an existing Current Price when that happens so partial refresh callers do not erase
-unrelated data. For the full daily/backfill pipelines, however, every published
-trading ticker is attempted. A quote that still carries an older ``price_updated``
-after that full refresh is therefore unverified stale state and must not survive.
+Current Price is secondary market data. ``price_lookup`` validates every newly
+retrieved quote against the market provider's timestamp and ``dashboard_export``
+now preserves that authoritative provider timestamp in ``price_updated``. The feed's
+``generated_at`` value records pipeline retrieval time, so those two timestamps are
+not expected to be identical.
 
-Run this gate immediately after ``main.py``. At that point a successfully refreshed
-quote has the exact same timestamp as the feed's ``generated_at`` value because
-``refresh_market_prices`` writes both from the same ``updated_at`` value. Later
-pipeline steps are free to change ``generated_at`` after this gate has completed.
+Run this gate immediately after ``main.py``. A populated quote survives only when it
+has a positive price and a timezone-aware provider timestamp that is no older than
+the same freshness window enforced by ``price_lookup`` and is not materially in the
+future relative to the pipeline retrieval time. Invalid/stale quotes and all public
+market-value derivatives are cleared before lifecycle reconciliation continues.
 """
 
 from __future__ import annotations
 
 import json
 import math
+from datetime import datetime
 from pathlib import Path
 
 import dashboard_export
+from price_lookup import MAX_FUTURE_SKEW_SECONDS, MAX_QUOTE_AGE_SECONDS
 
 _MARKET_VALUE_SIGNAL_MARKERS = ("currently valued", "current market value")
 
@@ -32,6 +34,19 @@ def _number(value):
     except (TypeError, ValueError):
         return None
     return number if math.isfinite(number) else None
+
+
+def _timestamp(value):
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed
 
 
 def _strip_quote_derived_fields(filing: dict) -> None:
@@ -58,11 +73,12 @@ def _strip_quote_derived_fields(filing: dict) -> None:
 
 
 def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
-    """Clear populated quotes not proven fresh in this exact pipeline refresh."""
+    """Clear populated quotes that do not carry a release-fresh provider timestamp."""
     if not isinstance(payload, dict):
         raise ValueError("Market-price freshness gate requires an object payload")
 
     refresh_marker = str(payload.get("generated_at") or "").strip()
+    refresh_time = _timestamp(refresh_marker)
     stale = []
     for filing in payload.get("filings") or []:
         if not isinstance(filing, dict) or filing.get("current_price") in (None, ""):
@@ -70,7 +86,18 @@ def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
 
         price = _number(filing.get("current_price"))
         price_updated = str(filing.get("price_updated") or "").strip()
-        if price is not None and price > 0 and refresh_marker and price_updated == refresh_marker:
+        quote_time = _timestamp(price_updated)
+        age_seconds = (
+            (refresh_time - quote_time).total_seconds()
+            if refresh_time is not None and quote_time is not None
+            else None
+        )
+        if (
+            price is not None
+            and price > 0
+            and age_seconds is not None
+            and -MAX_FUTURE_SKEW_SECONDS <= age_seconds <= MAX_QUOTE_AGE_SECONDS
+        ):
             continue
 
         stale.append(
@@ -106,7 +133,7 @@ def main(argv=None) -> int:
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Clear Current Price values that were not refreshed in this pipeline run."
+        description="Clear Current Price values with invalid or stale provider timestamps."
     )
     parser.add_argument("feed", help="Path to docs/data/filings.json")
     args = parser.parse_args(argv)
@@ -118,7 +145,7 @@ def main(argv=None) -> int:
         )
         print(f"Market-price freshness gate cleared {len(stale)} stale quote(s): {labels}")
     else:
-        print("Market-price freshness gate: all populated Current Price values were refreshed")
+        print("Market-price freshness gate: all populated Current Price values are provider-fresh")
     return 0
 
 
