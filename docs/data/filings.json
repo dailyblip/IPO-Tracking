@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-05T12:30:00.772979+00:00",
+  "generated_at": "2026-09-05T13:12:26.224180+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -12429,7 +12429,7 @@
           "shares_before_ipo": 165159,
           "shares_sold_ipo": null,
           "shares_after_ipo": 165159,
-          "stanford_source": null,
+          "stanford_source": "",
           "ipo_value": 3303180.0,
           "cash_realized_ipo": null,
           "liquid_shares": null,
