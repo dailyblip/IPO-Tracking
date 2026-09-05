@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-05T14:25:26.415942+00:00",
+  "generated_at": "2026-09-05T15:09:04.140612+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
       "id": "0001628280-26-060761",
       "company": "SB Energy, Inc.",
-      "ticker": "",
+      "ticker": "SBE",
       "cik": "0002133037",
       "accession_no": "0001628280-26-060761",
       "form": "S-1/A",
