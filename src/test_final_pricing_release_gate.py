@@ -34,6 +34,19 @@ class FinalPricingReleaseGateTests(unittest.TestCase):
         future = (date.today() + timedelta(days=1)).isoformat()
         self.assertFalse(is_release_grade_final(self._final(pricing_date=future)))
 
+    def test_final_prospectus_requires_canonical_nonfuture_filing_date(self):
+        self.assertFalse(is_release_grade_final(self._final(filed=None)))
+        self.assertFalse(is_release_grade_final(self._final(filed="08/24/2026")))
+        future = (date.today() + timedelta(days=1)).isoformat()
+        self.assertFalse(is_release_grade_final(self._final(filed=future)))
+
+    def test_final_prospectus_rejects_pricing_after_final_filing(self):
+        self.assertFalse(
+            is_release_grade_final(
+                self._final(filed="2026-08-24", pricing_date="2026-08-25")
+            )
+        )
+
     def test_final_prospectus_requires_positive_final_ipo_price(self):
         for value in (None, "", 0, -1, "unknown", float("nan"), True):
             with self.subTest(value=value):
