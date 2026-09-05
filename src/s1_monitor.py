@@ -417,6 +417,47 @@ def build_payload(records: list[dict], generated_at: str | None = None) -> dict:
     }
 
 
+def _preserve_unambiguous_ticker_lineage(records: list[dict], history: list[dict]) -> list[dict]:
+    """Carry a ticker forward only from strictly earlier exact-CIK S-1 lineage.
+
+    An amendment can omit a ticker that an earlier registration statement already
+    disclosed. Preserve that authoritative metadata when every earlier nonblank
+    S-1/S-1A ticker for the same CIK agrees. Conflicting history, same-day filings,
+    missing dates, and existing nonblank tickers remain untouched rather than guessed.
+    """
+    lineage = []
+    for item in list(history or []) + list(records or []):
+        if not isinstance(item, dict):
+            continue
+        if str(item.get("form") or "").strip().upper() not in FORM_TYPES:
+            continue
+        cik = str(item.get("cik") or "").zfill(10) if item.get("cik") else ""
+        filed = _normalize_filing_date(item.get("filed") or item.get("filing_date") or "")
+        ticker = str(item.get("ticker") or "").strip().upper()
+        if cik and filed:
+            lineage.append((cik, filed, ticker))
+
+    for record in records or []:
+        if not isinstance(record, dict):
+            continue
+        current_ticker = str(record.get("ticker") or "").strip().upper()
+        if current_ticker:
+            record["ticker"] = current_ticker
+            continue
+        cik = str(record.get("cik") or "").zfill(10) if record.get("cik") else ""
+        filed = _normalize_filing_date(record.get("filed") or record.get("filing_date") or "")
+        if not cik or not filed:
+            continue
+        prior_tickers = {
+            ticker
+            for lineage_cik, lineage_filed, ticker in lineage
+            if lineage_cik == cik and ticker and lineage_filed < filed
+        }
+        if len(prior_tickers) == 1:
+            record["ticker"] = next(iter(prior_tickers))
+    return records
+
+
 def export_feed(
     records: list[dict],
     output_path: Path = OUTPUT_PATH,
@@ -431,6 +472,7 @@ def export_feed(
         except (OSError, json.JSONDecodeError):
             existing = []
 
+    _preserve_unambiguous_ticker_lineage(records, existing)
     processed_ciks = {
         str(cik or "").zfill(10) for cik in (processed_ciks or set()) if cik
     }
@@ -497,6 +539,7 @@ def sync_research_queue(
         except (OSError, json.JSONDecodeError):
             existing = []
 
+    _preserve_unambiguous_ticker_lineage(records, existing)
     priced_ciks = {
         str(item.get("cik") or "").zfill(10)
         for item in existing
