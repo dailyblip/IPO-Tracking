@@ -1,11 +1,15 @@
 import unittest
 
 import archived_reporting_history_gate as gate
+import followon_sanitizer
+
+
+EXCHANGE_ACT_REGISTRATION_FORMS = ("10-12B", "10-12B/A", "10-12G", "10-12G/A")
 
 
 class ExchangeActRegistrationHistoryGateTests(unittest.TestCase):
     def test_prior_form_10_registration_is_reporting_history(self):
-        for form in ("10-12B", "10-12B/A", "10-12G", "10-12G/A"):
+        for form in EXCHANGE_ACT_REGISTRATION_FORMS:
             with self.subTest(form=form):
                 submissions = {
                     "filings": {
@@ -105,6 +109,67 @@ class ExchangeActRegistrationHistoryGateTests(unittest.TestCase):
         self.assertEqual(queue["filings"], [])
         self.assertEqual(excluded_prepricing, {"0001234567"})
         self.assertEqual(len(excluded_final), 1)
+
+    def test_inline_followon_gate_recognizes_prior_form_10_registration(self):
+        for form in EXCHANGE_ACT_REGISTRATION_FORMS:
+            with self.subTest(form=form):
+                submissions = {
+                    "filings": {
+                        "recent": {
+                            "form": [form],
+                            "filingDate": ["2026-06-01"],
+                        }
+                    }
+                }
+                self.assertTrue(
+                    followon_sanitizer.has_prior_periodic_report(
+                        submissions, "2026-07-01"
+                    )
+                )
+
+    def test_inline_followon_gate_does_not_infer_same_day_form_10_order(self):
+        for form in EXCHANGE_ACT_REGISTRATION_FORMS:
+            with self.subTest(form=form):
+                submissions = {
+                    "filings": {
+                        "recent": {
+                            "form": [form],
+                            "filingDate": ["2026-07-01"],
+                        }
+                    }
+                }
+                self.assertFalse(
+                    followon_sanitizer.has_prior_periodic_report(
+                        submissions, "2026-07-01"
+                    )
+                )
+
+    def test_inline_followon_sanitizer_removes_final_after_prior_form_10(self):
+        final = {
+            "company": "Already Reporting Final Co",
+            "cik": "7654321",
+            "accession_no": "0007654321-26-000002",
+            "form": "424B4",
+            "stage": "Priced",
+            "filed": "2026-07-02",
+            "pricing_date": "2026-07-01",
+            "offering_price": 12.0,
+        }
+
+        updated, removed = followon_sanitizer.sanitize_payload(
+            {"filings": [final]},
+            submissions_loader=lambda cik: {
+                "filings": {
+                    "recent": {
+                        "form": ["10-12B"],
+                        "filingDate": ["2026-05-15"],
+                    }
+                }
+            },
+        )
+
+        self.assertEqual(updated["filings"], [])
+        self.assertEqual(removed, [final])
 
 
 if __name__ == "__main__":
