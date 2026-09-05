@@ -17,6 +17,7 @@ from pathlib import Path
 import dashboard_export
 import edgar_client
 import filing_parser
+import final_pricing_release_gate
 
 
 def _canonical_cik(value):
@@ -158,6 +159,20 @@ def _final_metadata_ticker_mismatch(filing, filing_meta):
     sec_ticker = str(filing_meta.get("ticker") or "").strip().upper()
     stored_ticker = str(filing.get("ticker") or "").strip().upper()
     return bool(sec_ticker and sec_ticker != stored_ticker)
+
+
+def _can_preserve_release_grade_final(filing, filing_meta):
+    """Keep an already-valid final when only optional size repair is unavailable.
+
+    Offering size is not a release requirement. A transient SEC document failure or
+    an unparseable exact share count must therefore not delete a priced IPO whose
+    final price/date state is already release-grade. An SEC ticker contradiction is
+    still release-blocking and must be repaired rather than preserved.
+    """
+    return (
+        final_pricing_release_gate.is_release_grade_final(filing)
+        and not _final_metadata_ticker_mismatch(filing, filing_meta)
+    )
 
 
 def _clear_market_quote_derivatives(record):
@@ -402,28 +417,38 @@ def reconcile_payload(payload, final_filings, soup_loader):
             continue
 
         if existing_final is not None:
-            if (
-                _has_release_grade_final_size(existing_final)
-                and not _final_metadata_ticker_mismatch(existing_final, final_meta)
-            ):
+            ticker_mismatch = _final_metadata_ticker_mismatch(existing_final, final_meta)
+            if _has_release_grade_final_size(existing_final) and not ticker_mismatch:
                 states[cik] = {
                     "meta": final_meta,
                     "existing": existing_final,
                     "replacement": existing_final,
                 }
                 continue
+
+            preserve_existing = _can_preserve_release_grade_final(existing_final, final_meta)
             try:
                 soup = soup_loader(final_meta)
                 replacement = _repair_final_record(existing_final, final_meta, soup)
             except Exception as error:
                 print(f"[lifecycle_reconciler] Could not repair final terms for CIK {cik}: {error}")
-                replacement = None
+                replacement = existing_final if preserve_existing else None
+
+            # Exact offering size is optional. If the final prospectus cannot be
+            # reparsed well enough to improve size, retain an already release-grade
+            # priced row unless SEC metadata says its ticker identity is stale.
+            if replacement is None and preserve_existing:
+                replacement = existing_final
+
+            if replacement is not None and replacement == existing_final:
+                replacement = existing_final
+
             states[cik] = {
                 "meta": final_meta,
                 "existing": existing_final,
                 "replacement": replacement,
             }
-            if replacement is not None:
+            if replacement is not None and replacement is not existing_final:
                 repaired_count += 1
             continue
 
