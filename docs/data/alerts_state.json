@@ -1,7 +1,43 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-05T02:25:08.160371+00:00",
+  "updated_at": "2026-09-05T02:31:17.828594+00:00",
   "items": {
+    "s1:0002133037": {
+      "id": "s1:0002133037",
+      "cik": "0002133037",
+      "company": "SB Energy, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-04",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026060761/0001628280-26-060761-index.htm"
+    },
+    "s1:0002142855": {
+      "id": "s1:0002142855",
+      "cik": "0002142855",
+      "company": "PBT Land & Minerals, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-04",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2142855/000121390026097366/0001213900-26-097366-index.htm"
+    },
+    "s1:0001802369": {
+      "id": "s1:0001802369",
+      "cik": "0001802369",
+      "company": "ADARx Pharmaceuticals, Inc.",
+      "form": "S-1",
+      "filed": "2026-09-04",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526383838/0001193125-26-383838-index.htm"
+    },
     "s1:0002133022": {
       "id": "s1:0002133022",
       "cik": "0002133022",
@@ -25,18 +61,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026060083/0001628280-26-060083-index.htm"
-    },
-    "s1:0002133037": {
-      "id": "s1:0002133037",
-      "cik": "0002133037",
-      "company": "SB Energy, Inc.",
-      "form": "S-1",
-      "filed": "2026-09-01",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026059639/0001628280-26-059639-index.htm"
     },
     "s1:0002028464": {
       "id": "s1:0002028464",
@@ -988,6 +1012,27 @@
     }
   },
   "ciks": {
+    "0002133037": {
+      "company": "SB Energy, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002133037",
+      "last_filed": "2026-09-04",
+      "missing_runs": 0
+    },
+    "0002142855": {
+      "company": "PBT Land & Minerals, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002142855",
+      "last_filed": "2026-09-04",
+      "missing_runs": 0
+    },
+    "0001802369": {
+      "company": "ADARx Pharmaceuticals, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001802369",
+      "last_filed": "2026-09-04",
+      "missing_runs": 0
+    },
     "0002133022": {
       "company": "Oura Inc.",
       "stage": "pre-pricing",
@@ -1000,13 +1045,6 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002141406",
       "last_filed": "2026-09-02",
-      "missing_runs": 0
-    },
-    "0002133037": {
-      "company": "SB Energy, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002133037",
-      "last_filed": "2026-09-01",
       "missing_runs": 0
     },
     "0002028464": {

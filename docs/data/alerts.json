@@ -1,8 +1,36 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-05T02:25:08.160431+00:00",
-  "count": 94,
+  "generated_at": "2026-09-05T02:31:17.828648+00:00",
+  "count": 96,
   "alerts": [
+    {
+      "type": "new_prepricing",
+      "company": "PBT Land & Minerals, Inc.",
+      "cik": "0002142855",
+      "filing_id": "s1:0002142855",
+      "form": "S-1/A",
+      "filed": "2026-09-04",
+      "stage": "pre-pricing",
+      "priority": "Medium",
+      "summary": "New pre-pricing S-1/A candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2142855/000121390026097366/0001213900-26-097366-index.htm",
+      "detected_at": "2026-09-05T02:31:17.828335+00:00",
+      "key": "new_prepricing|s1:0002142855|0002142855|2026-09-04|"
+    },
+    {
+      "type": "new_prepricing",
+      "company": "ADARx Pharmaceuticals, Inc.",
+      "cik": "0001802369",
+      "filing_id": "s1:0001802369",
+      "form": "S-1",
+      "filed": "2026-09-04",
+      "stage": "pre-pricing",
+      "priority": "Medium",
+      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526383838/0001193125-26-383838-index.htm",
+      "detected_at": "2026-09-05T02:31:17.828363+00:00",
+      "key": "new_prepricing|s1:0001802369|0001802369|2026-09-04|"
+    },
     {
       "type": "new_424b4",
       "company": "Andersen Group Inc.",
