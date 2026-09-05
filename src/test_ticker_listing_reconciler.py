@@ -37,6 +37,30 @@ class TickerListingReconcilerTests(unittest.TestCase):
         self.assertEqual((updated, conflicts), (1, 0))
         self.assertEqual(payload["filings"][0]["ticker"], "NEW")
 
+    def test_current_amendment_can_replace_earlier_proposed_ticker(self):
+        """A later S-1/A listing statement controls over a stale earlier S-1 symbol."""
+        payload = {
+            "filings": [
+                {
+                    "id": "amended-ipo",
+                    "company": "Example Returning Issuer",
+                    "ticker": "MENW",
+                    "form": "S-1/A",
+                    "sec_url": "https://www.sec.gov/example-amendment-index.htm",
+                }
+            ]
+        }
+        current_amendment_text = (
+            "Prior to this offering, there has been no public market for our common stock. "
+            "We have applied to list our common stock on the Nasdaq Global Select Market "
+            "(Nasdaq) under the symbol ‘MW’."
+        )
+        updated, conflicts = reconciler.reconcile_payload(
+            payload, fetch_text=lambda record: current_amendment_text
+        )
+        self.assertEqual((updated, conflicts), (1, 0))
+        self.assertEqual(payload["filings"][0]["ticker"], "MW")
+
     def test_conflicting_current_listing_symbols_fail_closed(self):
         payload = {
             "filings": [
