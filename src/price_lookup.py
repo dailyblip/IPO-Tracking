@@ -22,6 +22,15 @@ class PriceLookupError(Exception):
     pass
 
 
+class QuotePrice(float):
+    """Float-compatible market price carrying the provider's quote timestamp."""
+
+    def __new__(cls, value, quote_timestamp):
+        instance = super().__new__(cls, value)
+        instance.quote_timestamp = float(quote_timestamp)
+        return instance
+
+
 def _get_api_key() -> str:
     api_key = os.environ.get("MARKET_DATA_API_KEY")
     if not api_key:
@@ -74,12 +83,15 @@ def _validate_quote(ticker: str, data: dict, now: float = None) -> float:
             "refusing to publish it as Current Price."
         )
 
-    return price
+    return QuotePrice(price, quote_timestamp)
 
 
 def get_current_price(ticker: str) -> float:
     """
     Return the current price for a given ticker symbol.
+
+    The return value behaves as a float and also carries the authoritative
+    provider quote timestamp on ``quote_timestamp`` for downstream provenance.
 
     Raises PriceLookupError if the ticker is invalid, not found, stale, or the
     API call fails after retries.
@@ -126,9 +138,9 @@ def get_current_prices(tickers: list) -> dict:
     """
     Look up current prices for multiple tickers.
 
-    Returns a dict mapping ticker -> price, or ticker -> None if the
-    lookup failed for that specific ticker (does not raise, so one bad
-    ticker doesn't block the rest of the batch).
+    Returns a dict mapping ticker -> float-compatible QuotePrice, or ticker ->
+    None if the lookup failed for that specific ticker. QuotePrice preserves the
+    provider timestamp without breaking numeric callers.
     """
     results = {}
     for ticker in tickers:
