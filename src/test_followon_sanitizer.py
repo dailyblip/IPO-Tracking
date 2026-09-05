@@ -92,6 +92,19 @@ class FollowOnSanitizerTests(unittest.TestCase):
                     followon_sanitizer.has_prior_periodic_report(submissions, "2026-06-01")
                 )
 
+    def test_prior_424b4_proves_prior_public_offering(self):
+        submissions = {
+            "filings": {
+                "recent": {
+                    "form": ["424B4", "424B4"],
+                    "filingDate": ["2026-05-14", "2026-06-01"],
+                }
+            }
+        }
+        self.assertTrue(
+            followon_sanitizer.has_prior_periodic_report(submissions, "2026-06-01")
+        )
+
     def test_reporting_form_after_candidate_does_not_disqualify_historical_ipo(self):
         submissions = {
             "filings": {
@@ -106,7 +119,7 @@ class FollowOnSanitizerTests(unittest.TestCase):
         )
 
     def test_same_day_reporting_form_does_not_guess_event_order(self):
-        for form in ("8-K", "6-K", "S-3", "F-3"):
+        for form in ("8-K", "6-K", "S-3", "F-3", "424B4"):
             with self.subTest(form=form):
                 submissions = {
                     "filings": {
