@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-05T07:11:48.986583+00:00",
+  "updated_at": "2026-09-05T07:12:10.014573+00:00",
   "items": {
     "s1:0002133037": {
       "id": "s1:0002133037",
@@ -997,18 +997,6 @@
       "priority": "High",
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
-    },
-    "0001628280-26-034849": {
-      "id": "0001628280-26-034849",
-      "cik": "0001853868",
-      "company": "Fervo Energy Co",
-      "form": "424B4",
-      "filed": "2026-05-14",
-      "stage": "priced",
-      "price_range": "25-26",
-      "priority": "High",
-      "value": 1890000000.0,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1853868/000162828026034849/0001628280-26-034849-index.htm"
     }
   },
   "ciks": {
@@ -1592,13 +1580,6 @@
       "last_filing_id": "0001213900-25-120076",
       "last_filed": "2025-12-10",
       "missing_runs": 0
-    },
-    "0001853868": {
-      "company": "Fervo Energy Co",
-      "stage": "priced",
-      "last_filing_id": "0001628280-26-034849",
-      "last_filed": "2026-05-14",
-      "missing_runs": 1
     }
   }
 }

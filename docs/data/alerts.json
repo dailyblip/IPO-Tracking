@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-05T07:11:48.986646+00:00",
-  "count": 96,
+  "generated_at": "2026-09-05T07:12:10.014637+00:00",
+  "count": 95,
   "alerts": [
     {
       "type": "new_prepricing",
@@ -346,21 +346,6 @@
       "detected_at": "2026-09-04T07:20:26.156049+00:00",
       "new_value": "$479M",
       "key": "new_424b4|0001104659-26-060835|0001898718|2026-05-14|$479M"
-    },
-    {
-      "type": "new_424b4",
-      "company": "Fervo Energy Co",
-      "cik": "0001853868",
-      "filing_id": "0001628280-26-034849",
-      "form": "424B4",
-      "filed": "2026-05-14",
-      "stage": "priced",
-      "priority": "High",
-      "summary": "New 424B4 entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1853868/000162828026034849/0001628280-26-034849-index.htm",
-      "detected_at": "2026-09-04T07:20:26.156055+00:00",
-      "new_value": "$1.9B",
-      "key": "new_424b4|0001628280-26-034849|0001853868|2026-05-14|$1.9B"
     },
     {
       "type": "new_424b4",
