@@ -6,12 +6,14 @@ before the candidate 424B4 is authoritative evidence that the company had alread
 entered the SEC reporting system before this offering. A prior Form S-3 or F-3,
 including automatic-shelf and Rule 462(b) additional-registration variants, is
 also affirmative reporting-history evidence because those short forms require
-Exchange Act reporting eligibility.
+Exchange Act reporting eligibility. A prior Form 424B4 is separately dispositive
+that the issuer already completed an earlier public offering prospectus and the
+later 424B4 cannot be its first IPO.
 
-This pass is deliberately conservative and date-aware: reporting evidence filed
-after or on the same day as the candidate does not disqualify a historical IPO.
-SEC lookup failure blocks the sanitizer instead of silently publishing an
-unverified candidate.
+This pass is deliberately conservative and date-aware: reporting/public-offering
+evidence filed after or on the same day as the candidate does not disqualify a
+historical IPO. SEC lookup failure blocks the sanitizer instead of silently
+publishing an unverified candidate.
 """
 
 from __future__ import annotations
@@ -35,6 +37,7 @@ REPORTING_FORMS = {
     "6-K", "6-K/A", "20-F", "20-F/A", "40-F", "40-F/A",
     "S-3", "S-3/A", "S-3ASR", "S-3ASR/A", "S-3MEF",
     "F-3", "F-3/A", "F-3ASR", "F-3ASR/A", "F-3MEF",
+    "424B4",
 }
 
 
@@ -50,7 +53,7 @@ def _iso_date(value):
 
 
 def has_prior_periodic_report(submissions: dict, candidate_date: str) -> bool:
-    """Return True when authoritative SEC reporting evidence predates the offering."""
+    """Return True when authoritative SEC reporting/public-offering evidence predates the offering."""
     cutoff = _iso_date(candidate_date)
     if cutoff is None:
         raise ValueError(f"Invalid candidate date: {candidate_date!r}")
@@ -74,7 +77,7 @@ def _load_submissions(cik: str) -> dict:
 
 
 def sanitize_payload(payload: dict, submissions_loader=_load_submissions):
-    """Remove final offerings proven to post-date prior SEC reporting history."""
+    """Remove final offerings proven to post-date prior SEC reporting/public-offering history."""
     filings = payload.get("filings", []) if isinstance(payload, dict) else []
     kept = []
     removed = []
