@@ -4,9 +4,9 @@ Research Monitor tracks company IPOs, not later registered offerings by companie
 that are already SEC reporting issuers. A prior Exchange Act reporting form
 before the candidate 424B4 is authoritative evidence that the company had already
 entered the SEC reporting system before this offering. A prior Form S-3 or F-3,
-including automatic-shelf variants, is also affirmative reporting-history evidence
-because those short forms require Exchange Act reporting eligibility. This
-includes amendments.
+including automatic-shelf and Rule 462(b) additional-registration variants, is
+also affirmative reporting-history evidence because those short forms require
+Exchange Act reporting eligibility.
 
 This pass is deliberately conservative and date-aware: reporting evidence filed
 after or on the same day as the candidate does not disqualify a historical IPO.
@@ -32,8 +32,8 @@ REPORTING_FORMS = {
     "10-Q", "10-Q/A", "10-QT", "10-QT/A",
     "10-K", "10-K/A", "10-KT", "10-KT/A",
     "6-K", "6-K/A", "20-F", "20-F/A", "40-F", "40-F/A",
-    "S-3", "S-3/A", "S-3ASR", "S-3ASR/A",
-    "F-3", "F-3/A", "F-3ASR", "F-3ASR/A",
+    "S-3", "S-3/A", "S-3ASR", "S-3ASR/A", "S-3MEF",
+    "F-3", "F-3/A", "F-3ASR", "F-3ASR/A", "F-3MEF",
 }
 
 
