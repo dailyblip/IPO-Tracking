@@ -55,8 +55,12 @@ _DOCUMENT_SECTION_HEADINGS = {
 _DOCUMENT_SECTION_HEADING_PREFIXES = (
     "material u.s. federal income tax considerations to ",
     "material us federal income tax considerations to ",
+    "material u.s. federal income tax considerations for ",
+    "material us federal income tax considerations for ",
     "material u.s. federal income tax consequences to ",
     "material us federal income tax consequences to ",
+    "material u.s. federal income tax consequences for ",
+    "material us federal income tax consequences for ",
 )
 
 _PERCENT_MARKERS = {"%", "percent", "percentage"}
