@@ -60,15 +60,14 @@ def is_priced_ipo(filing: dict) -> bool:
         return False
 
     # ``filed`` is the SEC filing date of the current public row. ``filing_date``
-    # is the original S-1 date and must not be used for this comparison. When the
-    # final 424B4 filing date is present, a pricing date after it is impossible and
-    # must not be allowed to retain a live quote even if an earlier sanitizer was
-    # bypassed or its ordering changes.
-    filed_raw = str(filing.get("filed") or "").strip()
-    if filed_raw:
-        filed_date = _canonical_nonfuture_date(filed_raw)
-        if filed_date is None or pricing_date > filed_date:
-            return False
+    # is the original S-1 date and must not be used for this comparison. A final
+    # 424B4 without a canonical SEC filing date is not release-safe, and a pricing
+    # date after that filing date is impossible. In either case the row must not
+    # retain a live quote even if an earlier sanitizer was bypassed or ordering
+    # changes later.
+    filed_date = _canonical_nonfuture_date(filing.get("filed"))
+    if filed_date is None or pricing_date > filed_date:
+        return False
 
     final_price = _number(filing.get("offering_price"))
     return final_price is not None and final_price > 0
