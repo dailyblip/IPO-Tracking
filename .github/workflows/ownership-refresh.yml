@@ -200,6 +200,13 @@ jobs:
         # The release wrapper delegates to the strict implementation formerly run as:
         # run: python market_quote_identity.py ../docs/data/filings.json
         run: python market_quote_release_gate.py ../docs/data/filings.json
+      # The startup unit-test pass validates code against the checked-in snapshot.
+      # Re-run the release-blocking suite after ownership regeneration and all
+      # sanitizers so the exact candidate feed must pass before publication.
+      - name: Run release-blocking regression suite on regenerated feed
+        env:
+          SKIP_LIVE_GOLDEN: '1'
+        run: python -m unittest discover -s src -p 'test_*.py' -v
       - name: Validate regenerated golden records
         run: python -m unittest discover -s src -p 'test_golden_records.py' -v
       - name: Validate public feed
