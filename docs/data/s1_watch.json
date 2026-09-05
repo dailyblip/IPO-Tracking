@@ -1,8 +1,77 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-05T01:34:18.327799+00:00",
+  "generated_at": "2026-09-05T02:27:56.606271+00:00",
   "source": "SEC EDGAR",
   "filings": [
+    {
+      "id": "0001628280-26-060761",
+      "company": "SB Energy, Inc.",
+      "ticker": "",
+      "cik": "0002133037",
+      "accession_no": "0001628280-26-060761",
+      "form": "S-1/A",
+      "filed": "2026-09-04",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026060761/0001628280-26-060761-index.htm"
+    },
+    {
+      "id": "0001213900-26-097366",
+      "company": "PBT Land & Minerals, Inc.",
+      "ticker": "PBT",
+      "cik": "0002142855",
+      "accession_no": "0001213900-26-097366",
+      "form": "S-1/A",
+      "filed": "2026-09-04",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2142855/000121390026097366/0001213900-26-097366-index.htm"
+    },
+    {
+      "id": "0001193125-26-383838",
+      "company": "ADARx Pharmaceuticals, Inc.",
+      "ticker": "ADRX",
+      "cik": "0001802369",
+      "accession_no": "0001193125-26-383838",
+      "form": "S-1",
+      "filed": "2026-09-04",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526383838/0001193125-26-383838-index.htm"
+    },
     {
       "id": "0001193125-26-381855",
       "company": "Oura Inc.",
