@@ -21,6 +21,8 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                     "id": "acme",
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "stage": "Priced",
+                    "pricing_date": "2026-08-01",
                     "current_price": 22.0,
                     "price_updated": "2026-08-20T00:06:53+00:00",
                     "signals": [
@@ -61,6 +63,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "stage": "Priced",
                     "pricing_date": "2026-09-04",
                     "current_price": 22.0,
                     "price_updated": "2026-09-04T20:00:00+00:00",
@@ -93,6 +96,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "stage": "Priced",
                     "pricing_date": "2026-09-01",
                     "current_price": 22.0,
                     "price_updated": marker,
@@ -116,6 +120,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "stage": "Priced",
                     "pricing_date": "2026-09-06",
                     "current_price": 22.0,
                     "price_updated": "2026-09-05T20:00:00+00:00",
@@ -147,6 +152,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "stage": "Priced",
                     "current_price": 22.0,
                     "price_updated": marker,
                     "people": [],
@@ -160,6 +166,38 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
         self.assertNotIn("current_price", sanitized["filings"][0])
         self.assertNotIn("price_updated", sanitized["filings"][0])
 
+    def test_filing_stage_quote_is_cleared_even_if_timestamp_is_post_pricing_date(self):
+        marker = "2026-09-06T20:00:00+00:00"
+        payload = {
+            "generated_at": marker,
+            "filings": [
+                {
+                    "company": "Acme Robotics, Inc.",
+                    "ticker": "ACME",
+                    "stage": "Filing",
+                    "pricing_date": "2026-09-06",
+                    "current_price": 22.0,
+                    "price_updated": marker,
+                    "people": [
+                        {
+                            "name": "Jane Founder",
+                            "cash_value": 44_000_000,
+                            "valuation_as_of": marker,
+                        }
+                    ],
+                }
+            ],
+        }
+
+        sanitized, stale = sanitize_payload(payload)
+
+        self.assertEqual(len(stale), 1)
+        filing = sanitized["filings"][0]
+        self.assertNotIn("current_price", filing)
+        self.assertNotIn("price_updated", filing)
+        self.assertNotIn("cash_value", filing["people"][0])
+        self.assertNotIn("valuation_as_of", filing["people"][0])
+
     def test_invalid_quote_is_cleared_even_when_timestamp_matches(self):
         marker = "2026-09-01T00:06:53+00:00"
         payload = {
@@ -168,6 +206,8 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "stage": "Priced",
+                    "pricing_date": "2026-09-01",
                     "current_price": 0,
                     "price_updated": marker,
                     "people": [],
@@ -188,6 +228,8 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "stage": "Priced",
+                    "pricing_date": "2026-09-04",
                     "current_price": 22.0,
                     "price_updated": "2026-09-05T08:00:00",
                     "people": [],
