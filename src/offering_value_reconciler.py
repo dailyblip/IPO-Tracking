@@ -29,6 +29,10 @@ ROUNDING_TOLERANCE_DOLLARS = 1.0
 RECENT_PRICING_DAYS = 45
 SOURCE_MARKER = "authoritative final 424B4 aggregate IPO price table"
 PRIMARY_SHARES_MARKER = "explicit issuer offering statement in final 424B4"
+IPO_PRICE_TOTAL_PATTERNS = (
+    r"initial public offering price.{0,80}?\$\s*(\d{1,4}(?:\.\d{1,5})?).{0,80}?\$\s*([\d,]{4,}(?:\.\d{1,2})?)",
+    r"public offering price.{0,80}?\$\s*(\d{1,4}(?:\.\d{1,5})?).{0,80}?\$\s*([\d,]{4,}(?:\.\d{1,2})?)",
+)
 
 
 class OfferingValueReconciliationError(RuntimeError):
@@ -65,6 +69,45 @@ def _sync_value_label(filing):
     return True
 
 
+def extract_authoritative_final_price(text):
+    """Return the final per-share IPO price from an authoritative cover price row.
+
+    The row must contain both the per-share price and aggregate IPO value. Requiring
+    both values keeps this narrower than a generic dollar extractor and lets the
+    same evidence support the aggregate reconciliation below.
+    """
+    normalized = " ".join(str(text or "").split())
+    for pattern in IPO_PRICE_TOTAL_PATTERNS:
+        match = re.search(pattern, normalized, re.I)
+        if not match:
+            continue
+        per_share = _number(match.group(1))
+        aggregate = _number(match.group(2))
+        if per_share is None or per_share <= 0 or aggregate is None or aggregate <= 0:
+            continue
+        return per_share
+    return None
+
+
+def validate_authoritative_final_price(filing, authoritative_price):
+    """Fail closed when the published final IPO price conflicts with the 424B4.
+
+    This validator intentionally does not invent or repair a missing final price.
+    Lifecycle reconciliation remains responsible for population. Here, an explicit
+    conflict in a recent priced record is release-blocking because downstream
+    offering and person economics can depend on the final price.
+    """
+    authoritative = _number(authoritative_price)
+    published = _number(filing.get("offering_price"))
+    if authoritative is None or authoritative <= 0 or published is None or published <= 0:
+        return
+    if int(round(authoritative * 100)) != int(round(published * 100)):
+        raise OfferingValueReconciliationError(
+            f"{filing.get('company')}: published final IPO price ${published:,.2f} conflicts with "
+            f"authoritative SEC 424B4 final IPO price ${authoritative:,.2f}"
+        )
+
+
 def extract_authoritative_aggregate(text, expected_price=None):
     """Return the explicit final IPO aggregate from a prospectus cover table.
 
@@ -73,11 +116,7 @@ def extract_authoritative_aggregate(text, expected_price=None):
     per-share value must match it within one cent.
     """
     normalized = " ".join(str(text or "").split())
-    patterns = [
-        r"initial public offering price.{0,80}?\$\s*(\d{1,4}(?:\.\d{1,5})?).{0,80}?\$\s*([\d,]{4,}(?:\.\d{1,2})?)",
-        r"public offering price.{0,80}?\$\s*(\d{1,4}(?:\.\d{1,5})?).{0,80}?\$\s*([\d,]{4,}(?:\.\d{1,2})?)",
-    ]
-    for pattern in patterns:
+    for pattern in IPO_PRICE_TOTAL_PATTERNS:
         match = re.search(pattern, normalized, re.I)
         if not match:
             continue
@@ -305,11 +344,15 @@ def reconcile_feed(path, today=None):
             document_url = filing_parser.find_primary_document_url(sec_url, expected_form_types=["424B4"])
             soup = filing_parser.fetch_document(document_url)
             cover_text = soup.get_text(" ", strip=True)[:30000]
+            authoritative_price = extract_authoritative_final_price(cover_text)
+            validate_authoritative_final_price(filing, authoritative_price)
             aggregate = extract_authoritative_aggregate(
                 cover_text,
                 expected_price=filing.get("offering_price"),
             )
             primary_shares = extract_authoritative_primary_shares(cover_text)
+        except OfferingValueReconciliationError:
+            raise
         except Exception as error:
             print(f"[offering-value] Warning: could not inspect {filing.get('company')}: {error}")
             continue
