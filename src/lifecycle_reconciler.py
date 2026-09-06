@@ -375,6 +375,9 @@ def _apply_final_terms(record, filing_meta, soup):
             _canonical_cik(filing_meta.get("cik") or record.get("cik")), accession
         ),
     })
+    # The conflict flag is an internal parser/reconciliation diagnostic. It is
+    # intentionally excluded from the registered public V1 feed schema.
+    updated.pop("offering_size_conflict", None)
     _reconcile_person_ipo_price_derivatives(updated)
 
     # Existing market data is safe to carry across the lifecycle handoff only when
