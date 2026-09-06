@@ -215,6 +215,47 @@ def _clear_market_quote_derivatives(record):
     return record
 
 
+def _reconcile_person_ipo_price_derivatives(record):
+    """Keep existing person IPO-value fields aligned with the authoritative final price.
+
+    ``ipo_value`` and ``cash_realized_ipo`` are arithmetic derivatives of SEC share
+    quantities and the final IPO price. If lifecycle repair corrects that price,
+    preserving an existing value calculated from an older price would publish
+    inconsistent economics. Recompute only an already-published derivative when its
+    supporting share quantity exists; otherwise remove that stale value. Do not add
+    new person-level economics solely because a lifecycle repair has enough inputs.
+    """
+    price = _number(record.get("offering_price"))
+    people = record.get("people")
+    if price is None or price <= 0 or not isinstance(people, list):
+        return record
+
+    normalized_people = []
+    for person in people:
+        if not isinstance(person, dict):
+            normalized_people.append(person)
+            continue
+        normalized = dict(person)
+
+        if "ipo_value" in person:
+            shares = _number(person.get("shares"))
+            if shares is None or shares < 0:
+                normalized.pop("ipo_value", None)
+            else:
+                normalized["ipo_value"] = shares * price
+
+        if "cash_realized_ipo" in person:
+            shares_sold = _number(person.get("shares_sold_ipo"))
+            if shares_sold is None or shares_sold < 0:
+                normalized.pop("cash_realized_ipo", None)
+            else:
+                normalized["cash_realized_ipo"] = shares_sold * price
+        normalized_people.append(normalized)
+
+    record["people"] = normalized_people
+    return record
+
+
 def _apply_final_terms(record, filing_meta, soup):
     """Apply authoritative SEC final terms without fabricating unavailable size facts."""
     cover = filing_parser.extract_cover_page_data(soup)
@@ -261,6 +302,7 @@ def _apply_final_terms(record, filing_meta, soup):
             _canonical_cik(filing_meta.get("cik") or record.get("cik")), accession
         ),
     })
+    _reconcile_person_ipo_price_derivatives(updated)
 
     # Existing market data is safe to carry across the lifecycle handoff only when
     # the final SEC prospectus confirms the same ticker identity. A mismatch clears
