@@ -333,12 +333,12 @@ def _current_registration_history(history, *, pricing_day, initial_day=None):
 
 
 def _source_matches_registration_history(filing, history):
-    """Trust cached SEC provenance only when it is the newest relevant filing.
+    """Identify cached SEC provenance tied to the newest relevant filing.
 
-    A source accession can still belong to the correct registration while being
-    stale if a later S-1/A changed the preliminary range. When a newer amendment
-    exists, force the normal newest-to-oldest inspection before accepting the
-    cached value.
+    Matching lineage makes the cached marketed range eligible for a one-filing
+    source-value validation. It is not sufficient by itself to trust the stored
+    value, because an intermediate lifecycle/export step could have altered the
+    range while leaving the accession metadata intact.
     """
     if not _has_authoritative_price_source(filing):
         return False
@@ -452,21 +452,55 @@ def recover_payload_filing_prices(
                 f"Priced row {filing.get('company') or filing.get('id')} has no S-1/S-1A history inside the current IPO registration"
             )
 
-        # A cached marketed range from the newest registration filing is already
-        # release-grade. A cached fixed value must still scan older amendments,
-        # because a later pricing amendment can repeat the final price and should
-        # not erase an earlier marketed range.
+        # Revalidate a cached marketed range against the actual newest source
+        # document before accepting it. Matching accession metadata proves lineage,
+        # not that the stored value still matches the SEC filing after lifecycle
+        # reconciliation or an intermediate export.
+        cached_range_checked = False
         if (
             existing_preliminary
             and "-" in existing_preliminary
             and _source_matches_registration_history(filing, history)
         ):
-            updated_filings.append(
-                _synchronize_preliminary_price_aliases(filing, existing_preliminary)
-            )
-            continue
+            checked += 1
+            cached_range_checked = True
+            metadata = history[0]
+            try:
+                parsed, source_url = registration_loader(cik, metadata)
+            except Exception as error:
+                accession = metadata.get("accession_no") or "unknown accession"
+                raise FilingPriceHistoryError(
+                    f"Could not validate cached S-1/S-1A Filing Price for "
+                    f"{filing.get('company') or filing.get('id')}; "
+                    f"{accession} could not be inspected: {error}"
+                ) from error
 
-        checked += 1
+            price_range = (parsed or {}).get("price_range") or {}
+            low = _number(price_range.get("range_low"))
+            high = _number(price_range.get("range_high"))
+            if low is not None and high is not None and low < high:
+                authoritative_value = _format_range(low, high)
+                normalized = _synchronize_preliminary_price_aliases(
+                    filing, authoritative_value
+                )
+                authoritative_source = {
+                    "source": "SEC EDGAR",
+                    "form": metadata.get("form_type"),
+                    "filing_date": metadata.get("filing_date"),
+                    "accession_no": metadata.get("accession_no"),
+                    "sec_url": source_url,
+                }
+                normalized["filing_price_source"] = authoritative_source
+                if (
+                    authoritative_value != existing_preliminary
+                    or filing.get("filing_price_source") != authoritative_source
+                ):
+                    recovered += 1
+                updated_filings.append(normalized)
+                continue
+
+        if not cached_range_checked:
+            checked += 1
         found = None
         fixed_candidate = None
         for metadata in history:
