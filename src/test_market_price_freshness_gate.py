@@ -61,6 +61,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "pricing_date": "2026-09-04",
                     "current_price": 22.0,
                     "price_updated": "2026-09-04T20:00:00+00:00",
                     "people": [
@@ -92,6 +93,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "pricing_date": "2026-09-01",
                     "current_price": 22.0,
                     "price_updated": marker,
                     "people": [{"name": "Jane Founder", "cash_value": 44_000_000}],
@@ -106,6 +108,57 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
         self.assertEqual(
             sanitized["filings"][0]["people"][0]["cash_value"], 44_000_000
         )
+
+    def test_fresh_quote_that_predates_pricing_date_is_cleared(self):
+        payload = {
+            "generated_at": "2026-09-06T08:00:00+00:00",
+            "filings": [
+                {
+                    "company": "Acme Robotics, Inc.",
+                    "ticker": "ACME",
+                    "pricing_date": "2026-09-06",
+                    "current_price": 22.0,
+                    "price_updated": "2026-09-05T20:00:00+00:00",
+                    "people": [
+                        {
+                            "name": "Jane Founder",
+                            "cash_value": 44_000_000,
+                            "valuation_as_of": "2026-09-05T20:00:00+00:00",
+                        }
+                    ],
+                }
+            ],
+        }
+
+        sanitized, stale = sanitize_payload(payload)
+
+        self.assertEqual(len(stale), 1)
+        filing = sanitized["filings"][0]
+        self.assertNotIn("current_price", filing)
+        self.assertNotIn("price_updated", filing)
+        self.assertNotIn("cash_value", filing["people"][0])
+        self.assertNotIn("valuation_as_of", filing["people"][0])
+
+    def test_current_price_without_pricing_date_is_cleared(self):
+        marker = "2026-09-06T08:00:00+00:00"
+        payload = {
+            "generated_at": marker,
+            "filings": [
+                {
+                    "company": "Acme Robotics, Inc.",
+                    "ticker": "ACME",
+                    "current_price": 22.0,
+                    "price_updated": marker,
+                    "people": [],
+                }
+            ],
+        }
+
+        sanitized, stale = sanitize_payload(payload)
+
+        self.assertEqual(len(stale), 1)
+        self.assertNotIn("current_price", sanitized["filings"][0])
+        self.assertNotIn("price_updated", sanitized["filings"][0])
 
     def test_invalid_quote_is_cleared_even_when_timestamp_matches(self):
         marker = "2026-09-01T00:06:53+00:00"
