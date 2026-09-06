@@ -8,16 +8,17 @@ not expected to be identical.
 
 Run this gate immediately after ``main.py``. A populated quote survives only when it
 has a positive price and a timezone-aware provider timestamp that is no older than
-the same freshness window enforced by ``price_lookup`` and is not materially in the
-future relative to the pipeline retrieval time. Invalid/stale quotes and all public
-market-value derivatives are cleared before lifecycle reconciliation continues.
+the same freshness window enforced by ``price_lookup``, is not materially in the
+future relative to the pipeline retrieval time, and does not predate the authoritative
+Pricing Date. Invalid/stale/pre-pricing quotes and all public market-value derivatives
+are cleared before lifecycle reconciliation continues.
 """
 
 from __future__ import annotations
 
 import json
 import math
-from datetime import datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import dashboard_export
@@ -49,6 +50,17 @@ def _timestamp(value):
     return parsed
 
 
+def _date(value):
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = date.fromisoformat(raw)
+    except ValueError:
+        return None
+    return parsed if parsed.isoformat() == raw else None
+
+
 def _strip_quote_derived_fields(filing: dict) -> None:
     """Remove a stale quote plus every public value derived from that quote."""
     filing.pop("current_price", None)
@@ -73,7 +85,7 @@ def _strip_quote_derived_fields(filing: dict) -> None:
 
 
 def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
-    """Clear populated quotes that do not carry a release-fresh provider timestamp."""
+    """Clear populated quotes that are stale, invalid, or predate IPO pricing."""
     if not isinstance(payload, dict):
         raise ValueError("Market-price freshness gate requires an object payload")
 
@@ -87,6 +99,13 @@ def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
         price = _number(filing.get("current_price"))
         price_updated = str(filing.get("price_updated") or "").strip()
         quote_time = _timestamp(price_updated)
+        pricing_date_raw = str(filing.get("pricing_date") or "").strip()
+        pricing_date = _date(pricing_date_raw)
+        quote_date = (
+            quote_time.astimezone(timezone.utc).date()
+            if quote_time is not None
+            else None
+        )
         age_seconds = (
             (refresh_time - quote_time).total_seconds()
             if refresh_time is not None and quote_time is not None
@@ -97,6 +116,9 @@ def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
             and price > 0
             and age_seconds is not None
             and -MAX_FUTURE_SKEW_SECONDS <= age_seconds <= MAX_QUOTE_AGE_SECONDS
+            and pricing_date is not None
+            and quote_date is not None
+            and quote_date >= pricing_date
         ):
             continue
 
@@ -105,6 +127,7 @@ def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
                 "company": filing.get("company") or filing.get("id") or "<unknown>",
                 "ticker": filing.get("ticker") or "",
                 "price_updated": price_updated or None,
+                "pricing_date": pricing_date_raw or None,
                 "generated_at": refresh_marker or None,
             }
         )
@@ -133,7 +156,10 @@ def main(argv=None) -> int:
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="Clear Current Price values with invalid or stale provider timestamps."
+        description=(
+            "Clear Current Price values with invalid, stale, or pre-pricing "
+            "provider timestamps."
+        )
     )
     parser.add_argument("feed", help="Path to docs/data/filings.json")
     args = parser.parse_args(argv)
@@ -143,9 +169,15 @@ def main(argv=None) -> int:
         labels = ", ".join(
             f"{item['company']} ({item['ticker'] or 'no ticker'})" for item in stale
         )
-        print(f"Market-price freshness gate cleared {len(stale)} stale quote(s): {labels}")
+        print(
+            f"Market-price freshness gate cleared {len(stale)} invalid/stale "
+            f"quote(s): {labels}"
+        )
     else:
-        print("Market-price freshness gate: all populated Current Price values are provider-fresh")
+        print(
+            "Market-price freshness gate: all populated Current Price values are "
+            "provider-fresh and post-pricing"
+        )
     return 0
 
 
