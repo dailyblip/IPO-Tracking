@@ -216,13 +216,14 @@ def _clear_market_quote_derivatives(record):
 
 
 def _reconcile_person_ipo_price_derivatives(record):
-    """Keep person IPO-value fields aligned with the authoritative final IPO price.
+    """Keep existing person IPO-value fields aligned with the authoritative final price.
 
     ``ipo_value`` and ``cash_realized_ipo`` are arithmetic derivatives of SEC share
     quantities and the final IPO price. If lifecycle repair corrects that price,
-    preserving values calculated from an older price would publish internally
-    inconsistent economics. Recompute only when the supporting share quantity is
-    present; otherwise remove the unsupported derived value instead of guessing.
+    preserving an existing value calculated from an older price would publish
+    inconsistent economics. Recompute only an already-published derivative when its
+    supporting share quantity exists; otherwise remove that stale value. Do not add
+    new person-level economics solely because a lifecycle repair has enough inputs.
     """
     price = _number(record.get("offering_price"))
     people = record.get("people")
@@ -235,17 +236,20 @@ def _reconcile_person_ipo_price_derivatives(record):
             normalized_people.append(person)
             continue
         normalized = dict(person)
-        shares = _number(person.get("shares"))
-        if shares is None or shares < 0:
-            normalized.pop("ipo_value", None)
-        else:
-            normalized["ipo_value"] = shares * price
 
-        shares_sold = _number(person.get("shares_sold_ipo"))
-        if shares_sold is None or shares_sold < 0:
-            normalized.pop("cash_realized_ipo", None)
-        else:
-            normalized["cash_realized_ipo"] = shares_sold * price
+        if "ipo_value" in person:
+            shares = _number(person.get("shares"))
+            if shares is None or shares < 0:
+                normalized.pop("ipo_value", None)
+            else:
+                normalized["ipo_value"] = shares * price
+
+        if "cash_realized_ipo" in person:
+            shares_sold = _number(person.get("shares_sold_ipo"))
+            if shares_sold is None or shares_sold < 0:
+                normalized.pop("cash_realized_ipo", None)
+            else:
+                normalized["cash_realized_ipo"] = shares_sold * price
         normalized_people.append(normalized)
 
     record["people"] = normalized_people
