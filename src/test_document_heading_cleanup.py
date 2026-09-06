@@ -21,6 +21,16 @@ class DocumentHeadingCleanupTests(unittest.TestCase):
         rows = parse_ownership_table(BeautifulSoup(html, "lxml").find("table"))
         self.assertEqual([row["name"] for row in rows], ["Frazier Life Sciences XI, L.P."])
 
+    def test_cerebras_section_headings_are_not_beneficial_owners(self):
+        html = """<table>
+        <tr><th>Name of beneficial owner</th><th>Shares beneficially owned</th></tr>
+        <tr><td>Andrew D. Feldman</td><td>10,144,876</td></tr>
+        <tr><td>EXECUTIVE AND DIRECTOR COMPENSATION</td><td>156</td></tr>
+        <tr><td>CHANGE IN INDEPENDENT ACCOUNTANT</td><td>214</td></tr>
+        </table>"""
+        rows = parse_ownership_table(BeautifulSoup(html, "lxml").find("table"))
+        self.assertEqual([row["name"] for row in rows], ["Andrew D. Feldman"])
+
     def test_underwriters_exact_heading_does_not_block_real_entity_name(self):
         self.assertTrue(looks_like_document_heading("UNDERWRITERS"))
         self.assertFalse(looks_like_document_heading("Underwriters Equity Partners LLC"))

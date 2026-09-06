@@ -33,6 +33,8 @@ _DOCUMENT_SECTION_HEADINGS = {
     "capitalization",
     "dilution",
     "executive compensation",
+    "executive and director compensation",
+    "change in independent accountant",
     "principal stockholders",
     "principal shareholders",
     "certain relationships and related party transactions",
