@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-06T04:12:53.749260+00:00",
+  "generated_at": "2026-09-06T04:31:56.043304+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -937,7 +937,6 @@
           "shares_after_ipo": 3459794,
           "stanford_source": null,
           "ipo_value": 60546395.0,
-          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -1027,7 +1026,6 @@
           "shares_after_ipo": 231987,
           "stanford_source": null,
           "ipo_value": 4059772.5,
-          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -1072,7 +1070,6 @@
           "shares_after_ipo": 65882,
           "stanford_source": null,
           "ipo_value": 1152935.0,
-          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
