@@ -75,6 +75,28 @@ def _looks_like_person_with_role(value: str) -> bool:
     return any(_contains_phrase(role_part, marker) for marker in PERSON_ROLE_MARKERS)
 
 
+def _role_from_holder_label(name: str):
+    """Return only an explicit role suffix embedded in a natural-person label.
+
+    Some SEC ownership tables publish labels such as ``Jane Smith, Chief
+    Executive Officer`` or place professional credentials before the role. This
+    fallback exposes that filing-supported role to lock-up mapping and the person
+    accordion without inferring a title from the person's identity or holdings.
+    """
+    value = " ".join(str(name or "").split())
+    lowered = value.lower()
+    if not _looks_like_person_with_role(lowered):
+        return None
+
+    parts = [part.strip() for part in value.split(",")]
+    for index, part in enumerate(parts[1:], start=1):
+        lowered_part = part.lower()
+        if any(_contains_phrase(lowered_part, marker) for marker in PERSON_ROLE_MARKERS):
+            role = ", ".join(piece for piece in parts[index:] if piece).strip()
+            return role or None
+    return None
+
+
 def holder_type(name: str) -> str:
     """Classify a beneficial-owner row without pretending entities are people."""
     value = " ".join(str(name or "").split()).lower()
@@ -221,10 +243,14 @@ def prospect_person_metadata(row: dict, name: str) -> dict:
     ownership_percent_after = valid_ownership_percent(
         first_present(row, "Ownership % After IPO", "Percent After IPO", "Ownership %", "Percent Ownership")
     )
+    role = first_present(row, "Role", "Title", "Position", "Relationship")
+    if role in (None, ""):
+        role = _role_from_holder_label(name)
+
     return {
         "holder_type": holder_type(name),
         "is_beneficial_owner": confirmed_boolean(first_present(row, "Beneficial Owner")),
-        "role": first_present(row, "Role", "Title", "Position", "Relationship"),
+        "role": role,
         "ownership_percent": ownership_percent,
         "ownership_percent_before": ownership_percent_before,
         "ownership_percent_after": ownership_percent_after,
