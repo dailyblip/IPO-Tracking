@@ -7,8 +7,10 @@ from offering_value_reconciler import (
     SOURCE_MARKER,
     _needs_check,
     extract_authoritative_aggregate,
+    extract_authoritative_final_price,
     extract_authoritative_primary_shares,
     reconcile_record,
+    validate_authoritative_final_price,
 )
 
 
@@ -29,6 +31,24 @@ class AuthoritativeOfferingValueTests(unittest.TestCase):
     def test_requires_table_price_to_match_final_ipo_price(self):
         text = "Initial public offering price $ 21.50000 $ 600,000,006"
         self.assertIsNone(extract_authoritative_aggregate(text, expected_price=22.00))
+
+    def test_extracts_authoritative_final_price_from_same_cover_row(self):
+        text = "Initial public offering price $ 21.50000 $ 600,000,006"
+        self.assertEqual(extract_authoritative_final_price(text), 21.50)
+
+    def test_authoritative_final_price_conflict_fails_closed(self):
+        filing = {"company": "Final Price Conflict Co.", "offering_price": 22.00}
+        with self.assertRaises(OfferingValueReconciliationError):
+            validate_authoritative_final_price(filing, 21.50)
+
+    def test_authoritative_final_price_match_passes(self):
+        filing = {"company": "Final Price Match Co.", "offering_price": 21.50}
+        validate_authoritative_final_price(filing, 21.50000)
+
+    def test_missing_published_final_price_is_not_invented_here(self):
+        filing = {"company": "Lifecycle Repair Co.", "offering_price": None}
+        validate_authoritative_final_price(filing, 21.50)
+        self.assertIsNone(filing["offering_price"])
 
     def test_extracts_scribe_explicit_issuer_primary_shares(self):
         text = """
