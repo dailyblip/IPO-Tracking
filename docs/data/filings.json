@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-06T13:34:35.849636+00:00",
+  "generated_at": "2026-09-06T20:15:31.043850+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -291,7 +291,7 @@
       "priority": "High",
       "status": "New",
       "value": 50000000,
-      "value_label": "$50,000,000",
+      "value_label": "$50M",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
@@ -590,11 +590,11 @@
         }
       ],
       "lockup_confidence": "High",
-      "people_count": 44,
+      "people_count": 43,
       "signals": [
         "Offering priced at $17.50 per share",
         "Offering raised approximately $298M",
-        "44 named beneficial owners disclosed",
+        "43 named beneficial owners disclosed",
         "Largest named holding currently valued at approximately $312M",
         "Lock-up terms captured for liquidity-event follow-up"
       ],
@@ -2510,51 +2510,6 @@
           "stanford_source": null,
           "ipo_value": 763542.5,
           "cash_realized_ipo": 84840.0,
-          "liquid_shares": null,
-          "liquid_value": null,
-          "locked_shares": null,
-          "locked_value": null,
-          "liquidity_status": "Lock-up applies — covered quantity unresolved",
-          "liquidity_confidence": "Holder class is supported, but the filing does not establish that the entire disclosed position is covered",
-          "lockup_schedule": [
-            {
-              "duration_value": 180,
-              "duration_unit": "days",
-              "end_date": "2027-02-14",
-              "scope": "substantially all pre-IPO holders, directors, executive officers, selling stockholders",
-              "special_holder": null,
-              "source_text": "and Citigroup Global Markets Inc., the shares of our common stock or securities convertible into or exchangeable for shares of our common stock for 180 days following the offering and our directors, executive officers, and holders of substantially all of our capital stock and securities convertible into our capital stock, including the selling stockholders, agreed, subject to certain limited exceptions, not to sell, dispose of, or hedge, without the prior written consent of Evercore Group L.L.C",
-              "has_staggered_releases": false,
-              "tranche_percent": null,
-              "tranche_label": null,
-              "covers_full_position": false
-            }
-          ]
-        },
-        {
-          "name": "Other selling stockholders",
-          "shares": 980735.0,
-          "cash_value": 12425912.45,
-          "stanford_university_bio": false,
-          "lockup_end_date": "2027-02-14",
-          "lockup_scope": "holder-mapped",
-          "lockup_duration_days": 180,
-          "lockup_duration_value": 180,
-          "lockup_duration_unit": "days",
-          "lockup_text": "and Citigroup Global Markets Inc., the shares of our common stock or securities convertible into or exchangeable for shares of our common stock for 180 days following the offering and our directors, executive officers, and holders of substantially all of our capital stock and securities convertible into our capital stock, including the selling stockholders, agreed, subject to certain limited exceptions, not to sell, dispose of, or hedge, without the prior written consent of Evercore Group L.L.C",
-          "valuation_as_of": "2026-09-04",
-          "holder_type": "Unknown",
-          "is_beneficial_owner": true,
-          "role": null,
-          "ownership_percent": null,
-          "ownership_percent_before": null,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 1089704,
-          "shares_sold_ipo": 108969,
-          "shares_after_ipo": 980735,
-          "stanford_source": null,
-          "ipo_value": 17162862.5,
-          "cash_realized_ipo": 1906957.5,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
