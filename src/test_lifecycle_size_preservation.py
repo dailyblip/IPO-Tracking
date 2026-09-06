@@ -54,7 +54,7 @@ class LifecycleOfferingSizePreservationTests(unittest.TestCase):
         self.assertEqual(repaired["value_label"], "$180M")
         self.assertEqual(repaired["offering_size_source"], "SEC final 424B4 offering terms")
         self.assertEqual(repaired["offering_size_confidence"], "Medium")
-        self.assertFalse(repaired["offering_size_conflict"])
+        self.assertNotIn("offering_size_conflict", repaired)
 
     @patch("lifecycle_reconciler.edgar_client.build_filing_index_url", return_value="https://sec.example/final")
     @patch("lifecycle_reconciler.filing_parser.extract_cover_page_data", return_value={"offering_price": 20.0, "ticker": "TEST"})
