@@ -387,6 +387,12 @@ def recover_payload_filing_prices(
     Price values, provenance metadata lost during later lifecycle/export steps, and
     stale sources from an earlier registration by the same issuer.
 
+    Marketed ranges take precedence over a later fixed expected price in an S-1/A.
+    A same-point expected price can reflect a final pricing amendment rather than
+    the preliminary range researchers need to preserve. Fixed expected prices are
+    retained only as the fallback when no authoritative non-degenerate range was
+    disclosed anywhere in the current registration history.
+
     A genuinely blank Filing Price is accepted only after every relevant statement
     needed to establish that blank has been inspected successfully. If an S-1/S-1A
     cannot be parsed before a reliable range is found, publication fails closed
@@ -446,7 +452,15 @@ def recover_payload_filing_prices(
                 f"Priced row {filing.get('company') or filing.get('id')} has no S-1/S-1A history inside the current IPO registration"
             )
 
-        if existing_preliminary and _source_matches_registration_history(filing, history):
+        # A cached marketed range from the newest registration filing is already
+        # release-grade. A cached fixed value must still scan older amendments,
+        # because a later pricing amendment can repeat the final price and should
+        # not erase an earlier marketed range.
+        if (
+            existing_preliminary
+            and "-" in existing_preliminary
+            and _source_matches_registration_history(filing, history)
+        ):
             updated_filings.append(
                 _synchronize_preliminary_price_aliases(filing, existing_preliminary)
             )
@@ -454,6 +468,7 @@ def recover_payload_filing_prices(
 
         checked += 1
         found = None
+        fixed_candidate = None
         for metadata in history:
             try:
                 parsed, source_url = registration_loader(cik, metadata)
@@ -470,8 +485,22 @@ def recover_payload_filing_prices(
             high = _number(price_range.get("range_high"))
             if low is None or high is None or low > high:
                 continue
-            found = (low, high, metadata, source_url)
-            break
+
+            candidate = (low, high, metadata, source_url)
+            if low < high:
+                # History is newest first, so the first non-degenerate range is
+                # the latest authoritative marketed range. Older ranges cannot
+                # supersede it.
+                found = candidate
+                break
+            if fixed_candidate is None:
+                # Keep the newest fixed expected price only as a fallback. Continue
+                # through older amendments to make sure a marketed range was not
+                # disclosed before the final pricing amendment.
+                fixed_candidate = candidate
+
+        if found is None:
+            found = fixed_candidate
 
         normalized = dict(filing)
         if found:
