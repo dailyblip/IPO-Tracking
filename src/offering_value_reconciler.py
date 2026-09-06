@@ -42,6 +42,29 @@ def _number(value):
         return None
 
 
+def _format_value_label(value):
+    """Return the canonical compact display label for an offering value."""
+    value = _number(value)
+    if value is None or value <= 0:
+        return "—"
+    if value >= 1_000_000_000:
+        return f"${value / 1_000_000_000:.1f}B"
+    if value >= 1_000_000:
+        return f"${value / 1_000_000:.0f}M"
+    if value >= 1_000:
+        return f"${value / 1_000:.0f}K"
+    return f"${value:,.0f}"
+
+
+def _sync_value_label(filing):
+    """Keep derived display metadata consistent with the authoritative raw value."""
+    expected = _format_value_label(filing.get("value"))
+    if filing.get("value_label") == expected:
+        return False
+    filing["value_label"] = expected
+    return True
+
+
 def extract_authoritative_aggregate(text, expected_price=None):
     """Return the explicit final IPO aggregate from a prospectus cover table.
 
@@ -218,6 +241,8 @@ def reconcile_record(filing, aggregate, primary_shares=None):
         if _append_source_marker(filing, PRIMARY_SHARES_MARKER):
             changed = True
 
+    if _sync_value_label(filing):
+        changed = True
     return changed
 
 
@@ -264,7 +289,13 @@ def reconcile_feed(path, today=None):
     path = Path(path)
     payload = json.loads(path.read_text(encoding="utf-8"))
     updates = {}
+    json_changed = False
     for filing in payload.get("filings", []):
+        # value_label is derived presentation metadata, so it can be repaired from
+        # an already-populated authoritative value without refetching old filings.
+        # This keeps historical rows consistent without widening any backfill.
+        if _sync_value_label(filing):
+            json_changed = True
         if not _needs_check(filing, today=today):
             continue
         sec_url = str(filing.get("sec_url") or "")
@@ -285,6 +316,7 @@ def reconcile_feed(path, today=None):
         if aggregate is None and primary_shares is None:
             continue
         if reconcile_record(filing, aggregate, primary_shares=primary_shares):
+            json_changed = True
             updates[str(filing.get("accession_no") or "")] = {
                 "value": filing.get("value"),
                 "primary_offering_shares": filing.get("primary_offering_shares"),
@@ -301,8 +333,9 @@ def reconcile_feed(path, today=None):
                     f"[offering-value] {filing.get('company')}: preserved explicit issuer-primary "
                     f"share count {primary_shares:,}"
                 )
-    if updates:
+    if json_changed:
         _atomic_json(path, payload)
+    if updates:
         _sync_csv(path.with_suffix(".csv"), updates)
     return updates
 
