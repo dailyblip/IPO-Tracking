@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-06T02:56:48.790239+00:00",
+  "updated_at": "2026-09-06T03:28:25.374283+00:00",
   "items": {
     "s1:0002133037": {
       "id": "s1:0002133037",
@@ -309,7 +309,7 @@
       "form": "424B4",
       "filed": "2026-08-05",
       "stage": "priced",
-      "price_range": "17",
+      "price_range": "15-17",
       "priority": "Medium",
       "value": 289000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2058707/000119312526334997/0001193125-26-334997-index.htm"
@@ -369,7 +369,7 @@
       "form": "424B4",
       "filed": "2026-07-16",
       "stage": "priced",
-      "price_range": "15",
+      "price_range": "18-21",
       "priority": "High",
       "value": 150000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2086716/000121390026078747/0001213900-26-078747-index.htm"
@@ -561,7 +561,7 @@
       "form": "424B4",
       "filed": "2026-05-14",
       "stage": "priced",
-      "price_range": "15",
+      "price_range": "22-25",
       "priority": "High",
       "value": 478723395.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1898718/000110465926060835/0001104659-26-060835-index.htm"
