@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-06T12:38:11.439870+00:00",
+  "generated_at": "2026-09-06T13:05:36.005962+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -291,7 +291,7 @@
       "priority": "High",
       "status": "New",
       "value": 50000000,
-      "value_label": "$50,000,000",
+      "value_label": "$50M",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
@@ -24334,7 +24334,7 @@
           "lockup_duration_value": null,
           "lockup_duration_unit": null,
           "lockup_text": null,
-          "holder_type": "Individual",
+          "holder_type": "Entity",
           "is_beneficial_owner": true,
           "role": null,
           "ownership_percent": null,
