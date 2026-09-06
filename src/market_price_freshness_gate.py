@@ -7,11 +7,12 @@ now preserves that authoritative provider timestamp in ``price_updated``. The fe
 not expected to be identical.
 
 Run this gate immediately after ``main.py``. A populated quote survives only when it
-has a positive price and a timezone-aware provider timestamp that is no older than
-the same freshness window enforced by ``price_lookup``, is not materially in the
-future relative to the pipeline retrieval time, and does not predate the authoritative
-Pricing Date. Invalid/stale/pre-pricing quotes and all public market-value derivatives
-are cleared before lifecycle reconciliation continues.
+belongs to a canonical Priced lifecycle record, has a positive price and a timezone-
+aware provider timestamp that is no older than the same freshness window enforced by
+``price_lookup``, is not materially in the future relative to the pipeline retrieval
+time, and does not predate the authoritative Pricing Date. Invalid/stale/pre-pricing
+quotes and all public market-value derivatives are cleared before lifecycle
+reconciliation continues.
 """
 
 from __future__ import annotations
@@ -85,7 +86,7 @@ def _strip_quote_derived_fields(filing: dict) -> None:
 
 
 def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
-    """Clear populated quotes that are stale, invalid, or predate IPO pricing."""
+    """Clear populated quotes that are stale, invalid, or not on a priced IPO."""
     if not isinstance(payload, dict):
         raise ValueError("Market-price freshness gate requires an object payload")
 
@@ -99,6 +100,7 @@ def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
         price = _number(filing.get("current_price"))
         price_updated = str(filing.get("price_updated") or "").strip()
         quote_time = _timestamp(price_updated)
+        stage = str(filing.get("stage") or "").strip()
         pricing_date_raw = str(filing.get("pricing_date") or "").strip()
         pricing_date = _date(pricing_date_raw)
         quote_date = (
@@ -112,7 +114,8 @@ def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
             else None
         )
         if (
-            price is not None
+            stage == "Priced"
+            and price is not None
             and price > 0
             and age_seconds is not None
             and -MAX_FUTURE_SKEW_SECONDS <= age_seconds <= MAX_QUOTE_AGE_SECONDS
@@ -126,6 +129,7 @@ def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
             {
                 "company": filing.get("company") or filing.get("id") or "<unknown>",
                 "ticker": filing.get("ticker") or "",
+                "stage": stage or None,
                 "price_updated": price_updated or None,
                 "pricing_date": pricing_date_raw or None,
                 "generated_at": refresh_marker or None,
@@ -158,7 +162,7 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Clear Current Price values with invalid, stale, or pre-pricing "
-            "provider timestamps."
+            "provider timestamps/lifecycle state."
         )
     )
     parser.add_argument("feed", help="Path to docs/data/filings.json")
