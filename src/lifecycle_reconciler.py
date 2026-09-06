@@ -480,6 +480,7 @@ def _select_final_meta(candidates, existing_final=None, prepricing=None):
         for candidate in candidates:
             if str(candidate.get("accession_no") or "").strip() == accession:
                 return candidate
+        return None
 
     prepricing_date = str(
         (prepricing or {}).get("filed")
