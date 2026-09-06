@@ -21,6 +21,8 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                     "id": "acme",
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "stage": "Priced",
+                    "pricing_date": "2026-08-01",
                     "current_price": 22.0,
                     "price_updated": "2026-08-20T00:06:53+00:00",
                     "signals": [
@@ -118,6 +120,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "stage": "Priced",
                     "pricing_date": "2026-09-06",
                     "current_price": 22.0,
                     "price_updated": "2026-09-05T20:00:00+00:00",
@@ -149,6 +152,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "stage": "Priced",
                     "current_price": 22.0,
                     "price_updated": marker,
                     "people": [],
@@ -202,6 +206,8 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "stage": "Priced",
+                    "pricing_date": "2026-09-01",
                     "current_price": 0,
                     "price_updated": marker,
                     "people": [],
@@ -222,6 +228,8 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "stage": "Priced",
+                    "pricing_date": "2026-09-04",
                     "current_price": 22.0,
                     "price_updated": "2026-09-05T08:00:00",
                     "people": [],
