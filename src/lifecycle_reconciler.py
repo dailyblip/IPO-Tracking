@@ -256,16 +256,94 @@ def _reconcile_person_ipo_price_derivatives(record):
     return record
 
 
+def _resolved_offering_size_fields(record, price, terms):
+    """Prefer newly verified final size, otherwise preserve only supported prior size.
+
+    Lifecycle repair may successfully verify final price while a conservative parser
+    cannot re-extract exact share counts from the same 424B4. That optional failure
+    must not erase an already evidence-supported offering size. When the final price
+    changes, recompute value only from preserved public share quantities; a standalone
+    old value is cleared because carrying it forward would make it stale arithmetic.
+    """
+    total_shares = _share_int(terms.get("total_shares"))
+    if total_shares is not None and total_shares > 0:
+        value = float(price) * total_shares
+        return {
+            "value": value,
+            "value_label": _money(value),
+            "primary_offering_shares": terms.get("primary_shares"),
+            "secondary_offering_shares": terms.get("secondary_shares"),
+            "offering_size_source": terms.get("source"),
+            "offering_size_confidence": terms.get("confidence"),
+            "offering_size_conflict": False,
+        }
+
+    source = str(record.get("offering_size_source") or "").strip()
+    confidence = str(record.get("offering_size_confidence") or "").strip()
+    conflict = bool(record.get("offering_size_conflict"))
+    supported = bool(
+        source
+        and confidence
+        and confidence.casefold() != "unresolved"
+        and not conflict
+    )
+    primary = _share_int(record.get("primary_offering_shares"))
+    secondary = _share_int(record.get("secondary_offering_shares"))
+
+    if supported and (primary is not None or secondary is not None):
+        preserved_total = (primary or 0) + (secondary or 0)
+        if preserved_total > 0:
+            value = float(price) * preserved_total
+            return {
+                "value": value,
+                "value_label": _money(value),
+                "primary_offering_shares": primary,
+                "secondary_offering_shares": secondary,
+                "offering_size_source": source,
+                "offering_size_confidence": confidence,
+                "offering_size_conflict": False,
+            }
+
+    existing_value = _number(record.get("value"))
+    existing_price = _number(record.get("offering_price"))
+    if (
+        supported
+        and existing_value is not None
+        and existing_value > 0
+        and existing_price is not None
+        and abs(existing_price - float(price)) < 1e-9
+    ):
+        return {
+            "value": existing_value,
+            "value_label": _money(existing_value),
+            "primary_offering_shares": primary,
+            "secondary_offering_shares": secondary,
+            "offering_size_source": source,
+            "offering_size_confidence": confidence,
+            "offering_size_conflict": False,
+        }
+
+    return {
+        "value": None,
+        "value_label": None,
+        "primary_offering_shares": None,
+        "secondary_offering_shares": None,
+        "offering_size_source": None,
+        "offering_size_confidence": "Unresolved",
+        "offering_size_conflict": conflict,
+    }
+
+
 def _apply_final_terms(record, filing_meta, soup):
     """Apply authoritative SEC final terms without fabricating unavailable size facts."""
     cover = filing_parser.extract_cover_page_data(soup)
     price = cover.get("offering_price")
     terms = extract_final_offering_terms(soup)
-    total_shares = terms.get("total_shares")
     if not price:
         return None
 
-    offering_value = float(price) * int(total_shares) if total_shares else None
+    price = float(price)
+    size_fields = _resolved_offering_size_fields(record, price, terms)
     final_filed = str(filing_meta.get("filing_date") or "").strip()
     # The SEC 424B4 filing date is not itself evidence of the IPO Pricing Date.
     # Preserve a date only on an already-final row; newly promoted S-1/S-1A rows
@@ -290,13 +368,8 @@ def _apply_final_terms(record, filing_meta, soup):
         "stage": "Priced",
         "filed": final_filed,
         "pricing_date": pricing_date or None,
-        "offering_price": float(price),
-        "value": offering_value,
-        "value_label": _money(offering_value) if offering_value is not None else None,
-        "primary_offering_shares": terms.get("primary_shares"),
-        "secondary_offering_shares": terms.get("secondary_shares"),
-        "offering_size_source": terms.get("source"),
-        "offering_size_confidence": terms.get("confidence"),
+        "offering_price": price,
+        **size_fields,
         "ticker": final_ticker,
         "sec_url": edgar_client.build_filing_index_url(
             _canonical_cik(filing_meta.get("cik") or record.get("cik")), accession
