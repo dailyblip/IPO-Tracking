@@ -68,8 +68,10 @@ def _extract_explicit_price_range_from_text(text):
     Keep the fallback anchored to expected/estimated IPO price language so fee
     tables, dilution examples, and unrelated dollar values are not treated as
     preliminary pricing. A fixed expected price is represented as low == high.
+    Search the full filing because authoritative pricing language can appear well
+    after the cover section in long S-1/S-1A documents.
     """
-    text = str(text or "")[:60000]
+    text = str(text or "")
     number = r"(\d{1,4}(?:\.\d{1,2})?)"
     anchors = (
         r"(?:initial\s+public\s+offering\s+price|"
