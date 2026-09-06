@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-06T01:30:06.200112+00:00",
+  "generated_at": "2026-09-06T02:26:28.880742+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -8542,7 +8542,7 @@
       "secondary_offering_shares": null,
       "offering_size_source": "cover share title; explicit issuer-only cover statement matches total",
       "offering_size_confidence": "High",
-      "filing_price": "18-21",
+      "filing_price": "15",
       "offering_price": 15.0,
       "current_price": 14.7,
       "price_updated": "2026-09-04T20:00:00+00:00",
@@ -9173,13 +9173,13 @@
         }
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2086716/000121390026078747/0001213900-26-078747-index.htm",
-      "price_range": "18-21",
+      "price_range": "15",
       "filing_price_source": {
         "source": "SEC EDGAR",
         "form": "S-1/A",
-        "filing_date": "2026-07-07",
-        "accession_no": "0001213900-26-075742",
-        "sec_url": "https://www.sec.gov/Archives/edgar/data/2086716/000121390026075742/0001213900-26-075742-index.htm"
+        "filing_date": "2026-07-15",
+        "accession_no": "0001213900-26-078128",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2086716/000121390026078128/0001213900-26-078128-index.htm"
       }
     },
     {
