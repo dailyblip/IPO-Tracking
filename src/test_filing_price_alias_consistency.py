@@ -46,6 +46,12 @@ class FilingPriceAliasConsistencyTests(unittest.TestCase):
             "sec_url": "https://www.sec.gov/amend",
         }
 
+    def _registration_loader(self, cik, metadata):
+        return (
+            {"price_range": {"range_low": 14, "range_high": 16}},
+            "https://www.sec.gov/amend",
+        )
+
     def test_recovered_history_replaces_stale_price_range_alias(self):
         payload, recovered, checked = filing_price_history.recover_payload_filing_prices(
             {
@@ -57,10 +63,7 @@ class FilingPriceAliasConsistencyTests(unittest.TestCase):
                 ]
             },
             history_loader=lambda cik, pricing_date: self._history(),
-            registration_loader=lambda cik, metadata: (
-                {"price_range": {"range_low": 14, "range_high": 16}},
-                "https://www.sec.gov/amend",
-            ),
+            registration_loader=self._registration_loader,
         )
 
         filing = payload["filings"][0]
@@ -69,7 +72,7 @@ class FilingPriceAliasConsistencyTests(unittest.TestCase):
         self.assertEqual(filing["filing_price_source"]["accession_no"], "0001193125-26-123456")
         self.assertEqual((recovered, checked), (1, 1))
 
-    def test_verified_filing_price_overrides_stale_price_range_without_reparse(self):
+    def test_verified_filing_price_overrides_stale_alias_after_source_revalidation(self):
         payload, recovered, checked = filing_price_history.recover_payload_filing_prices(
             {
                 "filings": [
@@ -81,17 +84,15 @@ class FilingPriceAliasConsistencyTests(unittest.TestCase):
                 ]
             },
             history_loader=lambda cik, pricing_date: self._history(),
-            registration_loader=lambda *args: (_ for _ in ()).throw(
-                AssertionError("matching authoritative source should not be reparsed")
-            ),
+            registration_loader=self._registration_loader,
         )
 
         filing = payload["filings"][0]
         self.assertEqual(filing["filing_price"], "14-16")
         self.assertEqual(filing["price_range"], "14-16")
-        self.assertEqual((recovered, checked), (0, 0))
+        self.assertEqual((recovered, checked), (0, 1))
 
-    def test_verified_price_range_alias_backfills_canonical_filing_price(self):
+    def test_verified_price_range_alias_backfills_canonical_after_source_revalidation(self):
         payload, recovered, checked = filing_price_history.recover_payload_filing_prices(
             {
                 "filings": [
@@ -103,15 +104,13 @@ class FilingPriceAliasConsistencyTests(unittest.TestCase):
                 ]
             },
             history_loader=lambda cik, pricing_date: self._history(),
-            registration_loader=lambda *args: (_ for _ in ()).throw(
-                AssertionError("matching authoritative source should not be reparsed")
-            ),
+            registration_loader=self._registration_loader,
         )
 
         filing = payload["filings"][0]
         self.assertEqual(filing["filing_price"], "14-16")
         self.assertEqual(filing["price_range"], "14-16")
-        self.assertEqual((recovered, checked), (0, 0))
+        self.assertEqual((recovered, checked), (0, 1))
 
 
 if __name__ == "__main__":
