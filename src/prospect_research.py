@@ -42,6 +42,7 @@ GENERIC_HOLDER_LABELS = {
 # short organization labels do not fall through to the natural-person heuristic.
 KNOWN_INSTITUTIONAL_HOLDER_NAMES = {
     "alpha wave",
+    "american securities",
     "blackstone",
     "brookfield",
     "electrum",

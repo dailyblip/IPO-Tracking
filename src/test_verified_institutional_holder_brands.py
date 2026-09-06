@@ -5,6 +5,7 @@ from prospect_research import holder_type
 
 class VerifiedInstitutionalHolderBrandTests(unittest.TestCase):
     def test_sec_verified_standalone_corporate_brands_are_entities(self):
+        self.assertEqual(holder_type("American Securities"), "Entity")
         self.assertEqual(holder_type("Brookfield"), "Entity")
         self.assertEqual(holder_type("Uber"), "Entity")
 
