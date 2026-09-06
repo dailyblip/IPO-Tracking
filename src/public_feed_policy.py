@@ -13,7 +13,7 @@ from followon_sanitizer import sanitize_payload as sanitize_followon_offerings
 from ownership_parser import looks_like_document_heading
 from person_economic_attribution_guard import suppress_unsupported_person_economics
 from prepricing_quote_sanitizer import sanitize_payload as sanitize_prepricing_quotes
-from prospect_research import holder_type, valid_ownership_percent, valid_share_count
+from prospect_research import GENERIC_HOLDER_LABELS, holder_type, valid_ownership_percent, valid_share_count
 
 # Retained as a reusable UI/filter threshold; it is no longer a publication gate.
 MINIMUM_IPO_VALUE = 100_000_000.0
@@ -206,14 +206,21 @@ def _has_consistent_priced_offering_value(filing):
     return abs(published_value - derived_value) <= tolerance
 
 
+def _is_generic_holder_label(name):
+    """Return True only for exact aggregate seller labels, never named owners."""
+    normalized = " ".join(str(name or "").split()).casefold()
+    return normalized in GENERIC_HOLDER_LABELS
+
+
 def _remove_document_heading_people(filing):
-    """Remove stale prospectus section labels from retained owner lists.
+    """Remove stale structural/non-identity rows from retained owner lists.
 
     Parser fixes only protect rows that are rebuilt. Rolling-window refreshes can
     preserve older public records, so apply the same conservative heading detector
-    at the canonical release gate. Only explicit document headings are removed;
-    uppercase fund/corporate owner names remain eligible. Keep the deterministic
-    owner-count metadata and signal synchronized with the filtered list.
+    at the canonical release gate. Only explicit document headings and exact generic
+    seller-group labels are removed; uppercase fund/corporate owner names remain
+    eligible. Keep deterministic owner-count metadata and signals synchronized with
+    the filtered list.
     """
     normalized = dict(filing)
     people = filing.get("people")
@@ -223,9 +230,11 @@ def _remove_document_heading_people(filing):
     filtered = []
     removed = 0
     for person in people:
-        if isinstance(person, dict) and looks_like_document_heading(person.get("name")):
-            removed += 1
-            continue
+        if isinstance(person, dict):
+            name = person.get("name")
+            if looks_like_document_heading(name) or _is_generic_holder_label(name):
+                removed += 1
+                continue
         filtered.append(person)
 
     if not removed:
