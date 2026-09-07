@@ -100,14 +100,49 @@ def _block_has_prior_reporting(payload, cutoff):
 
 
 def _archive_descriptors(submissions, cutoff):
-    files = (submissions or {}).get("filings", {}).get("files", []) or []
+    """Return SEC-listed archive descriptors without silently dropping malformed history.
+
+    The descriptor list decides which historical submission files are even eligible
+    for inspection. Treat malformed list entries, filenames, and filingFrom values
+    as incomplete chronology rather than skipping them, because silently skipping
+    one descriptor could hide prior Exchange Act reporting or an earlier offering.
+    """
+    if not isinstance(submissions, dict):
+        raise ArchivedReportingHistoryError(
+            "SEC submissions history is not a JSON object"
+        )
+    filings = submissions.get("filings")
+    if not isinstance(filings, dict):
+        raise ArchivedReportingHistoryError(
+            "SEC submissions history is missing a readable filings block"
+        )
+    files = filings.get("files", [])
+    if files is None:
+        files = []
+    if not isinstance(files, list):
+        raise ArchivedReportingHistoryError(
+            "SEC submissions history has malformed archive descriptor metadata"
+        )
+
     for descriptor in files:
         if not isinstance(descriptor, dict):
-            continue
+            raise ArchivedReportingHistoryError(
+                "SEC submissions history returned a malformed archive descriptor"
+            )
+
         name = str(descriptor.get("name") or "").strip()
-        if not name:
-            continue
-        filing_from = _iso_date(descriptor.get("filingFrom"))
+        if not name or name != Path(name).name or not name.lower().endswith(".json"):
+            raise ArchivedReportingHistoryError(
+                f"SEC submissions history returned an invalid archive filename: {name!r}"
+            )
+
+        filing_from_raw = str(descriptor.get("filingFrom") or "").strip()
+        filing_from = _iso_date(filing_from_raw) if filing_from_raw else None
+        if filing_from_raw and filing_from is None:
+            raise ArchivedReportingHistoryError(
+                f"SEC submissions history has invalid archive filingFrom: {filing_from_raw!r}"
+            )
+
         # A historical block whose earliest filing is on/after the candidate
         # cannot contain a strictly earlier reporting form.
         if filing_from is not None and filing_from >= cutoff:
