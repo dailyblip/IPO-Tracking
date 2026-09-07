@@ -43,7 +43,7 @@ class PrepricingQuoteSanitizerTests(unittest.TestCase):
                 "pricing_date": "2026-08-26",
                 "offering_price": 18.0,
                 "current_price": 24.13,
-                "price_updated": "2026-08-26T20:05:29+00:00",
+                "price_updated": "2026-08-27T20:05:29+00:00",
                 "people": [{"cash_value": 100}],
             }]
         }
@@ -52,6 +52,33 @@ class PrepricingQuoteSanitizerTests(unittest.TestCase):
         self.assertEqual(changed, 0)
         self.assertEqual(filing["current_price"], 24.13)
         self.assertEqual(filing["people"][0]["cash_value"], 100)
+
+    def test_removes_quote_after_pricing_but_before_final_424b4_filing(self):
+        payload = {
+            "filings": [{
+                "id": "ticker-collision-before-final",
+                "form": "424B4",
+                "stage": "Priced",
+                "filed": "2026-08-27",
+                "pricing_date": "2026-08-26",
+                "offering_price": 18.0,
+                "current_price": 24.13,
+                "price_updated": "2026-08-26T20:05:29+00:00",
+                "signals": ["Current market value is approximately $24M"],
+                "people": [{
+                    "cash_value": 100,
+                    "valuation_as_of": "2026-08-26",
+                }],
+            }]
+        }
+        sanitized, changed = sanitize_payload(payload)
+        filing = sanitized["filings"][0]
+        self.assertEqual(changed, 1)
+        self.assertNotIn("current_price", filing)
+        self.assertNotIn("price_updated", filing)
+        self.assertNotIn("cash_value", filing["people"][0])
+        self.assertNotIn("valuation_as_of", filing["people"][0])
+        self.assertEqual(filing["signals"], [])
 
     def test_removes_quote_when_pricing_date_is_after_final_424b4_filing(self):
         payload = {
