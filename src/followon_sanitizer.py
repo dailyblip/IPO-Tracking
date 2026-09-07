@@ -14,8 +14,9 @@ This pass is deliberately conservative and date-aware. Same-day filings are
 ordered only when SEC submissions supplies acceptance timestamps for both the
 candidate and the possible prior reporting filing, and the comparison date is the
 candidate's SEC filing date; otherwise same-day order is left unresolved. SEC
-lookup failure or malformed core chronology metadata blocks the sanitizer instead
-of silently publishing an unverified candidate.
+lookup failure, malformed core chronology metadata, or an inability to bind a
+supplied public candidate accession when SEC accession metadata is available
+blocks the sanitizer instead of silently publishing an unverified candidate.
 """
 
 from __future__ import annotations
@@ -42,6 +43,7 @@ REPORTING_FORMS = {
     "F-3", "F-3/A", "F-3ASR", "F-3ASR/A", "F-3MEF",
     "424B4",
 }
+ACCESSION_PATTERN = re.compile(r"^\d{10}-\d{2}-\d{6}$")
 
 
 def _iso_date(value):
@@ -144,6 +146,68 @@ def _validated_same_day_acceptance_metadata(
     return accessions, acceptance_times
 
 
+def _validate_candidate_sec_identity(
+    submissions: dict,
+    candidate_date: str,
+    candidate_accession: str,
+) -> None:
+    """Bind a supplied public final accession when SEC row identity is available.
+
+    Missing public accession metadata and SEC histories that omit accessionNumber
+    remain owned by the final pricing identity release gate. When SEC does supply
+    accession rows here, a supplied public accession must bind uniquely to the
+    424B4 on the public filed date. Unrelated malformed accession rows are not made
+    authoritative for the candidate.
+    """
+    raw_candidate = str(candidate_accession or "").strip()
+    if not raw_candidate:
+        return
+    if not ACCESSION_PATTERN.fullmatch(raw_candidate):
+        raise RuntimeError(
+            f"Final 424B4 record has invalid SEC accession: {raw_candidate!r}"
+        )
+
+    cutoff = _iso_date(candidate_date)
+    if cutoff is None:
+        raise ValueError(f"Invalid candidate date: {candidate_date!r}")
+    candidate_key = _normalized_accession(raw_candidate)
+
+    recent = (submissions or {}).get("filings", {}).get("recent", {})
+    forms, dates = _validated_recent_chronology(recent)
+    if "accessionNumber" not in recent:
+        return
+    accessions = recent.get("accessionNumber")
+    if not isinstance(accessions, list):
+        raise RuntimeError("SEC submissions accessionNumber metadata is malformed")
+    if len(accessions) != len(dates):
+        raise RuntimeError("SEC submissions accessionNumber array is misaligned")
+
+    matches = []
+    for index, accession in enumerate(accessions):
+        if not isinstance(accession, str):
+            continue
+        normalized = accession.strip()
+        if not ACCESSION_PATTERN.fullmatch(normalized):
+            continue
+        if _normalized_accession(normalized) == candidate_key:
+            matches.append(index)
+
+    if len(matches) != 1:
+        raise RuntimeError(
+            "Final 424B4 accession does not uniquely match SEC submissions history"
+        )
+
+    index = matches[0]
+    if _iso_date(dates[index]) != cutoff:
+        raise RuntimeError(
+            "Final 424B4 accession filing date does not match the public filed date"
+        )
+    if forms[index].strip().upper() != "424B4":
+        raise RuntimeError(
+            "Final 424B4 accession resolves to a different SEC form"
+        )
+
+
 def _candidate_acceptance_time(
     recent: dict,
     candidate_accession: str,
@@ -228,16 +292,22 @@ def sanitize_payload(payload: dict, submissions_loader=_load_submissions):
         cik = str(filing.get("cik") or "").strip()
         candidate_date = str(filing.get("filed") or filing.get("pricing_date") or "").strip()
         if not cik or _iso_date(candidate_date) is None:
-            # Other release gates own missing identity/date errors; do not infer here.
+            # Other release gates own missing issuer/date errors; do not infer here.
             kept.append(filing)
             continue
 
         if cik not in cache:
             cache[cik] = submissions_loader(cik)
+        candidate_accession = str(filing.get("accession_no") or "").strip()
+        _validate_candidate_sec_identity(
+            cache[cik],
+            candidate_date,
+            candidate_accession,
+        )
         if has_prior_periodic_report(
             cache[cik],
             candidate_date,
-            candidate_accession=str(filing.get("accession_no") or "").strip(),
+            candidate_accession=candidate_accession,
         ):
             removed.append(filing)
             continue
