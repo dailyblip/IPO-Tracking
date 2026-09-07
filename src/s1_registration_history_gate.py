@@ -8,6 +8,12 @@ pre-pricing row only when an earlier filing is deterministically resale/direct-
 listing and the current record has no high-confidence issuer-primary offering
 shares.
 
+The gate also excludes current S-1/S-1A registrations that SEC filing text
+explicitly identifies as non-transferable subscription-rights offerings. Rights
+offerings are capital-raising registrations, not initial public offerings, even
+when a newly formed successor issuer uses Form S-1 in connection with a business
+combination.
+
 The gate also excludes an S-1/S-1A when SEC filing history proves the issuer was
 already a reporting company before the candidate registration. This catches
 post-SPAC/de-SPAC and other already-public issuers that can file a new S-1 before
@@ -27,6 +33,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 from dashboard_export import write_dashboard_csv
@@ -43,6 +50,16 @@ REPORTING_FORMS = {
     "10-K", "10-K/A", "10-KT", "10-KT/A",
     "6-K", "6-K/A", "20-F", "20-F/A", "40-F", "40-F/A",
 }
+RIGHTS_OFFERING_PATTERNS = (
+    re.compile(
+        r"\bright(?:s)? offering\b.{0,6000}\bnon[- ]?transferable\b.{0,500}\bsubscription rights\b",
+        re.IGNORECASE | re.DOTALL,
+    ),
+    re.compile(
+        r"\bnon[- ]?transferable\b.{0,500}\bsubscription rights\b.{0,6000}\bright(?:s)? offering\b",
+        re.IGNORECASE | re.DOTALL,
+    ),
+)
 
 
 def _normalized_accession(value: str) -> str:
@@ -182,6 +199,46 @@ def _primary_document_url(cik: str, filing: dict) -> str:
     return f"{edgar_client.EDGAR_ARCHIVES_BASE}/{int(cik)}/{folder}/{document}"
 
 
+def current_registration_is_rights_offering(record: dict) -> bool:
+    """Return True only when the current SEC registration explicitly is a rights offering.
+
+    A rights offering can use Form S-1/S-1A and a newly formed successor issuer,
+    so reporting-history and resale gates alone do not prove it is non-IPO. Require
+    both the filing's explicit ``Rights Offering`` label and non-transferable
+    subscription-rights language near the front of the current prospectus. That is
+    affirmative transaction evidence, not a company-name or dollar-size heuristic.
+    """
+    if str(record.get("form") or "").strip().upper() not in FORM_TYPES:
+        return False
+    if str(record.get("stage") or "").strip().casefold() != "pre-pricing":
+        return False
+
+    cik = str(record.get("cik") or "").strip()
+    accession_no = str(record.get("accession_no") or record.get("id") or "").strip()
+    if not cik or not accession_no:
+        return False
+
+    try:
+        rows = _recent_submission_rows(cik)
+        current_key = _normalized_accession(accession_no)
+        current = next(
+            (row for row in rows if _normalized_accession(row.get("accession_no")) == current_key),
+            None,
+        )
+        if not current or not current.get("primary_document"):
+            return False
+        soup = filing_parser.fetch_document(_primary_document_url(cik, current))
+        normalized = " ".join(soup.get_text(" ", strip=True).split())[:125000]
+    except Exception as error:
+        print(
+            f"[s1_registration_history_gate] Current filing lookup failed for "
+            f"{record.get('company') or accession_no}: {error}"
+        )
+        return False
+
+    return any(pattern.search(normalized) for pattern in RIGHTS_OFFERING_PATTERNS)
+
+
 def amendment_inherits_resale_exclusion(record: dict) -> bool:
     """Return True only for authoritative same-registration resale history."""
     if str(record.get("form") or "").strip().upper() != "S-1/A":
@@ -268,7 +325,7 @@ def _candidate_records(*payloads: dict) -> list[dict]:
 
 
 def apply_gate(s1_watch_path: Path, queue_path: Path) -> set[str]:
-    """Remove confirmed already-public or resale-lineage rows from pre-pricing outputs."""
+    """Remove confirmed already-public, rights-offering, or resale-lineage rows."""
     s1_watch_path = Path(s1_watch_path)
     queue_path = Path(queue_path)
     watch_payload = _load_payload(s1_watch_path)
@@ -277,13 +334,19 @@ def apply_gate(s1_watch_path: Path, queue_path: Path) -> set[str]:
     excluded_ciks = set()
     for record in _candidate_records(watch_payload, queue_payload):
         already_reporting = already_reporting_before_registration(record)
-        resale_history = False if already_reporting else amendment_inherits_resale_exclusion(record)
-        if already_reporting or resale_history:
+        rights_offering = False if already_reporting else current_registration_is_rights_offering(record)
+        resale_history = (
+            False if (already_reporting or rights_offering)
+            else amendment_inherits_resale_exclusion(record)
+        )
+        if already_reporting or rights_offering or resale_history:
             cik = str(record.get("cik") or "").zfill(10)
             if cik.strip("0"):
                 excluded_ciks.add(cik)
                 if already_reporting:
                     reason = "SEC reporting forms predate the candidate S-1/S-1A"
+                elif rights_offering:
+                    reason = "current SEC registration is a non-transferable subscription-rights offering"
                 else:
                     reason = "prior filing in the same SEC registration statement is resale/direct-listing only"
                 print(
@@ -292,7 +355,7 @@ def apply_gate(s1_watch_path: Path, queue_path: Path) -> set[str]:
                 )
 
     if not excluded_ciks:
-        print("[s1_registration_history_gate] No reporting-history or resale exclusions found")
+        print("[s1_registration_history_gate] No reporting-history, rights-offering, or resale exclusions found")
         return set()
 
     watch_payload["filings"] = [
@@ -316,7 +379,7 @@ def apply_gate(s1_watch_path: Path, queue_path: Path) -> set[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Exclude pre-pricing rows with prior reporting or authoritative resale history"
+        description="Exclude pre-pricing rows with prior reporting, rights-offering, or resale evidence"
     )
     parser.add_argument("s1_watch")
     parser.add_argument("queue")
