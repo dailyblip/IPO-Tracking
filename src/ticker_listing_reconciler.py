@@ -4,6 +4,11 @@ SEC submissions metadata can retain a stale historical ticker for a returning
 issuer. For the pre-pricing watch, prefer the issuer's current S-1/S-1A
 statement that it has applied, intends, or expects to list the offered shares
 under a specific symbol. Conflicting current-listing statements fail closed.
+
+When the CLI is invoked on ``s1_watch.json``, reconcile the sibling public
+``filings.json`` queue as well. If that queue changes, keep its companion CSV in
+sync so a stale SEC-submissions ticker cannot survive in one public surface after
+being corrected in another.
 """
 
 import json
@@ -11,6 +16,7 @@ import re
 import sys
 from pathlib import Path
 
+import dashboard_export
 import filing_parser
 
 
@@ -103,7 +109,7 @@ def reconcile_payload(payload: dict, fetch_text=_fetch_filing_text) -> tuple[int
     return updated, conflicts
 
 
-def reconcile_file(path: Path) -> tuple[int, int]:
+def reconcile_file(path: Path, *, sync_csv: bool = False) -> tuple[int, int]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     updated, conflicts = reconcile_payload(payload)
     if updated:
@@ -111,6 +117,8 @@ def reconcile_file(path: Path) -> tuple[int, int]:
             json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
             encoding="utf-8",
         )
+        if sync_csv:
+            dashboard_export.write_dashboard_csv(payload.get("filings", []), path)
     print(
         f"[ticker_listing_reconciler] inspected {len(payload.get('filings', []))} filing(s); "
         f"updated={updated}, conflicts={conflicts}"
@@ -122,6 +130,15 @@ def main(argv=None) -> int:
     argv = list(argv or sys.argv[1:])
     path = Path(argv[0]) if argv else Path("../docs/data/s1_watch.json")
     reconcile_file(path)
+
+    # s1_monitor.py writes both the dedicated watch and the Research Monitor queue
+    # before this release gate runs. Reconcile both copies from the same explicit SEC
+    # listing language so a stale submissions-metadata symbol cannot survive only in
+    # the public queue. Keep the CSV synchronized whenever that queue changes.
+    if path.name == "s1_watch.json":
+        queue_path = path.with_name("filings.json")
+        if queue_path.exists():
+            reconcile_file(queue_path, sync_csv=True)
     return 0
 
 
