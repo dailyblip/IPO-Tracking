@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-07T05:47:38.966295+00:00",
+  "generated_at": "2026-09-07T06:24:42.071723+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -137,33 +137,6 @@
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2028464/000162828026059692/0001628280-26-059692-index.htm"
-    },
-    {
-      "id": "s1:0002149773",
-      "company": "Xiasan Dynasty Co",
-      "ticker": "",
-      "cik": "0002149773",
-      "accession_no": "0002149773-26-000008",
-      "form": "S-1",
-      "filed": "2026-08-31",
-      "stage": "Pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": null,
-      "secondary_offering_shares": null,
-      "priority": "Medium",
-      "status": "New",
-      "value": null,
-      "value_label": "—",
-      "people_count": 0,
-      "signals": [
-        "Initial registration statement filed — IPO is pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "people": [],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2149773/000214977326000008/0002149773-26-000008-index.htm"
     },
     {
       "id": "s1:0002125056",
