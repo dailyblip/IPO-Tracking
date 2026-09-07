@@ -58,6 +58,36 @@ class LifecycleFollowonCandidateGuardTests(unittest.TestCase):
 
         self.assertIs(selected, ipo_final)
 
+    def test_existing_final_accepts_same_accession_with_formatting_difference(self):
+        existing_final = {
+            "cik": "0001234567",
+            "accession_no": "0001234567-26-000100",
+            "form": "424B4",
+            "stage": "Priced",
+        }
+        same_ipo_final_compact = {
+            "cik": "0001234567",
+            "accession_no": "000123456726000100",
+            "form_type": "424B4",
+            "filing_date": "2026-06-11",
+        }
+        later_followon = {
+            "cik": "0001234567",
+            "accession_no": "0001234567-26-000900",
+            "form_type": "424B4",
+            "filing_date": "2026-09-01",
+        }
+
+        selected = _select_final_meta(
+            [later_followon, same_ipo_final_compact], existing_final=existing_final
+        )
+
+        self.assertIs(
+            selected,
+            same_ipo_final_compact,
+            "SEC accession formatting differences must not hide the same IPO final, while genuinely different later 424B4 accessions remain excluded.",
+        )
+
     def test_prepricing_record_can_still_select_first_later_final(self):
         prepricing = {
             "cik": "0001234567",
