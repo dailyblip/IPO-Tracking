@@ -311,6 +311,11 @@ def _current_registration_history(history, *, pricing_day, initial_day=None):
     and older registrations with different file numbers are excluded even if they
     belong to the same issuer. The row-level initial filing date is retained only
     as a conservative fallback for injected/legacy history that lacks fileNumber.
+
+    A mix of known and missing SEC file numbers inside the current IPO window is
+    ambiguous evidence, not permission to discard the unnumbered filing. Fail
+    closed in that case so a later S-1/A cannot be silently skipped when deciding
+    whether a priced row may keep a blank or older Filing Price.
     """
     chronological = []
     for metadata in history or []:
@@ -330,6 +335,18 @@ def _current_registration_history(history, *, pricing_day, initial_day=None):
         "",
     )
     if current_file_number:
+        ambiguous = []
+        for metadata in chronological:
+            if str(metadata.get("file_number") or "").strip():
+                continue
+            source_day = _canonical_date(metadata.get("filing_date"))
+            if initial_day is None or source_day >= initial_day:
+                ambiguous.append(metadata)
+        if ambiguous:
+            accession = ambiguous[0].get("accession_no") or "unknown accession"
+            raise FilingPriceHistoryError(
+                f"SEC S-1 history lacks file-number lineage for {accession} inside the current IPO registration window"
+            )
         return [
             metadata
             for metadata in chronological
