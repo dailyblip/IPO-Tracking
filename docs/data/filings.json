@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-07T01:05:49.552233+00:00",
+  "generated_at": "2026-09-07T01:25:58.821791+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -7816,9 +7816,9 @@
       "status": "New",
       "value": 128700000.0,
       "value_label": "$129M",
-      "primary_offering_shares": 8580000,
+      "primary_offering_shares": null,
       "secondary_offering_shares": null,
-      "offering_size_source": "prospectus cover title; authoritative final 424B4 aggregate IPO price table; explicit issuer offering statement in final 424B4",
+      "offering_size_source": "prospectus cover title",
       "offering_size_confidence": "High",
       "filing_price": "13-15",
       "offering_price": 15.0,
