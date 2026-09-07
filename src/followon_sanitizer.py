@@ -100,6 +100,50 @@ def _validated_recent_chronology(recent: dict):
     return normalized_forms, normalized_dates
 
 
+def _validated_same_day_acceptance_metadata(
+    recent: dict,
+    dates: list[str],
+    candidate_date: str,
+):
+    """Validate SEC row alignment when acceptance timestamps are available.
+
+    SEC submissions may omit acceptanceDateTime entirely, in which case same-day
+    ordering remains unresolved. Once that array is supplied, however, it must be
+    safely bindable to the same filing rows as accessionNumber/form/filingDate;
+    malformed or misaligned metadata is release-blocking rather than silently
+    degrading an authoritative ordering check.
+    """
+    if "acceptanceDateTime" not in recent:
+        return None
+
+    acceptance_times = recent.get("acceptanceDateTime")
+    accessions = recent.get("accessionNumber")
+    if not isinstance(acceptance_times, list) or not isinstance(accessions, list):
+        raise RuntimeError("SEC submissions acceptance-order metadata is malformed")
+    if len(acceptance_times) != len(dates) or len(accessions) != len(dates):
+        raise RuntimeError("SEC submissions acceptance-order arrays are misaligned")
+
+    cutoff = _iso_date(candidate_date)
+    if cutoff is None:
+        raise ValueError(f"Invalid candidate date: {candidate_date!r}")
+
+    for index, filing_date in enumerate(dates):
+        if _iso_date(filing_date) != cutoff:
+            continue
+        accession = accessions[index]
+        if not isinstance(accession, str) or not _normalized_accession(accession):
+            raise RuntimeError(
+                f"SEC submissions same-day row has invalid accessionNumber: {accession!r}"
+            )
+        accepted = acceptance_times[index]
+        if not isinstance(accepted, str) or _iso_datetime(accepted) is None:
+            raise RuntimeError(
+                f"SEC submissions same-day row has invalid acceptanceDateTime: {accepted!r}"
+            )
+
+    return accessions, acceptance_times
+
+
 def _candidate_acceptance_time(
     recent: dict,
     candidate_accession: str,
@@ -135,7 +179,12 @@ def has_prior_periodic_report(
 
     recent = (submissions or {}).get("filings", {}).get("recent", {})
     forms, dates = _validated_recent_chronology(recent)
-    acceptance_times = recent.get("acceptanceDateTime", []) or []
+    acceptance_metadata = _validated_same_day_acceptance_metadata(
+        recent,
+        dates,
+        candidate_date,
+    )
+    acceptance_times = acceptance_metadata[1] if acceptance_metadata is not None else []
     candidate_accepted = _candidate_acceptance_time(
         recent,
         candidate_accession,
@@ -149,8 +198,6 @@ def has_prior_periodic_report(
         if report_date < cutoff:
             return True
         if report_date != cutoff or candidate_accepted is None:
-            continue
-        if index >= len(acceptance_times):
             continue
         report_accepted = _iso_datetime(acceptance_times[index])
         if report_accepted is not None and report_accepted < candidate_accepted:
