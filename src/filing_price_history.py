@@ -217,6 +217,10 @@ def sec_s1_history(cik, pricing_date):
 
         filing_from_raw = str(descriptor.get("filingFrom") or "").strip()
         filing_from = _canonical_date(filing_from_raw) if filing_from_raw else None
+        if filing_from_raw and filing_from is None:
+            raise FilingPriceHistoryError(
+                f"SEC submissions history for CIK {cik} has invalid archive filingFrom: {filing_from_raw!r}"
+            )
         if pricing_day is not None and filing_from is not None and filing_from > pricing_day:
             continue
 
