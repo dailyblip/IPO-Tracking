@@ -1,22 +1,8 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-07T05:24:11.738788+00:00",
-  "count": 95,
+  "generated_at": "2026-09-07T05:24:29.887488+00:00",
+  "count": 94,
   "alerts": [
-    {
-      "type": "new_prepricing",
-      "company": "PBT Land & Minerals, Inc.",
-      "cik": "0002142855",
-      "filing_id": "s1:0002142855",
-      "form": "S-1/A",
-      "filed": "2026-09-04",
-      "stage": "pre-pricing",
-      "priority": "Medium",
-      "summary": "New pre-pricing S-1/A candidate entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2142855/000121390026097366/0001213900-26-097366-index.htm",
-      "detected_at": "2026-09-05T02:31:17.828335+00:00",
-      "key": "new_prepricing|s1:0002142855|0002142855|2026-09-04|"
-    },
     {
       "type": "new_prepricing",
       "company": "ADARx Pharmaceuticals, Inc.",
