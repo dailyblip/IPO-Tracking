@@ -47,7 +47,9 @@ class PersonSaleReleaseGateTests(unittest.TestCase):
 
             filtered, removed = enforce_public_feed_policy(
                 output,
-                followon_submissions_loader=lambda _cik: {"filings": {"recent": {}}},
+                followon_submissions_loader=lambda _cik: {
+                    "filings": {"recent": {"form": [], "filingDate": []}}
+                },
             )
 
             self.assertEqual(removed, 0)
@@ -111,7 +113,9 @@ class PersonSaleReleaseGateTests(unittest.TestCase):
 
             filtered, removed = enforce_public_feed_policy(
                 output,
-                followon_submissions_loader=lambda _cik: {"filings": {"recent": {}}},
+                followon_submissions_loader=lambda _cik: {
+                    "filings": {"recent": {"form": [], "filingDate": []}}
+                },
             )
 
             self.assertEqual(removed, 0)
@@ -173,7 +177,9 @@ class PersonSaleReleaseGateTests(unittest.TestCase):
 
             filtered, removed = enforce_public_feed_policy(
                 output,
-                followon_submissions_loader=lambda _cik: {"filings": {"recent": {}}},
+                followon_submissions_loader=lambda _cik: {
+                    "filings": {"recent": {"form": [], "filingDate": []}}
+                },
             )
 
             self.assertEqual(removed, 0)

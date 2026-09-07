@@ -14,8 +14,8 @@ This pass is deliberately conservative and date-aware. Same-day filings are
 ordered only when SEC submissions supplies acceptance timestamps for both the
 candidate and the possible prior reporting filing, and the comparison date is the
 candidate's SEC filing date; otherwise same-day order is left unresolved. SEC
-lookup failure blocks the sanitizer instead of silently publishing an unverified
-candidate.
+lookup failure or malformed core chronology metadata blocks the sanitizer instead
+of silently publishing an unverified candidate.
 """
 
 from __future__ import annotations
@@ -73,6 +73,18 @@ def _normalized_accession(value):
     return re.sub(r"\D", "", str(value or ""))
 
 
+def _validated_recent_chronology(recent: dict):
+    if not isinstance(recent, dict):
+        raise RuntimeError("SEC submissions recent filing metadata is malformed")
+    forms = recent.get("form")
+    dates = recent.get("filingDate")
+    if not isinstance(forms, list) or not isinstance(dates, list):
+        raise RuntimeError("SEC submissions chronology arrays are missing or malformed")
+    if len(forms) != len(dates):
+        raise RuntimeError("SEC submissions chronology arrays are misaligned")
+    return forms, dates
+
+
 def _candidate_acceptance_time(
     recent: dict,
     candidate_accession: str,
@@ -107,8 +119,7 @@ def has_prior_periodic_report(
         raise ValueError(f"Invalid candidate date: {candidate_date!r}")
 
     recent = (submissions or {}).get("filings", {}).get("recent", {})
-    forms = recent.get("form", []) or []
-    dates = recent.get("filingDate", []) or []
+    forms, dates = _validated_recent_chronology(recent)
     acceptance_times = recent.get("acceptanceDateTime", []) or []
     candidate_accepted = _candidate_acceptance_time(
         recent,
