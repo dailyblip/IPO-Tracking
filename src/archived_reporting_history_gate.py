@@ -67,13 +67,34 @@ def _columnar_history(payload):
     return payload
 
 
-def _block_has_prior_reporting(payload, cutoff):
+def _validated_history_columns(payload):
+    """Return aligned SEC form/date columns or fail closed on malformed chronology."""
     block = _columnar_history(payload)
-    forms = block.get("form", []) or []
-    dates = block.get("filingDate", []) or []
+    forms = block.get("form")
+    dates = block.get("filingDate")
+    if not isinstance(forms, list) or not isinstance(dates, list):
+        raise ArchivedReportingHistoryError(
+            "SEC submissions filing history is missing form/filingDate arrays"
+        )
+    if len(forms) != len(dates):
+        raise ArchivedReportingHistoryError(
+            "SEC submissions filing history has misaligned form/filingDate arrays"
+        )
+
+    normalized = []
     for form, filing_date in zip(forms, dates):
         report_date = _iso_date(filing_date)
-        if str(form or "").strip().upper() in REPORTING_FORMS and report_date and report_date < cutoff:
+        if report_date is None:
+            raise ArchivedReportingHistoryError(
+                f"SEC submissions filing history has invalid filingDate: {filing_date!r}"
+            )
+        normalized.append((str(form or "").strip().upper(), report_date))
+    return normalized
+
+
+def _block_has_prior_reporting(payload, cutoff):
+    for form, report_date in _validated_history_columns(payload):
+        if form in REPORTING_FORMS and report_date < cutoff:
             return True
     return False
 
