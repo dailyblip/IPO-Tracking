@@ -183,6 +183,75 @@ class FilingPriceRegistrationLineageTests(unittest.TestCase):
         self.assertEqual(payload["filings"][0]["filing_price_source"], existing_source)
         self.assertEqual((recovered, checked), (1, 1))
 
+    def test_missing_file_number_inside_current_registration_window_fails_closed(self):
+        history = [
+            {
+                "form_type": "S-1/A",
+                "accession_no": "0001104659-26-088001",
+                "filing_date": "2026-07-27",
+                "file_number": "",
+            },
+            {
+                "form_type": "S-1/A",
+                "accession_no": "0001104659-26-084856",
+                "filing_date": "2026-07-20",
+                "file_number": "333-300001",
+            },
+        ]
+        calls = []
+
+        def registration_loader(cik, metadata):
+            calls.append(metadata["accession_no"])
+            raise AssertionError("ambiguous lineage must fail before document review")
+
+        with self.assertRaisesRegex(
+            filing_price_history.FilingPriceHistoryError,
+            "lacks file-number lineage",
+        ):
+            filing_price_history.recover_payload_filing_prices(
+                {"filings": [self._row(filing_date="2026-07-10")]},
+                history_loader=lambda cik, pricing_date: history,
+                registration_loader=registration_loader,
+            )
+
+        self.assertEqual(calls, [])
+
+    def test_missing_file_number_before_initial_window_does_not_block_current_lineage(self):
+        history = [
+            {
+                "form_type": "S-1/A",
+                "accession_no": "0001104659-26-088001",
+                "filing_date": "2026-07-27",
+                "file_number": "333-300001",
+            },
+            {
+                "form_type": "S-1/A",
+                "accession_no": "0001104659-25-099999",
+                "filing_date": "2025-11-15",
+                "file_number": "",
+            },
+        ]
+        calls = []
+
+        def registration_loader(cik, metadata):
+            calls.append(metadata["accession_no"])
+            if metadata["accession_no"] == "0001104659-25-099999":
+                raise AssertionError("pre-window filing must not be inspected")
+            return (
+                {"price_range": {"range_low": None, "range_high": None}},
+                "https://www.sec.gov/current-amendment",
+            )
+
+        payload, recovered, checked = filing_price_history.recover_payload_filing_prices(
+            {"filings": [self._row()]},
+            history_loader=lambda cik, pricing_date: history,
+            registration_loader=registration_loader,
+        )
+
+        self.assertEqual(calls, ["0001104659-26-088001"])
+        self.assertIsNone(payload["filings"][0]["filing_price"])
+        self.assertEqual((recovered, checked), (0, 1))
+
 
 if __name__ == "__main__":
     unittest.main()
