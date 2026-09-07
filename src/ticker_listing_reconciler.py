@@ -56,7 +56,11 @@ def _fetch_filing_text(record: dict) -> str:
         sec_url, expected_form_types=[form]
     )
     soup = filing_parser.fetch_document(document_url)
-    return soup.get_text(" ", strip=True)[:100000]
+    # The authoritative current-listing statement can occur well beyond the
+    # first 100k characters in a long registration statement. We already have
+    # the full filing in memory, so scan all filing text rather than allowing a
+    # prefix cutoff to preserve a stale SEC-submissions ticker.
+    return soup.get_text(" ", strip=True)
 
 
 def reconcile_payload(payload: dict, fetch_text=_fetch_filing_text) -> tuple[int, int]:
