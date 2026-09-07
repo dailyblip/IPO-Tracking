@@ -61,6 +61,53 @@ class ArchivedReportingHistoryMalformedTests(unittest.TestCase):
                 archive_loader=lambda _name: archived,
             )
 
+    def test_non_list_archive_descriptor_metadata_fails_closed(self):
+        submissions = self._submissions()
+        submissions["filings"]["files"] = {
+            "name": "CIK0000000001-submissions-001.json",
+            "filingFrom": "2020-01-01",
+        }
+
+        with self.assertRaises(gate.ArchivedReportingHistoryError):
+            gate.has_prior_reporting_history(
+                submissions,
+                "2026-09-01",
+                archive_loader=lambda _name: self.fail("archive should not be reached"),
+            )
+
+    def test_malformed_archive_descriptor_entry_fails_closed(self):
+        submissions = self._submissions()
+        submissions["filings"]["files"] = ["CIK0000000001-submissions-001.json"]
+
+        with self.assertRaises(gate.ArchivedReportingHistoryError):
+            gate.has_prior_reporting_history(
+                submissions,
+                "2026-09-01",
+                archive_loader=lambda _name: self.fail("archive should not be reached"),
+            )
+
+    def test_archive_descriptor_without_name_fails_closed(self):
+        submissions = self._submissions()
+        submissions["filings"]["files"] = [{"filingFrom": "2020-01-01"}]
+
+        with self.assertRaises(gate.ArchivedReportingHistoryError):
+            gate.has_prior_reporting_history(
+                submissions,
+                "2026-09-01",
+                archive_loader=lambda _name: self.fail("archive should not be reached"),
+            )
+
+    def test_invalid_archive_filing_from_fails_closed(self):
+        submissions = self._submissions()
+        submissions["filings"]["files"][0]["filingFrom"] = "not-a-date"
+
+        with self.assertRaises(gate.ArchivedReportingHistoryError):
+            gate.has_prior_reporting_history(
+                submissions,
+                "2026-09-01",
+                archive_loader=lambda _name: self.fail("archive should not be reached"),
+            )
+
     def test_malformed_recent_chronology_blocks_final_release(self):
         queue = {
             "filings": [
@@ -77,6 +124,31 @@ class ArchivedReportingHistoryMalformedTests(unittest.TestCase):
         }
         submissions = self._submissions()
         submissions["filings"]["recent"]["form"].append("8-K")
+
+        with self.assertRaises(gate.ArchivedReportingHistoryError):
+            gate.sanitize_payloads(
+                {"filings": []},
+                queue,
+                submissions_loader=lambda _cik: submissions,
+                archive_loader=lambda _name: self.fail("archive should not be reached"),
+            )
+
+    def test_malformed_archive_descriptors_block_final_release(self):
+        queue = {
+            "filings": [
+                {
+                    "id": "final-malformed-archive-descriptors",
+                    "company": "Malformed Archive Descriptor Co",
+                    "cik": "1",
+                    "form": "424B4",
+                    "stage": "Priced",
+                    "filed": "2026-09-02",
+                    "pricing_date": "2026-09-01",
+                }
+            ]
+        }
+        submissions = self._submissions()
+        submissions["filings"]["files"] = [{"filingFrom": "2020-01-01"}]
 
         with self.assertRaises(gate.ArchivedReportingHistoryError):
             gate.sanitize_payloads(
