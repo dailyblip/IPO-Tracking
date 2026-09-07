@@ -12,9 +12,10 @@ later 424B4 cannot be its first IPO.
 
 This pass is deliberately conservative and date-aware. Same-day filings are
 ordered only when SEC submissions supplies acceptance timestamps for both the
-candidate and the possible prior reporting filing; otherwise same-day order is
-left unresolved. SEC lookup failure blocks the sanitizer instead of silently
-publishing an unverified candidate.
+candidate and the possible prior reporting filing, and the comparison date is the
+candidate's SEC filing date; otherwise same-day order is left unresolved. SEC
+lookup failure blocks the sanitizer instead of silently publishing an unverified
+candidate.
 """
 
 from __future__ import annotations
@@ -72,15 +73,23 @@ def _normalized_accession(value):
     return re.sub(r"\D", "", str(value or ""))
 
 
-def _candidate_acceptance_time(recent: dict, candidate_accession: str):
+def _candidate_acceptance_time(
+    recent: dict,
+    candidate_accession: str,
+    candidate_date: str,
+):
     candidate_key = _normalized_accession(candidate_accession)
-    if not candidate_key:
+    cutoff = _iso_date(candidate_date)
+    if not candidate_key or cutoff is None:
         return None
     accessions = recent.get("accessionNumber", []) or []
+    filing_dates = recent.get("filingDate", []) or []
     acceptance_times = recent.get("acceptanceDateTime", []) or []
     for index, accession in enumerate(accessions):
         if _normalized_accession(accession) != candidate_key:
             continue
+        if index >= len(filing_dates) or _iso_date(filing_dates[index]) != cutoff:
+            return None
         if index >= len(acceptance_times):
             return None
         return _iso_datetime(acceptance_times[index])
@@ -101,7 +110,11 @@ def has_prior_periodic_report(
     forms = recent.get("form", []) or []
     dates = recent.get("filingDate", []) or []
     acceptance_times = recent.get("acceptanceDateTime", []) or []
-    candidate_accepted = _candidate_acceptance_time(recent, candidate_accession)
+    candidate_accepted = _candidate_acceptance_time(
+        recent,
+        candidate_accession,
+        candidate_date,
+    )
 
     for index, (form, filing_date) in enumerate(zip(forms, dates)):
         report_date = _iso_date(filing_date)
@@ -170,9 +183,9 @@ def sanitize_file(path: Path = DEFAULT_PATH) -> list:
     payload = json.loads(path.read_text(encoding="utf-8"))
     payload, removed = sanitize_payload(payload)
     if removed:
-        updated = path.with_suffix(path.suffix + ".tmp")
-        updated.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-        updated.replace(path)
+        temporary = path.with_suffix(path.suffix + ".tmp")
+        temporary.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        temporary.replace(path)
     dashboard_export.write_dashboard_csv(payload.get("filings", []), path)
     return removed
 
