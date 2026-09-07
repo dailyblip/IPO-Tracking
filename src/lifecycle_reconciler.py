@@ -25,6 +25,11 @@ def _canonical_cik(value):
     return digits.zfill(10) if digits else ""
 
 
+def _canonical_accession(value):
+    """Normalize SEC accession identity without weakening exact-filing matching."""
+    return re.sub(r"\D", "", str(value or ""))
+
+
 def _share_int(value):
     try:
         return int(str(value).replace(",", "").strip())
@@ -475,10 +480,11 @@ def _select_final_meta(candidates, existing_final=None, prepricing=None):
         return None
     candidates = sorted(candidates, key=lambda item: str(item.get("filing_date") or ""))
 
-    accession = str((existing_final or {}).get("accession_no") or "").strip()
+    accession = _canonical_accession((existing_final or {}).get("accession_no"))
     if accession:
         for candidate in candidates:
-            if str(candidate.get("accession_no") or "").strip() == accession:
+            candidate_accession = _canonical_accession(candidate.get("accession_no"))
+            if candidate_accession and candidate_accession == accession:
                 return candidate
         return None
 
