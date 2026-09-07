@@ -14,9 +14,9 @@ This pass is deliberately conservative and date-aware. Same-day filings are
 ordered only when SEC submissions supplies acceptance timestamps for both the
 candidate and the possible prior reporting filing, and the comparison date is the
 candidate's SEC filing date; otherwise same-day order is left unresolved. SEC
-lookup failure, malformed core chronology metadata, or an inability to bind the
-public candidate to its unique SEC 424B4 row blocks the sanitizer instead of
-silently publishing an unverified candidate.
+lookup failure, malformed core chronology metadata, or an inability to bind a
+supplied public candidate accession to its unique SEC 424B4 row blocks the
+sanitizer instead of silently publishing an unverified candidate.
 """
 
 from __future__ import annotations
@@ -151,16 +151,24 @@ def _validate_candidate_sec_identity(
     candidate_date: str,
     candidate_accession: str,
 ) -> None:
-    """Require the public final row to bind to one SEC 424B4 on its filed date."""
+    """Bind a supplied public final accession to one SEC 424B4 on its filed date.
+
+    Missing public accession metadata is owned by the final pricing release gate.
+    This sanitizer only strengthens identity validation when the public row already
+    supplies an SEC accession, without making unrelated malformed accession rows
+    authoritative for the candidate.
+    """
+    raw_candidate = str(candidate_accession or "").strip()
+    if not raw_candidate:
+        return
+    if not ACCESSION_PATTERN.fullmatch(raw_candidate):
+        raise RuntimeError(
+            f"Final 424B4 record has invalid SEC accession: {raw_candidate!r}"
+        )
+
     cutoff = _iso_date(candidate_date)
     if cutoff is None:
         raise ValueError(f"Invalid candidate date: {candidate_date!r}")
-
-    raw_candidate = str(candidate_accession or "").strip()
-    if not ACCESSION_PATTERN.fullmatch(raw_candidate):
-        raise RuntimeError(
-            f"Final 424B4 record has missing or invalid SEC accession: {raw_candidate!r}"
-        )
     candidate_key = _normalized_accession(raw_candidate)
 
     recent = (submissions or {}).get("filings", {}).get("recent", {})
@@ -173,11 +181,12 @@ def _validate_candidate_sec_identity(
 
     matches = []
     for index, accession in enumerate(accessions):
-        if not isinstance(accession, str) or not ACCESSION_PATTERN.fullmatch(accession.strip()):
-            raise RuntimeError(
-                f"SEC submissions has invalid accessionNumber metadata: {accession!r}"
-            )
-        if _normalized_accession(accession) == candidate_key:
+        if not isinstance(accession, str):
+            continue
+        normalized = accession.strip()
+        if not ACCESSION_PATTERN.fullmatch(normalized):
+            continue
+        if _normalized_accession(normalized) == candidate_key:
             matches.append(index)
 
     if len(matches) != 1:
