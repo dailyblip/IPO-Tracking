@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-07T06:32:59.680904+00:00",
-  "count": 94,
+  "generated_at": "2026-09-07T07:26:46.252112+00:00",
+  "count": 93,
   "alerts": [
     {
       "type": "new_prepricing",
@@ -524,20 +524,6 @@
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2028464/000162828026059692/0001628280-26-059692-index.htm",
       "detected_at": "2026-09-02T02:21:57.710328+00:00",
       "key": "new_prepricing|s1:0002028464|0002028464|2026-09-01|"
-    },
-    {
-      "type": "new_prepricing",
-      "company": "Xiasan Dynasty Co",
-      "cik": "0002149773",
-      "filing_id": "s1:0002149773",
-      "form": "S-1",
-      "filed": "2026-08-31",
-      "stage": "pre-pricing",
-      "priority": "Medium",
-      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2149773/000214977326000008/0002149773-26-000008-index.htm",
-      "detected_at": "2026-09-01T02:10:02.502607+00:00",
-      "key": "new_prepricing|s1:0002149773|0002149773|2026-08-31|"
     },
     {
       "type": "new_prepricing",
