@@ -82,7 +82,22 @@ def _validated_recent_chronology(recent: dict):
         raise RuntimeError("SEC submissions chronology arrays are missing or malformed")
     if len(forms) != len(dates):
         raise RuntimeError("SEC submissions chronology arrays are misaligned")
-    return forms, dates
+
+    normalized_forms = []
+    normalized_dates = []
+    for form, filing_date in zip(forms, dates):
+        if not isinstance(form, str) or not form.strip():
+            raise RuntimeError(
+                f"SEC submissions chronology has invalid form metadata: {form!r}"
+            )
+        report_date = _iso_date(filing_date)
+        if report_date is None:
+            raise RuntimeError(
+                f"SEC submissions chronology has invalid filingDate: {filing_date!r}"
+            )
+        normalized_forms.append(form.strip())
+        normalized_dates.append(report_date.isoformat())
+    return normalized_forms, normalized_dates
 
 
 def _candidate_acceptance_time(
