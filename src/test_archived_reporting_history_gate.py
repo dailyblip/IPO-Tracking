@@ -211,6 +211,65 @@ class ArchivedReportingHistoryGateTests(unittest.TestCase):
             [row["id"] for row in updated_queue["filings"]],
         )
 
+    def test_final_candidate_uses_actual_424b4_filed_date_not_pricing_date(self):
+        queue = {
+            "filings": [
+                {
+                    "id": "final-cutoff",
+                    "company": "Cutoff Final Co",
+                    "cik": "1",
+                    "form": "424B4",
+                    "stage": "Priced",
+                    "filed": "2026-09-02",
+                    "pricing_date": "2026-09-01",
+                }
+            ]
+        }
+        submissions = {
+            "filings": {
+                "recent": {
+                    "form": ["424B4", "10-Q"],
+                    "filingDate": ["2026-09-02", "2026-09-01"],
+                },
+                "files": [],
+            }
+        }
+
+        _watch, updated_queue, _excluded_s1, excluded_final = gate.sanitize_payloads(
+            {"filings": []},
+            queue,
+            submissions_loader=lambda _cik: submissions,
+            archive_loader=lambda _name: self.fail("archive should not be fetched"),
+        )
+
+        self.assertEqual(1, len(excluded_final))
+        self.assertEqual([], updated_queue["filings"])
+
+    def test_final_missing_424b4_filed_date_blocks_release(self):
+        queue = {
+            "filings": [
+                {
+                    "id": "final-missing-filed",
+                    "company": "Missing Filed Final Co",
+                    "cik": "1",
+                    "form": "424B4",
+                    "stage": "Priced",
+                    "pricing_date": "2026-09-01",
+                }
+            ]
+        }
+
+        with self.assertRaisesRegex(
+            gate.ArchivedReportingHistoryError,
+            "Missing or invalid final 424B4 filed date",
+        ):
+            gate.sanitize_payloads(
+                {"filings": []},
+                queue,
+                submissions_loader=lambda _cik: self.fail("SEC should not be queried"),
+                archive_loader=lambda _name: self.fail("archive should not be queried"),
+            )
+
     def test_prepricing_archive_failure_does_not_invent_exclusion(self):
         watch = {
             "filings": [
