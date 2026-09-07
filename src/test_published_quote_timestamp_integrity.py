@@ -47,7 +47,7 @@ class PublishedQuoteTimestampIntegrityTests(unittest.TestCase):
         cls.filings = payload.get("filings", []) if isinstance(payload, dict) else payload
 
     def test_published_quotes_have_canonical_post_pricing_nonfuture_timestamps(self):
-        """A published Current Price must be tied to a real post-IPO quote timestamp.
+        """A published Current Price must be a real quote after IPO pricing and final filing.
 
         This validates the exact generated feed, not only the quote sanitizer unit
         behavior. Secondary quote data may legitimately be absent when identity or
@@ -62,10 +62,16 @@ class PublishedQuoteTimestampIntegrityTests(unittest.TestCase):
 
             label = filing.get("company") or filing.get("id") or "unknown filing"
             pricing_date = _iso_date(filing.get("pricing_date"))
+            final_filing_date = _iso_date(filing.get("filed"))
             quote_time = _aware_datetime(filing.get("price_updated"))
 
             if pricing_date is None:
                 failures.append(f"{label}: Current Price exists without canonical Pricing Date")
+                continue
+            if final_filing_date is None:
+                failures.append(
+                    f"{label}: Current Price exists without canonical final 424B4 Filed date"
+                )
                 continue
             if quote_time is None:
                 failures.append(
@@ -82,6 +88,11 @@ class PublishedQuoteTimestampIntegrityTests(unittest.TestCase):
                 failures.append(
                     f"{label}: price_updated {quote_utc.date().isoformat()} predates Pricing Date "
                     f"{pricing_date.isoformat()}"
+                )
+            if quote_utc.date() < final_filing_date:
+                failures.append(
+                    f"{label}: price_updated {quote_utc.date().isoformat()} predates final 424B4 Filed "
+                    f"{final_filing_date.isoformat()}"
                 )
 
         self.assertEqual(
