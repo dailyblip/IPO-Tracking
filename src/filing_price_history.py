@@ -288,12 +288,36 @@ def sec_s1_history(cik, pricing_date):
                 else ""
             )
             key = _normalized_accession(accession) or accession
-            history_by_accession[key] = {
+            candidate = {
                 "form_type": form,
                 "accession_no": accession,
                 "filing_date": filed,
                 "file_number": file_number,
             }
+            existing = history_by_accession.get(key)
+            if existing is None:
+                history_by_accession[key] = candidate
+                continue
+
+            conflicts = []
+            for field in ("form_type", "filing_date"):
+                if existing.get(field) != candidate.get(field):
+                    conflicts.append(field)
+            existing_file_number = str(existing.get("file_number") or "").strip()
+            candidate_file_number = str(candidate.get("file_number") or "").strip()
+            if (
+                existing_file_number
+                and candidate_file_number
+                and existing_file_number != candidate_file_number
+            ):
+                conflicts.append("file_number")
+            if conflicts:
+                raise FilingPriceHistoryError(
+                    f"SEC S-1 history for CIK {cik} has conflicting duplicate accession metadata "
+                    f"for {accession}: {', '.join(conflicts)}"
+                )
+            if not existing_file_number and candidate_file_number:
+                existing["file_number"] = candidate_file_number
 
     history = list(history_by_accession.values())
     history.sort(
