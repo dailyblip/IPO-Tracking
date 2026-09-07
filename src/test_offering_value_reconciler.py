@@ -169,6 +169,7 @@ class AuthoritativeOfferingValueTests(unittest.TestCase):
             "stage": "Priced",
             "pricing_date": "2026-06-01",
             "value": 100_000_000,
+            "primary_offering_shares": 5_000_000,
         }
         self.assertFalse(_needs_check(filing, today=date(2026, 8, 29)))
 
