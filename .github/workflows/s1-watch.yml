@@ -20,6 +20,8 @@ on:
       - 'src/test_fullpac_real_proceeds_regression.py'
       - 'src/s1_registration_history_gate.py'
       - 'src/test_s1_registration_history_gate.py'
+      - 'src/s1_substantive_registration_gate.py'
+      - 'src/test_s1_non_substantive_template_exclusion.py'
       - 'src/archived_reporting_history_gate.py'
       - 'src/test_archived_reporting_history_gate.py'
       - 'src/resale_registration_sanitizer.py'
@@ -115,6 +117,11 @@ jobs:
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python s1_registration_history_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
+      - name: Exclude non-substantive S-1 form templates
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_substantive_registration_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
       - name: Check archived SEC reporting history
         working-directory: src
         env:
