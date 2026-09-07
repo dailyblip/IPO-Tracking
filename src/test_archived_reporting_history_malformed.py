@@ -10,7 +10,7 @@ class ArchivedReportingHistoryMalformedTests(unittest.TestCase):
             "filings": {
                 "recent": {
                     "form": ["424B4"],
-                    "filingDate": ["2026-09-01"],
+                    "filingDate": ["2026-09-02"],
                 },
                 "files": [
                     {
