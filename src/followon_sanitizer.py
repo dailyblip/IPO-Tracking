@@ -15,8 +15,8 @@ ordered only when SEC submissions supplies acceptance timestamps for both the
 candidate and the possible prior reporting filing, and the comparison date is the
 candidate's SEC filing date; otherwise same-day order is left unresolved. SEC
 lookup failure, malformed core chronology metadata, or an inability to bind a
-supplied public candidate accession to its unique SEC 424B4 row blocks the
-sanitizer instead of silently publishing an unverified candidate.
+supplied public candidate accession when SEC accession metadata is available
+blocks the sanitizer instead of silently publishing an unverified candidate.
 """
 
 from __future__ import annotations
@@ -151,11 +151,12 @@ def _validate_candidate_sec_identity(
     candidate_date: str,
     candidate_accession: str,
 ) -> None:
-    """Bind a supplied public final accession to one SEC 424B4 on its filed date.
+    """Bind a supplied public final accession when SEC row identity is available.
 
-    Missing public accession metadata is owned by the final pricing release gate.
-    This sanitizer only strengthens identity validation when the public row already
-    supplies an SEC accession, without making unrelated malformed accession rows
+    Missing public accession metadata and SEC histories that omit accessionNumber
+    remain owned by the final pricing identity release gate. When SEC does supply
+    accession rows here, a supplied public accession must bind uniquely to the
+    424B4 on the public filed date. Unrelated malformed accession rows are not made
     authoritative for the candidate.
     """
     raw_candidate = str(candidate_accession or "").strip()
@@ -173,9 +174,11 @@ def _validate_candidate_sec_identity(
 
     recent = (submissions or {}).get("filings", {}).get("recent", {})
     forms, dates = _validated_recent_chronology(recent)
+    if "accessionNumber" not in recent:
+        return
     accessions = recent.get("accessionNumber")
     if not isinstance(accessions, list):
-        raise RuntimeError("SEC submissions accessionNumber metadata is missing or malformed")
+        raise RuntimeError("SEC submissions accessionNumber metadata is malformed")
     if len(accessions) != len(dates):
         raise RuntimeError("SEC submissions accessionNumber array is misaligned")
 
