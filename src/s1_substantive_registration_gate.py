@@ -56,15 +56,63 @@ def is_non_substantive_template_text(text: str) -> bool:
     return True
 
 
+def _absolute_sec_document_url(index_url: str, href: str) -> str:
+    href = str(href or "").strip()
+    if href.startswith("http"):
+        return href
+    if href.startswith("/"):
+        return f"https://www.sec.gov{href}"
+    return f"{index_url.rsplit('/', 1)[0]}/{href}"
+
+
+def _find_registration_document_url(index_url: str, form: str) -> str:
+    """Find the SEC registration document, including typed plain-text S-1 files.
+
+    Most registrations expose an HTML primary document, but EDGAR can publish a
+    typed S-1/S-1A as .txt (with a PDF companion) and only metadata tables as
+    HTML. The generic filing parser intentionally prefers HTML documents, so the
+    release gate must explicitly honor the SEC Type column before inspecting
+    whether a registration is substantive.
+    """
+    soup = filing_parser.fetch_document(index_url)
+    table = soup.find("table", class_="tableFile") or soup.find("table")
+    if table is not None:
+        typed_candidates = []
+        for row in table.find_all("tr"):
+            link = row.find("a", href=True)
+            if not link:
+                continue
+            href = str(link["href"])
+            if not href.lower().endswith((".htm", ".html", ".txt")):
+                continue
+            cell_texts = [cell.get_text(strip=True) for cell in row.find_all("td")]
+            if not any(form.upper() == cell.upper() for cell in cell_texts):
+                continue
+            typed_candidates.append(href)
+
+        if typed_candidates:
+            chosen = next(
+                (
+                    href
+                    for href in typed_candidates
+                    if href.lower().endswith((".htm", ".html"))
+                ),
+                typed_candidates[0],
+            )
+            return _absolute_sec_document_url(index_url, chosen)
+
+    return filing_parser.find_primary_document_url(
+        index_url,
+        expected_form_types=[form],
+    )
+
+
 def _fetch_current_text(record: dict) -> str:
     sec_url = str(record.get("sec_url") or "").strip()
     form = str(record.get("form") or "").strip().upper()
     if not sec_url or form not in FORM_TYPES:
         return ""
-    document_url = filing_parser.find_primary_document_url(
-        sec_url,
-        expected_form_types=[form],
-    )
+    document_url = _find_registration_document_url(sec_url, form)
     soup = filing_parser.fetch_document(document_url)
     return soup.get_text(" ", strip=True)
 
