@@ -76,6 +76,12 @@ jobs:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python resale_registration_sanitizer.py ../docs/data/s1_watch.json ../docs/data/filings.json
 
+      - name: Exclude non-substantive S-1 form templates before daily regeneration
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_substantive_registration_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
       - name: Run unit tests
         env:
           SKIP_LIVE_GOLDEN: '1'
@@ -103,6 +109,12 @@ jobs:
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python s1_registration_history_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
+      - name: Exclude non-substantive S-1 form templates after daily regeneration
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_substantive_registration_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
 
       - name: Verify fixed pre-pricing Filing Prices against SEC cover terms
         working-directory: src
