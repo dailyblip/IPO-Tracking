@@ -1,62 +1,80 @@
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import stanford_grader as grader
 
 
-def _response(html):
-    response = Mock()
-    response.text = html
-    response.raise_for_status.return_value = None
-    return response
+def test_openai_research_prompt_prioritizes_authoritative_sources_and_exact_identity():
+    prompt = grader._build_openai_prompt(
+        "Nima Farzan",
+        "Latigo Biotherapeutics, Inc.",
+        "President and Chief Executive Officer",
+        "",
+    )
+
+    assert "Person: Nima Farzan" in prompt
+    assert "stanford.edu" in prompt
+    assert "issuer/company's official website" in prompt
+    assert "SEC filings" in prompt
+    assert "Identity matching is critical" in prompt
+    assert "same-name person" in prompt
 
 
-def test_official_issuer_page_can_confirm_when_search_snippet_is_silent():
-    results = [{
-        "title": "Nima Farzan - Latigo Biotherapeutics",
-        "snippet": "President and Chief Executive Officer biography",
-        "link": "https://latigobio.com/staff-member/nima-farzan-mba/",
-    }]
-    html = "<html><body><h1>Nima Farzan</h1><p>He earned a B.A. from Stanford University.</p></body></html>"
-    with patch.object(grader, "run_search_fallback", return_value=results), \
-            patch.object(grader.requests, "get", return_value=_response(html)), \
-            patch.object(grader, "grade_via_llm") as llm:
-        result = grader.grade_stanford_affiliation("Nima Farzan", "Latigo Biotherapeutics, Inc.")
+def test_confirmed_authoritative_openai_result_is_preserved():
+    result = {
+        "grade": 5,
+        "justification": "Issuer biography confirms a Stanford University degree for the exact person.",
+        "source": "openai_web_research",
+        "source_url": "https://latigobio.com/staff-member/nima-farzan-mba/",
+    }
+    with patch.object(grader, "grade_via_llm", return_value=result) as research:
+        actual = grader.grade_stanford_affiliation(
+            "Nima Farzan",
+            "Latigo Biotherapeutics, Inc.",
+        )
 
-    assert result["grade"] == 5
-    assert result["source"] == "official_page_content"
-    assert "latigobio.com" in result["justification"]
-    llm.assert_not_called()
-
-
-def test_official_page_does_not_confirm_without_exact_person():
-    results = [{
-        "title": "Leadership - Latigo Biotherapeutics",
-        "snippet": "Executive biographies",
-        "link": "https://latigobio.com/leadership/",
-    }]
-    html = "<html><body><p>Another executive earned a degree from Stanford University.</p></body></html>"
-    with patch.object(grader, "run_search_fallback", return_value=results), \
-            patch.object(grader.requests, "get", return_value=_response(html)), \
-            patch.object(grader, "grade_via_llm") as llm:
-        result = grader.grade_stanford_affiliation("Nima Farzan", "Latigo Biotherapeutics, Inc.")
-
-    assert result["grade"] == 0
-    assert result["source"] == "no_public_evidence"
-    llm.assert_not_called()
+    assert actual == result
+    research.assert_called_once()
 
 
-def test_unofficial_page_is_never_fetched_for_deterministic_confirmation():
-    results = [{
-        "title": "Nima Farzan profile",
-        "snippet": "Executive biography",
-        "link": "https://example.com/nima-farzan",
-    }]
-    with patch.object(grader, "run_search_fallback", return_value=results), \
-            patch.object(grader.requests, "get") as get, \
-            patch.object(grader, "grade_via_llm") as llm:
-        result = grader.grade_stanford_affiliation("Nima Farzan", "Latigo Biotherapeutics, Inc.")
+def test_no_public_evidence_fails_closed_without_cardinal_signal():
+    result = {
+        "grade": 0,
+        "justification": "No unambiguous Stanford University affiliation found for the exact person.",
+        "source": "openai_web_research",
+        "source_url": "",
+    }
+    with patch.object(grader, "grade_via_llm", return_value=result):
+        actual = grader.grade_stanford_affiliation(
+            "Nima Farzan",
+            "Latigo Biotherapeutics, Inc.",
+        )
 
-    assert result["grade"] == 0
-    assert result["source"] == "no_public_evidence"
-    get.assert_not_called()
-    llm.assert_not_called()
+    assert actual["grade"] == 0
+    assert actual["source_url"] == ""
+
+
+def test_unconfirmed_grade_five_from_openai_is_downgraded(monkeypatch):
+    class Response:
+        ok = True
+        text = ""
+
+        @staticmethod
+        def json():
+            return {
+                "output": [{
+                    "type": "message",
+                    "content": [{
+                        "type": "output_text",
+                        "text": '{"grade":5,"confirmed":false,"justification":"Ambiguous identity","source_url":"https://example.com"}',
+                    }],
+                }],
+                "usage": {},
+            }
+
+    monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setattr(grader.requests, "post", lambda *args, **kwargs: Response())
+
+    actual = grader.grade_via_llm("Nima Farzan", "Latigo Biotherapeutics, Inc.", "", "")
+
+    assert actual["grade"] == 4
+    assert actual["source"] == "openai_web_research"
