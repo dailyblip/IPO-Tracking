@@ -83,12 +83,16 @@ def _validated_history_columns(payload):
 
     normalized = []
     for form, filing_date in zip(forms, dates):
+        if not isinstance(form, str) or not form.strip():
+            raise ArchivedReportingHistoryError(
+                f"SEC submissions filing history has invalid form metadata: {form!r}"
+            )
         report_date = _iso_date(filing_date)
         if report_date is None:
             raise ArchivedReportingHistoryError(
                 f"SEC submissions filing history has invalid filingDate: {filing_date!r}"
             )
-        normalized.append((str(form or "").strip().upper(), report_date))
+        normalized.append((form.strip().upper(), report_date))
     return normalized
 
 
