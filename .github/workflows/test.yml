@@ -33,7 +33,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt pytest
 
       - name: Detect checked-in public-feed change
         id: feed_change
@@ -64,14 +64,16 @@ jobs:
       # Generator/parser changes may intentionally repair stale checked-in feed
       # data only after the ownership refresh runs on main. Keep all deterministic
       # unit coverage active in PR CI, but defer the live golden comparison until
-      # a commit actually changes the public feed.
+      # a commit actually changes the public feed. Pytest is required here because
+      # the suite intentionally contains both unittest.TestCase classes and
+      # module-level test functions that use pytest fixtures.
       - name: Run unit tests
         env:
           SKIP_LIVE_GOLDEN: '1'
-        run: python -m unittest discover -s src -p 'test_*.py' -v
+        run: python -m pytest src -q
       - name: Validate golden records when public feed changed
         if: steps.feed_change.outputs.changed == 'true'
-        run: python -m unittest discover -s src -p 'test_golden_records.py' -v
+        run: python -m pytest src/test_golden_records.py -q
       - name: Validate V1 public feed schema
         run: python src/feed_schema_contract.py docs/data/filings.json
       - name: Validate dashboard assets and public release policy
