@@ -66,6 +66,31 @@ class SameDayFollowOnAcceptanceTests(unittest.TestCase):
             )
         )
 
+    def test_pricing_day_does_not_borrow_next_day_424b4_acceptance_order(self):
+        submissions = {
+            "filings": {
+                "recent": {
+                    "form": ["8-K", "424B4"],
+                    "filingDate": ["2026-08-31", "2026-09-01"],
+                    "accessionNumber": [
+                        "0000000001-26-000010",
+                        "0000000001-26-000011",
+                    ],
+                    "acceptanceDateTime": [
+                        "2026-08-31T20:00:00.000Z",
+                        "2026-09-01T13:00:00.000Z",
+                    ],
+                }
+            }
+        }
+        self.assertFalse(
+            followon_sanitizer.has_prior_periodic_report(
+                submissions,
+                "2026-08-31",
+                candidate_accession="0000000001-26-000011",
+            )
+        )
+
     def test_payload_uses_candidate_accession_for_same_day_ordering(self):
         payload = {
             "filings": [
