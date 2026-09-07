@@ -66,6 +66,79 @@ class SameDayFollowOnAcceptanceTests(unittest.TestCase):
             )
         )
 
+    def test_malformed_acceptance_array_blocks_release(self):
+        submissions = self._submissions(
+            "2026-09-01T13:00:00.000Z",
+            "2026-09-01T14:00:00.000Z",
+        )
+        submissions["filings"]["recent"]["acceptanceDateTime"] = "not-an-array"
+
+        with self.assertRaises(RuntimeError):
+            followon_sanitizer.has_prior_periodic_report(
+                submissions,
+                "2026-09-01",
+                candidate_accession="0000000001-26-000011",
+            )
+
+    def test_misaligned_acceptance_array_blocks_release(self):
+        submissions = self._submissions(
+            "2026-09-01T13:00:00.000Z",
+            "2026-09-01T14:00:00.000Z",
+        )
+        submissions["filings"]["recent"]["acceptanceDateTime"] = [
+            "2026-09-01T13:00:00.000Z"
+        ]
+
+        with self.assertRaises(RuntimeError):
+            followon_sanitizer.has_prior_periodic_report(
+                submissions,
+                "2026-09-01",
+                candidate_accession="0000000001-26-000011",
+            )
+
+    def test_misaligned_accession_array_blocks_release(self):
+        submissions = self._submissions(
+            "2026-09-01T13:00:00.000Z",
+            "2026-09-01T14:00:00.000Z",
+        )
+        submissions["filings"]["recent"]["accessionNumber"] = [
+            "0000000001-26-000011"
+        ]
+
+        with self.assertRaises(RuntimeError):
+            followon_sanitizer.has_prior_periodic_report(
+                submissions,
+                "2026-09-01",
+                candidate_accession="0000000001-26-000011",
+            )
+
+    def test_invalid_same_day_acceptance_timestamp_blocks_release(self):
+        submissions = self._submissions(
+            "not-a-timestamp",
+            "2026-09-01T14:00:00.000Z",
+        )
+
+        with self.assertRaises(RuntimeError):
+            followon_sanitizer.has_prior_periodic_report(
+                submissions,
+                "2026-09-01",
+                candidate_accession="0000000001-26-000011",
+            )
+
+    def test_invalid_same_day_accession_blocks_release(self):
+        submissions = self._submissions(
+            "2026-09-01T13:00:00.000Z",
+            "2026-09-01T14:00:00.000Z",
+        )
+        submissions["filings"]["recent"]["accessionNumber"][0] = ""
+
+        with self.assertRaises(RuntimeError):
+            followon_sanitizer.has_prior_periodic_report(
+                submissions,
+                "2026-09-01",
+                candidate_accession="0000000001-26-000011",
+            )
+
     def test_pricing_day_does_not_borrow_next_day_424b4_acceptance_order(self):
         submissions = {
             "filings": {
