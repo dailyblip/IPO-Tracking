@@ -208,7 +208,10 @@ def _candidate_kind(record):
 def _candidate_date(record, kind):
     if kind == "prepricing":
         return str(record.get("filed") or record.get("filing_date") or "").strip()
-    return str(record.get("pricing_date") or record.get("filed") or "").strip()
+    # Final follow-on chronology must be keyed to the actual 424B4 filing date,
+    # not the (often earlier) pricing date. Otherwise reporting evidence filed
+    # after pricing but before the prospectus can be silently missed.
+    return str(record.get("filed") or record.get("filing_date") or "").strip()
 
 
 def _record_identity(record, kind):
@@ -253,7 +256,14 @@ def sanitize_payloads(
 
         cik = identity[0]
         candidate_date = _candidate_date(record, kind)
-        if not cik.strip("0") or _iso_date(candidate_date) is None:
+        if not cik.strip("0"):
+            continue
+        if _iso_date(candidate_date) is None:
+            if kind == "final":
+                raise ArchivedReportingHistoryError(
+                    f"Missing or invalid final 424B4 filed date for "
+                    f"{record.get('company') or cik}; historical SEC chronology cannot be verified"
+                )
             continue
 
         try:
