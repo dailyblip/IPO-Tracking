@@ -1,4 +1,8 @@
+import json
+import tempfile
 import unittest
+from pathlib import Path
+from unittest.mock import call, patch
 
 import ticker_listing_reconciler as reconciler
 
@@ -100,6 +104,56 @@ class TickerListingReconcilerTests(unittest.TestCase):
         )
         self.assertEqual((updated, conflicts), (0, 0))
         self.assertEqual(payload["filings"][0]["ticker"], "KEEP")
+
+    def test_watch_cli_reconciles_research_queue_and_requests_csv_sync(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            watch = Path(tmp) / "s1_watch.json"
+            queue = Path(tmp) / "filings.json"
+            watch.write_text('{"filings": []}', encoding="utf-8")
+            queue.write_text('{"filings": []}', encoding="utf-8")
+
+            with patch.object(
+                reconciler, "reconcile_file", return_value=(0, 0)
+            ) as reconcile_file:
+                reconciler.main([str(watch)])
+
+            self.assertEqual(
+                reconcile_file.call_args_list,
+                [call(watch), call(queue, sync_csv=True)],
+            )
+
+    def test_queue_reconciliation_keeps_companion_csv_in_sync(self):
+        payload = {
+            "filings": [
+                {
+                    "id": "example",
+                    "company": "Example Returning Issuer",
+                    "ticker": "OLD",
+                    "form": "S-1/A",
+                    "sec_url": "https://www.sec.gov/example-index.htm",
+                }
+            ]
+        }
+
+        def repair_ticker(candidate):
+            candidate["filings"][0]["ticker"] = "NEW"
+            return 1, 0
+
+        with tempfile.TemporaryDirectory() as tmp:
+            queue = Path(tmp) / "filings.json"
+            queue.write_text(json.dumps(payload), encoding="utf-8")
+
+            with patch.object(
+                reconciler, "reconcile_payload", side_effect=repair_ticker
+            ), patch.object(
+                reconciler.dashboard_export, "write_dashboard_csv"
+            ) as write_csv:
+                updated, conflicts = reconciler.reconcile_file(queue, sync_csv=True)
+
+            self.assertEqual((updated, conflicts), (1, 0))
+            rewritten = json.loads(queue.read_text(encoding="utf-8"))
+            self.assertEqual(rewritten["filings"][0]["ticker"], "NEW")
+            write_csv.assert_called_once_with(rewritten["filings"], queue)
 
 
 if __name__ == "__main__":
