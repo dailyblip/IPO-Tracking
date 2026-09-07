@@ -10,15 +10,18 @@ Exchange Act reporting eligibility. A prior Form 424B4 is separately dispositive
 that the issuer already completed an earlier public offering prospectus and the
 later 424B4 cannot be its first IPO.
 
-This pass is deliberately conservative and date-aware: reporting/public-offering
-evidence filed after or on the same day as the candidate does not disqualify a
-historical IPO. SEC lookup failure blocks the sanitizer instead of silently
-publishing an unverified candidate.
+This pass is deliberately conservative and date-aware. Same-day filings are
+ordered only when SEC submissions supplies acceptance timestamps for both the
+candidate and the possible prior reporting filing, and the comparison date is the
+candidate's SEC filing date; otherwise same-day order is left unresolved. SEC
+lookup failure blocks the sanitizer instead of silently publishing an unverified
+candidate.
 """
 
 from __future__ import annotations
 
 import json
+import re
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -52,7 +55,52 @@ def _iso_date(value):
     return parsed if parsed.isoformat() == raw else None
 
 
-def has_prior_periodic_report(submissions: dict, candidate_date: str) -> bool:
+def _iso_datetime(value):
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    normalized = raw[:-1] + "+00:00" if raw.endswith("Z") else raw
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        return None
+    return parsed.astimezone(timezone.utc)
+
+
+def _normalized_accession(value):
+    return re.sub(r"\D", "", str(value or ""))
+
+
+def _candidate_acceptance_time(
+    recent: dict,
+    candidate_accession: str,
+    candidate_date: str,
+):
+    candidate_key = _normalized_accession(candidate_accession)
+    cutoff = _iso_date(candidate_date)
+    if not candidate_key or cutoff is None:
+        return None
+    accessions = recent.get("accessionNumber", []) or []
+    filing_dates = recent.get("filingDate", []) or []
+    acceptance_times = recent.get("acceptanceDateTime", []) or []
+    for index, accession in enumerate(accessions):
+        if _normalized_accession(accession) != candidate_key:
+            continue
+        if index >= len(filing_dates) or _iso_date(filing_dates[index]) != cutoff:
+            return None
+        if index >= len(acceptance_times):
+            return None
+        return _iso_datetime(acceptance_times[index])
+    return None
+
+
+def has_prior_periodic_report(
+    submissions: dict,
+    candidate_date: str,
+    candidate_accession: str | None = None,
+) -> bool:
     """Return True when authoritative SEC reporting/public-offering evidence predates the offering."""
     cutoff = _iso_date(candidate_date)
     if cutoff is None:
@@ -61,9 +109,25 @@ def has_prior_periodic_report(submissions: dict, candidate_date: str) -> bool:
     recent = (submissions or {}).get("filings", {}).get("recent", {})
     forms = recent.get("form", []) or []
     dates = recent.get("filingDate", []) or []
-    for form, filing_date in zip(forms, dates):
+    acceptance_times = recent.get("acceptanceDateTime", []) or []
+    candidate_accepted = _candidate_acceptance_time(
+        recent,
+        candidate_accession,
+        candidate_date,
+    )
+
+    for index, (form, filing_date) in enumerate(zip(forms, dates)):
         report_date = _iso_date(filing_date)
-        if str(form or "").upper() in REPORTING_FORMS and report_date and report_date < cutoff:
+        if str(form or "").upper() not in REPORTING_FORMS or report_date is None:
+            continue
+        if report_date < cutoff:
+            return True
+        if report_date != cutoff or candidate_accepted is None:
+            continue
+        if index >= len(acceptance_times):
+            continue
+        report_accepted = _iso_datetime(acceptance_times[index])
+        if report_accepted is not None and report_accepted < candidate_accepted:
             return True
     return False
 
@@ -97,7 +161,11 @@ def sanitize_payload(payload: dict, submissions_loader=_load_submissions):
 
         if cik not in cache:
             cache[cik] = submissions_loader(cik)
-        if has_prior_periodic_report(cache[cik], candidate_date):
+        if has_prior_periodic_report(
+            cache[cik],
+            candidate_date,
+            candidate_accession=str(filing.get("accession_no") or "").strip(),
+        ):
             removed.append(filing)
             continue
         kept.append(filing)
