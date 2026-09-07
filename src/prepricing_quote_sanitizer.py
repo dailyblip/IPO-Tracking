@@ -4,9 +4,10 @@ Ticker symbols can collide with already-trading securities before an IPO begins
 trading. Publishing those provider quotes on an S-1/S-1A record is therefore a
 data-integrity defect. Current Price is allowed only when a final 424B4 row also
 has a priced lifecycle state, an authoritative pricing date, a positive final
-IPO price, and a positive current quote. A malformed/incomplete lifecycle or a
-priced row without a publishable quote must fail closed and lose market-derived
-holder values rather than retaining stale quote arithmetic.
+IPO price, and a positive current quote observed no earlier than the final SEC
+filing date. A malformed/incomplete lifecycle or a priced row without a
+publishable quote must fail closed and lose market-derived holder values rather
+than retaining stale quote arithmetic.
 """
 
 from __future__ import annotations
@@ -56,7 +57,7 @@ def _canonical_quote_date(value):
     parseable timezone-aware timestamp cannot establish when the market value was
     observed, so it must fail closed. The normalized UTC timestamp itself must not
     be in the future, including later on the same UTC date. Returning its UTC date
-    then lets the release gate compare it with the authoritative IPO Pricing Date
+    then lets the release gate compare it with the authoritative final filing state
     and reject stale pre-pricing ticker quotes.
     """
     raw = str(value or "").strip()
@@ -106,9 +107,13 @@ def has_release_safe_market_quote(filing: dict) -> bool:
     if current_price is None or current_price <= 0:
         return False
 
-    pricing_date = _canonical_nonfuture_date(filing.get("pricing_date"))
+    filed_date = _canonical_nonfuture_date(filing.get("filed"))
     quote_date = _canonical_quote_date(filing.get("price_updated"))
-    return bool(pricing_date and quote_date and quote_date >= pricing_date)
+    # A quote dated before the final 424B4 can belong to an already-trading security
+    # that reused the pending IPO's ticker. The SEC filing date is the earliest
+    # unambiguous day this public row is in a verified final state, so older provider
+    # quotes fail closed. Same-day final-filing quotes remain eligible.
+    return bool(filed_date and quote_date and quote_date >= filed_date)
 
 
 def sanitize_payload(payload: dict) -> tuple[dict, int]:
