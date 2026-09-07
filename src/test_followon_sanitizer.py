@@ -133,6 +133,58 @@ class FollowOnSanitizerTests(unittest.TestCase):
                     followon_sanitizer.has_prior_periodic_report(submissions, "2026-08-07")
                 )
 
+    def test_misaligned_recent_chronology_blocks_release(self):
+        payload = {
+            "filings": [
+                {
+                    "id": "candidate",
+                    "company": "Candidate Co",
+                    "cik": "1",
+                    "form": "424B4",
+                    "filed": "2026-08-07",
+                }
+            ]
+        }
+        submissions = {
+            "filings": {
+                "recent": {
+                    "form": ["10-Q", "424B4"],
+                    "filingDate": ["2026-08-07"],
+                }
+            }
+        }
+
+        with self.assertRaises(RuntimeError):
+            followon_sanitizer.sanitize_payload(
+                payload, submissions_loader=lambda cik: submissions
+            )
+
+    def test_malformed_recent_chronology_blocks_release(self):
+        payload = {
+            "filings": [
+                {
+                    "id": "candidate",
+                    "company": "Candidate Co",
+                    "cik": "1",
+                    "form": "424B4",
+                    "filed": "2026-08-07",
+                }
+            ]
+        }
+        submissions = {
+            "filings": {
+                "recent": {
+                    "form": "424B4",
+                    "filingDate": ["2026-08-07"],
+                }
+            }
+        }
+
+        with self.assertRaises(RuntimeError):
+            followon_sanitizer.sanitize_payload(
+                payload, submissions_loader=lambda cik: submissions
+            )
+
     def test_payload_removes_proven_followon_but_keeps_prepricing_and_first_ipo(self):
         payload = {
             "schema_version": 1,
