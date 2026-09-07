@@ -266,7 +266,12 @@ def sec_s1_history(cik, pricing_date):
             )
         count = len(forms)
         for index in range(count):
-            form = str(forms[index] or "").strip().upper()
+            raw_form = forms[index]
+            if not isinstance(raw_form, str) or not raw_form.strip():
+                raise FilingPriceHistoryError(
+                    f"SEC submissions history for CIK {cik} contains malformed form metadata"
+                )
+            form = raw_form.strip().upper()
             if form not in {"S-1", "S-1/A"}:
                 continue
             filed = str(dates[index] or "").strip()
