@@ -119,6 +119,34 @@ class SameDayFollowOnAcceptanceTests(unittest.TestCase):
         self.assertEqual([item["id"] for item in removed], ["later-offering"])
         self.assertEqual(updated["filings"], [])
 
+    def test_payload_orders_reporting_against_final_filing_date_not_pricing_date(self):
+        payload = {
+            "filings": [
+                {
+                    "id": "next-day-final",
+                    "company": "Already Public Co.",
+                    "cik": "1",
+                    "accession_no": "0000000001-26-000011",
+                    "form": "424B4",
+                    "stage": "Priced",
+                    "filed": "2026-09-01",
+                    "pricing_date": "2026-08-31",
+                }
+            ]
+        }
+        submissions = self._submissions(
+            "2026-09-01T13:00:00.000Z",
+            "2026-09-01T14:00:00.000Z",
+        )
+
+        updated, removed = followon_sanitizer.sanitize_payload(
+            payload,
+            submissions_loader=lambda cik: submissions,
+        )
+
+        self.assertEqual([item["id"] for item in removed], ["next-day-final"])
+        self.assertEqual(updated["filings"], [])
+
 
 if __name__ == "__main__":
     unittest.main()
