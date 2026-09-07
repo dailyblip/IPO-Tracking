@@ -251,7 +251,20 @@ def sec_s1_history(cik, pricing_date):
         accessions = block.get("accessionNumber") or []
         dates = block.get("filingDate") or []
         file_numbers = block.get("fileNumber") or []
-        count = min(len(forms), len(accessions), len(dates))
+        core_arrays = (forms, accessions, dates)
+        if any(not isinstance(values, list) for values in core_arrays):
+            raise FilingPriceHistoryError(
+                f"SEC submissions history for CIK {cik} has malformed core filing metadata arrays"
+            )
+        if not isinstance(file_numbers, list):
+            raise FilingPriceHistoryError(
+                f"SEC submissions history for CIK {cik} has malformed file-number metadata"
+            )
+        if len({len(values) for values in core_arrays}) != 1:
+            raise FilingPriceHistoryError(
+                f"SEC submissions history for CIK {cik} has mismatched core filing metadata arrays"
+            )
+        count = len(forms)
         for index in range(count):
             form = str(forms[index] or "").strip().upper()
             if form not in {"S-1", "S-1/A"}:
