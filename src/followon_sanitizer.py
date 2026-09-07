@@ -153,7 +153,7 @@ def sanitize_payload(payload: dict, submissions_loader=_load_submissions):
             continue
 
         cik = str(filing.get("cik") or "").strip()
-        candidate_date = str(filing.get("pricing_date") or filing.get("filed") or "").strip()
+        candidate_date = str(filing.get("filed") or filing.get("pricing_date") or "").strip()
         if not cik or _iso_date(candidate_date) is None:
             # Other release gates own missing identity/date errors; do not infer here.
             kept.append(filing)
