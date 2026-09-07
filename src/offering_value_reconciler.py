@@ -185,6 +185,13 @@ def _needs_check(filing, today=None):
         # blank value should still receive an authoritative SEC recovery attempt
         # regardless of age. A failed fetch remains non-destructive below.
         return True
+    if _number(filing.get("primary_offering_shares")) is None:
+        # A June-present ownership replay can rebuild a priced row after it ages
+        # beyond the recent-pricing window and drop an explicit issuer share count
+        # that had already been recovered from the final prospectus. Recheck any
+        # blank primary-share field regardless of age so authoritative 424B4 terms
+        # are restored instead of silently degrading as the record gets older.
+        return True
     has_fractional_value = abs(value - round(value)) > 1e-9
     return has_fractional_value or _recent_priced(filing, today=today)
 
