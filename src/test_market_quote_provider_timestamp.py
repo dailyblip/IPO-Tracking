@@ -28,6 +28,11 @@ class MarketQuoteProviderTimestampTests(unittest.TestCase):
                 {
                     "id": "example",
                     "ticker": "ACME",
+                    "form": "424B4",
+                    "stage": "Priced",
+                    "filed": "2026-08-18",
+                    "pricing_date": "2026-08-17",
+                    "offering_price": 20.0,
                     "current_price": 24.5,
                     "price_updated": "2026-08-17T20:00:00+00:00",
                     "people": [
