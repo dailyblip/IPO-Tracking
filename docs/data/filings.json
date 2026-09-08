@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-08T10:38:25.680242+00:00",
+  "generated_at": "2026-09-08T11:04:06.530465+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -237,7 +237,7 @@
       "priority": "High",
       "status": "New",
       "value": 50000000,
-      "value_label": "$50,000,000",
+      "value_label": "$50M",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
