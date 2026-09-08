@@ -6,6 +6,7 @@ import json
 import re
 from datetime import date
 from pathlib import Path
+from urllib.parse import urlparse
 
 from jsonschema import Draft202012Validator
 
@@ -13,7 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_DIR = ROOT / "schemas"
 ACCESSION_PATTERN = re.compile(r"^\d{10}-\d{2}-\d{6}$")
 SEC_ARCHIVES_PREFIX = "https://www.sec.gov/Archives/edgar/data/"
-SEC_ARCHIVES_CIK_PATTERN = re.compile(r"/Archives/edgar/data/(\d+)/", re.IGNORECASE)
+SEC_ARCHIVES_FILING_PATH_PATTERN = re.compile(
+    r"^/Archives/edgar/data/(\d+)/(\d{18})(?:/|$)", re.IGNORECASE
+)
 
 
 def schema_path_for_version(version: int) -> Path:
@@ -118,21 +121,24 @@ def _priced_filing_price_provenance_errors(index: int, filing: dict) -> list[str
 
     sec_url = str(source.get("sec_url") or "").strip()
     row_cik = _normalize_cik(filing.get("cik"))
-    sec_cik_match = SEC_ARCHIVES_CIK_PATTERN.search(sec_url)
-    sec_url_cik = int(sec_cik_match.group(1)) if sec_cik_match else None
+    path_match = SEC_ARCHIVES_FILING_PATH_PATTERN.match(urlparse(sec_url).path)
+    sec_url_cik = int(path_match.group(1)) if path_match else None
+    sec_url_accession = path_match.group(2) if path_match else None
     if not sec_url.startswith(SEC_ARCHIVES_PREFIX):
         failures.append(f"{prefix}.sec_url: Filing Price source must link to SEC Archives")
     else:
-        if row_cik is None:
+        if path_match is None:
+            failures.append(
+                f"{prefix}.sec_url: Filing Price SEC URL must use a canonical issuer/accession path"
+            )
+        elif row_cik is None:
             failures.append(f"$.filings[{index}].cik: priced IPO lacks a valid issuer CIK for Filing Price provenance")
-        elif sec_url_cik is None:
-            failures.append(f"{prefix}.sec_url: Filing Price SEC URL does not encode an issuer CIK")
         elif sec_url_cik != row_cik:
             failures.append(f"{prefix}.sec_url: Filing Price SEC URL issuer CIK does not match row CIK")
 
         if accession and ACCESSION_PATTERN.fullmatch(accession):
             accession_digits = accession.replace("-", "")
-            if accession_digits not in sec_url.replace("-", ""):
+            if sec_url_accession != accession_digits:
                 failures.append(f"{prefix}.sec_url: Filing Price SEC URL does not match source accession")
 
     return failures
