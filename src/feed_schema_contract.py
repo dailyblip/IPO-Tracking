@@ -29,6 +29,33 @@ def load_schema(version: int) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _has_preliminary_price(filing: dict) -> bool:
+    """Return True only when one of the public Filing Price aliases has a value."""
+    for field in ("filing_price", "price_range"):
+        value = filing.get(field)
+        if value is not None and str(value).strip():
+            return True
+    return False
+
+
+def _semantic_errors(payload: dict) -> list[str]:
+    """Enforce cross-field provenance rules that JSON Schema alone cannot express."""
+    failures = []
+    filings = payload.get("filings")
+    if not isinstance(filings, list):
+        return failures
+
+    for index, filing in enumerate(filings):
+        if not isinstance(filing, dict):
+            continue
+        if filing.get("filing_price_source") is not None and not _has_preliminary_price(filing):
+            failures.append(
+                f"$.filings[{index}].filing_price_source: SEC Filing Price provenance "
+                "cannot remain populated when both filing_price and price_range are blank"
+            )
+    return failures
+
+
 def validate_payload(payload: dict) -> list[str]:
     version = payload.get("schema_version")
     if not isinstance(version, int) or isinstance(version, bool):
@@ -45,6 +72,7 @@ def validate_payload(payload: dict) -> list[str]:
         for part in error.absolute_path:
             location += f"[{part}]" if isinstance(part, int) else f".{part}"
         errors.append(f"{location}: {error.message}")
+    errors.extend(_semantic_errors(payload))
     return errors
 
 
