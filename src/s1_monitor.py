@@ -593,20 +593,65 @@ def sync_research_queue(
 def run(days_back: int = 4) -> dict:
     candidates = discover_recent_s1(days_back=days_back)
     print(f"[s1_monitor] Found {len(candidates)} recent S-1/S-1A filing(s).")
-    records = []
-    processed_ciks = set()
+
+    evaluations = []
     for index, meta in enumerate(candidates, 1):
         print(
             f"[s1_monitor] Processing {index}/{len(candidates)}: "
             f"{meta['company_name']} ({meta['form_type']})"
         )
         record, evaluated = evaluate_record(meta)
-        if evaluated and meta.get("cik"):
-            processed_ciks.add(str(meta.get("cik") or "").zfill(10))
-        if record:
-            records.append(record)
-    payload = export_feed(records, processed_ciks=processed_ciks)
-    queue = sync_research_queue(records, processed_ciks=processed_ciks)
+        evaluations.append((meta, record, evaluated))
+
+    # Only the newest filing in an issuer's current S-1 lineage may decide whether
+    # that issuer is published. Otherwise an older qualifying S-1 can be re-added
+    # after a newer amendment is deterministically excluded, or can replace current
+    # state when evaluation of the newest amendment fails transiently. Filing date
+    # is authoritative; on the same date an S-1/A supersedes an S-1, then discovery
+    # order breaks ties between filings of the same form.
+    latest_by_cik = {}
+    for position, (meta, _record, _evaluated) in enumerate(evaluations):
+        cik = str(meta.get("cik") or "").zfill(10) if meta.get("cik") else ""
+        if not cik:
+            continue
+        filed = _normalize_filing_date(meta.get("filing_date") or "")
+        form_rank = 1 if str(meta.get("form_type") or "").strip().upper() == "S-1/A" else 0
+        key = (filed, form_rank, position)
+        current = latest_by_cik.get(cik)
+        if current is None or key > current[0]:
+            latest_by_cik[cik] = (key, position)
+
+    processed_ciks = set()
+    history_records = []
+    queue_records = []
+    latest_outcomes = {
+        cik: evaluations[position]
+        for cik, (_key, position) in latest_by_cik.items()
+    }
+
+    for meta, record, _evaluated in evaluations:
+        cik = str(meta.get("cik") or "").zfill(10) if meta.get("cik") else ""
+        if not cik:
+            if record:
+                history_records.append(record)
+                queue_records.append(record)
+            continue
+
+        latest_meta, latest_record, latest_evaluated = latest_outcomes[cik]
+        if meta is latest_meta and latest_evaluated:
+            processed_ciks.add(cik)
+            if latest_record:
+                queue_records.append(latest_record)
+
+        # A successfully qualifying latest filing validates the current issuer
+        # lineage, so keep the qualifying filing history discovered in this run.
+        # A deterministic latest exclusion must prune the issuer, while a transient
+        # latest failure must leave prior published state untouched.
+        if record and latest_evaluated and latest_record is not None:
+            history_records.append(record)
+
+    payload = export_feed(history_records, processed_ciks=processed_ciks)
+    queue = sync_research_queue(queue_records, processed_ciks=processed_ciks)
     print(f"[s1_monitor] Feed now contains {len(payload['filings'])} pre-pricing filing(s).")
     print(f"[s1_monitor] Research queue now contains {len(queue['filings'])} filing(s).")
     return payload
