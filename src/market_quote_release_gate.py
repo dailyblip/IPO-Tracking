@@ -46,6 +46,22 @@ def _clear_unverified_quotes(payload: dict) -> int:
     return cleared
 
 
+def _normalize_sec_tickers(value):
+    """Return normalized SEC tickers only when submissions metadata is well formed."""
+    if not isinstance(value, list):
+        return None
+
+    tickers = set()
+    for item in value:
+        if not isinstance(item, str):
+            return None
+        ticker = item.strip().upper()
+        if not ticker:
+            return None
+        tickers.add(ticker)
+    return tickers
+
+
 def _sec_quote_identity_crosscheck(path: Path) -> tuple[int, int] | None:
     """Cross-check surviving quote tickers against the exact filing CIK at SEC.
 
@@ -83,20 +99,15 @@ def _sec_quote_identity_crosscheck(path: Path) -> tuple[int, int] | None:
         sec_profile = sec_profiles[cik]
 
         sec_cik = identity._normalize_cik((sec_profile or {}).get("cik"))
-        raw_tickers = (sec_profile or {}).get("tickers") or []
-        if isinstance(raw_tickers, str):
-            raw_tickers = [raw_tickers]
-        sec_tickers = {
-            str(item or "").strip().upper()
-            for item in raw_tickers
-            if str(item or "").strip()
-        }
+        sec_tickers = _normalize_sec_tickers((sec_profile or {}).get("tickers"))
 
         reason = None
         if not sec_cik:
             reason = "SEC submissions profile is missing a confirmable CIK"
         elif sec_cik != cik:
             reason = f"SEC submissions CIK {sec_cik} does not match filing CIK {cik}"
+        elif sec_tickers is None:
+            reason = "SEC submissions ticker metadata is malformed"
         elif ticker not in sec_tickers:
             reason = "SEC submissions profile does not confirm the filing ticker"
 
