@@ -562,6 +562,8 @@ def _quote_updated_at(quote, fallback):
 
 def refresh_market_prices(output_path, market_prices, updated_at=None):
     """Refresh delayed quotes and holder cash values in the public feed."""
+    from prepricing_quote_sanitizer import is_priced_ipo
+
     output_path = Path(output_path)
     try:
         payload = json.loads(output_path.read_text(encoding="utf-8"))
@@ -571,6 +573,8 @@ def refresh_market_prices(output_path, market_prices, updated_at=None):
     updated_at = updated_at or datetime.now(timezone.utc).isoformat()
     changed = False
     for filing in payload.get("filings", []):
+        if not isinstance(filing, dict) or not is_priced_ipo(filing):
+            continue
         ticker = str(filing.get("ticker") or "").strip().upper()
         quote = market_prices.get(ticker) if ticker else None
         price = _number(quote)
