@@ -10,6 +10,8 @@ class FinalPricingReleaseGateTests(unittest.TestCase):
         filing = {
             "id": "priced-ipo",
             "company": "Acme Robotics, Inc.",
+            "cik": "0001234567",
+            "accession_no": "0001234567-26-000001",
             "form": "424B4",
             "stage": "Priced",
             "filed": "2026-08-24",
@@ -17,6 +19,10 @@ class FinalPricingReleaseGateTests(unittest.TestCase):
             "offering_price": 18.0,
             "value": None,
             "filing_price": None,
+            "sec_url": (
+                "https://www.sec.gov/Archives/edgar/data/1234567/"
+                "000123456726000001/0001234567-26-000001-index.htm"
+            ),
         }
         filing.update(updates)
         return filing
@@ -52,6 +58,32 @@ class FinalPricingReleaseGateTests(unittest.TestCase):
             with self.subTest(value=value):
                 self.assertFalse(is_release_grade_final(self._final(offering_price=value)))
 
+    def test_final_prospectus_requires_matching_sec_identity_provenance(self):
+        wrong_accession = "0001234567-26-000002"
+        cases = (
+            {"cik": None},
+            {"cik": ["0001234567"]},
+            {"accession_no": None},
+            {"accession_no": ["0001234567-26-000001"]},
+            {"accession_no": "1234567-26-1"},
+            {"sec_url": None},
+            {
+                "sec_url": (
+                    "https://www.sec.gov/Archives/edgar/data/7654321/"
+                    "000123456726000001/0001234567-26-000001-index.htm"
+                )
+            },
+            {
+                "sec_url": (
+                    "https://www.sec.gov/Archives/edgar/data/1234567/"
+                    f"{wrong_accession.replace('-', '')}/{wrong_accession}-index.htm"
+                )
+            },
+        )
+        for updates in cases:
+            with self.subTest(updates=updates):
+                self.assertFalse(is_release_grade_final(self._final(**updates)))
+
     def test_malformed_filing_entries_fail_closed(self):
         malformed = [None, "not a filing", ["bad"]]
         for filing in malformed:
@@ -83,15 +115,21 @@ class FinalPricingReleaseGateTests(unittest.TestCase):
         bad_stage = self._final(id="bad-stage", stage="Pre-pricing")
         bad_date = self._final(id="bad-date", pricing_date=None)
         bad_price = self._final(id="bad-price", offering_price=None)
+        bad_identity = self._final(
+            id="bad-identity", sec_url="https://www.sec.gov/edgar/search/"
+        )
 
         payload, removed = sanitize_payload(
-            {"schema_version": 1, "filings": [good, bad_stage, bad_date, bad_price]}
+            {
+                "schema_version": 1,
+                "filings": [good, bad_stage, bad_date, bad_price, bad_identity],
+            }
         )
 
         self.assertEqual([item["id"] for item in payload["filings"]], ["good"])
         self.assertEqual(
             [item["id"] for item in removed],
-            ["bad-stage", "bad-date", "bad-price"],
+            ["bad-stage", "bad-date", "bad-price", "bad-identity"],
         )
 
     def _assert_writer_orders_final_gate(self, workflow_path):
