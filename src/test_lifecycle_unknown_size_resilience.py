@@ -23,6 +23,10 @@ def _final_record(**overrides):
         "people": [],
         "people_count": 0,
         "signals": ["Offering priced at $17.50 per share"],
+        "sec_url": (
+            "https://www.sec.gov/Archives/edgar/data/2132582/"
+            "000119312526356916/0001193125-26-356916-index.htm"
+        ),
     }
     record.update(overrides)
     return record
