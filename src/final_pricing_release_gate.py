@@ -1,11 +1,12 @@
-"""Fail closed on unresolved final 424B4 pricing states.
+"""Fail closed on impossible IPO lifecycle and unresolved final 424B4 pricing states.
 
 Lifecycle reconciliation and pricing-date recovery get the first opportunity to
 repair final prospectus records. After those passes, a 424B4 is release-grade only
 when it is explicitly Priced, has canonical non-future final filing and Pricing
 Dates in possible chronology, carries a positive authoritative Final IPO Price,
 and its SEC Archives URL matches the published issuer CIK and accession number.
-Offering size and preliminary Filing Price are deliberately not required here:
+S-1/S-1A rows must remain explicitly Pre-pricing and cannot carry final-pricing
+metadata. Offering size and preliminary Filing Price are deliberately not required:
 qualifying IPOs may have unknown size, and preliminary price history is repaired
 by the separate S-1/S-1A history pass.
 """
@@ -93,11 +94,31 @@ def _has_matching_sec_identity(filing):
     return archive_accession == accession_compact and index_accession == accession
 
 
+def _has_safe_prepricing_state(filing: dict) -> bool:
+    """Reject S-1/S-1A lifecycle drift instead of publishing contradictory IPO facts.
+
+    Registration statements remain pre-pricing until a final 424B4 supersedes them.
+    A stale S-1 row marked Priced, or one carrying a Pricing Date / Final IPO Price,
+    is an impossible public state. Do not guess which field is stale; omit the row so
+    the lifecycle reconciler can rebuild it from authoritative SEC history.
+    """
+    if str(filing.get("stage") or "").strip().casefold() != "pre-pricing":
+        return False
+    if str(filing.get("pricing_date") or "").strip():
+        return False
+    if filing.get("offering_price") not in (None, ""):
+        return False
+    return True
+
+
 def is_release_grade_final(filing: dict) -> bool:
-    """Return True for non-final rows or a fully resolved final 424B4 state."""
+    """Return True only for a safe supported lifecycle state or an unrelated form."""
     if not isinstance(filing, dict):
         return False
-    if str(filing.get("form") or "").strip().upper() != "424B4":
+    form = str(filing.get("form") or "").strip().upper()
+    if form in {"S-1", "S-1/A"}:
+        return _has_safe_prepricing_state(filing)
+    if form != "424B4":
         return True
     if str(filing.get("stage") or "").strip().casefold() != "priced":
         return False
@@ -116,7 +137,7 @@ def is_release_grade_final(filing: dict) -> bool:
 
 
 def sanitize_payload(payload: dict):
-    """Remove malformed entries and final prospectus rows with unresolved pricing."""
+    """Remove malformed entries and rows with impossible/unresolved lifecycle states."""
     filings = payload.get("filings") if isinstance(payload, dict) else None
     if not isinstance(filings, list):
         raise ValueError("Public feed must contain a filings list")
@@ -165,9 +186,9 @@ def main() -> None:
             else "<malformed entry>"
             for item in removed
         )
-        print(f"Removed {len(removed)} unresolved final-pricing record(s): {labels}")
+        print(f"Removed {len(removed)} unsafe lifecycle record(s): {labels}")
     else:
-        print("No unresolved final-pricing records found.")
+        print("No unsafe lifecycle records found.")
 
 
 if __name__ == "__main__":
