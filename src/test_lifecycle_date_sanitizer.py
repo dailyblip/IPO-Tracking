@@ -48,6 +48,38 @@ class LifecycleDateSanitizerTests(unittest.TestCase):
         self.assertEqual(cleaned["filings"][0]["filing_date"], "2026-08-10")
         self.assertEqual(cleaned["filings"][0]["offering_price"], 17.5)
 
+    def test_clears_malformed_nonblank_lifecycle_dates(self):
+        payload = {"filings": [{
+            "company": "Malformed Lifecycle IPO",
+            "form": "424B4",
+            "stage": "Priced",
+            "filed": "2026/08/19",
+            "filing_date": "2026-08-10T00:00:00Z",
+            "pricing_date": 20260818,
+            "offering_price": 17.5,
+        }]}
+        cleaned, changed = sanitizer.sanitize_payload(payload)
+        self.assertEqual(changed, 3)
+        row = cleaned["filings"][0]
+        self.assertIsNone(row["filed"])
+        self.assertIsNone(row["filing_date"])
+        self.assertIsNone(row["pricing_date"])
+        self.assertEqual(row["offering_price"], 17.5)
+
+    def test_preserves_blank_lifecycle_dates_without_counting_change(self):
+        payload = {"filings": [{
+            "company": "Blank Lifecycle IPO",
+            "filed": "",
+            "filing_date": "",
+            "pricing_date": None,
+        }]}
+        cleaned, changed = sanitizer.sanitize_payload(payload)
+        self.assertEqual(changed, 0)
+        row = cleaned["filings"][0]
+        self.assertEqual(row["filed"], "")
+        self.assertEqual(row["filing_date"], "")
+        self.assertIsNone(row["pricing_date"])
+
     def test_preserves_valid_chronology(self):
         payload = {"filings": [{
             "company": "Valid IPO",
