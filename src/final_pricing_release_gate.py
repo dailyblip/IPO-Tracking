@@ -22,8 +22,9 @@ import dashboard_export
 
 DEFAULT_PATH = Path(__file__).resolve().parents[1] / "docs" / "data" / "filings.json"
 ACCESSION_PATTERN = re.compile(r"^\d{10}-\d{2}-\d{6}$")
-SEC_ARCHIVES_CIK_PATTERN = re.compile(
-    r"^https://www\.sec\.gov/Archives/edgar/data/(\d+)/",
+SEC_ARCHIVES_FILING_PATTERN = re.compile(
+    r"^https://www\.sec\.gov/Archives/edgar/data/(\d+)/(\d{18})/"
+    r"(\d{10}-\d{2}-\d{6})-index\.htm$",
     re.IGNORECASE,
 )
 
@@ -64,7 +65,7 @@ def _canonical_cik(value):
 
 
 def _has_matching_sec_identity(filing):
-    """Require the final-price row to resolve to its own SEC filing identity."""
+    """Require the final-price row to resolve to its own canonical SEC filing URL."""
     accession = filing.get("accession_no")
     if not isinstance(accession, str):
         return False
@@ -80,12 +81,16 @@ def _has_matching_sec_identity(filing):
     if not isinstance(sec_url, str):
         return False
     sec_url = sec_url.strip()
-    match = SEC_ARCHIVES_CIK_PATTERN.match(sec_url)
-    if not match or int(match.group(1)) != cik:
+    match = SEC_ARCHIVES_FILING_PATTERN.fullmatch(sec_url)
+    if not match:
+        return False
+
+    archive_cik, archive_accession, index_accession = match.groups()
+    if int(archive_cik) != cik:
         return False
 
     accession_compact = accession.replace("-", "")
-    return accession_compact in sec_url.replace("-", "")
+    return archive_accession == accession_compact and index_accession == accession
 
 
 def is_release_grade_final(filing: dict) -> bool:

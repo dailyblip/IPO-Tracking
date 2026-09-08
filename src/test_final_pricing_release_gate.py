@@ -79,6 +79,25 @@ class FinalPricingReleaseGateTests(unittest.TestCase):
                     f"{wrong_accession.replace('-', '')}/{wrong_accession}-index.htm"
                 )
             },
+            {
+                "sec_url": (
+                    "https://www.sec.gov/Archives/edgar/data/1234567/"
+                    "000123456726000002/0001234567-26-000001-index.htm"
+                )
+            },
+            {
+                "sec_url": (
+                    "https://www.sec.gov/Archives/edgar/data/1234567/"
+                    "000123456726000001/0001234567-26-000002-index.htm"
+                )
+            },
+            {
+                "sec_url": (
+                    "https://www.sec.gov/Archives/edgar/data/1234567/"
+                    "000123456726000002/0001234567-26-000002-index.htm"
+                    "?source=000123456726000001"
+                )
+            },
         )
         for updates in cases:
             with self.subTest(updates=updates):
