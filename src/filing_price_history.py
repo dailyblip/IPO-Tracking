@@ -269,6 +269,10 @@ def sec_s1_history(cik, pricing_date):
                 f"SEC submissions history for CIK {cik} has mismatched core filing metadata arrays"
             )
         count = len(forms)
+        if file_numbers and len(file_numbers) != count:
+            raise FilingPriceHistoryError(
+                f"SEC submissions history for CIK {cik} has mismatched file-number metadata"
+            )
         for index in range(count):
             raw_form = forms[index]
             if not isinstance(raw_form, str) or not raw_form.strip():
@@ -533,7 +537,7 @@ def recover_payload_filing_prices(
             except Exception as error:
                 accession = metadata.get("accession_no") or "unknown accession"
                 raise FilingPriceHistoryError(
-                    f"Could not validate cached S-1/S-1A Filing Price for "
+                    f"Could not validate cached S-1/S-1/A Filing Price for "
                     f"{filing.get('company') or filing.get('id')}; "
                     f"{accession} could not be inspected: {error}"
                 ) from error
