@@ -282,12 +282,25 @@ def sec_s1_history(cik, pricing_date):
             form = raw_form.strip().upper()
             if form not in {"S-1", "S-1/A"}:
                 continue
-            filed = str(dates[index] or "").strip()
-            accession = str(accessions[index] or "").strip()
-            if not filed or not accession:
+
+            raw_accession = accessions[index]
+            raw_filed = dates[index]
+            raw_file_number = file_numbers[index] if file_numbers else ""
+            if not isinstance(raw_accession, str) or not raw_accession.strip():
                 raise FilingPriceHistoryError(
-                    f"SEC S-1 history for CIK {cik} contains incomplete filing metadata"
+                    f"SEC S-1 history for CIK {cik} contains malformed accession metadata"
                 )
+            if not isinstance(raw_filed, str) or not raw_filed.strip():
+                raise FilingPriceHistoryError(
+                    f"SEC S-1 history for CIK {cik} contains malformed filing-date metadata"
+                )
+            if raw_file_number not in (None, "") and not isinstance(raw_file_number, str):
+                raise FilingPriceHistoryError(
+                    f"SEC S-1 history for CIK {cik} contains malformed file-number metadata"
+                )
+
+            accession = raw_accession.strip()
+            filed = raw_filed.strip()
             filed_day = _canonical_date(filed)
             if filed_day is None:
                 raise FilingPriceHistoryError(
@@ -295,11 +308,7 @@ def sec_s1_history(cik, pricing_date):
                 )
             if pricing_day is not None and filed_day > pricing_day:
                 continue
-            file_number = (
-                str(file_numbers[index] or "").strip()
-                if index < len(file_numbers)
-                else ""
-            )
+            file_number = raw_file_number.strip() if isinstance(raw_file_number, str) else ""
             key = _normalized_accession(accession) or accession
             candidate = {
                 "form_type": form,
