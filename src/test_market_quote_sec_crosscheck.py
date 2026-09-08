@@ -217,6 +217,55 @@ class MarketQuoteSecCrosscheckTests(unittest.TestCase):
             self.assertNotIn("current_price", filing)
             csv_mock.assert_called_once()
 
+    def test_sec_crosscheck_fails_closed_on_malformed_sec_ticker_metadata(self):
+        malformed_values = (
+            {"EXMP": "wrong container"},
+            "EXMP",
+            ["EXMP", 123],
+            ["EXMP", ""],
+        )
+        for malformed_tickers in malformed_values:
+            with self.subTest(tickers=malformed_tickers), tempfile.TemporaryDirectory() as directory:
+                path = Path(directory) / "filings.json"
+                path.write_text(json.dumps(self._payload()), encoding="utf-8")
+
+                with (
+                    patch.dict(
+                        "os.environ",
+                        {"SEC_EDGAR_USER_AGENT": "Research Monitor test@example.com"},
+                        clear=False,
+                    ),
+                    patch.object(
+                        market_quote_release_gate.identity,
+                        "sanitize_feed",
+                        return_value=(1, 0),
+                    ),
+                    patch.object(
+                        market_quote_release_gate.identity,
+                        "_paced_sec_lookup",
+                        return_value=lambda cik, value=malformed_tickers: {
+                            "cik": 1234567,
+                            "name": "Example Technology Holdings Inc.",
+                            "tickers": value,
+                        },
+                    ),
+                    patch.object(
+                        market_quote_release_gate.dashboard_export,
+                        "write_dashboard_csv",
+                    ) as csv_mock,
+                ):
+                    audited, sanitized = market_quote_release_gate.enforce_release_gate(
+                        path,
+                        api_key="test-key",
+                        time_budget_seconds=None,
+                    )
+
+                self.assertEqual((audited, sanitized), (0, 1))
+                filing = json.loads(path.read_text(encoding="utf-8"))["filings"][0]
+                self.assertNotIn("current_price", filing)
+                self.assertNotIn("price_updated", filing)
+                csv_mock.assert_called_once()
+
 
 if __name__ == "__main__":
     unittest.main()
