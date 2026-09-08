@@ -3,12 +3,17 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
+from datetime import date
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_DIR = ROOT / "schemas"
+ACCESSION_PATTERN = re.compile(r"^\d{10}-\d{2}-\d{6}$")
+SEC_ARCHIVES_PREFIX = "https://www.sec.gov/Archives/edgar/data/"
+SEC_ARCHIVES_CIK_PATTERN = re.compile(r"/Archives/edgar/data/(\d+)/", re.IGNORECASE)
 
 
 def schema_path_for_version(version: int) -> Path:
@@ -38,6 +43,101 @@ def _has_preliminary_price(filing: dict) -> bool:
     return False
 
 
+def _canonical_date(value):
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = date.fromisoformat(raw)
+    except ValueError:
+        return None
+    return parsed if parsed.isoformat() == raw else None
+
+
+def _normalize_cik(value):
+    digits = re.sub(r"\D", "", str(value or ""))
+    return int(digits) if digits else None
+
+
+def _is_priced_424b4(filing: dict) -> bool:
+    return (
+        str(filing.get("form") or "").strip().upper() == "424B4"
+        and str(filing.get("stage") or "").strip().casefold() == "priced"
+    )
+
+
+def _priced_filing_price_provenance_errors(index: int, filing: dict) -> list[str]:
+    """Validate the authoritative SEC lineage behind a priced Filing Price.
+
+    Lifecycle reconciliation can preserve a preliminary price while later export or
+    merge steps accidentally drop or stale its source metadata. A priced 424B4 must
+    therefore carry same-issuer, same-accession S-1/S-1A provenance for every
+    nonblank Filing Price. Fail closed rather than allowing an untraceable value to
+    outrank the authoritative history in the researcher UI.
+    """
+    if not _is_priced_424b4(filing) or not _has_preliminary_price(filing):
+        return []
+
+    prefix = f"$.filings[{index}].filing_price_source"
+    failures = []
+
+    filing_price = filing.get("filing_price")
+    price_range = filing.get("price_range")
+    filing_price_text = str(filing_price).strip() if filing_price not in (None, "") else ""
+    price_range_text = str(price_range).strip() if price_range not in (None, "") else ""
+    if filing_price_text and price_range_text and filing_price_text != price_range_text:
+        failures.append(
+            f"$.filings[{index}]: filing_price and price_range disagree for a priced IPO"
+        )
+
+    source = filing.get("filing_price_source")
+    if not isinstance(source, dict):
+        failures.append(f"{prefix}: populated Filing Price lacks SEC S-1/S-1A provenance")
+        return failures
+
+    if str(source.get("source") or "").strip().casefold() != "sec edgar":
+        failures.append(f"{prefix}.source: Filing Price source must be SEC EDGAR")
+    if str(source.get("form") or "").strip().upper() not in {"S-1", "S-1/A"}:
+        failures.append(f"{prefix}.form: Filing Price source must be S-1 or S-1/A")
+
+    accession = str(source.get("accession_no") or "").strip()
+    if not ACCESSION_PATTERN.fullmatch(accession):
+        failures.append(f"{prefix}.accession_no: Filing Price source must use a canonical SEC accession number")
+
+    source_date = _canonical_date(source.get("filing_date"))
+    if source_date is None:
+        failures.append(f"{prefix}.filing_date: Filing Price source must use a canonical SEC filing date")
+
+    pricing_date = _canonical_date(filing.get("pricing_date"))
+    if pricing_date is None:
+        failures.append(
+            f"$.filings[{index}].pricing_date: priced IPO must have a canonical Pricing Date for Filing Price chronology"
+        )
+    elif source_date is not None and source_date > pricing_date:
+        failures.append(f"{prefix}.filing_date: Filing Price source cannot postdate Pricing Date")
+
+    sec_url = str(source.get("sec_url") or "").strip()
+    row_cik = _normalize_cik(filing.get("cik"))
+    sec_cik_match = SEC_ARCHIVES_CIK_PATTERN.search(sec_url)
+    sec_url_cik = int(sec_cik_match.group(1)) if sec_cik_match else None
+    if not sec_url.startswith(SEC_ARCHIVES_PREFIX):
+        failures.append(f"{prefix}.sec_url: Filing Price source must link to SEC Archives")
+    else:
+        if row_cik is None:
+            failures.append(f"$.filings[{index}].cik: priced IPO lacks a valid issuer CIK for Filing Price provenance")
+        elif sec_url_cik is None:
+            failures.append(f"{prefix}.sec_url: Filing Price SEC URL does not encode an issuer CIK")
+        elif sec_url_cik != row_cik:
+            failures.append(f"{prefix}.sec_url: Filing Price SEC URL issuer CIK does not match row CIK")
+
+        if accession and ACCESSION_PATTERN.fullmatch(accession):
+            accession_digits = accession.replace("-", "")
+            if accession_digits not in sec_url.replace("-", ""):
+                failures.append(f"{prefix}.sec_url: Filing Price SEC URL does not match source accession")
+
+    return failures
+
+
 def _semantic_errors(payload: dict) -> list[str]:
     """Enforce cross-field provenance rules that JSON Schema alone cannot express."""
     failures = []
@@ -53,6 +153,7 @@ def _semantic_errors(payload: dict) -> list[str]:
                 f"$.filings[{index}].filing_price_source: SEC Filing Price provenance "
                 "cannot remain populated when both filing_price and price_range are blank"
             )
+        failures.extend(_priced_filing_price_provenance_errors(index, filing))
     return failures
 
 
