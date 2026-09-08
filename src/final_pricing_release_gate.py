@@ -98,15 +98,18 @@ def _has_safe_prepricing_state(filing: dict) -> bool:
     """Reject S-1/S-1A lifecycle drift instead of publishing contradictory IPO facts.
 
     Registration statements remain pre-pricing until a final 424B4 supersedes them.
-    A stale S-1 row marked Priced, or one carrying a Pricing Date / Final IPO Price,
-    is an impossible public state. Do not guess which field is stale; omit the row so
-    the lifecycle reconciler can rebuild it from authoritative SEC history.
+    A stale S-1 row marked Priced, one carrying a Pricing Date / Final IPO Price, or
+    one carrying a live Current Price is an impossible public state. Do not guess
+    which field is stale; omit the row so the lifecycle and quote gates can rebuild
+    it from authoritative SEC history.
     """
     if str(filing.get("stage") or "").strip().casefold() != "pre-pricing":
         return False
     if str(filing.get("pricing_date") or "").strip():
         return False
     if filing.get("offering_price") not in (None, ""):
+        return False
+    if filing.get("current_price") not in (None, ""):
         return False
     return True
 
