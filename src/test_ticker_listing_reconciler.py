@@ -19,6 +19,25 @@ class TickerListingReconcilerTests(unittest.TestCase):
             {"MENW"},
         )
 
+    def test_current_listing_symbol_supports_exchange_punctuation_without_truncation(self):
+        cases = (
+            (
+                "We have applied to list our common stock on Nasdaq under the symbol ‘AB.C’.",
+                {"AB.C"},
+            ),
+            (
+                "We expect to trade on NYSE under the ticker symbol NEW-A.",
+                {"NEW-A"},
+            ),
+            (
+                "We plan to list on Nasdaq under the symbol NEW.",
+                {"NEW"},
+            ),
+        )
+        for text, expected in cases:
+            with self.subTest(text=text):
+                self.assertEqual(reconciler.extract_current_listing_tickers(text), expected)
+
     def test_reconcile_replaces_stale_existing_ticker(self):
         payload = {
             "filings": [
