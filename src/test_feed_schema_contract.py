@@ -20,6 +20,8 @@ class FeedSchemaContractTests(unittest.TestCase):
             "accession_no": "0001193125-26-123456",
             "form": "424B4",
             "filed": "2026-08-20",
+            "filing_date": "2026-08-01",
+            "pricing_date": "2026-08-20",
             "stage": "Priced",
             "priority": "Medium",
             "status": "New",
@@ -40,6 +42,20 @@ class FeedSchemaContractTests(unittest.TestCase):
             "source": "SEC EDGAR",
             "filings": [filing],
         }
+
+    def _filing_price_source(self, **overrides):
+        source = {
+            "source": "SEC EDGAR",
+            "form": "S-1/A",
+            "filing_date": "2026-08-18",
+            "accession_no": "0001193125-26-123455",
+            "sec_url": (
+                "https://www.sec.gov/Archives/edgar/data/1234567/"
+                "000119312526123455/example-s1a.htm"
+            ),
+        }
+        source.update(overrides)
+        return source
 
     def test_checked_in_feed_matches_registered_schema(self):
         failures = validate_file(ROOT / "docs" / "data" / "filings.json")
@@ -77,13 +93,7 @@ class FeedSchemaContractTests(unittest.TestCase):
         filing = self._filing(
             filing_price=None,
             price_range=None,
-            filing_price_source={
-                "source": "SEC EDGAR",
-                "form": "S-1/A",
-                "filing_date": "2026-08-18",
-                "accession_no": "0001193125-26-123455",
-                "sec_url": "https://www.sec.gov/example-s1a",
-            },
+            filing_price_source=self._filing_price_source(),
         )
         failures = validate_payload(self._payload(filing))
         self.assertTrue(
@@ -91,17 +101,89 @@ class FeedSchemaContractTests(unittest.TestCase):
             failures,
         )
 
+    def test_priced_preliminary_price_without_source_is_rejected(self):
+        filing = self._filing(
+            filing_price="15-17",
+            price_range="15-17",
+            filing_price_source=None,
+        )
+        failures = validate_payload(self._payload(filing))
+        self.assertTrue(
+            any("lacks SEC S-1/S-1A provenance" in failure for failure in failures),
+            failures,
+        )
+
+    def test_priced_filing_price_aliases_must_agree(self):
+        filing = self._filing(
+            filing_price="15-17",
+            price_range="16-18",
+            filing_price_source=self._filing_price_source(),
+        )
+        failures = validate_payload(self._payload(filing))
+        self.assertTrue(any("filing_price and price_range disagree" in failure for failure in failures), failures)
+
+    def test_filing_price_source_must_be_sec_registration_provenance(self):
+        filing = self._filing(
+            filing_price="15-17",
+            price_range="15-17",
+            filing_price_source=self._filing_price_source(source="Issuer", form="424B4"),
+        )
+        failures = validate_payload(self._payload(filing))
+        self.assertTrue(any("source must be SEC EDGAR" in failure for failure in failures), failures)
+        self.assertTrue(any("source must be S-1 or S-1/A" in failure for failure in failures), failures)
+
+    def test_filing_price_source_after_pricing_date_is_rejected(self):
+        filing = self._filing(
+            filing_price="15-17",
+            price_range="15-17",
+            filing_price_source=self._filing_price_source(filing_date="2026-08-21"),
+        )
+        failures = validate_payload(self._payload(filing))
+        self.assertTrue(any("cannot postdate Pricing Date" in failure for failure in failures), failures)
+
+    def test_cross_issuer_filing_price_source_url_is_rejected(self):
+        filing = self._filing(
+            filing_price="15-17",
+            price_range="15-17",
+            filing_price_source=self._filing_price_source(
+                sec_url=(
+                    "https://www.sec.gov/Archives/edgar/data/7654321/"
+                    "000119312526123455/example-s1a.htm"
+                )
+            ),
+        )
+        failures = validate_payload(self._payload(filing))
+        self.assertTrue(any("issuer CIK does not match row CIK" in failure for failure in failures), failures)
+
+    def test_wrong_accession_filing_price_source_url_is_rejected(self):
+        filing = self._filing(
+            filing_price="15-17",
+            price_range="15-17",
+            filing_price_source=self._filing_price_source(
+                sec_url=(
+                    "https://www.sec.gov/Archives/edgar/data/1234567/"
+                    "000119312526999999/example-s1a.htm"
+                )
+            ),
+        )
+        failures = validate_payload(self._payload(filing))
+        self.assertTrue(any("does not match source accession" in failure for failure in failures), failures)
+
+    def test_priced_filing_price_requires_canonical_pricing_date(self):
+        filing = self._filing(
+            pricing_date=None,
+            filing_price="15-17",
+            price_range="15-17",
+            filing_price_source=self._filing_price_source(),
+        )
+        failures = validate_payload(self._payload(filing))
+        self.assertTrue(any("must have a canonical Pricing Date" in failure for failure in failures), failures)
+
     def test_filing_price_source_with_preliminary_price_is_valid(self):
         filing = self._filing(
             filing_price="15-17",
             price_range="15-17",
-            filing_price_source={
-                "source": "SEC EDGAR",
-                "form": "S-1/A",
-                "filing_date": "2026-08-18",
-                "accession_no": "0001193125-26-123455",
-                "sec_url": "https://www.sec.gov/example-s1a",
-            },
+            filing_price_source=self._filing_price_source(),
         )
         self.assertEqual([], validate_payload(self._payload(filing)))
 
