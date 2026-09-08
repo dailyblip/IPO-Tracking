@@ -158,16 +158,27 @@ def extract_authoritative_pricing_date(soup, sec_filing_date=None):
     A candidate must not post-date the SEC filing and must be close to that filing.
     The narrow ten-day window rejects historical prospectus references elsewhere in
     long registration documents while accommodating weekends and filing delays.
+    Conflicting plausible explicit prospectus dates fail closed instead of choosing
+    whichever matching phrase appears first.
     """
     raw_text = soup.get_text("\n", strip=True).replace("\xa0", " ")
     text = " ".join(raw_text[:120000].split())
     filed = _iso_date(sec_filing_date)
 
+    explicit_candidates = []
     for pattern in _EXPLICIT_PROSPECTUS_DATE_PATTERNS:
         for match in pattern.finditer(text):
             candidate = _parse_month_date(match.group(1))
-            if _candidate_is_plausible(candidate, filed):
-                return candidate.isoformat()
+            if not _candidate_is_plausible(candidate, filed):
+                continue
+            iso = candidate.isoformat()
+            if iso not in explicit_candidates:
+                explicit_candidates.append(iso)
+
+    if len(explicit_candidates) == 1:
+        return explicit_candidates[0]
+    if explicit_candidates:
+        return None
 
     front_cover = _extract_front_cover_date(raw_text, filed)
     if front_cover:
