@@ -631,6 +631,12 @@ def recover_payload_filing_prices(
                 f"Priced row {filing.get('company') or filing.get('id')} has preliminary price "
                 f"{existing_preliminary!r} without recoverable SEC S-1/S-1A provenance"
             )
+        elif filing.get("filing_price_source") is not None:
+            # A complete current-registration history review established that no
+            # preliminary price was disclosed. Provenance without a value is stale
+            # metadata, not evidence; remove it so the legitimate blank can survive
+            # the downstream source/value consistency contract.
+            normalized.pop("filing_price_source", None)
         updated_filings.append(normalized)
 
     updated_payload["filings"] = updated_filings
