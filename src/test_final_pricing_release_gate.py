@@ -52,6 +52,19 @@ class FinalPricingReleaseGateTests(unittest.TestCase):
             with self.subTest(value=value):
                 self.assertFalse(is_release_grade_final(self._final(offering_price=value)))
 
+    def test_malformed_filing_entries_fail_closed(self):
+        malformed = [None, "not a filing", ["bad"]]
+        for filing in malformed:
+            with self.subTest(filing=filing):
+                self.assertFalse(is_release_grade_final(filing))
+
+        good = self._final(id="good")
+        payload, removed = sanitize_payload(
+            {"schema_version": 1, "filings": [good, *malformed]}
+        )
+        self.assertEqual(payload["filings"], [good])
+        self.assertEqual(removed, malformed)
+
     def test_prepricing_registration_rows_are_not_removed_by_final_gate(self):
         filing = {
             "id": "prepricing",

@@ -46,7 +46,9 @@ def _canonical_nonfuture_date(value):
 
 def is_release_grade_final(filing: dict) -> bool:
     """Return True for non-final rows or a fully resolved final 424B4 state."""
-    if str((filing or {}).get("form") or "").strip().upper() != "424B4":
+    if not isinstance(filing, dict):
+        return False
+    if str(filing.get("form") or "").strip().upper() != "424B4":
         return True
     if str(filing.get("stage") or "").strip().casefold() != "priced":
         return False
@@ -63,7 +65,7 @@ def is_release_grade_final(filing: dict) -> bool:
 
 
 def sanitize_payload(payload: dict):
-    """Remove final prospectus rows whose authoritative pricing state is unresolved."""
+    """Remove malformed entries and final prospectus rows with unresolved pricing."""
     filings = payload.get("filings") if isinstance(payload, dict) else None
     if not isinstance(filings, list):
         raise ValueError("Public feed must contain a filings list")
@@ -71,7 +73,7 @@ def sanitize_payload(payload: dict):
     kept = []
     removed = []
     for filing in filings:
-        if not isinstance(filing, dict) or is_release_grade_final(filing):
+        if is_release_grade_final(filing):
             kept.append(filing)
             continue
         removed.append(filing)
@@ -107,7 +109,10 @@ def main() -> None:
     removed = sanitize_file(target)
     if removed:
         labels = ", ".join(
-            str(item.get("company") or item.get("id") or "<unknown>") for item in removed
+            str(item.get("company") or item.get("id") or "<unknown>")
+            if isinstance(item, dict)
+            else "<malformed entry>"
+            for item in removed
         )
         print(f"Removed {len(removed)} unresolved final-pricing record(s): {labels}")
     else:
