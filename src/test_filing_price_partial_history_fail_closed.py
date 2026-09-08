@@ -134,6 +134,33 @@ class FilingPricePartialHistoryFailClosedTests(unittest.TestCase):
                 ):
                     filing_price_history.sec_s1_history("1234567", "2026-08-20")
 
+    def test_sec_history_rejects_mismatched_file_number_metadata(self):
+        submissions = {
+            "filings": {
+                "recent": {
+                    "form": ["S-1", "S-1/A"],
+                    "accessionNumber": [
+                        "0000000000-26-000001",
+                        "0000000000-26-000002",
+                    ],
+                    "filingDate": ["2026-08-01", "2026-08-18"],
+                    "fileNumber": ["333-123456"],
+                }
+            }
+        }
+
+        with patch.object(filing_price_history.edgar_client, "_get_headers", return_value={}):
+            with patch.object(
+                filing_price_history.edgar_client,
+                "_request_json",
+                return_value=submissions,
+            ):
+                with self.assertRaisesRegex(
+                    filing_price_history.FilingPriceHistoryError,
+                    "mismatched file-number metadata",
+                ):
+                    filing_price_history.sec_s1_history("1234567", "2026-08-20")
+
 
 if __name__ == "__main__":
     unittest.main()
