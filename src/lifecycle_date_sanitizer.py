@@ -1,13 +1,14 @@
-"""Remove impossible lifecycle dates from the public Research Monitor feed.
+"""Remove impossible or malformed lifecycle dates from the public Research Monitor feed.
 
 Never infer a replacement date. The stored ``filing_date`` is the lifecycle's
 initial S-1 date, so it cannot occur after either the SEC filing date of the
 current public row or an already-priced IPO's pricing date. Likewise, a final
-424B4 Pricing Date cannot occur after that final prospectus was filed. Clear only
-an impossible date and keep the remaining authoritative lifecycle facts intact;
-the final-pricing release gate will fail closed if a priced row is left without a
-valid Pricing Date. CSV output is regenerated so the public exports remain
-synchronized.
+424B4 Pricing Date cannot occur after that final prospectus was filed. Nonblank
+lifecycle values that are not strict ISO dates are also cleared rather than
+allowed to bypass chronology checks. Clear only an unsupported date and keep the
+remaining authoritative lifecycle facts intact; the final-pricing release gate
+will fail closed if a priced row is left without a valid Pricing Date. CSV output
+is regenerated so the public exports remain synchronized.
 """
 
 from __future__ import annotations
@@ -33,6 +34,10 @@ def _iso_date(value):
     return parsed if parsed.isoformat() == raw else None
 
 
+def _has_nonblank_value(value):
+    return str(value or "").strip() != ""
+
+
 def sanitize_payload(payload: dict) -> tuple[dict, int]:
     filings = payload.get("filings", []) if isinstance(payload, dict) else []
     changed = 0
@@ -44,6 +49,18 @@ def sanitize_payload(payload: dict) -> tuple[dict, int]:
         filing_date = _iso_date(filing.get("filing_date"))
         form = str(filing.get("form") or "").strip().upper()
         stage = str(filing.get("stage") or "").strip().casefold()
+
+        # A malformed nonblank lifecycle value is not authoritative evidence.
+        # Clear it rather than silently treating it as absent while leaving the
+        # invalid public value in place. Never guess a replacement date.
+        for field, parsed in (
+            ("filed", filed_date),
+            ("pricing_date", pricing_date),
+            ("filing_date", filing_date),
+        ):
+            if _has_nonblank_value(filing.get(field)) and parsed is None:
+                filing[field] = None
+                changed += 1
 
         # A company cannot price after the final 424B4 that reports that pricing.
         # Do not move the date to a plausible value: clear the conflict so the
