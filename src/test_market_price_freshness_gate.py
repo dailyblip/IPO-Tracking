@@ -21,6 +21,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                     "id": "acme",
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "form": "424B4",
                     "stage": "Priced",
                     "pricing_date": "2026-08-01",
                     "current_price": 22.0,
@@ -63,6 +64,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "form": "424B4",
                     "stage": "Priced",
                     "pricing_date": "2026-09-04",
                     "current_price": 22.0,
@@ -96,6 +98,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "form": "424B4",
                     "stage": "Priced",
                     "pricing_date": "2026-09-01",
                     "current_price": 22.0,
@@ -113,6 +116,39 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
             sanitized["filings"][0]["people"][0]["cash_value"], 44_000_000
         )
 
+    def test_non_424b4_quote_is_cleared_even_when_stage_says_priced(self):
+        marker = "2026-09-06T20:00:00+00:00"
+        payload = {
+            "generated_at": marker,
+            "filings": [
+                {
+                    "company": "Acme Robotics, Inc.",
+                    "ticker": "ACME",
+                    "form": "S-1/A",
+                    "stage": "Priced",
+                    "pricing_date": "2026-09-06",
+                    "current_price": 22.0,
+                    "price_updated": marker,
+                    "people": [
+                        {
+                            "name": "Jane Founder",
+                            "cash_value": 44_000_000,
+                            "valuation_as_of": marker,
+                        }
+                    ],
+                }
+            ],
+        }
+
+        sanitized, stale = sanitize_payload(payload)
+
+        self.assertEqual(len(stale), 1)
+        filing = sanitized["filings"][0]
+        self.assertNotIn("current_price", filing)
+        self.assertNotIn("price_updated", filing)
+        self.assertNotIn("cash_value", filing["people"][0])
+        self.assertNotIn("valuation_as_of", filing["people"][0])
+
     def test_fresh_quote_that_predates_pricing_date_is_cleared(self):
         payload = {
             "generated_at": "2026-09-06T08:00:00+00:00",
@@ -120,6 +156,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "form": "424B4",
                     "stage": "Priced",
                     "pricing_date": "2026-09-06",
                     "current_price": 22.0,
@@ -152,6 +189,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "form": "424B4",
                     "stage": "Priced",
                     "current_price": 22.0,
                     "price_updated": marker,
@@ -174,6 +212,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "form": "424B4",
                     "stage": "Filing",
                     "pricing_date": "2026-09-06",
                     "current_price": 22.0,
@@ -206,6 +245,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "form": "424B4",
                     "stage": "Priced",
                     "pricing_date": "2026-09-01",
                     "current_price": 0,
@@ -228,6 +268,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                 {
                     "company": "Acme Robotics, Inc.",
                     "ticker": "ACME",
+                    "form": "424B4",
                     "stage": "Priced",
                     "pricing_date": "2026-09-04",
                     "current_price": 22.0,
