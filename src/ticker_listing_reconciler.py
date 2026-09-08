@@ -22,14 +22,14 @@ import filing_parser
 
 _CURRENT_LISTING_PATTERNS = [
     r"\bwe\s+(?:have\s+|has\s+)?applied\s+to\s+list\b.{0,600}?"
-    r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"'“‘]?([A-Z][A-Z0-9]{0,5})[\"'”’]?",
+    r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"'“‘]?([A-Z](?:[A-Z0-9.-]{0,8}[A-Z0-9])?)[\"'”’]?",
     r"\bapplication\s+(?:has\s+been|is)\s+(?:made|submitted)\s+(?:to|for)\s+(?:list|listing)\b.{0,600}?"
-    r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"'“‘]?([A-Z][A-Z0-9]{0,5})[\"'”’]?",
+    r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"'“‘]?([A-Z](?:[A-Z0-9.-]{0,8}[A-Z0-9])?)[\"'”’]?",
     r"\bwe\s+(?:intend|expect|plan)\s+to\s+(?:list|trade)\b.{0,600}?"
-    r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"'“‘]?([A-Z][A-Z0-9]{0,5})[\"'”’]?",
+    r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"'“‘]?([A-Z](?:[A-Z0-9.-]{0,8}[A-Z0-9])?)[\"'”’]?",
     r"\b(?:our\s+common\s+stock|the\s+common\s+stock|our\s+shares|the\s+shares)\s+"
     r"(?:has|have)\s+been\s+(?:approved|authorized)\s+for\s+listing\b.{0,600}?"
-    r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"'“‘]?([A-Z][A-Z0-9]{0,5})[\"'”’]?",
+    r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"'“‘]?([A-Z](?:[A-Z0-9.-]{0,8}[A-Z0-9])?)[\"'”’]?",
 ]
 
 
