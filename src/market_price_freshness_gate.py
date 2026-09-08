@@ -12,7 +12,8 @@ aware provider timestamp that is no older than the same freshness window enforce
 ``price_lookup``, is not materially in the future relative to the pipeline retrieval
 time, and does not predate the authoritative Pricing Date. Invalid/stale/pre-pricing
 quotes and all public market-value derivatives are cleared before lifecycle
-reconciliation continues.
+reconciliation continues. Quote-derived values are also cleared when Current Price
+is already blank, so stale holder valuations cannot survive as orphaned market data.
 """
 
 from __future__ import annotations
@@ -26,6 +27,12 @@ import dashboard_export
 from price_lookup import MAX_FUTURE_SKEW_SECONDS, MAX_QUOTE_AGE_SECONDS
 
 _MARKET_VALUE_SIGNAL_MARKERS = ("currently valued", "current market value")
+_QUOTE_DERIVED_PERSON_FIELDS = (
+    "cash_value",
+    "liquid_value",
+    "locked_value",
+    "valuation_as_of",
+)
 
 
 def _number(value):
@@ -62,6 +69,29 @@ def _date(value):
     return parsed if parsed.isoformat() == raw else None
 
 
+def _has_quote_derived_fields(filing: dict) -> bool:
+    """Return True when public market-value metadata survives without its quote."""
+    if filing.get("price_updated") not in (None, ""):
+        return True
+
+    for person in filing.get("people") or []:
+        if not isinstance(person, dict):
+            continue
+        if any(person.get(field) not in (None, "") for field in _QUOTE_DERIVED_PERSON_FIELDS):
+            return True
+
+    signals = filing.get("signals")
+    if isinstance(signals, list):
+        return any(
+            any(
+                marker in str(signal or "").casefold()
+                for marker in _MARKET_VALUE_SIGNAL_MARKERS
+            )
+            for signal in signals
+        )
+    return False
+
+
 def _strip_quote_derived_fields(filing: dict) -> None:
     """Remove a stale quote plus every public value derived from that quote."""
     filing.pop("current_price", None)
@@ -70,7 +100,7 @@ def _strip_quote_derived_fields(filing: dict) -> None:
     for person in filing.get("people") or []:
         if not isinstance(person, dict):
             continue
-        for field in ("cash_value", "liquid_value", "locked_value", "valuation_as_of"):
+        for field in _QUOTE_DERIVED_PERSON_FIELDS:
             person.pop(field, None)
 
     signals = filing.get("signals")
@@ -86,7 +116,7 @@ def _strip_quote_derived_fields(filing: dict) -> None:
 
 
 def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
-    """Clear populated quotes that are stale, invalid, or not on a priced IPO."""
+    """Clear quotes and quote derivatives that are invalid, stale, or orphaned."""
     if not isinstance(payload, dict):
         raise ValueError("Market-price freshness gate requires an object payload")
 
@@ -94,13 +124,31 @@ def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
     refresh_time = _timestamp(refresh_marker)
     stale = []
     for filing in payload.get("filings") or []:
-        if not isinstance(filing, dict) or filing.get("current_price") in (None, ""):
+        if not isinstance(filing, dict):
             continue
 
-        price = _number(filing.get("current_price"))
+        stage = str(filing.get("stage") or "").strip()
+        current_price = filing.get("current_price")
+        if current_price in (None, ""):
+            if not _has_quote_derived_fields(filing):
+                continue
+            stale.append(
+                {
+                    "company": filing.get("company") or filing.get("id") or "<unknown>",
+                    "ticker": filing.get("ticker") or "",
+                    "stage": stage or None,
+                    "price_updated": str(filing.get("price_updated") or "").strip() or None,
+                    "pricing_date": str(filing.get("pricing_date") or "").strip() or None,
+                    "generated_at": refresh_marker or None,
+                    "reason": "quote-derived values present without current price",
+                }
+            )
+            _strip_quote_derived_fields(filing)
+            continue
+
+        price = _number(current_price)
         price_updated = str(filing.get("price_updated") or "").strip()
         quote_time = _timestamp(price_updated)
-        stage = str(filing.get("stage") or "").strip()
         pricing_date_raw = str(filing.get("pricing_date") or "").strip()
         pricing_date = _date(pricing_date_raw)
         quote_date = (
@@ -161,8 +209,8 @@ def main(argv=None) -> int:
 
     parser = argparse.ArgumentParser(
         description=(
-            "Clear Current Price values with invalid, stale, or pre-pricing "
-            "provider timestamps/lifecycle state."
+            "Clear Current Price values and market derivatives with invalid, stale, "
+            "or pre-pricing provider timestamps/lifecycle state."
         )
     )
     parser.add_argument("feed", help="Path to docs/data/filings.json")
@@ -175,12 +223,12 @@ def main(argv=None) -> int:
         )
         print(
             f"Market-price freshness gate cleared {len(stale)} invalid/stale "
-            f"quote(s): {labels}"
+            f"quote record(s): {labels}"
         )
     else:
         print(
-            "Market-price freshness gate: all populated Current Price values are "
-            "provider-fresh and post-pricing"
+            "Market-price freshness gate: all Current Price values and market "
+            "derivatives are provider-fresh and post-pricing"
         )
     return 0
 
