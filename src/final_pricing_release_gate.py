@@ -3,22 +3,29 @@
 Lifecycle reconciliation and pricing-date recovery get the first opportunity to
 repair final prospectus records. After those passes, a 424B4 is release-grade only
 when it is explicitly Priced, has canonical non-future final filing and Pricing
-Dates in possible chronology, and carries a positive authoritative Final IPO
-Price. Offering size and preliminary Filing Price are deliberately not required
-here: qualifying IPOs may have unknown size, and preliminary price history is
-repaired by the separate S-1/S-1A history pass.
+Dates in possible chronology, carries a positive authoritative Final IPO Price,
+and its SEC Archives URL matches the published issuer CIK and accession number.
+Offering size and preliminary Filing Price are deliberately not required here:
+qualifying IPOs may have unknown size, and preliminary price history is repaired
+by the separate S-1/S-1A history pass.
 """
 
 from __future__ import annotations
 
 import json
 import math
+import re
 from datetime import date, datetime, timezone
 from pathlib import Path
 
 import dashboard_export
 
 DEFAULT_PATH = Path(__file__).resolve().parents[1] / "docs" / "data" / "filings.json"
+ACCESSION_PATTERN = re.compile(r"^\d{10}-\d{2}-\d{6}$")
+SEC_ARCHIVES_CIK_PATTERN = re.compile(
+    r"^https://www\.sec\.gov/Archives/edgar/data/(\d+)/",
+    re.IGNORECASE,
+)
 
 
 def _number(value):
@@ -44,6 +51,43 @@ def _canonical_nonfuture_date(value):
     return parsed
 
 
+def _canonical_cik(value):
+    if value is None or isinstance(value, bool):
+        return None
+    raw = str(value).strip()
+    if not raw or not raw.isdigit():
+        return None
+    try:
+        return int(raw)
+    except ValueError:
+        return None
+
+
+def _has_matching_sec_identity(filing):
+    """Require the final-price row to resolve to its own SEC filing identity."""
+    accession = filing.get("accession_no")
+    if not isinstance(accession, str):
+        return False
+    accession = accession.strip()
+    if not ACCESSION_PATTERN.fullmatch(accession):
+        return False
+
+    cik = _canonical_cik(filing.get("cik"))
+    if cik is None:
+        return False
+
+    sec_url = filing.get("sec_url")
+    if not isinstance(sec_url, str):
+        return False
+    sec_url = sec_url.strip()
+    match = SEC_ARCHIVES_CIK_PATTERN.match(sec_url)
+    if not match or int(match.group(1)) != cik:
+        return False
+
+    accession_compact = accession.replace("-", "")
+    return accession_compact in sec_url.replace("-", "")
+
+
 def is_release_grade_final(filing: dict) -> bool:
     """Return True for non-final rows or a fully resolved final 424B4 state."""
     if not isinstance(filing, dict):
@@ -61,7 +105,9 @@ def is_release_grade_final(filing: dict) -> bool:
         return False
 
     final_price = _number(filing.get("offering_price"))
-    return final_price is not None and final_price > 0
+    if final_price is None or final_price <= 0:
+        return False
+    return _has_matching_sec_identity(filing)
 
 
 def sanitize_payload(payload: dict):
