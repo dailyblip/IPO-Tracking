@@ -105,6 +105,49 @@ class TickerListingReconcilerTests(unittest.TestCase):
         self.assertEqual((updated, conflicts), (0, 0))
         self.assertEqual(payload["filings"][0]["ticker"], "KEEP")
 
+    def test_filing_fetch_failure_clears_unverified_existing_ticker(self):
+        payload = {
+            "filings": [
+                {
+                    "id": "returning-issuer",
+                    "company": "Example Returning Issuer",
+                    "ticker": "OLD",
+                    "form": "S-1/A",
+                    "sec_url": "https://www.sec.gov/example-index.htm",
+                }
+            ]
+        }
+
+        def fail_fetch(_record):
+            raise RuntimeError("SEC filing unavailable")
+
+        updated, conflicts = reconciler.reconcile_payload(
+            payload, fetch_text=fail_fetch
+        )
+        self.assertEqual((updated, conflicts), (1, 0))
+        self.assertEqual(payload["filings"][0]["ticker"], "")
+
+    def test_filing_fetch_failure_leaves_blank_ticker_unchanged(self):
+        payload = {
+            "filings": [
+                {
+                    "id": "new-issuer",
+                    "ticker": "",
+                    "form": "S-1",
+                    "sec_url": "https://www.sec.gov/example-index.htm",
+                }
+            ]
+        }
+
+        def fail_fetch(_record):
+            raise RuntimeError("SEC filing unavailable")
+
+        updated, conflicts = reconciler.reconcile_payload(
+            payload, fetch_text=fail_fetch
+        )
+        self.assertEqual((updated, conflicts), (0, 0))
+        self.assertEqual(payload["filings"][0]["ticker"], "")
+
     def test_watch_cli_reconciles_research_queue_and_requests_csv_sync(self):
         with tempfile.TemporaryDirectory() as tmp:
             watch = Path(tmp) / "s1_watch.json"

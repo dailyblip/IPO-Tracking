@@ -75,18 +75,25 @@ def reconcile_payload(payload: dict, fetch_text=_fetch_filing_text) -> tuple[int
         if not str(record.get("sec_url") or "").strip():
             continue
 
+        current = str(record.get("ticker") or "").strip().upper()
+        label = record.get("company") or record.get("id") or "<unknown>"
         try:
             text = fetch_text(record)
         except Exception as error:
+            # SEC submissions metadata can retain a historical symbol for a
+            # returning issuer. If the current registration statement cannot be
+            # inspected, a nonblank metadata ticker is not sufficiently verified
+            # for publication. Prefer a blank to a potentially stale identity.
+            if current:
+                record["ticker"] = ""
+                updated += 1
             print(
-                f"[ticker_listing_reconciler] Warning: could not inspect "
-                f"{record.get('company') or record.get('id')}: {error}"
+                f"[ticker_listing_reconciler] Warning: could not inspect {label}: "
+                f"{error}; clearing unverified ticker {current or '<blank>'}"
             )
             continue
 
         tickers = extract_current_listing_tickers(text)
-        current = str(record.get("ticker") or "").strip().upper()
-        label = record.get("company") or record.get("id") or "<unknown>"
 
         if len(tickers) > 1:
             conflicts += 1
