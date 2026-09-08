@@ -34,6 +34,12 @@ REPORTING_FORMS = {
     "10-12B", "10-12B/A", "10-12G", "10-12G/A",
     "10-Q", "10-Q/A", "10-QT", "10-QT/A",
     "10-K", "10-K/A", "10-KT", "10-KT/A",
+    # Form 15 terminates or suspends an issuer's Exchange Act registration/reporting
+    # obligations. A Form 15 filed before the candidate therefore proves the issuer
+    # had already entered the Exchange Act reporting system; it cannot be treated as
+    # a first-time operating-company IPO merely because older periodic reports have
+    # aged into an SEC submissions archive.
+    "15-12B", "15-12B/A", "15-12G", "15-12G/A", "15-15D", "15-15D/A",
     "6-K", "6-K/A", "20-F", "20-F/A", "40-F", "40-F/A",
     "S-3", "S-3/A", "S-3ASR", "S-3ASR/A", "S-3MEF",
     "F-3", "F-3/A", "F-3ASR", "F-3ASR/A", "F-3MEF",
