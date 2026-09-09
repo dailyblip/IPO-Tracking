@@ -21,6 +21,10 @@ def _release_grade_final(**overrides):
         "ticker": "OLD",
         "cik": "0002132582",
         "accession_no": "0001193125-26-356916",
+        "sec_url": (
+            "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/"
+            "0001193125-26-356916-index.htm"
+        ),
         "form": "424B4",
         "filed": "2026-08-19",
         "filing_date": "2026-07-01",
