@@ -5,10 +5,11 @@ repair final prospectus records. After those passes, a 424B4 is release-grade on
 when it is explicitly Priced, has canonical non-future registration, final filing,
 and Pricing Dates in possible chronology, carries a positive authoritative Final IPO
 Price, and its SEC Archives URL matches the published issuer CIK and accession number.
-S-1/S-1A rows must remain explicitly Pre-pricing and cannot carry final-pricing or
-market-derived metadata. Offering size and preliminary Filing Price are deliberately
-not required: qualifying IPOs may have unknown size, and preliminary price history is
-repaired by the separate S-1/S-1A history pass.
+S-1/S-1A rows must remain explicitly Pre-pricing, cannot carry final-pricing or
+market-derived metadata, and must not retain contradictory supplied SEC filing URL
+provenance. Offering size and preliminary Filing Price are deliberately not required:
+qualifying IPOs may have unknown size, and preliminary price history is repaired by
+the separate S-1/S-1A history pass.
 """
 
 from __future__ import annotations
@@ -26,6 +27,10 @@ ACCESSION_PATTERN = re.compile(r"^\d{10}-\d{2}-\d{6}$")
 SEC_ARCHIVES_FILING_PATTERN = re.compile(
     r"^https://www\.sec\.gov/Archives/edgar/data/(\d+)/(\d{18})/"
     r"(\d{10}-\d{2}-\d{6})-index\.htm$",
+    re.IGNORECASE,
+)
+SEC_ARCHIVES_DOCUMENT_PATTERN = re.compile(
+    r"^https://www\.sec\.gov/Archives/edgar/data/(\d+)/(\d{18})/[^/?#]+$",
     re.IGNORECASE,
 )
 _MARKET_DERIVED_PERSON_FIELDS = (
@@ -72,43 +77,59 @@ def _canonical_cik(value):
         return None
 
 
-def _has_matching_sec_identity(filing):
-    """Require the final-price row to resolve to its own canonical SEC filing URL."""
+def _canonical_sec_identity(filing, pattern):
     accession = filing.get("accession_no")
     if not isinstance(accession, str):
-        return False
+        return None
     accession = accession.strip()
     if not ACCESSION_PATTERN.fullmatch(accession):
-        return False
+        return None
 
     cik = _canonical_cik(filing.get("cik"))
     if cik is None:
-        return False
+        return None
 
     sec_url = filing.get("sec_url")
     if not isinstance(sec_url, str):
-        return False
-    sec_url = sec_url.strip()
-    match = SEC_ARCHIVES_FILING_PATTERN.fullmatch(sec_url)
+        return None
+    match = pattern.fullmatch(sec_url.strip())
     if not match:
-        return False
+        return None
 
-    archive_cik, archive_accession, index_accession = match.groups()
+    archive_cik, archive_accession = match.groups()[:2]
     if int(archive_cik) != cik:
-        return False
+        return None
+    if archive_accession != accession.replace("-", ""):
+        return None
+    return accession, match
 
-    accession_compact = accession.replace("-", "")
-    return archive_accession == accession_compact and index_accession == accession
+
+def _has_matching_sec_identity(filing):
+    """Require a final row's index URL to match its CIK and accession exactly."""
+    resolved = _canonical_sec_identity(filing, SEC_ARCHIVES_FILING_PATTERN)
+    if resolved is None:
+        return False
+    accession, match = resolved
+    index_accession = match.group(3)
+    return index_accession == accession
+
+
+def _has_matching_registration_sec_identity(filing):
+    """Allow any canonical S-1 filing document within the exact accession directory."""
+    return _canonical_sec_identity(filing, SEC_ARCHIVES_DOCUMENT_PATTERN) is not None
 
 
 def _has_safe_prepricing_state(filing: dict) -> bool:
-    """Reject S-1/S-1A lifecycle or market-data drift before public release.
+    """Reject S-1/S-1A lifecycle, market-data, or supplied SEC-URL drift before release.
 
     Registration statements remain pre-pricing until a final 424B4 supersedes them.
-    A stale S-1 row marked Priced, one carrying a Pricing Date / Final IPO Price, or
-    one retaining quote provenance or quote-derived values is an impossible public
-    state. Do not guess which field is stale; omit the row so the lifecycle and quote
-    gates can rebuild it from authoritative SEC history.
+    A stale S-1 row marked Priced, one carrying a Pricing Date / Final IPO Price, one
+    retaining quote-derived values, or one whose supplied SEC filing URL contradicts
+    its CIK/accession is an impossible public state. Do not guess which field is stale;
+    omit the row so the lifecycle and provenance gates can rebuild it from authoritative
+    SEC history. Completeness of public SEC provenance is enforced separately by the
+    published-feed identity contract; this gate validates supplied URLs without making
+    partial internal fixtures invent missing provenance.
     """
     if str(filing.get("stage") or "").strip().casefold() != "pre-pricing":
         return False
@@ -119,6 +140,10 @@ def _has_safe_prepricing_state(filing: dict) -> bool:
     if filing.get("current_price") not in (None, ""):
         return False
     if filing.get("price_updated") not in (None, ""):
+        return False
+
+    sec_url = filing.get("sec_url")
+    if sec_url not in (None, "") and not _has_matching_registration_sec_identity(filing):
         return False
 
     for person in filing.get("people") or []:
