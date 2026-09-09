@@ -133,7 +133,7 @@ class MarketQuoteReleaseGateTests(unittest.TestCase):
                         path, api_key="test-key"
                     )
 
-    def test_successful_identity_gate_preserves_verified_quote(self):
+    def test_missing_sec_identity_config_clears_unverified_quote(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "filings.json"
             path.write_text(json.dumps(self._payload()), encoding="utf-8")
@@ -148,15 +148,22 @@ class MarketQuoteReleaseGateTests(unittest.TestCase):
                     "sanitize_feed",
                     return_value=(1, 0),
                 ),
+                patch.object(
+                    market_quote_release_gate.dashboard_export,
+                    "write_dashboard_csv",
+                ) as csv_mock,
             ):
-                self.assertEqual(
-                    market_quote_release_gate.enforce_release_gate(
-                        path, api_key="test-key"
-                    ),
-                    (1, 0),
+                audited, cleared = market_quote_release_gate.enforce_release_gate(
+                    path, api_key="test-key"
                 )
+
+            self.assertEqual((audited, cleared), (0, 1))
             payload = json.loads(path.read_text(encoding="utf-8"))
-            self.assertEqual(payload["filings"][0]["current_price"], 18.25)
+            filing = payload["filings"][0]
+            self.assertNotIn("current_price", filing)
+            self.assertNotIn("price_updated", filing)
+            self.assertEqual(filing["offering_price"], 15.0)
+            csv_mock.assert_called_once()
 
     def test_daily_workflow_uses_release_safe_quote_gate(self):
         workflow = (Path(__file__).resolve().parents[1] / ".github/workflows/daily.yml").read_text(
