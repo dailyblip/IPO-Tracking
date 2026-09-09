@@ -1,7 +1,19 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-09T00:28:19.009957+00:00",
+  "updated_at": "2026-09-09T02:47:16.731801+00:00",
   "items": {
+    "s1:0002104277": {
+      "id": "s1:0002104277",
+      "cik": "0002104277",
+      "company": "Holtec Nuclear Corp",
+      "form": "S-1/A",
+      "filed": "2026-09-08",
+      "stage": "pre-pricing",
+      "price_range": "$15.00–$18.00",
+      "priority": "High",
+      "value": 825000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526384287/0001193125-26-384287-index.htm"
+    },
     "s1:0002133037": {
       "id": "s1:0002133037",
       "cik": "0002133037",
@@ -13,6 +25,18 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026060761/0001628280-26-060761-index.htm"
+    },
+    "s1:0002108671": {
+      "id": "s1:0002108671",
+      "cik": "0002108671",
+      "company": "Rothe Development, Inc.",
+      "form": "S-1",
+      "filed": "2026-09-04",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226041590/0001493152-26-041590-index.htm"
     },
     "s1:0001802369": {
       "id": "s1:0001802369",
@@ -157,18 +181,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526372368/0001193125-26-372368-index.htm"
-    },
-    "s1:0002104277": {
-      "id": "s1:0002104277",
-      "cik": "0002104277",
-      "company": "Holtec Nuclear Corp",
-      "form": "S-1/A",
-      "filed": "2026-08-24",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526361496/0001193125-26-361496-index.htm"
     },
     "s1:0002065821": {
       "id": "s1:0002065821",
@@ -976,10 +988,24 @@
     }
   },
   "ciks": {
+    "0002104277": {
+      "company": "Holtec Nuclear Corp",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002104277",
+      "last_filed": "2026-09-08",
+      "missing_runs": 0
+    },
     "0002133037": {
       "company": "SB Energy, Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002133037",
+      "last_filed": "2026-09-04",
+      "missing_runs": 0
+    },
+    "0002108671": {
+      "company": "Rothe Development, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002108671",
       "last_filed": "2026-09-04",
       "missing_runs": 0
     },
@@ -1065,13 +1091,6 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002141616",
       "last_filed": "2026-08-28",
-      "missing_runs": 0
-    },
-    "0002104277": {
-      "company": "Holtec Nuclear Corp",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002104277",
-      "last_filed": "2026-08-24",
       "missing_runs": 0
     },
     "0002065821": {
