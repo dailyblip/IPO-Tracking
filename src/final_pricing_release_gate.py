@@ -2,9 +2,9 @@
 
 Lifecycle reconciliation and pricing-date recovery get the first opportunity to
 repair final prospectus records. After those passes, a 424B4 is release-grade only
-when it is explicitly Priced, has canonical non-future final filing and Pricing
-Dates in possible chronology, carries a positive authoritative Final IPO Price,
-and its SEC Archives URL matches the published issuer CIK and accession number.
+when it is explicitly Priced, has canonical non-future registration, final filing,
+and Pricing Dates in possible chronology, carries a positive authoritative Final IPO
+Price, and its SEC Archives URL matches the published issuer CIK and accession number.
 S-1/S-1A rows must remain explicitly Pre-pricing and cannot carry final-pricing or
 market-derived metadata. Offering size and preliminary Filing Price are deliberately
 not required: qualifying IPOs may have unknown size, and preliminary price history is
@@ -158,6 +158,18 @@ def is_release_grade_final(filing: dict) -> bool:
         return False
     if pricing_date > filed_date:
         return False
+
+    # When the original S-1/S-1A filing date is retained on a priced record, it is a
+    # lifecycle identity check as well as a display field. It can never occur after
+    # the IPO pricing date. Rejecting that contradiction prevents an older historical
+    # 424B4 (for example, a prior offering by the same CIK) from being attached to a
+    # newer registration lineage during reconciliation. Blank remains permissible
+    # because the gate must not invent missing filing history.
+    registration_raw = str(filing.get("filing_date") or "").strip()
+    if registration_raw:
+        registration_date = _canonical_nonfuture_date(registration_raw)
+        if registration_date is None or registration_date > pricing_date:
+            return False
 
     final_price = _number(filing.get("offering_price"))
     if final_price is None or final_price <= 0:
