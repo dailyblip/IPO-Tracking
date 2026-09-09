@@ -7,13 +7,22 @@ from pathlib import Path
 DATA_PATH = Path(__file__).resolve().parents[1] / "docs" / "data" / "filings.json"
 CIK_PATTERN = re.compile(r"^\d{10}$")
 ACCESSION_PATTERN = re.compile(r"^\d{10}-\d{2}-\d{6}$")
-SEC_ARCHIVES_PREFIX = "https://www.sec.gov/Archives/edgar/data/"
-SEC_ARCHIVES_CIK_PATTERN = re.compile(r"/Archives/edgar/data/(\d+)/", re.IGNORECASE)
+SEC_ARCHIVES_FILING_PATTERN = re.compile(
+    r"^https://www\.sec\.gov/Archives/edgar/data/(\d+)/(\d{18})/[^/?#]+$",
+    re.IGNORECASE,
+)
 
 
 def _normalize_cik(value):
     digits = re.sub(r"\D", "", str(value or ""))
     return int(digits) if digits else None
+
+
+def _canonical_accession(value):
+    accession = str(value or "").strip()
+    if not ACCESSION_PATTERN.fullmatch(accession):
+        return ""
+    return accession.replace("-", "")
 
 
 def _sec_identity_failures(filing):
@@ -25,25 +34,29 @@ def _sec_identity_failures(filing):
     if not CIK_PATTERN.fullmatch(cik):
         failures.append(f"missing or non-canonical 10-digit issuer CIK: {cik!r}")
 
-    if not ACCESSION_PATTERN.fullmatch(accession):
+    canonical_accession = _canonical_accession(accession)
+    if not canonical_accession:
         failures.append(f"missing or non-canonical SEC accession number: {accession!r}")
 
-    if not sec_url.startswith(SEC_ARCHIVES_PREFIX):
-        failures.append("SEC URL is missing or does not point to SEC Archives")
+    if not sec_url:
+        failures.append("SEC URL is missing")
         return failures
 
-    url_cik_match = SEC_ARCHIVES_CIK_PATTERN.search(sec_url)
-    url_cik = int(url_cik_match.group(1)) if url_cik_match else None
+    match = SEC_ARCHIVES_FILING_PATTERN.fullmatch(sec_url)
+    if not match:
+        failures.append("SEC URL is not a canonical SEC Archives filing URL")
+        return failures
+
+    url_cik_digits, url_accession = match.groups()
+    url_cik = int(url_cik_digits)
     row_cik = _normalize_cik(cik)
-    if url_cik is None:
-        failures.append("SEC Archives URL does not encode an issuer CIK")
-    elif row_cik is None:
+    if row_cik is None:
         failures.append("row lacks a valid issuer CIK for SEC URL matching")
     elif url_cik != row_cik:
         failures.append(f"SEC URL issuer CIK {url_cik} does not match row CIK {row_cik}")
 
-    if accession and accession.replace("-", "") not in sec_url.replace("-", ""):
-        failures.append(f"SEC URL does not match row accession {accession}")
+    if canonical_accession and url_accession != canonical_accession:
+        failures.append(f"SEC URL accession directory does not match row accession {accession}")
 
     return failures
 
@@ -76,29 +89,64 @@ class PublicSECIdentityProvenanceTests(unittest.TestCase):
             "Public SEC identity/provenance failures: " + "; ".join(failures[:10]),
         )
 
-    def test_cross_issuer_or_stale_accession_urls_are_rejected(self):
-        accession = "0001234567-26-000001"
-        cross_issuer = {
+    def test_canonical_sec_archives_url_is_accepted(self):
+        filing = {
             "cik": "0001234567",
-            "accession_no": accession,
-            "sec_url": (
-                "https://www.sec.gov/Archives/edgar/data/7654321/"
-                "000123456726000001/example.htm"
-            ),
-        }
-        stale_accession = {
-            "cik": "0001234567",
-            "accession_no": accession,
+            "accession_no": "0001234567-26-012345",
             "sec_url": (
                 "https://www.sec.gov/Archives/edgar/data/1234567/"
-                "000765432126000999/0007654321-26-000999-index.htm"
+                "000123456726012345/example-s1.htm"
             ),
         }
+        self.assertEqual(_sec_identity_failures(filing), [])
 
-        cross_failures = _sec_identity_failures(cross_issuer)
-        stale_failures = _sec_identity_failures(stale_accession)
-        self.assertTrue(any("does not match row CIK" in item for item in cross_failures))
-        self.assertTrue(any("does not match row accession" in item for item in stale_failures))
+    def test_cross_issuer_url_is_rejected(self):
+        filing = {
+            "cik": "0001234567",
+            "accession_no": "0001234567-26-012345",
+            "sec_url": (
+                "https://www.sec.gov/Archives/edgar/data/7654321/"
+                "000123456726012345/example-s1.htm"
+            ),
+        }
+        failures = _sec_identity_failures(filing)
+        self.assertTrue(any("does not match row CIK" in item for item in failures))
+
+    def test_wrong_accession_directory_is_rejected(self):
+        filing = {
+            "cik": "0001234567",
+            "accession_no": "0001234567-26-012345",
+            "sec_url": (
+                "https://www.sec.gov/Archives/edgar/data/1234567/"
+                "000123456726099999/example-s1.htm"
+            ),
+        }
+        failures = _sec_identity_failures(filing)
+        self.assertTrue(any("accession directory" in item for item in failures))
+
+    def test_query_string_cannot_mask_wrong_accession_directory(self):
+        filing = {
+            "cik": "0001234567",
+            "accession_no": "0001234567-26-012345",
+            "sec_url": (
+                "https://www.sec.gov/Archives/edgar/data/1234567/"
+                "000123456726099999/example-s1.htm?expected=000123456726012345"
+            ),
+        }
+        failures = _sec_identity_failures(filing)
+        self.assertIn("SEC URL is not a canonical SEC Archives filing URL", failures)
+
+    def test_filename_cannot_mask_wrong_accession_directory(self):
+        filing = {
+            "cik": "0001234567",
+            "accession_no": "0001234567-26-012345",
+            "sec_url": (
+                "https://www.sec.gov/Archives/edgar/data/1234567/"
+                "000123456726099999/000123456726012345-s1.htm"
+            ),
+        }
+        failures = _sec_identity_failures(filing)
+        self.assertTrue(any("accession directory" in item for item in failures))
 
 
 if __name__ == "__main__":
