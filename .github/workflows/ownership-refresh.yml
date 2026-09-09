@@ -19,6 +19,10 @@ on:
       - 'src/final_pricing_release_gate.py'
       - 'src/followon_sanitizer.py'
       - 'src/archived_reporting_history_gate.py'
+      - 'src/s1_registration_history_gate.py'
+      - 'src/resale_registration_sanitizer.py'
+      - 'src/s1_substantive_registration_gate.py'
+      - 'src/s1_preliminary_price_gate.py'
       - 'src/prepricing_quote_sanitizer.py'
       - 'src/market_quote_identity.py'
       - 'src/market_quote_release_gate.py'
@@ -39,6 +43,9 @@ on:
       - 'src/test_final_pricing_release_gate.py'
       - 'src/test_followon_sanitizer.py'
       - 'src/test_archived_reporting_history_gate.py'
+      - 'src/test_s1_registration_history_gate.py'
+      - 'src/test_resale_registration_sanitizer.py'
+      - 'src/test_s1_preliminary_price_gate.py'
       - 'src/test_prepricing_quote_sanitizer.py'
       - 'src/test_market_quote_identity.py'
       - 'src/test_market_quote_release_gate.py'
@@ -51,6 +58,7 @@ on:
       - 'src/public_feed_policy.py'
       - 'src/test_public_feed_policy.py'
       - 'src/test_workflow_contract.py'
+      - 'src/test_ownership_refresh_s1_contract.py'
       - '.github/workflows/ownership-refresh.yml'
   workflow_dispatch: {}
 
@@ -111,6 +119,29 @@ jobs:
           END=$(date -u +%F)
           echo "Regrading ownership and Stanford affiliations from $START through $END"
           python main.py --backfill-start "$START" --backfill-end "$END"
+      # The ownership replay regenerates both the public feed and S-1 watch data.
+      # Apply the same S-1 release gates as Daily before any lifecycle or market
+      # publication steps so replay cannot reintroduce rows Daily would suppress.
+      - name: Reconcile regenerated S-1 registration history
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_registration_history_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
+      - name: Reconcile resale-only S-1 registrations after ownership regeneration
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python resale_registration_sanitizer.py ../docs/data/s1_watch.json ../docs/data/filings.json
+      - name: Exclude non-substantive S-1 form templates after ownership regeneration
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_substantive_registration_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
+      - name: Verify fixed pre-pricing Filing Prices after ownership regeneration
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_preliminary_price_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
       - name: Clear market quotes not refreshed in this run
         working-directory: src
         run: python market_price_freshness_gate.py ../docs/data/filings.json
