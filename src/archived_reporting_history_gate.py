@@ -11,8 +11,8 @@ short-form registration that itself requires Exchange Act reporting eligibility,
 must be filed strictly before the candidate. A prior 424B4 is separately
 conclusive that the issuer already completed an earlier public offering prospectus.
 Same-day evidence does not establish event order. Archive lookup failures block
-final 424B4 publication; for pre-pricing S-1/S-1A rows they do not invent an
-exclusion, matching the existing pre-pricing gate's conservative failure behavior.
+publication in release mode for both final 424B4 and pre-pricing S-1/S-1A candidates;
+incorrect follow-on classification is worse than temporarily withholding a row.
 """
 
 from __future__ import annotations
@@ -231,8 +231,14 @@ def sanitize_payloads(
     queue_payload,
     submissions_loader=_load_submissions,
     archive_loader=_load_archive,
+    fail_closed_prepricing=False,
 ):
-    """Remove rows whose older SEC submissions prove the issuer already reported/offered."""
+    """Remove rows whose older SEC submissions prove the issuer already reported/offered.
+
+    ``fail_closed_prepricing`` is enabled by the production release path. Keeping
+    the default false preserves the lower-level helper's ability to classify
+    partial fixtures without treating a lookup outage as affirmative exclusion.
+    """
     cache = {}
     archive_cache = {}
     excluded_prepricing_ciks = set()
@@ -278,7 +284,7 @@ def sanitize_payloads(
                 cache[cik], candidate_date, archive_loader=cached_archive_loader
             )
         except Exception as error:
-            if kind == "prepricing":
+            if kind == "prepricing" and not fail_closed_prepricing:
                 print(
                     f"[archived_reporting_history_gate] Historical SEC lookup failed for "
                     f"{record.get('company') or cik}; leaving pre-pricing row unclassified: {error}"
@@ -345,7 +351,11 @@ def apply_gate(watch_path, queue_path):
     queue_path = Path(queue_path)
     watch = _load_payload(watch_path)
     queue = _load_payload(queue_path)
-    updated_watch, updated_queue, excluded_s1, excluded_final = sanitize_payloads(watch, queue)
+    updated_watch, updated_queue, excluded_s1, excluded_final = sanitize_payloads(
+        watch,
+        queue,
+        fail_closed_prepricing=True,
+    )
 
     if updated_watch != watch:
         _write_payload(watch_path, updated_watch)
