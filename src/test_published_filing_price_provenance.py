@@ -36,7 +36,7 @@ class PublishedFilingPriceProvenanceTests(unittest.TestCase):
         cls.feed = json.loads(FEED_PATH.read_text(encoding="utf-8"))
         cls.records = cls.feed["filings"] if isinstance(cls.feed, dict) else cls.feed
 
-    def test_priced_filing_price_provenance_matches_registration_identity(self):
+    def test_priced_filing_price_provenance_matches_issuer_and_pricing(self):
         failures = []
         checked = 0
         for record in self.records:
@@ -68,17 +68,21 @@ class PublishedFilingPriceProvenanceTests(unittest.TestCase):
                 failures.append(f"{label}: Filing Price source form is not S-1/S-1/A")
 
             source_date = _iso_date(source.get("filing_date"))
-            initial_date = _iso_date(record.get("filing_date"))
             pricing_date = _iso_date(record.get("pricing_date"))
 
             if source_date is None:
                 failures.append(f"{label}: Filing Price source has invalid filing_date")
-            else:
-                if initial_date is not None and source_date < initial_date:
-                    failures.append(f"{label}: Filing Price source predates current registration")
-                if pricing_date is not None and source_date > pricing_date:
-                    failures.append(f"{label}: Filing Price source postdates pricing")
+            elif pricing_date is None:
+                failures.append(f"{label}: priced row has invalid pricing_date")
+            elif source_date > pricing_date:
+                failures.append(f"{label}: Filing Price source postdates pricing")
 
+            # Do not compare the source date with the row-level filing_date here.
+            # Lifecycle reconciliation can carry an earlier S-1/S-1A source from the
+            # same SEC registration file-number lineage into a later priced row.
+            # filing_price_history enforces that lineage before publication; this
+            # generated-feed regression verifies the persisted issuer/accession and
+            # pricing chronology without replacing the authoritative fileNumber gate.
             sec_url = _display(source.get("sec_url"))
             parsed = urlparse(sec_url)
             if (
