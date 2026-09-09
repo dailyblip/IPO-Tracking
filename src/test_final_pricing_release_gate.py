@@ -39,7 +39,7 @@ class FinalPricingReleaseGateTests(unittest.TestCase):
             "value": None,
             "sec_url": (
                 "https://www.sec.gov/Archives/edgar/data/1234567/"
-                "000123456726000010/0001234567-26-000010-index.htm"
+                "000123456726000010/example-s1a.htm"
             ),
         }
         filing.update(updates)
@@ -155,21 +155,20 @@ class FinalPricingReleaseGateTests(unittest.TestCase):
     def test_prepricing_with_canonical_sec_identity_is_release_grade(self):
         self.assertTrue(is_release_grade_final(self._prepricing()))
 
-    def test_prepricing_rejects_partial_or_stale_sec_identity_provenance(self):
+    def test_prepricing_supplied_url_requires_matching_sec_identity_provenance(self):
         cases = (
             {"cik": None},
             {"accession_no": None},
-            {"sec_url": None},
             {
                 "sec_url": (
                     "https://www.sec.gov/Archives/edgar/data/7654321/"
-                    "000123456726000010/0001234567-26-000010-index.htm"
+                    "000123456726000010/example-s1a.htm"
                 )
             },
             {
                 "sec_url": (
                     "https://www.sec.gov/Archives/edgar/data/1234567/"
-                    "000123456726000011/0001234567-26-000011-index.htm"
+                    "000123456726000011/example-s1a.htm"
                     "?source=000123456726000010"
                 )
             },
@@ -177,6 +176,9 @@ class FinalPricingReleaseGateTests(unittest.TestCase):
         for updates in cases:
             with self.subTest(updates=updates):
                 self.assertFalse(is_release_grade_final(self._prepricing(**updates)))
+
+    def test_prepricing_without_supplied_sec_url_is_not_forced_to_invent_provenance(self):
+        self.assertTrue(is_release_grade_final(self._prepricing(sec_url=None)))
 
     def test_malformed_filing_entries_fail_closed(self):
         malformed = [None, "not a filing", ["bad"]]
