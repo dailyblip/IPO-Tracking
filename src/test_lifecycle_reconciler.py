@@ -63,6 +63,10 @@ def _final_record(**overrides):
         "stage": "Priced",
         "pricing_date": "2026-08-19",
         "offering_price": 17.5,
+        "sec_url": (
+            "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/"
+            "0001193125-26-356916-index.htm"
+        ),
         "people": [{"name": "Final Holder", "shares": 750_000}],
         "people_count": 1,
         "signals": ["Offering priced at $17.50 per share"],
@@ -131,6 +135,37 @@ class LifecycleReconcilerTests(unittest.TestCase):
         self.assertEqual(repaired, 0)
         self.assertEqual(removed, 1)
         self.assertEqual(payload["filings"], [final])
+
+    def test_high_confidence_size_does_not_skip_stale_final_sec_provenance(self):
+        final = _final_record(
+            value=297_500_000,
+            value_label="$298M",
+            primary_offering_shares=5_714_286,
+            secondary_offering_shares=11_285_714,
+            offering_size_source="final 424B4 THE OFFERING primary + secondary rows",
+            offering_size_confidence="High",
+            sec_url=(
+                "https://www.sec.gov/Archives/edgar/data/9999999/000119312526356916/"
+                "0001193125-26-356916-index.htm"
+            ),
+        )
+        payload, repaired, removed = reconcile_payload(
+            {"filings": [final]},
+            [_final_meta()],
+            lambda _: _lyntris_final_soup(),
+        )
+
+        self.assertEqual(repaired, 1)
+        self.assertEqual(removed, 0)
+        self.assertEqual(len(payload["filings"]), 1)
+        result = payload["filings"][0]
+        self.assertEqual(
+            result["sec_url"],
+            "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/"
+            "0001193125-26-356916-index.htm",
+        )
+        self.assertEqual(result["value"], 297_500_000.0)
+        self.assertEqual(result["offering_size_confidence"], "High")
 
     def test_repairs_incomplete_final_and_removes_stale_prepricing_duplicate(self):
         final = _final_record(value=None, value_label=None)
