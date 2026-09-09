@@ -542,8 +542,10 @@ def reconcile_payload(payload, final_filings, soup_loader):
             continue
 
         if existing_final is not None:
-            ticker_mismatch = _final_metadata_ticker_mismatch(existing_final, final_meta)
-            if _has_release_grade_final_size(existing_final) and not ticker_mismatch:
+            if (
+                _has_release_grade_final_size(existing_final)
+                and _can_preserve_release_grade_final(existing_final, final_meta)
+            ):
                 states[cik] = {
                     "meta": final_meta,
                     "existing": existing_final,
