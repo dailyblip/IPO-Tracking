@@ -6,6 +6,10 @@ budget, publish no unverified market quote rather than blocking otherwise
 authoritative SEC IPO data. Deterministic lifecycle or issuer/ticker identity defects
 remain release-blocking/sanitized by market_quote_identity.
 
+Quote freshness is revalidated here against the final repaired lifecycle state before
+provider/SEC identity review. This prevents a quote that was valid before lifecycle or
+pricing reconciliation from surviving after authoritative filing/pricing dates advance.
+
 Every quote that survives the market profile check must also receive a second-factor
 CIK/ticker check against the authoritative SEC issuer profile. Provider identity is
 necessary but not sufficient: if SEC identity verification is unavailable or
@@ -22,6 +26,7 @@ import signal
 from pathlib import Path
 
 import dashboard_export
+import market_price_freshness_gate as freshness
 import market_quote_identity as identity
 
 IDENTITY_AUDIT_TIME_BUDGET_SECONDS = 180
@@ -35,6 +40,21 @@ def _write_payload(path: Path, payload: dict) -> None:
     )
     temp.replace(path)
     dashboard_export.write_dashboard_csv(payload.get("filings", []), path)
+
+
+def _revalidate_quote_freshness(path: Path) -> int:
+    """Recheck quotes against the final repaired lifecycle state before release."""
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload, stale = freshness.sanitize_payload(payload)
+    if stale:
+        _write_payload(path, payload)
+        for item in stale:
+            print(
+                "Market quote release gate: cleared Current Price for "
+                f"{item['company']} ({item['ticker'] or 'no ticker'}) after "
+                "post-lifecycle freshness recheck"
+            )
+    return len(stale)
 
 
 def _clear_unverified_quotes(payload: dict) -> int:
@@ -173,13 +193,15 @@ def enforce_release_gate(
     api_key: str | None = None,
     time_budget_seconds: float | None = IDENTITY_AUDIT_TIME_BUDGET_SECONDS,
 ) -> tuple[int, int]:
-    """Run strict identity validation; blank all quotes on provider outage/budget."""
+    """Revalidate freshness, then identity; blank quotes on provider outage/budget."""
     path = Path(path)
     api_key = api_key or os.environ.get("MARKET_DATA_API_KEY")
     if not api_key:
         raise identity.QuoteProviderError(
             "MARKET_DATA_API_KEY is required to verify populated Current Price values"
         )
+
+    _revalidate_quote_freshness(path)
 
     try:
         return _sanitize_with_time_budget(path, api_key, time_budget_seconds)
@@ -199,9 +221,9 @@ def enforce_release_gate(
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Verify market-quote issuer identity; if the secondary identity provider "
-            "is unavailable or exceeds its release time budget, clear unverified "
-            "quote-derived fields before release."
+            "Revalidate market-quote freshness and issuer identity; if the secondary "
+            "identity provider is unavailable or exceeds its release time budget, "
+            "clear unverified quote-derived fields before release."
         )
     )
     parser.add_argument("feed", help="Path to docs/data/filings.json")
