@@ -67,6 +67,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                     "form": "424B4",
                     "stage": "Priced",
                     "pricing_date": "2026-09-04",
+                    "filed": "2026-09-04",
                     "current_price": 22.0,
                     "price_updated": "2026-09-04T20:00:00+00:00",
                     "people": [
@@ -101,6 +102,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
                     "form": "424B4",
                     "stage": "Priced",
                     "pricing_date": "2026-09-01",
+                    "filed": "2026-09-01",
                     "current_price": 22.0,
                     "price_updated": marker,
                     "people": [{"name": "Jane Founder", "cash_value": 44_000_000}],
