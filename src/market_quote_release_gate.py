@@ -6,10 +6,11 @@ budget, publish no unverified market quote rather than blocking otherwise
 authoritative SEC IPO data. Deterministic lifecycle or issuer/ticker identity defects
 remain release-blocking/sanitized by market_quote_identity.
 
-When SEC submissions access is configured, every quote that survives the market
-profile check receives a second-factor CIK/ticker check against the authoritative
-SEC issuer profile. This prevents a deceptively similar provider name from allowing
-a stale or reused ticker to attach a live quote to the wrong historical issuer.
+Every quote that survives the market profile check must also receive a second-factor
+CIK/ticker check against the authoritative SEC issuer profile. Provider identity is
+necessary but not sufficient: if SEC identity verification is unavailable or
+misconfigured, publish no unverified market quote rather than risk attaching a stale
+or reused ticker to the wrong historical issuer.
 """
 
 from __future__ import annotations
@@ -62,7 +63,7 @@ def _normalize_sec_tickers(value):
     return tickers
 
 
-def _sec_quote_identity_crosscheck(path: Path) -> tuple[int, int] | None:
+def _sec_quote_identity_crosscheck(path: Path) -> tuple[int, int]:
     """Cross-check surviving quote tickers against the exact filing CIK at SEC.
 
     Finnhub already establishes provider ticker/name identity. This second factor is
@@ -73,7 +74,9 @@ def _sec_quote_identity_crosscheck(path: Path) -> tuple[int, int] | None:
     """
     user_agent = str(os.environ.get("SEC_EDGAR_USER_AGENT") or "").strip()
     if not user_agent:
-        return None
+        raise identity.QuoteProviderError(
+            "SEC_EDGAR_USER_AGENT is required for authoritative SEC quote-identity cross-check"
+        )
 
     payload = json.loads(path.read_text(encoding="utf-8"))
     lookup_sec_profile = identity._paced_sec_lookup(user_agent)
@@ -130,10 +133,7 @@ def _sec_quote_identity_crosscheck(path: Path) -> tuple[int, int] | None:
 
 def _run_identity_gates(path: Path, api_key: str) -> tuple[int, int]:
     audited, sanitized = identity.sanitize_feed(path, api_key=api_key)
-    sec_result = _sec_quote_identity_crosscheck(path)
-    if sec_result is None:
-        return audited, sanitized
-    sec_audited, sec_sanitized = sec_result
+    sec_audited, sec_sanitized = _sec_quote_identity_crosscheck(path)
     return sec_audited, sanitized + sec_sanitized
 
 
