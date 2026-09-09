@@ -27,6 +27,24 @@ class FinalPricingReleaseGateTests(unittest.TestCase):
         filing.update(updates)
         return filing
 
+    def _prepricing(self, **updates):
+        filing = {
+            "id": "prepricing-ipo",
+            "company": "Acme Robotics, Inc.",
+            "cik": "0001234567",
+            "accession_no": "0001234567-26-000010",
+            "form": "S-1/A",
+            "stage": "Pre-pricing",
+            "filed": "2026-08-20",
+            "value": None,
+            "sec_url": (
+                "https://www.sec.gov/Archives/edgar/data/1234567/"
+                "000123456726000010/0001234567-26-000010-index.htm"
+            ),
+        }
+        filing.update(updates)
+        return filing
+
     def test_release_grade_final_does_not_require_size_or_preliminary_price(self):
         self.assertTrue(is_release_grade_final(self._final()))
 
@@ -133,6 +151,32 @@ class FinalPricingReleaseGateTests(unittest.TestCase):
         for updates in cases:
             with self.subTest(updates=updates):
                 self.assertFalse(is_release_grade_final(self._final(**updates)))
+
+    def test_prepricing_with_canonical_sec_identity_is_release_grade(self):
+        self.assertTrue(is_release_grade_final(self._prepricing()))
+
+    def test_prepricing_rejects_partial_or_stale_sec_identity_provenance(self):
+        cases = (
+            {"cik": None},
+            {"accession_no": None},
+            {"sec_url": None},
+            {
+                "sec_url": (
+                    "https://www.sec.gov/Archives/edgar/data/7654321/"
+                    "000123456726000010/0001234567-26-000010-index.htm"
+                )
+            },
+            {
+                "sec_url": (
+                    "https://www.sec.gov/Archives/edgar/data/1234567/"
+                    "000123456726000011/0001234567-26-000011-index.htm"
+                    "?source=000123456726000010"
+                )
+            },
+        )
+        for updates in cases:
+            with self.subTest(updates=updates):
+                self.assertFalse(is_release_grade_final(self._prepricing(**updates)))
 
     def test_malformed_filing_entries_fail_closed(self):
         malformed = [None, "not a filing", ["bad"]]
