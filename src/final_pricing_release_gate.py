@@ -39,7 +39,15 @@ _MARKET_DERIVED_PERSON_FIELDS = (
     "locked_value",
     "valuation_as_of",
 )
+_FINAL_PRICE_DERIVED_PERSON_FIELDS = (
+    "ipo_value",
+    "cash_realized_ipo",
+)
 _MARKET_VALUE_SIGNAL_MARKERS = ("currently valued", "current market value")
+_FINAL_PRICING_SIGNAL_MARKERS = (
+    "offering priced at",
+    "offering raised approximately",
+)
 
 
 def _number(value):
@@ -124,12 +132,13 @@ def _has_safe_prepricing_state(filing: dict) -> bool:
 
     Registration statements remain pre-pricing until a final 424B4 supersedes them.
     A stale S-1 row marked Priced, one carrying a Pricing Date / Final IPO Price, one
-    retaining quote-derived values, or one whose supplied SEC filing URL contradicts
-    its CIK/accession is an impossible public state. Do not guess which field is stale;
-    omit the row so the lifecycle and provenance gates can rebuild it from authoritative
-    SEC history. Completeness of public SEC provenance is enforced separately by the
-    published-feed identity contract; this gate validates supplied URLs without making
-    partial internal fixtures invent missing provenance.
+    retaining quote-derived or final-price-derived person values, or one whose supplied
+    SEC filing URL contradicts its CIK/accession is an impossible public state. Final
+    pricing/raised signals are likewise incompatible with a still-pre-pricing row. Do
+    not guess which field is stale; omit the row so the lifecycle and provenance gates
+    can rebuild it from authoritative SEC history. Completeness of public SEC provenance
+    is enforced separately by the published-feed identity contract; this gate validates
+    supplied URLs without making partial internal fixtures invent missing provenance.
     """
     if str(filing.get("stage") or "").strip().casefold() != "pre-pricing":
         return False
@@ -149,7 +158,7 @@ def _has_safe_prepricing_state(filing: dict) -> bool:
     for person in filing.get("people") or []:
         if not isinstance(person, dict):
             continue
-        for field in _MARKET_DERIVED_PERSON_FIELDS:
+        for field in _MARKET_DERIVED_PERSON_FIELDS + _FINAL_PRICE_DERIVED_PERSON_FIELDS:
             if person.get(field) not in (None, "", "—"):
                 return False
 
@@ -160,6 +169,8 @@ def _has_safe_prepricing_state(filing: dict) -> bool:
                 continue
             folded = signal.casefold()
             if any(marker in folded for marker in _MARKET_VALUE_SIGNAL_MARKERS):
+                return False
+            if any(marker in folded for marker in _FINAL_PRICING_SIGNAL_MARKERS):
                 return False
 
     return True

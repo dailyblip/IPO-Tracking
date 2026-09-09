@@ -54,6 +54,18 @@ class PrepricingLifecycleReleaseGateTests(unittest.TestCase):
                     )
                 )
 
+    def test_s1_cannot_carry_final_price_derived_person_values(self):
+        for field, value in (
+            ("ipo_value", 900000.0),
+            ("cash_realized_ipo", 250000.0),
+        ):
+            with self.subTest(field=field):
+                self.assertFalse(
+                    is_release_grade_final(
+                        self._prepricing(people=[{"name": "Alex Holder", field: value}])
+                    )
+                )
+
     def test_s1_cannot_carry_market_value_signal_after_quote_is_removed(self):
         self.assertFalse(
             is_release_grade_final(
@@ -68,6 +80,16 @@ class PrepricingLifecycleReleaseGateTests(unittest.TestCase):
             )
         )
 
+    def test_s1_cannot_carry_final_pricing_signals(self):
+        for signal in (
+            "Offering priced at $18.00 per share",
+            "Offering raised approximately $90M",
+        ):
+            with self.subTest(signal=signal):
+                self.assertFalse(
+                    is_release_grade_final(self._prepricing(signals=[signal]))
+                )
+
     def test_sanitizer_removes_only_impossible_prepricing_lifecycle_rows(self):
         good = self._prepricing(id="good")
         bad_stage = self._prepricing(id="bad-stage", stage="Priced")
@@ -81,9 +103,21 @@ class PrepricingLifecycleReleaseGateTests(unittest.TestCase):
             id="bad-person-value",
             people=[{"name": "Alex Holder", "cash_value": 1250000.0}],
         )
+        bad_ipo_value = self._prepricing(
+            id="bad-ipo-value",
+            people=[{"name": "Alex Holder", "ipo_value": 900000.0}],
+        )
+        bad_realized_cash = self._prepricing(
+            id="bad-realized-cash",
+            people=[{"name": "Alex Holder", "cash_realized_ipo": 250000.0}],
+        )
         bad_market_signal = self._prepricing(
             id="bad-market-signal",
             signals=["Largest named holding currently valued at $12.5M"],
+        )
+        bad_pricing_signal = self._prepricing(
+            id="bad-pricing-signal",
+            signals=["Offering priced at $18.00 per share"],
         )
 
         payload, removed = sanitize_payload(
@@ -97,7 +131,10 @@ class PrepricingLifecycleReleaseGateTests(unittest.TestCase):
                     bad_quote,
                     bad_quote_time,
                     bad_person_value,
+                    bad_ipo_value,
+                    bad_realized_cash,
                     bad_market_signal,
+                    bad_pricing_signal,
                 ],
             }
         )
@@ -112,7 +149,10 @@ class PrepricingLifecycleReleaseGateTests(unittest.TestCase):
                 "bad-quote",
                 "bad-quote-time",
                 "bad-person-value",
+                "bad-ipo-value",
+                "bad-realized-cash",
                 "bad-market-signal",
+                "bad-pricing-signal",
             ],
         )
 
