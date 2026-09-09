@@ -504,33 +504,40 @@ def _promote_prepricing_record(record, filing_meta, soup):
 
 
 def _select_final_meta(candidates, existing_final=None, prepricing=None):
-    """Select the IPO final prospectus, avoiding a later follow-on 424B4 when possible."""
+    """Select the final prospectus from the current registration lineage."""
     if not candidates:
         return None
     candidates = sorted(candidates, key=lambda item: str(item.get("filing_date") or ""))
-
-    accession = _canonical_accession((existing_final or {}).get("accession_no"))
-    if accession:
-        for candidate in candidates:
-            candidate_accession = _canonical_accession(candidate.get("accession_no"))
-            if candidate_accession and candidate_accession == accession:
-                return candidate
-        return None
 
     prepricing_date = str(
         (prepricing or {}).get("filed")
         or (prepricing or {}).get("filing_date")
         or ""
     ).strip()
+    eligible = candidates
     if prepricing_date:
         eligible = [
-            candidate for candidate in candidates
-            if str(candidate.get("filing_date") or "") >= prepricing_date
+            candidate
+            for candidate in candidates
+            if str(candidate.get("filing_date") or "").strip()
+            and str(candidate.get("filing_date") or "").strip() >= prepricing_date
         ]
-        if eligible:
-            return eligible[0]
+        if not eligible:
+            return None
 
-    return candidates[0]
+    accession = _canonical_accession((existing_final or {}).get("accession_no"))
+    if accession:
+        for candidate in eligible:
+            candidate_accession = _canonical_accession(candidate.get("accession_no"))
+            if candidate_accession and candidate_accession == accession:
+                return candidate
+        if not prepricing_date:
+            return None
+        # A stored final that predates the current S-1/S-1A registration belongs to
+        # an older lifecycle. Do not let its exact accession suppress the current
+        # registration; use the earliest final prospectus in the current window.
+
+    return eligible[0]
 
 
 def reconcile_payload(payload, final_filings, soup_loader):
