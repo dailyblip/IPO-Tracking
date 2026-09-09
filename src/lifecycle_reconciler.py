@@ -160,10 +160,23 @@ def _has_release_grade_final_size(filing):
 
 
 def _final_metadata_ticker_mismatch(filing, filing_meta):
-    """Return True when authoritative SEC final metadata contradicts stored ticker."""
+    """Return True when SEC final metadata contradicts a stored ticker."""
     sec_ticker = str(filing_meta.get("ticker") or "").strip().upper()
     stored_ticker = str(filing.get("ticker") or "").strip().upper()
     return bool(sec_ticker and sec_ticker != stored_ticker)
+
+
+def _final_metadata_lacks_ticker_confirmation(filing, filing_meta):
+    """Return True when a stored final ticker is not affirmed by SEC discovery metadata.
+
+    SEC daily-index fallback metadata does not include ticker symbols. A populated
+    stored ticker therefore cannot use the no-refetch fast path when discovery is
+    silent; the final 424B4 must be inspected before that ticker and its quote-derived
+    economics are allowed to survive.
+    """
+    sec_ticker = str(filing_meta.get("ticker") or "").strip().upper()
+    stored_ticker = str(filing.get("ticker") or "").strip().upper()
+    return bool(stored_ticker and not sec_ticker)
 
 
 def _can_preserve_release_grade_final(filing, filing_meta):
@@ -171,12 +184,14 @@ def _can_preserve_release_grade_final(filing, filing_meta):
 
     Offering size is not a release requirement. A transient SEC document failure or
     an unparseable exact share count must therefore not delete a priced IPO whose
-    final price/date state is already release-grade. An SEC ticker contradiction is
-    still release-blocking and must be repaired rather than preserved.
+    final price/date state is already release-grade. Stored ticker identity must be
+    affirmatively confirmed by SEC final metadata before the no-refetch fast path is
+    allowed; contradictions or missing ticker metadata require final-document review.
     """
     return (
         final_pricing_release_gate.is_release_grade_final(filing)
         and not _final_metadata_ticker_mismatch(filing, filing_meta)
+        and not _final_metadata_lacks_ticker_confirmation(filing, filing_meta)
     )
 
 
@@ -218,6 +233,14 @@ def _clear_market_quote_derivatives(record):
             )
         ]
     return record
+
+
+def _sanitize_unverified_final_ticker(record):
+    """Keep authoritative priced facts while dropping an unverified ticker and quote."""
+    sanitized = dict(record)
+    sanitized["ticker"] = ""
+    _clear_market_quote_derivatives(sanitized)
+    return sanitized
 
 
 def _reconcile_person_ipo_price_derivatives(record):
@@ -364,7 +387,13 @@ def _apply_final_terms(record, filing_meta, soup):
 
     updated = dict(record)
     old_ticker = str(record.get("ticker") or "").strip().upper()
-    final_ticker = str(cover.get("ticker") or filing_meta.get("ticker") or old_ticker).strip().upper()
+    final_ticker = str(cover.get("ticker") or filing_meta.get("ticker") or "").strip().upper()
+    # An S-1/S-1A ticker that passed the pre-pricing current-filing gate may survive
+    # promotion when the final parser is silent. An already-final 424B4 ticker does
+    # not get that fallback: final-document silence means the stored ticker is no
+    # longer evidence-supported and must fail closed to blank.
+    if not final_ticker and not _is_final_record(record):
+        final_ticker = old_ticker
 
     updated.update({
         "id": accession,
@@ -554,6 +583,9 @@ def reconcile_payload(payload, final_filings, soup_loader):
                 continue
 
             preserve_existing = _can_preserve_release_grade_final(existing_final, final_meta)
+            missing_ticker_confirmation = _final_metadata_lacks_ticker_confirmation(
+                existing_final, final_meta
+            )
             try:
                 soup = soup_loader(final_meta)
                 replacement = _repair_final_record(existing_final, final_meta, soup)
@@ -563,9 +595,16 @@ def reconcile_payload(payload, final_filings, soup_loader):
 
             # Exact offering size is optional. If the final prospectus cannot be
             # reparsed well enough to improve size, retain an already release-grade
-            # priced row unless SEC metadata says its ticker identity is stale.
+            # priced row only when SEC metadata affirms its ticker identity.
             if replacement is None and preserve_existing:
                 replacement = existing_final
+
+            # Missing ticker metadata is not evidence that the IPO itself is invalid.
+            # If the final document cannot affirm the stored symbol, preserve the
+            # authoritative priced record but strip the unsupported ticker and every
+            # market value derived from it rather than carrying a stale quote forward.
+            if replacement is None and missing_ticker_confirmation:
+                replacement = _sanitize_unverified_final_ticker(existing_final)
 
             if replacement is not None and replacement == existing_final:
                 replacement = existing_final
@@ -643,8 +682,8 @@ def reconcile_feed(output_path, days_back=60):
     payload = json.loads(output_path.read_text(encoding="utf-8"))
     filings = [f for f in payload.get("filings", []) if isinstance(f, dict)]
     # Every final row gets a cheap SEC metadata identity check. The full 424B4 is
-    # refetched only when final terms are incomplete or authoritative metadata
-    # contradicts the stored ticker.
+    # refetched when final terms are incomplete, SEC metadata contradicts the stored
+    # ticker, or discovery metadata is too incomplete to affirm a populated ticker.
     needs_reconciliation = any(
         _is_prepricing(filing) or _is_final_record(filing)
         for filing in filings
