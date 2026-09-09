@@ -12,6 +12,7 @@ import market_quote_release_gate
 class MarketQuoteReleaseGateTests(unittest.TestCase):
     def _payload(self):
         return {
+            "generated_at": "2026-08-31T10:05:00+00:00",
             "filings": [
                 {
                     "company": "Example Priced Inc.",
@@ -19,6 +20,8 @@ class MarketQuoteReleaseGateTests(unittest.TestCase):
                     "cik": "0001234567",
                     "form": "424B4",
                     "stage": "Priced",
+                    "filed": "2026-08-31",
+                    "pricing_date": "2026-08-31",
                     "offering_price": 15.0,
                     "current_price": 18.25,
                     "price_updated": "2026-08-31T10:00:00+00:00",
@@ -163,6 +166,56 @@ class MarketQuoteReleaseGateTests(unittest.TestCase):
             self.assertNotIn("current_price", filing)
             self.assertNotIn("price_updated", filing)
             self.assertEqual(filing["offering_price"], 15.0)
+            csv_mock.assert_called_once()
+
+    def test_release_gate_rechecks_freshness_after_lifecycle_reconciliation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "filings.json"
+            payload = self._payload()
+            payload["generated_at"] = "2026-08-31T00:05:00+00:00"
+            filing = payload["filings"][0]
+            filing["price_updated"] = "2026-08-30T23:59:00+00:00"
+            filing["pricing_date"] = "2026-08-30"
+            filing["filed"] = "2026-08-31"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+
+            def identity_after_freshness(feed_path, api_key=None):
+                current = json.loads(Path(feed_path).read_text(encoding="utf-8"))["filings"][0]
+                self.assertNotIn("current_price", current)
+                self.assertNotIn("price_updated", current)
+                return (0, 0)
+
+            with (
+                patch.object(
+                    market_quote_release_gate.identity,
+                    "sanitize_feed",
+                    side_effect=identity_after_freshness,
+                ),
+                patch.object(
+                    market_quote_release_gate,
+                    "_sec_quote_identity_crosscheck",
+                    return_value=(0, 0),
+                ),
+                patch.object(
+                    market_quote_release_gate.dashboard_export,
+                    "write_dashboard_csv",
+                ) as csv_mock,
+            ):
+                audited, cleared = market_quote_release_gate.enforce_release_gate(
+                    path, api_key="test-key"
+                )
+
+            self.assertEqual((audited, cleared), (0, 0))
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            filing = payload["filings"][0]
+            person = filing["people"][0]
+            self.assertNotIn("current_price", filing)
+            self.assertNotIn("price_updated", filing)
+            self.assertEqual(filing["offering_price"], 15.0)
+            self.assertEqual(filing["signals"], ["Offering priced at $15.00 per share"])
+            self.assertEqual(person["shares_after_ipo"], 1000)
+            for field in ("cash_value", "liquid_value", "locked_value", "valuation_as_of"):
+                self.assertNotIn(field, person)
             csv_mock.assert_called_once()
 
     def test_daily_workflow_uses_release_safe_quote_gate(self):
