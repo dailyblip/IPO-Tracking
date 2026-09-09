@@ -3,7 +3,8 @@
 SEC submissions metadata can retain a stale historical ticker for a returning
 issuer. For the pre-pricing watch, prefer the issuer's current S-1/S-1A
 statement that it has applied, intends, or expects to list the offered shares
-under a specific symbol. Conflicting current-listing statements fail closed.
+under a specific symbol. Absent or conflicting current-listing evidence fails
+closed for a nonblank symbol.
 
 When the CLI is invoked on ``s1_watch.json``, reconcile the sibling public
 ``filings.json`` queue as well. If that queue changes, keep its companion CSV in
@@ -105,7 +106,18 @@ def reconcile_payload(payload: dict, fetch_text=_fetch_filing_text) -> tuple[int
                 f"symbols {sorted(tickers)}; clearing ticker"
             )
             continue
-        if len(tickers) != 1:
+        if not tickers:
+            # A submissions-profile symbol can belong to an issuer's historical
+            # listing rather than this proposed IPO. Without an explicit current
+            # listing statement in the registration filing, do not publish that
+            # unverified identity as the IPO ticker.
+            if current:
+                record["ticker"] = ""
+                updated += 1
+                print(
+                    f"[ticker_listing_reconciler] {label}: no explicit current-listing "
+                    f"symbol found; clearing unverified ticker {current}"
+                )
             continue
 
         authoritative = next(iter(tickers))
