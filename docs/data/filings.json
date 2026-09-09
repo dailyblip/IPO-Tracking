@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-09T09:07:16.090516+00:00",
+  "generated_at": "2026-09-09T09:18:18.951472+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -21,7 +21,7 @@
       "priority": "High",
       "status": "New",
       "value": 825000000,
-      "value_label": "$825M",
+      "value_label": "$825,000,000",
       "people_count": 0,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -34,7 +34,7 @@
     {
       "id": "s1:0002133037",
       "company": "SB Energy, Inc.",
-      "ticker": "SBE",
+      "ticker": "",
       "cik": "0002133037",
       "accession_no": "0001628280-26-060761",
       "form": "S-1/A",
@@ -142,7 +142,7 @@
     {
       "id": "s1:0002141406",
       "company": "Accelevation Holdings Corp.",
-      "ticker": "ACCV",
+      "ticker": "",
       "cik": "0002141406",
       "accession_no": "0001628280-26-060083",
       "form": "S-1",
@@ -196,7 +196,7 @@
     {
       "id": "s1:0002125056",
       "company": "Wella Co",
-      "ticker": "WELA",
+      "ticker": "",
       "cik": "0002125056",
       "accession_no": "0001628280-26-059572",
       "form": "S-1",
@@ -250,7 +250,7 @@
     {
       "id": "s1:0001718728",
       "company": "Syntiant Corp.",
-      "ticker": "SYTN",
+      "ticker": "",
       "cik": "0001718728",
       "accession_no": "0001193125-26-376166",
       "form": "S-1/A",
@@ -277,7 +277,7 @@
     {
       "id": "s1:0002151905",
       "company": "La Beaute Inc.",
-      "ticker": "LABI",
+      "ticker": "",
       "cik": "0002151905",
       "accession_no": "0002151905-26-000001",
       "form": "S-1",
@@ -292,7 +292,7 @@
       "priority": "High",
       "status": "New",
       "value": 50000000,
-      "value_label": "$50M",
+      "value_label": "$50,000,000",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
@@ -305,7 +305,7 @@
     {
       "id": "s1:0001779977",
       "company": "SeeQC, Inc.",
-      "ticker": "SEQC",
+      "ticker": "",
       "cik": "0001779977",
       "accession_no": "0001213900-26-095175",
       "form": "S-1/A",
@@ -359,7 +359,7 @@
     {
       "id": "s1:0002125355",
       "company": "Bamboo Insurance Services, Inc.",
-      "ticker": "BMB",
+      "ticker": "",
       "cik": "0002125355",
       "accession_no": "0001628280-26-059433",
       "form": "S-1",
@@ -2519,7 +2519,7 @@
     {
       "id": "s1:0001880995",
       "company": "Alopexx, Inc.",
-      "ticker": "ALPX",
+      "ticker": "",
       "cik": "0001880995",
       "accession_no": "0001213900-26-090319",
       "form": "S-1/A",

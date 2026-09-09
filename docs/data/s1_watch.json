@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-09T06:29:40.099722+00:00",
+  "generated_at": "2026-09-09T09:18:18.940417+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -30,7 +30,7 @@
     {
       "id": "0001628280-26-060761",
       "company": "SB Energy, Inc.",
-      "ticker": "SBE",
+      "ticker": "",
       "cik": "0002133037",
       "accession_no": "0001628280-26-060761",
       "form": "S-1/A",
@@ -122,7 +122,7 @@
     {
       "id": "0001628280-26-060083",
       "company": "Accelevation Holdings Corp.",
-      "ticker": "ACCV",
+      "ticker": "",
       "cik": "0002141406",
       "accession_no": "0001628280-26-060083",
       "form": "S-1",
@@ -191,7 +191,7 @@
     {
       "id": "0001628280-26-059572",
       "company": "Wella Co",
-      "ticker": "WELA",
+      "ticker": "",
       "cik": "0002125056",
       "accession_no": "0001628280-26-059572",
       "form": "S-1",
@@ -237,7 +237,7 @@
     {
       "id": "0001193125-26-376166",
       "company": "Syntiant Corp.",
-      "ticker": "SYTN",
+      "ticker": "",
       "cik": "0001718728",
       "accession_no": "0001193125-26-376166",
       "form": "S-1/A",
@@ -260,7 +260,7 @@
     {
       "id": "0002151905-26-000001",
       "company": "La Beaute Inc.",
-      "ticker": "LABI",
+      "ticker": "",
       "cik": "0002151905",
       "accession_no": "0002151905-26-000001",
       "form": "S-1",
@@ -284,7 +284,7 @@
     {
       "id": "0001213900-26-095175",
       "company": "SeeQC, Inc.",
-      "ticker": "SEQC",
+      "ticker": "",
       "cik": "0001779977",
       "accession_no": "0001213900-26-095175",
       "form": "S-1/A",
@@ -330,7 +330,7 @@
     {
       "id": "0001628280-26-059433",
       "company": "Bamboo Insurance Services, Inc.",
-      "ticker": "BMB",
+      "ticker": "",
       "cik": "0002125355",
       "accession_no": "0001628280-26-059433",
       "form": "S-1",
@@ -470,7 +470,7 @@
     {
       "id": "0001493152-26-038800",
       "company": "Varsal Tech, Inc.",
-      "ticker": "VAT",
+      "ticker": "",
       "cik": "0002109801",
       "accession_no": "0001493152-26-038800",
       "form": "S-1/A",
@@ -493,7 +493,7 @@
     {
       "id": "0001213900-26-090319",
       "company": "Alopexx, Inc.",
-      "ticker": "ALPX",
+      "ticker": "",
       "cik": "0001880995",
       "accession_no": "0001213900-26-090319",
       "form": "S-1/A",
@@ -540,7 +540,7 @@
     {
       "id": "0001493152-26-037415",
       "company": "Fast Finance Pay Corp.",
-      "ticker": "FFPP",
+      "ticker": "",
       "cik": "0002109616",
       "accession_no": "0001493152-26-037415",
       "form": "S-1",
