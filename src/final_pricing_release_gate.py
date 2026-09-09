@@ -5,10 +5,11 @@ repair final prospectus records. After those passes, a 424B4 is release-grade on
 when it is explicitly Priced, has canonical non-future registration, final filing,
 and Pricing Dates in possible chronology, carries a positive authoritative Final IPO
 Price, and its SEC Archives URL matches the published issuer CIK and accession number.
-S-1/S-1A rows must remain explicitly Pre-pricing and cannot carry final-pricing or
-market-derived metadata. Offering size and preliminary Filing Price are deliberately
-not required: qualifying IPOs may have unknown size, and preliminary price history is
-repaired by the separate S-1/S-1A history pass.
+S-1/S-1A rows must remain explicitly Pre-pricing, cannot carry final-pricing or
+market-derived metadata, and must not retain contradictory SEC filing identity
+provenance. Offering size and preliminary Filing Price are deliberately not required:
+qualifying IPOs may have unknown size, and preliminary price history is repaired by
+the separate S-1/S-1A history pass.
 """
 
 from __future__ import annotations
@@ -73,7 +74,7 @@ def _canonical_cik(value):
 
 
 def _has_matching_sec_identity(filing):
-    """Require the final-price row to resolve to its own canonical SEC filing URL."""
+    """Require a row's SEC URL to match its canonical CIK and accession exactly."""
     accession = filing.get("accession_no")
     if not isinstance(accession, str):
         return False
@@ -102,13 +103,15 @@ def _has_matching_sec_identity(filing):
 
 
 def _has_safe_prepricing_state(filing: dict) -> bool:
-    """Reject S-1/S-1A lifecycle or market-data drift before public release.
+    """Reject S-1/S-1A lifecycle, market-data, or SEC-identity drift before release.
 
     Registration statements remain pre-pricing until a final 424B4 supersedes them.
-    A stale S-1 row marked Priced, one carrying a Pricing Date / Final IPO Price, or
-    one retaining quote provenance or quote-derived values is an impossible public
-    state. Do not guess which field is stale; omit the row so the lifecycle and quote
-    gates can rebuild it from authoritative SEC history.
+    A stale S-1 row marked Priced, one carrying a Pricing Date / Final IPO Price, one
+    retaining quote-derived values, or one whose supplied SEC filing identity is
+    internally contradictory is an impossible public state. Do not guess which field
+    is stale; omit the row so the lifecycle and provenance gates can rebuild it from
+    authoritative SEC history. Legacy rows with no SEC identity fields at all remain
+    permissible until authoritative provenance is available.
     """
     if str(filing.get("stage") or "").strip().casefold() != "pre-pricing":
         return False
@@ -119,6 +122,15 @@ def _has_safe_prepricing_state(filing: dict) -> bool:
     if filing.get("current_price") not in (None, ""):
         return False
     if filing.get("price_updated") not in (None, ""):
+        return False
+
+    identity_values = (
+        filing.get("cik"),
+        filing.get("accession_no"),
+        filing.get("sec_url"),
+    )
+    has_any_sec_identity = any(value not in (None, "") for value in identity_values)
+    if has_any_sec_identity and not _has_matching_sec_identity(filing):
         return False
 
     for person in filing.get("people") or []:
