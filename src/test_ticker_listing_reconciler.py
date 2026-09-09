@@ -106,7 +106,7 @@ class TickerListingReconcilerTests(unittest.TestCase):
         self.assertEqual((updated, conflicts), (1, 1))
         self.assertEqual(payload["filings"][0]["ticker"], "")
 
-    def test_no_current_listing_statement_preserves_existing_ticker(self):
+    def test_no_current_listing_statement_clears_unverified_existing_ticker(self):
         payload = {
             "filings": [
                 {
@@ -121,8 +121,26 @@ class TickerListingReconcilerTests(unittest.TestCase):
             payload,
             fetch_text=lambda record: "Historical trading symbol OLD was discussed.",
         )
+        self.assertEqual((updated, conflicts), (1, 0))
+        self.assertEqual(payload["filings"][0]["ticker"], "")
+
+    def test_no_current_listing_statement_leaves_blank_ticker_unchanged(self):
+        payload = {
+            "filings": [
+                {
+                    "id": "example",
+                    "ticker": "",
+                    "form": "S-1",
+                    "sec_url": "https://www.sec.gov/example-index.htm",
+                }
+            ]
+        }
+        updated, conflicts = reconciler.reconcile_payload(
+            payload,
+            fetch_text=lambda record: "Historical trading symbol OLD was discussed.",
+        )
         self.assertEqual((updated, conflicts), (0, 0))
-        self.assertEqual(payload["filings"][0]["ticker"], "KEEP")
+        self.assertEqual(payload["filings"][0]["ticker"], "")
 
     def test_filing_fetch_failure_clears_unverified_existing_ticker(self):
         payload = {
