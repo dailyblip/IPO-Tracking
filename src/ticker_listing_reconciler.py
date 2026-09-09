@@ -3,13 +3,18 @@
 SEC submissions metadata can retain a stale historical ticker for a returning
 issuer. For the pre-pricing watch, prefer the issuer's current S-1/S-1A
 statement that it has applied, intends, or expects to list the offered shares
-under a specific symbol. Absent or conflicting current-listing evidence fails
-closed for a nonblank symbol.
+under a specific symbol. When a later amendment omits that statement, preserve
+an earlier symbol only when exact-CIK, strictly earlier S-1/S-1A filing evidence
+in the same watch lineage was successfully inspected and is unambiguous.
+Absent or conflicting registration-lineage evidence fails closed for a nonblank
+symbol.
 
 When the CLI is invoked on ``s1_watch.json``, reconcile the sibling public
-``filings.json`` queue as well. If that queue changes, keep its companion CSV in
-sync so a stale SEC-submissions ticker cannot survive in one public surface after
-being corrected in another.
+``filings.json`` queue as well. The queue may contain only the latest S-1 row,
+so an exact CIK+accession ticker verified in the watch is allowed to carry into
+that same queue record. If the queue changes, keep its companion CSV in sync so
+a stale SEC-submissions ticker cannot survive in one public surface after being
+corrected in another.
 """
 
 import json
@@ -64,38 +69,111 @@ def _fetch_filing_text(record: dict) -> str:
     return soup.get_text(" ", strip=True)
 
 
-def reconcile_payload(payload: dict, fetch_text=_fetch_filing_text) -> tuple[int, int]:
-    """Reconcile S-1 watch tickers in place; return (updated, conflicts)."""
-    updated = 0
-    conflicts = 0
+def _normalized_cik(record: dict) -> str:
+    raw = str(record.get("cik") or "").strip()
+    if not raw:
+        return ""
+    return raw.zfill(10)
+
+
+def _accession(record: dict) -> str:
+    return str(record.get("accession_no") or record.get("id") or "").strip()
+
+
+def _filed(record: dict) -> str:
+    value = str(record.get("filed") or record.get("filing_date") or "").strip()
+    return value if re.fullmatch(r"\d{4}-\d{2}-\d{2}", value) else ""
+
+
+def _record_key(record: dict) -> tuple[str, str]:
+    return _normalized_cik(record), _accession(record)
+
+
+def _verified_watch_tickers(payload: dict) -> dict[tuple[str, str], str]:
+    """Return exact-record ticker evidence already reconciled in the watch."""
+    verified = {}
     for record in payload.get("filings", []):
         if not isinstance(record, dict):
             continue
         if str(record.get("form") or "").strip().upper() not in {"S-1", "S-1/A"}:
             continue
-        if not str(record.get("sec_url") or "").strip():
-            continue
+        key = _record_key(record)
+        ticker = str(record.get("ticker") or "").strip().upper()
+        if key[0] and key[1] and ticker:
+            verified[key] = ticker
+    return verified
 
-        current = str(record.get("ticker") or "").strip().upper()
-        label = record.get("company") or record.get("id") or "<unknown>"
+
+def reconcile_payload(
+    payload: dict,
+    fetch_text=_fetch_filing_text,
+    verified_lineage: dict[tuple[str, str], str] | None = None,
+) -> tuple[int, int]:
+    """Reconcile S-1 tickers in place; return ``(updated, conflicts)``.
+
+    Current filing language always controls. If a successfully inspected later
+    amendment omits the listing statement, an earlier exact-CIK S-1/S-1A symbol
+    may carry forward only when every inspectable prior symbol agrees and no prior
+    filing in that lineage failed inspection. Same-day filings are never ordered
+    by inference. ``verified_lineage`` is reserved for the exact same CIK+accession
+    already reconciled in ``s1_watch.json`` before the public queue is processed.
+    """
+    records = [
+        record
+        for record in payload.get("filings", [])
+        if isinstance(record, dict)
+        and str(record.get("form") or "").strip().upper() in {"S-1", "S-1/A"}
+        and str(record.get("sec_url") or "").strip()
+    ]
+    verified_lineage = verified_lineage or {}
+
+    # Fetch each SEC filing once, then reconcile in a second pass. The watch is
+    # sorted newest-first, so a one-pass implementation cannot safely use earlier
+    # registration statements that appear later in the payload.
+    evidence: dict[int, set[str]] = {}
+    failed: set[int] = set()
+    for record in records:
         try:
-            text = fetch_text(record)
+            evidence[id(record)] = extract_current_listing_tickers(fetch_text(record))
         except Exception as error:
-            # SEC submissions metadata can retain a historical symbol for a
-            # returning issuer. If the current registration statement cannot be
-            # inspected, a nonblank metadata ticker is not sufficiently verified
-            # for publication. Prefer a blank to a potentially stale identity.
-            if current:
-                record["ticker"] = ""
-                updated += 1
+            failed.add(id(record))
+            label = record.get("company") or record.get("id") or "<unknown>"
             print(
                 f"[ticker_listing_reconciler] Warning: could not inspect {label}: "
-                f"{error}; clearing unverified ticker {current or '<blank>'}"
+                f"{error}"
             )
+
+    updated = 0
+    conflicts = 0
+    for record in records:
+        current = str(record.get("ticker") or "").strip().upper()
+        label = record.get("company") or record.get("id") or "<unknown>"
+        key = _record_key(record)
+        trusted_exact = str(verified_lineage.get(key) or "").strip().upper()
+
+        if id(record) in failed:
+            # A duplicate queue fetch may fail after the exact same accession was
+            # already SEC-verified in the watch during this process. That exact
+            # evidence is safe to retain; otherwise fail closed.
+            authoritative = trusted_exact
+            if authoritative:
+                if authoritative != current:
+                    record["ticker"] = authoritative
+                    updated += 1
+                print(
+                    f"[ticker_listing_reconciler] {label}: retained SEC-verified "
+                    f"watch ticker {authoritative} for exact accession"
+                )
+            elif current:
+                record["ticker"] = ""
+                updated += 1
+                print(
+                    f"[ticker_listing_reconciler] {label}: clearing unverified "
+                    f"ticker {current} after filing inspection failure"
+                )
             continue
 
-        tickers = extract_current_listing_tickers(text)
-
+        tickers = evidence.get(id(record), set())
         if len(tickers) > 1:
             conflicts += 1
             if current:
@@ -106,35 +184,96 @@ def reconcile_payload(payload: dict, fetch_text=_fetch_filing_text) -> tuple[int
                 f"symbols {sorted(tickers)}; clearing ticker"
             )
             continue
-        if not tickers:
-            # A submissions-profile symbol can belong to an issuer's historical
-            # listing rather than this proposed IPO. Without an explicit current
-            # listing statement in the registration filing, do not publish that
-            # unverified identity as the IPO ticker.
-            if current:
-                record["ticker"] = ""
+
+        if len(tickers) == 1:
+            authoritative = next(iter(tickers))
+            if authoritative != current:
+                record["ticker"] = authoritative
                 updated += 1
                 print(
-                    f"[ticker_listing_reconciler] {label}: no explicit current-listing "
-                    f"symbol found; clearing unverified ticker {current}"
+                    f"[ticker_listing_reconciler] {label}: reconciled ticker "
+                    f"{current or '<blank>'} -> {authoritative} from explicit SEC listing language"
                 )
             continue
 
-        authoritative = next(iter(tickers))
-        if authoritative != current:
-            record["ticker"] = authoritative
+        # The current amendment was inspected successfully but does not repeat a
+        # listing symbol. First accept exact-record evidence established by the
+        # already-reconciled watch (used for the sibling public queue).
+        if trusted_exact:
+            if trusted_exact != current:
+                record["ticker"] = trusted_exact
+                updated += 1
+            print(
+                f"[ticker_listing_reconciler] {label}: preserved exact-accession "
+                f"SEC-verified ticker {trusted_exact} from S-1 watch"
+            )
+            continue
+
+        cik = _normalized_cik(record)
+        filed = _filed(record)
+        prior = [
+            other
+            for other in records
+            if other is not record
+            and cik
+            and _normalized_cik(other) == cik
+            and filed
+            and _filed(other)
+            and _filed(other) < filed
+        ]
+
+        # If any strictly earlier filing in the available lineage could not be
+        # inspected, do not infer through that gap. A missing amendment could have
+        # changed the proposed symbol.
+        prior_failed = any(id(other) in failed for other in prior)
+        prior_conflict = any(len(evidence.get(id(other), set())) > 1 for other in prior)
+        prior_tickers = {
+            ticker
+            for other in prior
+            for ticker in evidence.get(id(other), set())
+            if len(evidence.get(id(other), set())) == 1
+        }
+
+        if not prior_failed and not prior_conflict and len(prior_tickers) == 1:
+            authoritative = next(iter(prior_tickers))
+            if authoritative != current:
+                record["ticker"] = authoritative
+                updated += 1
+            print(
+                f"[ticker_listing_reconciler] {label}: carried forward ticker "
+                f"{authoritative} from unambiguous earlier exact-CIK S-1 lineage"
+            )
+            continue
+
+        if len(prior_tickers) > 1 or prior_conflict:
+            conflicts += 1
+            print(
+                f"[ticker_listing_reconciler] {label}: conflicting earlier S-1 "
+                f"ticker lineage {sorted(prior_tickers)}; clearing ticker"
+            )
+
+        if current:
+            record["ticker"] = ""
             updated += 1
             print(
-                f"[ticker_listing_reconciler] {label}: reconciled ticker "
-                f"{current or '<blank>'} -> {authoritative} from explicit SEC listing language"
+                f"[ticker_listing_reconciler] {label}: no explicit current-listing "
+                f"symbol or unambiguous SEC registration-lineage symbol found; "
+                f"clearing unverified ticker {current}"
             )
 
     return updated, conflicts
 
 
-def reconcile_file(path: Path, *, sync_csv: bool = False) -> tuple[int, int]:
+def reconcile_file(
+    path: Path,
+    *,
+    sync_csv: bool = False,
+    verified_lineage: dict[tuple[str, str], str] | None = None,
+) -> tuple[int, int]:
     payload = json.loads(path.read_text(encoding="utf-8"))
-    updated, conflicts = reconcile_payload(payload)
+    updated, conflicts = reconcile_payload(
+        payload, verified_lineage=verified_lineage
+    )
     if updated:
         path.write_text(
             json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
@@ -155,13 +294,19 @@ def main(argv=None) -> int:
     reconcile_file(path)
 
     # s1_monitor.py writes both the dedicated watch and the Research Monitor queue
-    # before this release gate runs. Reconcile both copies from the same explicit SEC
-    # listing language so a stale submissions-metadata symbol cannot survive only in
-    # the public queue. Keep the CSV synchronized whenever that queue changes.
+    # before this release gate runs. Reconcile the watch first, then let the queue
+    # reuse only ticker evidence from the exact same CIK+accession. This keeps the
+    # public surfaces consistent without falling back to ticker-only assumptions.
     if path.name == "s1_watch.json":
         queue_path = path.with_name("filings.json")
         if queue_path.exists():
-            reconcile_file(queue_path, sync_csv=True)
+            watch_payload = json.loads(path.read_text(encoding="utf-8"))
+            verified_lineage = _verified_watch_tickers(watch_payload)
+            reconcile_file(
+                queue_path,
+                sync_csv=True,
+                verified_lineage=verified_lineage,
+            )
     return 0
 
 
