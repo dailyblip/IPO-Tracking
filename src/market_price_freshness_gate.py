@@ -11,10 +11,11 @@ belongs to a canonical final 424B4/Priced lifecycle record, has issuer/ticker
 provenance, has a positive price and a timezone-aware provider timestamp that is no
 older than the same freshness window enforced by ``price_lookup``, is not materially
 in the future relative to the pipeline retrieval time, and does not predate the
-authoritative Pricing Date or, when populated, the final 424B4 filing date.
-Invalid/stale/pre-pricing quotes and all public market-value derivatives are cleared
-before lifecycle reconciliation continues. Quote-derived values are also cleared
-when Current Price is already blank, so stale holder valuations cannot survive as
+authoritative Pricing Date or final 424B4 filing date. A final filing date must be
+present and canonical before secondary market data may survive. Invalid/stale/
+pre-pricing quotes and all public market-value derivatives are cleared before
+lifecycle reconciliation continues. Quote-derived values are also cleared when
+Current Price is already blank, so stale holder valuations cannot survive as
 orphaned market data.
 """
 
@@ -179,9 +180,10 @@ def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
             and age_seconds is not None
             and -MAX_FUTURE_SKEW_SECONDS <= age_seconds <= MAX_QUOTE_AGE_SECONDS
             and pricing_date is not None
+            and final_filed_date is not None
             and quote_date is not None
             and quote_date >= pricing_date
-            and (final_filed_date is None or quote_date >= final_filed_date)
+            and quote_date >= final_filed_date
         ):
             continue
 
