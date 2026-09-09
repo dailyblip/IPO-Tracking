@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-09T22:10:57.214214+00:00",
+  "generated_at": "2026-09-09T22:21:34.216229+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -21,7 +21,7 @@
       "priority": "High",
       "status": "New",
       "value": 825000000,
-      "value_label": "$825M",
+      "value_label": "$825,000,000",
       "people_count": 0,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -34,7 +34,7 @@
     {
       "id": "s1:0002133037",
       "company": "SB Energy, Inc.",
-      "ticker": "",
+      "ticker": "SBE",
       "cik": "0002133037",
       "accession_no": "0001628280-26-060761",
       "form": "S-1/A",
@@ -292,7 +292,7 @@
       "priority": "High",
       "status": "New",
       "value": 50000000,
-      "value_label": "$50M",
+      "value_label": "$50,000,000",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
