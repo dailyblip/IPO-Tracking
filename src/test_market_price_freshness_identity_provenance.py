@@ -11,6 +11,7 @@ class MarketPriceFreshnessIdentityProvenanceTests(unittest.TestCase):
             "form": "424B4",
             "stage": "Priced",
             "pricing_date": "2026-09-08",
+            "filed": "2026-09-09",
             "current_price": 12.34,
             "price_updated": "2026-09-09T14:00:00+00:00",
             "signals": ["Current market value is approximately $12M"],
