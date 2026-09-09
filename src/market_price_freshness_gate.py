@@ -11,10 +11,11 @@ belongs to a canonical final 424B4/Priced lifecycle record, has issuer/ticker
 provenance, has a positive price and a timezone-aware provider timestamp that is no
 older than the same freshness window enforced by ``price_lookup``, is not materially
 in the future relative to the pipeline retrieval time, and does not predate the
-authoritative Pricing Date. Invalid/stale/pre-pricing quotes and all public
-market-value derivatives are cleared before lifecycle reconciliation continues.
-Quote-derived values are also cleared when Current Price is already blank, so stale
-holder valuations cannot survive as orphaned market data.
+authoritative Pricing Date or, when populated, the final 424B4 filing date.
+Invalid/stale/pre-pricing quotes and all public market-value derivatives are cleared
+before lifecycle reconciliation continues. Quote-derived values are also cleared
+when Current Price is already blank, so stale holder valuations cannot survive as
+orphaned market data.
 """
 
 from __future__ import annotations
@@ -156,6 +157,8 @@ def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
         quote_time = _timestamp(price_updated)
         pricing_date_raw = str(filing.get("pricing_date") or "").strip()
         pricing_date = _date(pricing_date_raw)
+        final_filed_raw = str(filing.get("filed") or "").strip()
+        final_filed_date = _date(final_filed_raw)
         quote_date = (
             quote_time.astimezone(timezone.utc).date()
             if quote_time is not None
@@ -178,6 +181,7 @@ def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
             and pricing_date is not None
             and quote_date is not None
             and quote_date >= pricing_date
+            and (final_filed_date is None or quote_date >= final_filed_date)
         ):
             continue
 
@@ -189,6 +193,7 @@ def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
                 "stage": stage or None,
                 "price_updated": price_updated or None,
                 "pricing_date": pricing_date_raw or None,
+                "filed": final_filed_raw or None,
                 "generated_at": refresh_marker or None,
             }
         )
