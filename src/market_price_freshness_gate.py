@@ -7,14 +7,14 @@ now preserves that authoritative provider timestamp in ``price_updated``. The fe
 not expected to be identical.
 
 Run this gate immediately after ``main.py``. A populated quote survives only when it
-belongs to a canonical final 424B4/Priced lifecycle record, has a positive price and
-a timezone-aware provider timestamp that is no older than the same freshness window
-enforced by ``price_lookup``, is not materially in the future relative to the pipeline
-retrieval time, and does not predate the authoritative Pricing Date. Invalid/stale/
-pre-pricing quotes and all public market-value derivatives are cleared before
-lifecycle reconciliation continues. Quote-derived values are also cleared when
-Current Price is already blank, so stale holder valuations cannot survive as orphaned
-market data.
+belongs to a canonical final 424B4/Priced lifecycle record, has issuer/ticker
+provenance, has a positive price and a timezone-aware provider timestamp that is no
+older than the same freshness window enforced by ``price_lookup``, is not materially
+in the future relative to the pipeline retrieval time, and does not predate the
+authoritative Pricing Date. Invalid/stale/pre-pricing quotes and all public
+market-value derivatives are cleared before lifecycle reconciliation continues.
+Quote-derived values are also cleared when Current Price is already blank, so stale
+holder valuations cannot survive as orphaned market data.
 """
 
 from __future__ import annotations
@@ -128,6 +128,8 @@ def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
         if not isinstance(filing, dict):
             continue
 
+        company = str(filing.get("company") or "").strip()
+        ticker = str(filing.get("ticker") or "").strip().upper()
         form = str(filing.get("form") or "").strip().upper()
         stage = str(filing.get("stage") or "").strip()
         current_price = filing.get("current_price")
@@ -136,8 +138,8 @@ def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
                 continue
             stale.append(
                 {
-                    "company": filing.get("company") or filing.get("id") or "<unknown>",
-                    "ticker": filing.get("ticker") or "",
+                    "company": company or filing.get("id") or "<unknown>",
+                    "ticker": ticker,
                     "form": form or None,
                     "stage": stage or None,
                     "price_updated": str(filing.get("price_updated") or "").strip() or None,
@@ -165,7 +167,9 @@ def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
             else None
         )
         if (
-            form == "424B4"
+            company
+            and ticker
+            and form == "424B4"
             and stage == "Priced"
             and price is not None
             and price > 0
@@ -179,8 +183,8 @@ def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
 
         stale.append(
             {
-                "company": filing.get("company") or filing.get("id") or "<unknown>",
-                "ticker": filing.get("ticker") or "",
+                "company": company or filing.get("id") or "<unknown>",
+                "ticker": ticker,
                 "form": form or None,
                 "stage": stage or None,
                 "price_updated": price_updated or None,
