@@ -10,6 +10,7 @@ import market_quote_release_gate
 class MarketQuoteSecCrosscheckTests(unittest.TestCase):
     def _payload(self):
         return {
+            "generated_at": "2026-08-31T10:05:00+00:00",
             "filings": [
                 {
                     "company": "Example Technology Holdings Inc.",
@@ -17,6 +18,8 @@ class MarketQuoteSecCrosscheckTests(unittest.TestCase):
                     "cik": "0001234567",
                     "form": "424B4",
                     "stage": "Priced",
+                    "filed": "2026-08-31",
+                    "pricing_date": "2026-08-31",
                     "offering_price": 15.0,
                     "current_price": 18.25,
                     "price_updated": "2026-08-31T10:00:00+00:00",
