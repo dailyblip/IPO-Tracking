@@ -142,6 +142,153 @@ class TickerListingReconcilerTests(unittest.TestCase):
         self.assertEqual((updated, conflicts), (0, 0))
         self.assertEqual(payload["filings"][0]["ticker"], "")
 
+    def test_amendment_without_repeated_symbol_preserves_prior_exact_cik_evidence(self):
+        payload = {
+            "filings": [
+                {
+                    "id": "amendment",
+                    "accession_no": "0001628280-26-060761",
+                    "company": "SB Energy, Inc.",
+                    "cik": "0002133037",
+                    "ticker": "",
+                    "form": "S-1/A",
+                    "filed": "2026-09-04",
+                    "sec_url": "https://www.sec.gov/amendment-index.htm",
+                },
+                {
+                    "id": "initial",
+                    "accession_no": "0001628280-26-059639",
+                    "company": "SB Energy, Inc.",
+                    "cik": "0002133037",
+                    "ticker": "SBE",
+                    "form": "S-1",
+                    "filed": "2026-09-01",
+                    "sec_url": "https://www.sec.gov/initial-index.htm",
+                },
+            ]
+        }
+        texts = {
+            "amendment": "This amendment updates financial statements and risk factors.",
+            "initial": (
+                "We have applied to list our common stock on Nasdaq under the symbol SBE."
+            ),
+        }
+
+        updated, conflicts = reconciler.reconcile_payload(
+            payload, fetch_text=lambda record: texts[record["id"]]
+        )
+
+        self.assertEqual((updated, conflicts), (1, 0))
+        self.assertEqual(payload["filings"][0]["ticker"], "SBE")
+
+    def test_conflicting_prior_exact_cik_symbols_do_not_seed_later_amendment(self):
+        payload = {
+            "filings": [
+                {
+                    "id": "latest",
+                    "cik": "0002133037",
+                    "ticker": "",
+                    "form": "S-1/A",
+                    "filed": "2026-09-04",
+                    "sec_url": "https://www.sec.gov/latest-index.htm",
+                },
+                {
+                    "id": "middle",
+                    "cik": "0002133037",
+                    "ticker": "",
+                    "form": "S-1/A",
+                    "filed": "2026-09-02",
+                    "sec_url": "https://www.sec.gov/middle-index.htm",
+                },
+                {
+                    "id": "initial",
+                    "cik": "0002133037",
+                    "ticker": "",
+                    "form": "S-1",
+                    "filed": "2026-09-01",
+                    "sec_url": "https://www.sec.gov/initial-index.htm",
+                },
+            ]
+        }
+        texts = {
+            "latest": "This amendment does not repeat listing terms.",
+            "middle": "We have applied to list our common stock on Nasdaq under the symbol SBEN.",
+            "initial": "We have applied to list our common stock on Nasdaq under the symbol SBE.",
+        }
+
+        updated, conflicts = reconciler.reconcile_payload(
+            payload, fetch_text=lambda record: texts[record["id"]]
+        )
+
+        self.assertGreaterEqual(conflicts, 1)
+        self.assertEqual(payload["filings"][0]["ticker"], "")
+        self.assertEqual(payload["filings"][1]["ticker"], "SBEN")
+        self.assertEqual(payload["filings"][2]["ticker"], "SBE")
+        self.assertEqual(updated, 2)
+
+    def test_exact_watch_accession_can_seed_queue_when_amendment_omits_symbol(self):
+        payload = {
+            "filings": [
+                {
+                    "id": "s1:0002133037",
+                    "accession_no": "0001628280-26-060761",
+                    "company": "SB Energy, Inc.",
+                    "cik": "0002133037",
+                    "ticker": "",
+                    "form": "S-1/A",
+                    "filed": "2026-09-04",
+                    "sec_url": "https://www.sec.gov/amendment-index.htm",
+                }
+            ]
+        }
+        verified = {
+            ("0002133037", "0001628280-26-060761"): "SBE",
+        }
+
+        updated, conflicts = reconciler.reconcile_payload(
+            payload,
+            fetch_text=lambda record: "This amendment does not repeat listing terms.",
+            verified_lineage=verified,
+        )
+
+        self.assertEqual((updated, conflicts), (1, 0))
+        self.assertEqual(payload["filings"][0]["ticker"], "SBE")
+
+    def test_same_day_prior_symbol_is_not_used_to_infer_order(self):
+        payload = {
+            "filings": [
+                {
+                    "id": "amendment",
+                    "cik": "0002133037",
+                    "ticker": "",
+                    "form": "S-1/A",
+                    "filed": "2026-09-04",
+                    "sec_url": "https://www.sec.gov/amendment-index.htm",
+                },
+                {
+                    "id": "initial",
+                    "cik": "0002133037",
+                    "ticker": "",
+                    "form": "S-1",
+                    "filed": "2026-09-04",
+                    "sec_url": "https://www.sec.gov/initial-index.htm",
+                },
+            ]
+        }
+        texts = {
+            "amendment": "This amendment does not repeat listing terms.",
+            "initial": "We have applied to list our common stock on Nasdaq under the symbol SBE.",
+        }
+
+        updated, conflicts = reconciler.reconcile_payload(
+            payload, fetch_text=lambda record: texts[record["id"]]
+        )
+
+        self.assertEqual(conflicts, 0)
+        self.assertEqual(payload["filings"][0]["ticker"], "")
+        self.assertEqual(payload["filings"][1]["ticker"], "SBE")
+        self.assertEqual(updated, 1)
+
     def test_filing_fetch_failure_clears_unverified_existing_ticker(self):
         payload = {
             "filings": [
@@ -185,6 +332,33 @@ class TickerListingReconcilerTests(unittest.TestCase):
         self.assertEqual((updated, conflicts), (0, 0))
         self.assertEqual(payload["filings"][0]["ticker"], "")
 
+    def test_filing_fetch_failure_can_use_exact_watch_accession_evidence(self):
+        payload = {
+            "filings": [
+                {
+                    "id": "s1:0002133037",
+                    "accession_no": "0001628280-26-060761",
+                    "cik": "0002133037",
+                    "ticker": "",
+                    "form": "S-1/A",
+                    "sec_url": "https://www.sec.gov/example-index.htm",
+                }
+            ]
+        }
+
+        def fail_fetch(_record):
+            raise RuntimeError("duplicate queue fetch unavailable")
+
+        updated, conflicts = reconciler.reconcile_payload(
+            payload,
+            fetch_text=fail_fetch,
+            verified_lineage={
+                ("0002133037", "0001628280-26-060761"): "SBE"
+            },
+        )
+        self.assertEqual((updated, conflicts), (1, 0))
+        self.assertEqual(payload["filings"][0]["ticker"], "SBE")
+
     def test_watch_cli_reconciles_research_queue_and_requests_csv_sync(self):
         with tempfile.TemporaryDirectory() as tmp:
             watch = Path(tmp) / "s1_watch.json"
@@ -199,7 +373,10 @@ class TickerListingReconcilerTests(unittest.TestCase):
 
             self.assertEqual(
                 reconcile_file.call_args_list,
-                [call(watch), call(queue, sync_csv=True)],
+                [
+                    call(watch),
+                    call(queue, sync_csv=True, verified_lineage={}),
+                ],
             )
 
     def test_queue_reconciliation_keeps_companion_csv_in_sync(self):
@@ -215,7 +392,7 @@ class TickerListingReconcilerTests(unittest.TestCase):
             ]
         }
 
-        def repair_ticker(candidate):
+        def repair_ticker(candidate, verified_lineage=None):
             candidate["filings"][0]["ticker"] = "NEW"
             return 1, 0
 
