@@ -211,6 +211,28 @@ def reconcile_payload(
 
         cik = _normalized_cik(record)
         filed = _filed(record)
+        same_day = [
+            other
+            for other in records
+            if other is not record
+            and cik
+            and _normalized_cik(other) == cik
+            and filed
+            and _filed(other) == filed
+        ]
+        if same_day:
+            # SEC filing dates do not establish ordering among same-day S-1/S-1A
+            # accessions. If this filing omits the symbol, do not carry a symbol
+            # through an unordered same-day registration event from older history.
+            if current:
+                record["ticker"] = ""
+                updated += 1
+            print(
+                f"[ticker_listing_reconciler] {label}: same-day exact-CIK S-1 "
+                f"lineage cannot be ordered; refusing earlier ticker carry-forward"
+            )
+            continue
+
         prior = [
             other
             for other in records
