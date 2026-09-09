@@ -53,6 +53,37 @@ class FinalPricingReleaseGateTests(unittest.TestCase):
             )
         )
 
+    def test_final_prospectus_accepts_supported_registration_chronology(self):
+        self.assertTrue(
+            is_release_grade_final(
+                self._final(
+                    filing_date="2026-08-12",
+                    pricing_date="2026-08-23",
+                    filed="2026-08-24",
+                )
+            )
+        )
+
+    def test_final_prospectus_rejects_registration_after_pricing(self):
+        self.assertFalse(
+            is_release_grade_final(
+                self._final(
+                    filing_date="2026-08-25",
+                    pricing_date="2026-08-23",
+                    filed="2026-08-24",
+                )
+            )
+        )
+
+    def test_final_prospectus_rejects_malformed_registration_date_when_present(self):
+        self.assertFalse(is_release_grade_final(self._final(filing_date="08/12/2026")))
+        future = (date.today() + timedelta(days=1)).isoformat()
+        self.assertFalse(is_release_grade_final(self._final(filing_date=future)))
+
+    def test_final_prospectus_allows_blank_registration_date(self):
+        self.assertTrue(is_release_grade_final(self._final(filing_date=None)))
+        self.assertTrue(is_release_grade_final(self._final(filing_date="")))
+
     def test_final_prospectus_requires_positive_final_ipo_price(self):
         for value in (None, "", 0, -1, "unknown", float("nan"), True):
             with self.subTest(value=value):
