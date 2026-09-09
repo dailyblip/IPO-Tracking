@@ -45,6 +45,24 @@ class MarketPricePostFinalFilingTests(unittest.TestCase):
         self.assertNotIn("valuation_as_of", person)
         self.assertEqual(person["ipo_value"], 900_000)
 
+    def test_quote_without_canonical_final_424b4_filing_date_is_cleared(self):
+        for filed_value in (None, "", "09/09/2026", "2026-9-9"):
+            with self.subTest(filed=filed_value):
+                payload = self._payload("2026-09-09T14:00:00+00:00")
+                payload["filings"][0]["filed"] = filed_value
+
+                sanitized, stale = sanitize_payload(payload)
+
+                self.assertEqual(len(stale), 1)
+                filing = sanitized["filings"][0]
+                self.assertNotIn("current_price", filing)
+                self.assertNotIn("price_updated", filing)
+                self.assertEqual(filing["signals"], [])
+                person = filing["people"][0]
+                self.assertNotIn("cash_value", person)
+                self.assertNotIn("valuation_as_of", person)
+                self.assertEqual(person["ipo_value"], 900_000)
+
     def test_quote_on_final_424b4_filing_date_can_survive(self):
         sanitized, stale = sanitize_payload(
             self._payload("2026-09-09T14:00:00+00:00")
