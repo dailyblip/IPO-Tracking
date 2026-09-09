@@ -5,10 +5,10 @@ repair final prospectus records. After those passes, a 424B4 is release-grade on
 when it is explicitly Priced, has canonical non-future final filing and Pricing
 Dates in possible chronology, carries a positive authoritative Final IPO Price,
 and its SEC Archives URL matches the published issuer CIK and accession number.
-S-1/S-1A rows must remain explicitly Pre-pricing and cannot carry final-pricing
-metadata. Offering size and preliminary Filing Price are deliberately not required:
-qualifying IPOs may have unknown size, and preliminary price history is repaired
-by the separate S-1/S-1A history pass.
+S-1/S-1A rows must remain explicitly Pre-pricing and cannot carry final-pricing or
+market-derived metadata. Offering size and preliminary Filing Price are deliberately
+not required: qualifying IPOs may have unknown size, and preliminary price history is
+repaired by the separate S-1/S-1A history pass.
 """
 
 from __future__ import annotations
@@ -28,6 +28,13 @@ SEC_ARCHIVES_FILING_PATTERN = re.compile(
     r"(\d{10}-\d{2}-\d{6})-index\.htm$",
     re.IGNORECASE,
 )
+_MARKET_DERIVED_PERSON_FIELDS = (
+    "cash_value",
+    "liquid_value",
+    "locked_value",
+    "valuation_as_of",
+)
+_MARKET_VALUE_SIGNAL_MARKERS = ("currently valued", "current market value")
 
 
 def _number(value):
@@ -95,13 +102,13 @@ def _has_matching_sec_identity(filing):
 
 
 def _has_safe_prepricing_state(filing: dict) -> bool:
-    """Reject S-1/S-1A lifecycle drift instead of publishing contradictory IPO facts.
+    """Reject S-1/S-1A lifecycle or market-data drift before public release.
 
     Registration statements remain pre-pricing until a final 424B4 supersedes them.
     A stale S-1 row marked Priced, one carrying a Pricing Date / Final IPO Price, or
-    one carrying a live Current Price is an impossible public state. Do not guess
-    which field is stale; omit the row so the lifecycle and quote gates can rebuild
-    it from authoritative SEC history.
+    one retaining quote provenance or quote-derived values is an impossible public
+    state. Do not guess which field is stale; omit the row so the lifecycle and quote
+    gates can rebuild it from authoritative SEC history.
     """
     if str(filing.get("stage") or "").strip().casefold() != "pre-pricing":
         return False
@@ -111,6 +118,25 @@ def _has_safe_prepricing_state(filing: dict) -> bool:
         return False
     if filing.get("current_price") not in (None, ""):
         return False
+    if filing.get("price_updated") not in (None, ""):
+        return False
+
+    for person in filing.get("people") or []:
+        if not isinstance(person, dict):
+            continue
+        for field in _MARKET_DERIVED_PERSON_FIELDS:
+            if person.get(field) not in (None, "", "—"):
+                return False
+
+    signals = filing.get("signals")
+    if isinstance(signals, list):
+        for signal in signals:
+            if not isinstance(signal, str):
+                continue
+            folded = signal.casefold()
+            if any(marker in folded for marker in _MARKET_VALUE_SIGNAL_MARKERS):
+                return False
+
     return True
 
 
