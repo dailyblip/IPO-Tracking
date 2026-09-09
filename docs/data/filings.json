@@ -1,8 +1,36 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-09T02:27:36.952905+00:00",
+  "generated_at": "2026-09-09T02:40:10.597093+00:00",
   "source": "SEC EDGAR",
   "filings": [
+    {
+      "id": "s1:0002104277",
+      "company": "Holtec Nuclear Corp",
+      "ticker": "HNUC",
+      "cik": "0002104277",
+      "accession_no": "0001193125-26-384287",
+      "form": "S-1/A",
+      "filed": "2026-09-08",
+      "stage": "Pre-pricing",
+      "price_range": "$15.00–$18.00",
+      "filing_price": "$15.00–$18.00",
+      "offering_size_source": "primary offering; cover title preceding IPO statement; explicit issuer-only cover statement matches total",
+      "offering_size_confidence": "High",
+      "primary_offering_shares": 50000000,
+      "secondary_offering_shares": null,
+      "priority": "High",
+      "status": "New",
+      "value": 825000000,
+      "value_label": "$825,000,000",
+      "people_count": 0,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "Preliminary offering range disclosed at $15.00–$18.00",
+        "IPO size disclosed or derived at approximately $825,000,000"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526384287/0001193125-26-384287-index.htm"
+    },
     {
       "id": "s1:0002133037",
       "company": "SB Energy, Inc.",
@@ -29,6 +57,33 @@
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026060761/0001628280-26-060761-index.htm"
+    },
+    {
+      "id": "s1:0002108671",
+      "company": "Rothe Development, Inc.",
+      "ticker": "",
+      "cik": "0002108671",
+      "accession_no": "0001493152-26-041590",
+      "form": "S-1",
+      "filed": "2026-09-04",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "priority": "Medium",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 0,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226041590/0001493152-26-041590-index.htm"
     },
     {
       "id": "s1:0001802369",
@@ -237,7 +292,7 @@
       "priority": "High",
       "status": "New",
       "value": 50000000,
-      "value_label": "$50M",
+      "value_label": "$50,000,000",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
@@ -354,33 +409,6 @@
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526372368/0001193125-26-372368-index.htm"
-    },
-    {
-      "id": "s1:0002104277",
-      "company": "Holtec Nuclear Corp",
-      "ticker": "HNUC",
-      "cik": "0002104277",
-      "accession_no": "0001193125-26-361496",
-      "form": "S-1/A",
-      "filed": "2026-08-24",
-      "stage": "Pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": null,
-      "secondary_offering_shares": null,
-      "priority": "Medium",
-      "status": "New",
-      "value": null,
-      "value_label": "—",
-      "people_count": 0,
-      "signals": [
-        "Registration statement amended — IPO remains pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "people": [],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526361496/0001193125-26-361496-index.htm"
     },
     {
       "id": "s1:0002065821",
