@@ -100,6 +100,15 @@ jobs:
         # after parser/data-quality improvements instead of aging out permanently.
         run: python main.py 14
 
+      # main.py can regenerate an amendment without the ticker evidence carried by
+      # its earlier exact-CIK, exact-registration-lineage S-1. Reconcile that SEC
+      # identity metadata before later lifecycle gates and publication consume it.
+      - name: Reconcile SEC-backed S-1 ticker metadata after daily regeneration
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python ticker_listing_reconciler.py
+
       # main.py can regenerate queue rows that were not present in the checked-in
       # S-1 watch snapshot. Re-run the SEC registration/reporting-history gate on
       # the regenerated queue so an already-public or resale-lineage issuer cannot
