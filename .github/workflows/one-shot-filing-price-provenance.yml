@@ -1,0 +1,125 @@
+name: One Shot Filing Price Provenance Patch
+
+on:
+  push:
+    branches:
+      - research/filing-price-file-number-provenance-20260910
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply narrow provenance patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          source_path = Path("src/filing_price_history.py")
+          source = source_path.read_text(encoding="utf-8")
+          pattern = re.compile(
+              r'(?m)^(?P<indent>\s*)"accession_no": metadata\.get\("accession_no"\),\n'
+              r'(?P=indent)"sec_url": source_url,$'
+          )
+
+          def add_file_number(match):
+              indent = match.group("indent")
+              return (
+                  f'{indent}"accession_no": metadata.get("accession_no"),\n'
+                  f'{indent}"file_number": metadata.get("file_number"),\n'
+                  f'{indent}"sec_url": source_url,'
+              )
+
+          source, count = pattern.subn(add_file_number, source)
+          if count != 2:
+              raise SystemExit(f"Expected 2 Filing Price provenance dictionaries, found {count}")
+          source_path.write_text(source, encoding="utf-8")
+
+          test_path = Path("src/test_filing_price_history.py")
+          test_text = test_path.read_text(encoding="utf-8")
+          old = '''        self.assertEqual(payload["filings"][0]["filing_price"], "15-17")
+          self.assertEqual((recovered, checked), (0, 1))'''
+          new = '''        self.assertEqual(payload["filings"][0]["filing_price"], "15-17")
+          self.assertEqual(
+              payload["filings"][0]["filing_price_source"]["file_number"],
+              "333-300001",
+          )
+          self.assertEqual((recovered, checked), (1, 1))'''
+          if test_text.count(old) != 1:
+              raise SystemExit("Expected cached-source migration assertion exactly once")
+          test_path.write_text(test_text.replace(old, new), encoding="utf-8")
+
+          lineage_path = Path("src/test_filing_price_final_registration_lineage.py")
+          lineage = lineage_path.read_text(encoding="utf-8")
+          old = '''        self.assertEqual(
+              row["filing_price_source"]["accession_no"],
+              "0001234567-26-000080",
+          )
+          self.assertEqual(calls, ["0001234567-26-000080"])'''
+          new = '''        self.assertEqual(
+              row["filing_price_source"]["accession_no"],
+              "0001234567-26-000080",
+          )
+          self.assertEqual(
+              row["filing_price_source"]["file_number"],
+              "333-888888",
+          )
+          self.assertEqual(calls, ["0001234567-26-000080"])'''
+          if lineage.count(old) != 1:
+              raise SystemExit("Expected final-lineage source assertion exactly once")
+          lineage_path.write_text(lineage.replace(old, new), encoding="utf-8")
+          PY
+
+      - name: Run focused Filing Price tests
+        run: |
+          cd src
+          python -m unittest \
+            test_filing_price_history.py \
+            test_filing_price_final_registration_lineage.py
+
+      - name: Recheck ownership-history commit guard
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+
+          request = urllib.request.Request(
+              f"{os.environ['GITHUB_API_URL']}/repos/{os.environ['GITHUB_REPOSITORY']}/actions/runs?per_page=100",
+              headers={
+                  "Authorization": f"Bearer {os.environ['GH_TOKEN']}",
+                  "Accept": "application/vnd.github+json",
+                  "X-GitHub-Api-Version": "2022-11-28",
+              },
+          )
+          with urllib.request.urlopen(request, timeout=30) as response:
+              runs = json.load(response).get("workflow_runs", [])
+          active = [
+              run for run in runs
+              if run.get("name") == "Refresh Prospect Ownership History"
+              and run.get("status") in {"queued", "in_progress", "waiting", "pending", "requested"}
+          ]
+          if active:
+              details = ", ".join(f"#{run.get('run_number')} {run.get('status')}" for run in active)
+              raise SystemExit(f"Ownership-history backfill has priority; refusing commit: {details}")
+          print("Ownership-history commit guard clear")
+          PY
+
+      - name: Commit patch and remove one-shot workflow
+        run: |
+          rm .github/workflows/one-shot-filing-price-provenance.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/filing_price_history.py src/test_filing_price_history.py src/test_filing_price_final_registration_lineage.py .github/workflows/one-shot-filing-price-provenance.yml
+          git diff --cached --check
+          git commit -m "Persist SEC registration file number in Filing Price provenance"
+          git push
