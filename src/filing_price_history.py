@@ -657,6 +657,7 @@ def recover_payload_filing_prices(
                     "form": metadata.get("form_type"),
                     "filing_date": metadata.get("filing_date"),
                     "accession_no": metadata.get("accession_no"),
+                    "file_number": metadata.get("file_number"),
                     "sec_url": source_url,
                 }
                 normalized["filing_price_source"] = authoritative_source
@@ -716,6 +717,7 @@ def recover_payload_filing_prices(
                 "form": metadata.get("form_type"),
                 "filing_date": metadata.get("filing_date"),
                 "accession_no": metadata.get("accession_no"),
+                "file_number": metadata.get("file_number"),
                 "sec_url": source_url,
             }
             recovered += 1
