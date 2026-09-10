@@ -17,10 +17,14 @@ class PostSpacS1ReportingHistoryTests(unittest.TestCase):
 
     def _submissions(self, forms, dates):
         count = len(forms)
+        accessions = [self._record()["accession_no"]]
+        accessions.extend(
+            f"0000000000-26-{index:06d}" for index in range(1, count)
+        )
         return {
             "filings": {
                 "recent": {
-                    "accessionNumber": [f"0000000000-26-{index:06d}" for index in range(count)],
+                    "accessionNumber": accessions,
                     "form": forms,
                     "fileNumber": ["333-000000"] * count,
                     "filingDate": dates,

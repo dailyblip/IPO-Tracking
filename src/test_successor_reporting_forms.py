@@ -56,12 +56,24 @@ class SuccessorReportingFormTests(unittest.TestCase):
             "stage": "Pre-pricing",
             "cik": "1234567",
             "filed": "2026-08-02",
+            "accession_no": "0001234567-26-000002",
         }
         for form in SUCCESSOR_REPORTING_FORMS:
             with self.subTest(form=form), patch.object(
                 s1_registration_history_gate,
                 "_recent_submission_rows",
-                return_value=[{"form": form, "filing_date": "2026-08-01"}],
+                return_value=[
+                    {
+                        "accession_no": record["accession_no"],
+                        "form": "S-1",
+                        "filing_date": "2026-08-02",
+                    },
+                    {
+                        "accession_no": "0001234567-26-000001",
+                        "form": form,
+                        "filing_date": "2026-08-01",
+                    },
+                ],
             ):
                 self.assertTrue(
                     s1_registration_history_gate.already_reporting_before_registration(
@@ -75,12 +87,24 @@ class SuccessorReportingFormTests(unittest.TestCase):
             "stage": "Pre-pricing",
             "cik": "1234567",
             "filed": "2026-08-02",
+            "accession_no": "0001234567-26-000002",
         }
         for form in SUCCESSOR_REPORTING_FORMS:
             with self.subTest(form=form), patch.object(
                 s1_registration_history_gate,
                 "_recent_submission_rows",
-                return_value=[{"form": form, "filing_date": "2026-08-02"}],
+                return_value=[
+                    {
+                        "accession_no": record["accession_no"],
+                        "form": "S-1",
+                        "filing_date": "2026-08-02",
+                    },
+                    {
+                        "accession_no": "0001234567-26-000001",
+                        "form": form,
+                        "filing_date": "2026-08-02",
+                    },
+                ],
             ):
                 self.assertFalse(
                     s1_registration_history_gate.already_reporting_before_registration(
