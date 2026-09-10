@@ -19,6 +19,7 @@ on:
       - 'src/final_pricing_release_gate.py'
       - 'src/followon_sanitizer.py'
       - 'src/archived_reporting_history_gate.py'
+      - 'src/ticker_listing_reconciler.py'
       - 'src/s1_registration_history_gate.py'
       - 'src/resale_registration_sanitizer.py'
       - 'src/s1_substantive_registration_gate.py'
@@ -43,6 +44,8 @@ on:
       - 'src/test_final_pricing_release_gate.py'
       - 'src/test_followon_sanitizer.py'
       - 'src/test_archived_reporting_history_gate.py'
+      - 'src/test_ticker_listing_reconciler.py'
+      - 'src/test_ticker_registration_lineage_guard.py'
       - 'src/test_s1_registration_history_gate.py'
       - 'src/test_resale_registration_sanitizer.py'
       - 'src/test_s1_preliminary_price_gate.py'
@@ -120,6 +123,13 @@ jobs:
           echo "Regrading ownership and Stanford affiliations from $START through $END"
           python main.py --backfill-start "$START" --backfill-end "$END"
       # The ownership replay regenerates both the public feed and S-1 watch data.
+      # Reconcile SEC-backed ticker metadata first so later lifecycle gates consume
+      # the same exact-CIK, exact-registration-lineage identity evidence as S-1 watch.
+      - name: Reconcile SEC-backed S-1 ticker metadata after ownership regeneration
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python ticker_listing_reconciler.py
       # Apply the same S-1 release gates as Daily before any lifecycle or market
       # publication steps so replay cannot reintroduce rows Daily would suppress.
       - name: Reconcile regenerated S-1 registration history
