@@ -18,6 +18,7 @@ import dashboard_export
 import edgar_client
 import filing_parser
 import final_pricing_release_gate
+import registration_lineage
 
 
 def _canonical_cik(value):
@@ -503,7 +504,12 @@ def _promote_prepricing_record(record, filing_meta, soup):
     return promoted
 
 
-def _select_final_meta(candidates, existing_final=None, prepricing=None):
+def _select_final_meta(
+    candidates,
+    existing_final=None,
+    prepricing=None,
+    lineage_resolver=None,
+):
     """Select the final prospectus from the current registration lineage."""
     if not candidates:
         return None
@@ -515,7 +521,15 @@ def _select_final_meta(candidates, existing_final=None, prepricing=None):
         or ""
     ).strip()
     eligible = candidates
-    if prepricing_date:
+    if prepricing is not None and lineage_resolver is not None:
+        eligible = [
+            candidate
+            for candidate in candidates
+            if lineage_resolver(prepricing, candidate)
+        ]
+        if not eligible:
+            return None
+    elif prepricing_date:
         eligible = [
             candidate
             for candidate in candidates
@@ -540,7 +554,7 @@ def _select_final_meta(candidates, existing_final=None, prepricing=None):
     return eligible[0]
 
 
-def reconcile_payload(payload, final_filings, soup_loader):
+def reconcile_payload(payload, final_filings, soup_loader, lineage_resolver=None):
     """Reconcile stale/incomplete lifecycle rows against SEC 424B4 metadata by CIK."""
     filings = payload.get("filings")
     if not isinstance(filings, list):
@@ -573,7 +587,12 @@ def reconcile_payload(payload, final_filings, soup_loader):
             continue
         existing_final = final_record_by_cik.get(cik)
         prepricing = prepricing_by_cik.get(cik)
-        final_meta = _select_final_meta(candidates, existing_final, prepricing)
+        final_meta = _select_final_meta(
+            candidates,
+            existing_final,
+            prepricing,
+            lineage_resolver=lineage_resolver,
+        )
         if not final_meta:
             continue
 
@@ -700,7 +719,13 @@ def reconcile_feed(output_path, days_back=60):
         return payload, 0, 0
 
     final_filings = edgar_client.find_recent_424b4_filings(days_back=days_back)
-    payload, repaired, removed = reconcile_payload(payload, final_filings, _load_final_soup)
+    lineage_resolver = registration_lineage.build_registration_lineage_resolver()
+    payload, repaired, removed = reconcile_payload(
+        payload,
+        final_filings,
+        _load_final_soup,
+        lineage_resolver=lineage_resolver,
+    )
     if repaired or removed:
         temporary = output_path.with_suffix(output_path.suffix + ".tmp")
         temporary.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
