@@ -1,8 +1,39 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-10T02:04:24.829958+00:00",
-  "count": 96,
+  "generated_at": "2026-09-10T03:03:59.398289+00:00",
+  "count": 98,
   "alerts": [
+    {
+      "type": "price_range_update",
+      "company": "Orion180 Insurance Group Inc.",
+      "cik": "0002124472",
+      "filing_id": "s1:0002124472",
+      "form": "S-1/A",
+      "filed": "2026-09-09",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "Preliminary IPO price range changed to $15.00–$17.00.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026061012/0001628280-26-061012-index.htm",
+      "detected_at": "2026-09-10T03:03:59.397972+00:00",
+      "new_value": "$15.00–$17.00",
+      "key": "price_range_update|s1:0002124472|0002124472|2026-09-09|$15.00–$17.00"
+    },
+    {
+      "type": "priority_escalation",
+      "company": "Orion180 Insurance Group Inc.",
+      "cik": "0002124472",
+      "filing_id": "s1:0002124472",
+      "form": "S-1/A",
+      "filed": "2026-09-09",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "Research priority increased from Medium to High.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026061012/0001628280-26-061012-index.htm",
+      "detected_at": "2026-09-10T03:03:59.397992+00:00",
+      "old_value": "Medium",
+      "new_value": "High",
+      "key": "priority_escalation|s1:0002124472|0002124472|2026-09-09|High"
+    },
     {
       "type": "price_range_update",
       "company": "Holtec Nuclear Corp",
