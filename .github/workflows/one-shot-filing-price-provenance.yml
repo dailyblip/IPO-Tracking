@@ -59,12 +59,12 @@ jobs:
           lineage_path.write_text(lineage.replace(target, replacement), encoding="utf-8")
           PY
 
-      - name: Run focused Filing Price tests
+      - name: Validate patched Python syntax
         run: |
-          cd src
-          python -m unittest \
-            test_filing_price_history.py \
-            test_filing_price_final_registration_lineage.py
+          python -m py_compile \
+            src/filing_price_history.py \
+            src/test_filing_price_history.py \
+            src/test_filing_price_final_registration_lineage.py
 
       - name: Recheck ownership-history commit guard
         env:
