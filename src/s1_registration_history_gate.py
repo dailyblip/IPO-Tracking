@@ -145,7 +145,12 @@ def already_reporting_before_registration(record: dict) -> bool:
 
 
 def _same_registration_predecessors(cik: str, accession_no: str) -> list[dict]:
-    """Return earlier S-1/S-1A filings sharing the current SEC file number."""
+    """Return strictly earlier S-1/S-1A filings sharing the SEC file number.
+
+    SEC filing dates do not establish ordering among multiple accessions filed on
+    the same day. Same-day and undated rows therefore cannot seed an inherited
+    resale/direct-listing exclusion.
+    """
     rows = _recent_submission_rows(cik)
     if not rows or not accession_no:
         return []
@@ -160,7 +165,7 @@ def _same_registration_predecessors(cik: str, accession_no: str) -> list[dict]:
 
     current_file_number = str(current.get("file_number") or "").strip()
     current_date = str(current.get("filing_date") or "").strip()
-    if not current_file_number:
+    if not current_file_number or not current_date:
         return []
 
     predecessors = []
@@ -174,7 +179,7 @@ def _same_registration_predecessors(cik: str, accession_no: str) -> list[dict]:
             continue
         if form not in FORM_TYPES or file_number != current_file_number:
             continue
-        if current_date and filing_date and filing_date > current_date:
+        if not filing_date or filing_date >= current_date:
             continue
         if not primary_document:
             continue
