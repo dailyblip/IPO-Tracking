@@ -5,9 +5,9 @@ issuer. For the pre-pricing watch, prefer the issuer's current S-1/S-1A
 statement that it has applied, intends, or expects to list the offered shares
 under a specific symbol. When a later amendment omits that statement, preserve
 an earlier symbol only when exact-CIK, strictly earlier S-1/S-1A filing evidence
-in the same watch lineage was successfully inspected and is unambiguous.
-Absent or conflicting registration-lineage evidence fails closed for a nonblank
-symbol.
+in the same SEC registration file-number lineage was successfully inspected and
+is unambiguous. Absent or conflicting registration-lineage evidence fails closed
+for a nonblank symbol.
 
 When the CLI is invoked on ``s1_watch.json``, reconcile the sibling public
 ``filings.json`` queue as well. The queue may contain only the latest S-1 row,
@@ -24,6 +24,7 @@ from pathlib import Path
 
 import dashboard_export
 import filing_parser
+import s1_registration_history_gate
 
 
 _CURRENT_LISTING_PATTERNS = [
@@ -37,6 +38,8 @@ _CURRENT_LISTING_PATTERNS = [
     r"(?:has|have)\s+been\s+(?:approved|authorized)\s+for\s+listing\b.{0,600}?"
     r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"'“‘]?([A-Z](?:[A-Z0-9.-]{0,8}[A-Z0-9])?)[\"'”’]?",
 ]
+
+_REGISTRATION_FILE_NUMBER_KEY = "_registration_file_number"
 
 
 def extract_current_listing_tickers(text: str) -> set[str]:
@@ -80,6 +83,10 @@ def _accession(record: dict) -> str:
     return str(record.get("accession_no") or record.get("id") or "").strip()
 
 
+def _normalized_accession(value: str) -> str:
+    return str(value or "").strip().replace("-", "")
+
+
 def _filed(record: dict) -> str:
     value = str(record.get("filed") or record.get("filing_date") or "").strip()
     return value if re.fullmatch(r"\d{4}-\d{2}-\d{2}", value) else ""
@@ -104,6 +111,43 @@ def _verified_watch_tickers(payload: dict) -> dict[tuple[str, str], str]:
     return verified
 
 
+def _registration_file_numbers(records: list[dict]) -> dict[tuple[str, str], str]:
+    """Return SEC registration file numbers for exact CIK+accession records.
+
+    The SEC submissions feed is authoritative for ``fileNumber`` lineage. A
+    lookup failure or missing accession intentionally leaves the record unmapped;
+    callers then fail closed instead of carrying a ticker across an unproven
+    registration relationship.
+    """
+    wanted_by_cik: dict[str, dict[str, tuple[str, str]]] = {}
+    for record in records:
+        key = _record_key(record)
+        normalized_accession = _normalized_accession(key[1])
+        if not key[0] or not normalized_accession:
+            continue
+        wanted_by_cik.setdefault(key[0], {})[normalized_accession] = key
+
+    lineage: dict[tuple[str, str], str] = {}
+    for cik, wanted in wanted_by_cik.items():
+        try:
+            submission_rows = s1_registration_history_gate._recent_submission_rows(cik)
+        except Exception as error:
+            print(
+                f"[ticker_listing_reconciler] Warning: SEC registration-lineage "
+                f"lookup failed for CIK {cik}: {error}"
+            )
+            continue
+
+        for row in submission_rows:
+            accession = _normalized_accession(row.get("accession_no"))
+            file_number = str(row.get("file_number") or "").strip()
+            original_key = wanted.get(accession)
+            if original_key and file_number:
+                lineage[original_key] = file_number
+
+    return lineage
+
+
 def reconcile_payload(
     payload: dict,
     fetch_text=_fetch_filing_text,
@@ -114,9 +158,12 @@ def reconcile_payload(
     Current filing language always controls. If a successfully inspected later
     amendment omits the listing statement, an earlier exact-CIK S-1/S-1A symbol
     may carry forward only when every inspectable prior symbol agrees and no prior
-    filing in that lineage failed inspection. Same-day filings are never ordered
-    by inference. ``verified_lineage`` is reserved for the exact same CIK+accession
-    already reconciled in ``s1_watch.json`` before the public queue is processed.
+    filing in that lineage failed inspection. Production file reconciliation
+    additionally annotates exact SEC ``fileNumber`` lineage; when present, only
+    filings in that exact registration statement may seed carry-forward. Same-day
+    filings inside the same registration statement are never ordered by inference.
+    ``verified_lineage`` is reserved for the exact same CIK+accession already
+    reconciled in ``s1_watch.json`` before the public queue is processed.
     """
     records = [
         record
@@ -126,6 +173,9 @@ def reconcile_payload(
         and str(record.get("sec_url") or "").strip()
     ]
     verified_lineage = verified_lineage or {}
+    strict_registration_lineage = any(
+        _REGISTRATION_FILE_NUMBER_KEY in record for record in records
+    )
 
     # Fetch each SEC filing once, then reconcile in a second pass. The watch is
     # sorted newest-first, so a one-pass implementation cannot safely use earlier
@@ -211,6 +261,23 @@ def reconcile_payload(
 
         cik = _normalized_cik(record)
         filed = _filed(record)
+        current_file_number = str(
+            record.get(_REGISTRATION_FILE_NUMBER_KEY) or ""
+        ).strip()
+
+        if strict_registration_lineage and not current_file_number:
+            # Production reconciliation explicitly requested SEC file-number
+            # lineage but could not prove the current registration identity. Do
+            # not fall back to same-CIK inheritance across an evidence gap.
+            if current:
+                record["ticker"] = ""
+                updated += 1
+            print(
+                f"[ticker_listing_reconciler] {label}: SEC registration file-number "
+                f"lineage unavailable; refusing earlier ticker carry-forward"
+            )
+            continue
+
         same_day = [
             other
             for other in records
@@ -219,16 +286,21 @@ def reconcile_payload(
             and _normalized_cik(other) == cik
             and filed
             and _filed(other) == filed
+            and (
+                not strict_registration_lineage
+                or str(other.get(_REGISTRATION_FILE_NUMBER_KEY) or "").strip()
+                == current_file_number
+            )
         ]
         if same_day:
             # SEC filing dates do not establish ordering among same-day S-1/S-1A
-            # accessions. If this filing omits the symbol, do not carry a symbol
-            # through an unordered same-day registration event from older history.
+            # accessions in the same registration statement. If this filing omits
+            # the symbol, do not carry a symbol through that unordered event.
             if current:
                 record["ticker"] = ""
                 updated += 1
             print(
-                f"[ticker_listing_reconciler] {label}: same-day exact-CIK S-1 "
+                f"[ticker_listing_reconciler] {label}: same-day S-1 registration "
                 f"lineage cannot be ordered; refusing earlier ticker carry-forward"
             )
             continue
@@ -242,11 +314,16 @@ def reconcile_payload(
             and filed
             and _filed(other)
             and _filed(other) < filed
+            and (
+                not strict_registration_lineage
+                or str(other.get(_REGISTRATION_FILE_NUMBER_KEY) or "").strip()
+                == current_file_number
+            )
         ]
 
-        # If any strictly earlier filing in the available lineage could not be
-        # inspected, do not infer through that gap. A missing amendment could have
-        # changed the proposed symbol.
+        # If any strictly earlier filing in the proven registration lineage could
+        # not be inspected, do not infer through that gap. A missing amendment
+        # could have changed the proposed symbol.
         prior_failed = any(id(other) in failed for other in prior)
         prior_conflict = any(len(evidence.get(id(other), set())) > 1 for other in prior)
         prior_tickers = {
@@ -263,7 +340,7 @@ def reconcile_payload(
                 updated += 1
             print(
                 f"[ticker_listing_reconciler] {label}: carried forward ticker "
-                f"{authoritative} from unambiguous earlier exact-CIK S-1 lineage"
+                f"{authoritative} from unambiguous earlier SEC registration lineage"
             )
             continue
 
@@ -293,9 +370,28 @@ def reconcile_file(
     verified_lineage: dict[tuple[str, str], str] | None = None,
 ) -> tuple[int, int]:
     payload = json.loads(path.read_text(encoding="utf-8"))
-    updated, conflicts = reconcile_payload(
-        payload, verified_lineage=verified_lineage
-    )
+    records = [
+        record
+        for record in payload.get("filings", [])
+        if isinstance(record, dict)
+        and str(record.get("form") or "").strip().upper() in {"S-1", "S-1/A"}
+    ]
+    registration_lineage = _registration_file_numbers(records)
+    for record in records:
+        record[_REGISTRATION_FILE_NUMBER_KEY] = registration_lineage.get(
+            _record_key(record), ""
+        )
+
+    try:
+        updated, conflicts = reconcile_payload(
+            payload, verified_lineage=verified_lineage
+        )
+    finally:
+        # File-number lineage is a release-gate implementation detail, not part
+        # of the public feed schema. Never persist it to JSON or CSV.
+        for record in records:
+            record.pop(_REGISTRATION_FILE_NUMBER_KEY, None)
+
     if updated:
         path.write_text(
             json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
