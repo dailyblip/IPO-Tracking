@@ -19,6 +19,7 @@ from pathlib import Path
 import dashboard_export
 import edgar_client
 import filing_parser
+import registration_lineage
 
 
 class FilingPriceHistoryError(RuntimeError):
@@ -163,6 +164,64 @@ def _has_authoritative_price_source(filing):
     source_date = _canonical_date(source.get("filing_date"))
     pricing_date = _canonical_date(filing.get("pricing_date"))
     return bool(source_date is not None and pricing_date is not None and source_date <= pricing_date)
+
+
+def _final_registration_file_number(
+    filing,
+    rows_loader=registration_lineage.load_registration_rows,
+):
+    """Return the SEC file number for the exact final 424B4 accession.
+
+    A CIK can have multiple S-1 registrations open at the same time. The priced
+    record's exact 424B4 registration file number is therefore the authoritative
+    lineage anchor for preliminary Filing Price recovery; newest-S-1-by-CIK alone
+    is not sufficient. Missing, duplicate, malformed, or date-conflicting final
+    SEC metadata fails closed instead of allowing a range from another registration.
+    """
+    cik = _canonical_cik((filing or {}).get("cik"))
+    final_accession = _normalized_accession((filing or {}).get("accession_no"))
+    if not cik or not final_accession:
+        raise FilingPriceHistoryError(
+            f"Priced row {(filing or {}).get('company') or (filing or {}).get('id')} lacks exact final SEC identity for S-1 lineage review"
+        )
+
+    try:
+        rows = rows_loader(cik, (final_accession,))
+    except Exception as error:
+        raise FilingPriceHistoryError(
+            f"Could not establish final 424B4 registration lineage for {(filing or {}).get('company') or (filing or {}).get('id')}: {error}"
+        ) from error
+
+    matches = [
+        row
+        for row in rows or []
+        if isinstance(row, dict)
+        and _normalized_accession(row.get("accession_no")) == final_accession
+    ]
+    if len(matches) != 1:
+        raise FilingPriceHistoryError(
+            f"Priced row {(filing or {}).get('company') or (filing or {}).get('id')} does not resolve to one exact SEC 424B4 accession"
+        )
+
+    final_row = matches[0]
+    if str(final_row.get("form") or "").strip().upper() != "424B4":
+        raise FilingPriceHistoryError(
+            f"Priced row {(filing or {}).get('company') or (filing or {}).get('id')} final SEC accession is not a 424B4"
+        )
+
+    file_number = str(final_row.get("file_number") or "").strip()
+    if not file_number:
+        raise FilingPriceHistoryError(
+            f"Priced row {(filing or {}).get('company') or (filing or {}).get('id')} final 424B4 lacks SEC registration file-number lineage"
+        )
+
+    sec_final_day = _canonical_date(final_row.get("filing_date"))
+    published_final_day = _canonical_date((filing or {}).get("filed"))
+    if sec_final_day is None or published_final_day is None or sec_final_day != published_final_day:
+        raise FilingPriceHistoryError(
+            f"Priced row {(filing or {}).get('company') or (filing or {}).get('id')} final 424B4 filing date does not match exact SEC accession metadata"
+        )
+    return file_number
 
 
 def sec_s1_history(cik, pricing_date):
@@ -349,18 +408,25 @@ def sec_s1_history(cik, pricing_date):
     return history
 
 
-def _current_registration_history(history, *, pricing_day, initial_day=None):
-    """Limit S-1 history to the current SEC registration statement.
+def _current_registration_history(
+    history,
+    *,
+    pricing_day,
+    initial_day=None,
+    required_file_number=None,
+):
+    """Limit S-1 history to the priced IPO's SEC registration statement.
 
-    SEC ``fileNumber`` is the authoritative lineage key. When it is available,
-    the newest S-1/S-1A on or before pricing identifies the current registration
-    and older registrations with different file numbers are excluded even if they
-    belong to the same issuer. The row-level initial filing date is retained only
-    as a conservative fallback for injected/legacy history that lacks fileNumber.
+    The exact final 424B4 ``fileNumber`` is the authoritative lineage key when
+    supplied. This prevents a newer concurrent resale/follow-on S-1 by the same CIK
+    from becoming the preliminary-price source merely because it was filed later.
+    The newest-S-1 heuristic remains only for injected/legacy tests that do not
+    supply final 424B4 lineage. The row-level initial filing date is a conservative
+    fallback for history that lacks fileNumber.
 
     A mix of known and missing SEC file numbers inside the current IPO window is
     ambiguous evidence, not permission to discard the unnumbered filing. Fail
-    closed in that case so a later S-1/A cannot be silently skipped when deciding
+    closed in that case so an amendment cannot be silently skipped when deciding
     whether a priced row may keep a blank or older Filing Price.
     """
     chronological = []
@@ -372,7 +438,8 @@ def _current_registration_history(history, *, pricing_day, initial_day=None):
             continue
         chronological.append(metadata)
 
-    current_file_number = next(
+    required_file_number = str(required_file_number or "").strip()
+    current_file_number = required_file_number or next(
         (
             str(metadata.get("file_number") or "").strip()
             for metadata in chronological
@@ -453,6 +520,7 @@ def recover_payload_filing_prices(
     payload,
     history_loader=sec_s1_history,
     registration_loader=parse_s1_history_entry,
+    final_registration_loader=None,
 ):
     """Enrich priced rows with an authoritative preliminary price and provenance.
 
@@ -462,6 +530,12 @@ def recover_payload_filing_prices(
     until the latest explicit preliminary price is found. This repairs blank Filing
     Price values, provenance metadata lost during later lifecycle/export steps, and
     stale sources from an earlier registration by the same issuer.
+
+    Production recovery anchors that history to the exact final 424B4 SEC
+    registration file number. This prevents a concurrent newer S-1 registration for
+    the same issuer from donating its range to an unrelated priced IPO. Injected
+    history loaders used by isolated unit tests retain the legacy heuristic unless
+    they explicitly provide ``final_registration_loader``.
 
     Marketed ranges take precedence over a later fixed expected price in an S-1/A.
     A same-point expected price can reflect a final pricing amendment rather than
@@ -477,6 +551,9 @@ def recover_payload_filing_prices(
     filings = payload.get("filings")
     if not isinstance(filings, list):
         raise ValueError("Public feed must contain a filings list")
+
+    if final_registration_loader is None and history_loader is sec_s1_history:
+        final_registration_loader = _final_registration_file_number
 
     updated_payload = dict(payload)
     updated_filings = []
@@ -518,10 +595,26 @@ def recover_payload_filing_prices(
                 f"Priced row {filing.get('company') or filing.get('id')} has an initial filing date after its pricing date"
             )
 
+        final_file_number = None
+        if final_registration_loader is not None:
+            try:
+                final_file_number = str(final_registration_loader(filing) or "").strip()
+            except FilingPriceHistoryError:
+                raise
+            except Exception as error:
+                raise FilingPriceHistoryError(
+                    f"Could not establish final 424B4 registration lineage for {filing.get('company') or filing.get('id')}: {error}"
+                ) from error
+            if not final_file_number:
+                raise FilingPriceHistoryError(
+                    f"Priced row {filing.get('company') or filing.get('id')} has no authoritative final 424B4 registration file number"
+                )
+
         history = _current_registration_history(
             history,
             pricing_day=pricing_day,
             initial_day=initial_day,
+            required_file_number=final_file_number,
         )
         if not history:
             raise FilingPriceHistoryError(
