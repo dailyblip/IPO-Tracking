@@ -34,6 +34,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+from datetime import date
 from pathlib import Path
 
 from dashboard_export import write_dashboard_csv
@@ -64,6 +65,18 @@ RIGHTS_OFFERING_PATTERNS = (
 
 def _normalized_accession(value: str) -> str:
     return str(value or "").strip().replace("-", "")
+
+
+def _iso_date(value):
+    """Return a canonical SEC ISO filing date, otherwise None."""
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = date.fromisoformat(raw)
+    except ValueError:
+        return None
+    return parsed if parsed.isoformat() == raw else None
 
 
 def _has_authoritative_primary_evidence(record: dict) -> bool:
@@ -113,9 +126,10 @@ def already_reporting_before_registration(record: dict) -> bool:
 
     A prior 8-K (including successor/assumption variants), 10-Q, 10-K, 10-QT,
     10-KT, 6-K, 20-F, or 40-F (including amendments) is affirmative evidence
-    that the issuer was already subject to Exchange Act reporting. Requiring a
-    strictly earlier filing date avoids inferring event order from same-day
-    accessions.
+    that the issuer was already subject to Exchange Act reporting. The chronology
+    cutoff comes from the exact candidate accession in SEC submissions metadata,
+    not the mutable public-feed date. Requiring a strictly earlier SEC filing date
+    avoids inferring event order from same-day accessions.
     """
     if str(record.get("form") or "").strip().upper() not in FORM_TYPES:
         return False
@@ -123,8 +137,8 @@ def already_reporting_before_registration(record: dict) -> bool:
         return False
 
     cik = str(record.get("cik") or "").strip()
-    current_date = str(record.get("filed") or record.get("filing_date") or "").strip()
-    if not cik or not current_date:
+    accession_no = str(record.get("accession_no") or "").strip()
+    if not cik or not accession_no:
         return False
 
     try:
@@ -136,20 +150,34 @@ def already_reporting_before_registration(record: dict) -> bool:
         )
         return False
 
-    return any(
-        row.get("form") in REPORTING_FORMS
-        and row.get("filing_date")
-        and row["filing_date"] < current_date
-        for row in rows
+    current_key = _normalized_accession(accession_no)
+    current = next(
+        (
+            row for row in rows
+            if _normalized_accession(row.get("accession_no")) == current_key
+            and row.get("form") in FORM_TYPES
+        ),
+        None,
     )
+    current_date = _iso_date((current or {}).get("filing_date"))
+    if current_date is None:
+        return False
+
+    for row in rows:
+        if row.get("form") not in REPORTING_FORMS:
+            continue
+        reporting_date = _iso_date(row.get("filing_date"))
+        if reporting_date is not None and reporting_date < current_date:
+            return True
+    return False
 
 
 def _same_registration_predecessors(cik: str, accession_no: str) -> list[dict]:
     """Return strictly earlier S-1/S-1A filings sharing the SEC file number.
 
     SEC filing dates do not establish ordering among multiple accessions filed on
-    the same day. Same-day and undated rows therefore cannot seed an inherited
-    resale/direct-listing exclusion.
+    the same day. Same-day, undated, and malformed-date rows therefore cannot seed
+    an inherited resale/direct-listing exclusion.
     """
     rows = _recent_submission_rows(cik)
     if not rows or not accession_no:
@@ -164,8 +192,8 @@ def _same_registration_predecessors(cik: str, accession_no: str) -> list[dict]:
         return []
 
     current_file_number = str(current.get("file_number") or "").strip()
-    current_date = str(current.get("filing_date") or "").strip()
-    if not current_file_number or not current_date:
+    current_date = _iso_date(current.get("filing_date"))
+    if not current_file_number or current_date is None:
         return []
 
     predecessors = []
@@ -174,12 +202,13 @@ def _same_registration_predecessors(cik: str, accession_no: str) -> list[dict]:
         form = str(row.get("form") or "").strip().upper()
         file_number = str(row.get("file_number") or "").strip()
         filing_date = str(row.get("filing_date") or "").strip()
+        parsed_filing_date = _iso_date(filing_date)
         primary_document = str(row.get("primary_document") or "").strip()
         if not accession or _normalized_accession(accession) == current_key:
             continue
         if form not in FORM_TYPES or file_number != current_file_number:
             continue
-        if not filing_date or filing_date >= current_date:
+        if parsed_filing_date is None or parsed_filing_date >= current_date:
             continue
         if not primary_document:
             continue
