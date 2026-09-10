@@ -1,7 +1,19 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-10T02:04:24.829892+00:00",
+  "updated_at": "2026-09-10T03:03:59.398231+00:00",
   "items": {
+    "s1:0002124472": {
+      "id": "s1:0002124472",
+      "cik": "0002124472",
+      "company": "Orion180 Insurance Group Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-09",
+      "stage": "pre-pricing",
+      "price_range": "$15.00–$17.00",
+      "priority": "High",
+      "value": 320000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026061012/0001628280-26-061012-index.htm"
+    },
     "s1:0002104277": {
       "id": "s1:0002104277",
       "cik": "0002104277",
@@ -205,18 +217,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2131613/000119312526361190/0001193125-26-361190-index.htm"
-    },
-    "s1:0002124472": {
-      "id": "s1:0002124472",
-      "cik": "0002124472",
-      "company": "Orion180 Insurance Group Inc.",
-      "form": "S-1",
-      "filed": "2026-08-20",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026058231/0001628280-26-058231-index.htm"
     },
     "0001193125-26-356916": {
       "id": "0001193125-26-356916",
@@ -988,6 +988,13 @@
     }
   },
   "ciks": {
+    "0002124472": {
+      "company": "Orion180 Insurance Group Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002124472",
+      "last_filed": "2026-09-09",
+      "missing_runs": 0
+    },
     "0002104277": {
       "company": "Holtec Nuclear Corp",
       "stage": "pre-pricing",
@@ -1105,13 +1112,6 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002131613",
       "last_filed": "2026-08-21",
-      "missing_runs": 0
-    },
-    "0002124472": {
-      "company": "Orion180 Insurance Group Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002124472",
-      "last_filed": "2026-08-20",
       "missing_runs": 0
     },
     "0002132582": {
