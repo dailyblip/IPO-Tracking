@@ -1,8 +1,36 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-10T01:08:41.574498+00:00",
+  "generated_at": "2026-09-10T02:07:27.312082+00:00",
   "source": "SEC EDGAR",
   "filings": [
+    {
+      "id": "s1:0002124472",
+      "company": "Orion180 Insurance Group Inc.",
+      "ticker": "OIG",
+      "cik": "0002124472",
+      "accession_no": "0001628280-26-061012",
+      "form": "S-1/A",
+      "filed": "2026-09-09",
+      "stage": "Pre-pricing",
+      "price_range": "$15.00–$17.00",
+      "filing_price": "$15.00–$17.00",
+      "offering_size_source": "explicit initial-public-offering total",
+      "offering_size_confidence": "High",
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "priority": "High",
+      "status": "New",
+      "value": 320000000,
+      "value_label": "$320,000,000",
+      "people_count": 0,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "Preliminary offering range disclosed at $15.00–$17.00",
+        "IPO size disclosed or derived at approximately $320,000,000"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026061012/0001628280-26-061012-index.htm"
+    },
     {
       "id": "s1:0002104277",
       "company": "Holtec Nuclear Corp",
@@ -21,7 +49,7 @@
       "priority": "High",
       "status": "New",
       "value": 825000000,
-      "value_label": "$825M",
+      "value_label": "$825,000,000",
       "people_count": 0,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -292,7 +320,7 @@
       "priority": "High",
       "status": "New",
       "value": 50000000,
-      "value_label": "$50M",
+      "value_label": "$50,000,000",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
@@ -464,33 +492,6 @@
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2131613/000119312526361190/0001193125-26-361190-index.htm"
-    },
-    {
-      "id": "s1:0002124472",
-      "company": "Orion180 Insurance Group Inc.",
-      "ticker": "OIG",
-      "cik": "0002124472",
-      "accession_no": "0001628280-26-058231",
-      "form": "S-1",
-      "filed": "2026-08-20",
-      "stage": "Pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": null,
-      "secondary_offering_shares": null,
-      "priority": "Medium",
-      "status": "New",
-      "value": null,
-      "value_label": "—",
-      "people_count": 0,
-      "signals": [
-        "Initial registration statement filed — IPO is pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "people": [],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026058231/0001628280-26-058231-index.htm"
     },
     {
       "id": "0001193125-26-356916",
