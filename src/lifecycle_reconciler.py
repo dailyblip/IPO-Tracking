@@ -587,12 +587,20 @@ def reconcile_payload(payload, final_filings, soup_loader, lineage_resolver=None
             continue
         existing_final = final_record_by_cik.get(cik)
         prepricing = prepricing_by_cik.get(cik)
-        final_meta = _select_final_meta(
-            candidates,
-            existing_final,
-            prepricing,
-            lineage_resolver=lineage_resolver,
-        )
+        # An already-published final row is an exact SEC filing identity. Do not let
+        # a separate, newer S-1 registration under the same CIK redirect that row to
+        # another 424B4. New pre-pricing registrations are reconciled independently.
+        if existing_final is not None:
+            final_meta = _select_final_meta(
+                candidates,
+                existing_final=existing_final,
+            )
+        else:
+            final_meta = _select_final_meta(
+                candidates,
+                prepricing=prepricing,
+                lineage_resolver=lineage_resolver,
+            )
         if not final_meta:
             continue
 
@@ -673,6 +681,17 @@ def reconcile_payload(payload, final_filings, soup_loader, lineage_resolver=None
             continue
 
         if _is_prepricing(filing):
+            # A final IPO and a newer S-1 can legitimately share a CIK. Remove a
+            # co-present pre-pricing row only when SEC registration lineage proves it
+            # belongs to the final record being reconciled. Otherwise fail closed and
+            # leave that separate registration visible for its own lifecycle.
+            if (
+                state["existing"] is not None
+                and lineage_resolver is not None
+                and not lineage_resolver(filing, state["meta"])
+            ):
+                reconciled.append(filing)
+                continue
             removed_count += 1
             if state["existing"] is None and state["replacement"] is not None and cik not in inserted_promotions:
                 reconciled.append(state["replacement"])
