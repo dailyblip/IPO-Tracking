@@ -26,6 +26,7 @@ def _fixture():
         "secondary_offering_shares": None,
         "offering_size_source": "final 424B4 explicit issuer-only THE OFFERING row",
         "offering_size_confidence": "High",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/1234567/000123456726000100/0001234567-26-000100-index.htm",
     }
     new_prepricing = {
         "cik": "0001234567",
