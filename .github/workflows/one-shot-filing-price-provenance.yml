@@ -44,37 +44,19 @@ jobs:
 
           test_path = Path("src/test_filing_price_history.py")
           test_text = test_path.read_text(encoding="utf-8")
-          old = '''        self.assertEqual(payload["filings"][0]["filing_price"], "15-17")
-          self.assertEqual((recovered, checked), (0, 1))'''
-          new = '''        self.assertEqual(payload["filings"][0]["filing_price"], "15-17")
-          self.assertEqual(
-              payload["filings"][0]["filing_price_source"]["file_number"],
-              "333-300001",
-          )
-          self.assertEqual((recovered, checked), (1, 1))'''
+          old = '        self.assertEqual(payload["filings"][0]["filing_price"], "15-17")\n        self.assertEqual((recovered, checked), (0, 1))'
+          new = '        self.assertEqual(payload["filings"][0]["filing_price"], "15-17")\n        self.assertEqual(\n            payload["filings"][0]["filing_price_source"]["file_number"],\n            "333-300001",\n        )\n        self.assertEqual((recovered, checked), (1, 1))'
           if test_text.count(old) != 1:
               raise SystemExit("Expected cached-source migration assertion exactly once")
           test_path.write_text(test_text.replace(old, new), encoding="utf-8")
 
           lineage_path = Path("src/test_filing_price_final_registration_lineage.py")
           lineage = lineage_path.read_text(encoding="utf-8")
-          old = '''        self.assertEqual(
-              row["filing_price_source"]["accession_no"],
-              "0001234567-26-000080",
-          )
-          self.assertEqual(calls, ["0001234567-26-000080"])'''
-          new = '''        self.assertEqual(
-              row["filing_price_source"]["accession_no"],
-              "0001234567-26-000080",
-          )
-          self.assertEqual(
-              row["filing_price_source"]["file_number"],
-              "333-888888",
-          )
-          self.assertEqual(calls, ["0001234567-26-000080"])'''
-          if lineage.count(old) != 1:
-              raise SystemExit("Expected final-lineage source assertion exactly once")
-          lineage_path.write_text(lineage.replace(old, new), encoding="utf-8")
+          target = '        self.assertEqual(calls, ["0001234567-26-000080"])'
+          replacement = '        self.assertEqual(\n            row["filing_price_source"]["file_number"],\n            "333-888888",\n        )\n' + target
+          if lineage.count(target) != 1:
+              raise SystemExit("Expected final-lineage source assertion target exactly once")
+          lineage_path.write_text(lineage.replace(target, replacement), encoding="utf-8")
           PY
 
       - name: Run focused Filing Price tests
