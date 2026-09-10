@@ -11,6 +11,7 @@ class ArchivedFilingPriceHistoryTests(unittest.TestCase):
             "company": "Archived Range Corp.",
             "ticker": "ARC",
             "cik": "1234567",
+            "accession_no": "0001234567-26-000004",
             "form": "424B4",
             "stage": "Priced",
             "filed": "2026-08-20",
@@ -24,10 +25,13 @@ class ArchivedFilingPriceHistoryTests(unittest.TestCase):
         return {
             "filings": {
                 "recent": {
-                    "form": ["S-1/A"],
-                    "accessionNumber": ["0001234567-26-000003"],
-                    "filingDate": ["2026-08-18"],
-                    "fileNumber": ["333-300001"],
+                    "form": ["424B4", "S-1/A"],
+                    "accessionNumber": [
+                        "0001234567-26-000004",
+                        "0001234567-26-000003",
+                    ],
+                    "filingDate": ["2026-08-20", "2026-08-18"],
+                    "fileNumber": ["333-300001", "333-300001"],
                 },
                 "files": [
                     {
