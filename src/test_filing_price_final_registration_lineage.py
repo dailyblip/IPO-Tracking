@@ -78,6 +78,10 @@ class FinalRegistrationFilingPriceLineageTests(unittest.TestCase):
             row["filing_price_source"]["accession_no"],
             "0001234567-26-000080",
         )
+        self.assertEqual(
+            row["filing_price_source"]["file_number"],
+            "333-888888",
+        )
         self.assertEqual(calls, ["0001234567-26-000080"])
         self.assertEqual(final_calls, ["0001234567-26-000090"])
         self.assertEqual((recovered, checked), (1, 1))

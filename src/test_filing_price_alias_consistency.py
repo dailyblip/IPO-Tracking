@@ -90,7 +90,8 @@ class FilingPriceAliasConsistencyTests(unittest.TestCase):
         filing = payload["filings"][0]
         self.assertEqual(filing["filing_price"], "14-16")
         self.assertEqual(filing["price_range"], "14-16")
-        self.assertEqual((recovered, checked), (0, 1))
+        self.assertEqual(filing["filing_price_source"]["file_number"], "333-300001")
+        self.assertEqual((recovered, checked), (1, 1))
 
     def test_verified_price_range_alias_backfills_canonical_after_source_revalidation(self):
         payload, recovered, checked = filing_price_history.recover_payload_filing_prices(
@@ -110,7 +111,8 @@ class FilingPriceAliasConsistencyTests(unittest.TestCase):
         filing = payload["filings"][0]
         self.assertEqual(filing["filing_price"], "14-16")
         self.assertEqual(filing["price_range"], "14-16")
-        self.assertEqual((recovered, checked), (0, 1))
+        self.assertEqual(filing["filing_price_source"]["file_number"], "333-300001")
+        self.assertEqual((recovered, checked), (1, 1))
 
 
 if __name__ == "__main__":
