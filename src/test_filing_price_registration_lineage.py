@@ -180,7 +180,10 @@ class FilingPriceRegistrationLineageTests(unittest.TestCase):
             ["0001104659-26-088001", "0001104659-26-084856"],
         )
         self.assertEqual(payload["filings"][0]["filing_price"], "15-17")
-        self.assertEqual(payload["filings"][0]["filing_price_source"], existing_source)
+        self.assertEqual(
+            payload["filings"][0]["filing_price_source"],
+            {**existing_source, "file_number": "333-300001"},
+        )
         self.assertEqual((recovered, checked), (1, 1))
 
     def test_missing_file_number_inside_current_registration_window_fails_closed(self):
