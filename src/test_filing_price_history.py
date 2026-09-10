@@ -168,7 +168,11 @@ class FilingPriceHistoryTests(unittest.TestCase):
         self.assertEqual(history_calls, [("0001234567", "2026-08-20")])
         self.assertEqual(registration_calls, ["0001193125-26-123456"])
         self.assertEqual(payload["filings"][0]["filing_price"], "15-17")
-        self.assertEqual((recovered, checked), (0, 1))
+        self.assertEqual(
+            payload["filings"][0]["filing_price_source"]["file_number"],
+            "333-300001",
+        )
+        self.assertEqual((recovered, checked), (1, 1))
 
     def test_corrupted_cached_range_is_replaced_from_matching_sec_source(self):
         history = [
