@@ -28,26 +28,34 @@ def reconcile_payload_to_convergence(
     lineage_resolver,
     max_passes=8,
 ):
-    """Repeat exact-lineage reconciliation until a pass makes no changes."""
+    """Repeat exact-lineage reconciliation until a pass makes no changes.
+
+    ``max_passes`` limits mutation-bearing reconciliation passes. One additional
+    verification pass is allowed after that boundary so a feed that becomes stable
+    on the final permitted repair pass is accepted instead of being falsely rejected
+    as non-convergent.
+    """
     current = payload
     total_repaired = 0
     total_removed = 0
 
-    for pass_number in range(1, max_passes + 1):
+    for pass_number in range(1, max_passes + 2):
         current, repaired, removed = lifecycle_reconciler.reconcile_payload(
             current,
             final_filings,
             soup_loader,
             lineage_resolver=lineage_resolver,
         )
-        total_repaired += repaired
-        total_removed += removed
         if repaired == 0 and removed == 0:
             return current, total_repaired, total_removed, pass_number
+        if pass_number > max_passes:
+            break
+        total_repaired += repaired
+        total_removed += removed
 
     raise RuntimeError(
         "Lifecycle reconciliation did not converge within "
-        f"{max_passes} passes; refusing to publish an unstable feed"
+        f"{max_passes} mutation pass(es); refusing to publish an unstable feed"
     )
 
 
