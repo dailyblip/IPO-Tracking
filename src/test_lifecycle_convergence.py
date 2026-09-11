@@ -106,3 +106,54 @@ def test_duplicate_prepricing_rows_do_not_emit_duplicate_final(monkeypatch):
     assert passes == 2
     assert len(reconciled["filings"]) == 1
     assert reconciled["filings"][0]["accession_no"] == final_meta["accession_no"]
+
+
+def test_stability_probe_accepts_convergence_at_mutation_pass_boundary(monkeypatch):
+    calls = []
+
+    def reconcile_once(current, *_args, **_kwargs):
+        calls.append(len(calls) + 1)
+        if len(calls) <= 2:
+            return current, 1, 1
+        return current, 0, 0
+
+    monkeypatch.setattr(lr, "reconcile_payload", reconcile_once)
+
+    reconciled, repaired, removed, passes = convergence.reconcile_payload_to_convergence(
+        {"filings": []},
+        [],
+        lambda _meta: object(),
+        lambda _prepricing, _final_meta: False,
+        max_passes=2,
+    )
+
+    assert reconciled == {"filings": []}
+    assert repaired == 2
+    assert removed == 2
+    assert passes == 3
+    assert calls == [1, 2, 3]
+
+
+def test_stability_probe_does_not_expand_mutation_budget(monkeypatch):
+    calls = []
+
+    def never_stable(current, *_args, **_kwargs):
+        calls.append(len(calls) + 1)
+        return current, 1, 0
+
+    monkeypatch.setattr(lr, "reconcile_payload", never_stable)
+
+    try:
+        convergence.reconcile_payload_to_convergence(
+            {"filings": []},
+            [],
+            lambda _meta: object(),
+            lambda _prepricing, _final_meta: False,
+            max_passes=2,
+        )
+    except RuntimeError as exc:
+        assert "2 mutation pass(es)" in str(exc)
+    else:
+        raise AssertionError("expected lifecycle convergence boundary to fail closed")
+
+    assert calls == [1, 2, 3]
