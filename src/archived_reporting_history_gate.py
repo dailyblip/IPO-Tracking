@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -69,6 +70,14 @@ def _iso_date(value):
     return parsed if parsed.isoformat() == raw else None
 
 
+def _canonical_accession(value):
+    return re.sub(r"\D", "", str(value or ""))
+
+
+def _canonical_file_number(value):
+    return str(value or "").strip().upper()
+
+
 def _columnar_history(payload):
     """Return the form/date column block from current or archived submissions JSON."""
     if not isinstance(payload, dict):
@@ -108,21 +117,73 @@ def _validated_history_columns(payload):
     return normalized
 
 
-def _s8_reporting_cutoff(submissions, cutoff):
+def _candidate_file_number_from_recent(submissions, candidate_accession):
+    """Resolve a candidate's exact SEC registration file number when available."""
+    target_accession = _canonical_accession(candidate_accession)
+    if not target_accession:
+        return ""
+
+    block = _columnar_history(submissions)
+    accessions = block.get("accessionNumber")
+    file_numbers = block.get("fileNumber")
+    if accessions is None and file_numbers is None:
+        return ""
+    if not isinstance(accessions, list) or not isinstance(file_numbers, list):
+        raise ArchivedReportingHistoryError(
+            "SEC submissions filing history has incomplete accessionNumber/fileNumber arrays"
+        )
+
+    history = _validated_history_columns(submissions)
+    if len(accessions) != len(history) or len(file_numbers) != len(history):
+        raise ArchivedReportingHistoryError(
+            "SEC submissions filing history has misaligned accessionNumber/fileNumber arrays"
+        )
+
+    matches = {
+        _canonical_file_number(file_number)
+        for accession, file_number in zip(accessions, file_numbers)
+        if _canonical_accession(accession) == target_accession
+        and _canonical_file_number(file_number)
+    }
+    if len(matches) > 1:
+        raise ArchivedReportingHistoryError(
+            "SEC submissions filing history returned conflicting file numbers for candidate accession"
+        )
+    return next(iter(matches), "")
+
+
+def _s8_reporting_cutoff(submissions, cutoff, candidate_file_number=None):
     """Bound S-8 evidence to before the current S-1 registration sequence.
 
-    For a final 424B4, an employee-plan S-8 can be filed after the IPO S-1 has
-    already begun but before the final prospectus. That S-8 is a consequence of
-    the IPO process, not proof that the issuer was a reporting company before the
-    IPO. The latest earlier base S-1 marks the start of the current registration
-    sequence; later S-1/A amendments must not advance the cutoff and accidentally
-    turn an IPO-contemporaneous S-8 into prior-reporting evidence. For an initial
-    S-1 candidate with no earlier base registration filing, the candidate date
-    remains the cutoff.
+    When the candidate's SEC registration file number is available, use it to find
+    the exact base S-1 for that registration. This prevents a separate concurrent
+    S-1 under the same CIK from moving the cutoff forward and turning an
+    IPO-contemporaneous S-8 into false prior-reporting evidence. If exact lineage
+    metadata is unavailable, retain the established date-based fallback.
     """
+    history = _validated_history_columns(submissions)
+    target_file_number = _canonical_file_number(candidate_file_number)
+    if target_file_number:
+        block = _columnar_history(submissions)
+        file_numbers = block.get("fileNumber")
+        if file_numbers is not None:
+            if not isinstance(file_numbers, list) or len(file_numbers) != len(history):
+                raise ArchivedReportingHistoryError(
+                    "SEC submissions filing history has misaligned fileNumber metadata"
+                )
+            lineage_base_dates = [
+                report_date
+                for (form, report_date), file_number in zip(history, file_numbers)
+                if form == "S-1"
+                and _canonical_file_number(file_number) == target_file_number
+                and report_date <= cutoff
+            ]
+            if lineage_base_dates:
+                return min(lineage_base_dates)
+
     earlier_registration_dates = [
         report_date
-        for form, report_date in _validated_history_columns(submissions)
+        for form, report_date in history
         if form == "S-1" and report_date < cutoff
     ]
     return max(earlier_registration_dates, default=cutoff)
@@ -202,13 +263,26 @@ def _load_archive(name):
     )
 
 
-def has_prior_reporting_history(submissions, candidate_date, archive_loader=_load_archive):
+def has_prior_reporting_history(
+    submissions,
+    candidate_date,
+    archive_loader=_load_archive,
+    candidate_accession=None,
+    candidate_file_number=None,
+):
     """Check current plus SEC-listed history for prior reporting/public-offering evidence."""
     cutoff = _iso_date(candidate_date)
     if cutoff is None:
         raise ValueError(f"Invalid candidate date: {candidate_date!r}")
 
-    s8_cutoff = _s8_reporting_cutoff(submissions, cutoff)
+    exact_file_number = _canonical_file_number(candidate_file_number)
+    if not exact_file_number:
+        exact_file_number = _candidate_file_number_from_recent(
+            submissions, candidate_accession
+        )
+    s8_cutoff = _s8_reporting_cutoff(
+        submissions, cutoff, candidate_file_number=exact_file_number
+    )
     if _block_has_prior_reporting(submissions, cutoff, s8_cutoff=s8_cutoff):
         return True
 
@@ -313,7 +387,13 @@ def sanitize_payloads(
             if cik not in cache:
                 cache[cik] = submissions_loader(cik)
             is_prior_reporting = has_prior_reporting_history(
-                cache[cik], candidate_date, archive_loader=cached_archive_loader
+                cache[cik],
+                candidate_date,
+                archive_loader=cached_archive_loader,
+                candidate_accession=record.get("accession_no") or record.get("id"),
+                candidate_file_number=(
+                    record.get("file_number") or record.get("registration_file_number")
+                ),
             )
         except Exception as error:
             if kind == "prepricing" and not fail_closed_prepricing:
