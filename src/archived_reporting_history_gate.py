@@ -152,34 +152,59 @@ def _candidate_file_number_from_recent(submissions, candidate_accession):
     return next(iter(matches), "")
 
 
-def _s8_reporting_cutoff(submissions, cutoff, candidate_file_number=None):
+def _exact_s1_sequence_start(payload, cutoff, candidate_file_number):
+    """Return the base S-1 date for one exact SEC registration lineage, if present."""
+    target_file_number = _canonical_file_number(candidate_file_number)
+    if not target_file_number:
+        return None
+
+    history = _validated_history_columns(payload)
+    block = _columnar_history(payload)
+    file_numbers = block.get("fileNumber")
+    if file_numbers is None:
+        return None
+    if not isinstance(file_numbers, list) or len(file_numbers) != len(history):
+        raise ArchivedReportingHistoryError(
+            "SEC submissions filing history has misaligned fileNumber metadata"
+        )
+
+    lineage_base_dates = [
+        report_date
+        for (form, report_date), file_number in zip(history, file_numbers)
+        if form == "S-1"
+        and _canonical_file_number(file_number) == target_file_number
+        and report_date <= cutoff
+    ]
+    return min(lineage_base_dates, default=None)
+
+
+def _s8_reporting_cutoff(
+    submissions,
+    cutoff,
+    candidate_file_number=None,
+    archived_histories=(),
+):
     """Bound S-8 evidence to before the current S-1 registration sequence.
 
     When the candidate's SEC registration file number is available, use it to find
-    the exact base S-1 for that registration. This prevents a separate concurrent
-    S-1 under the same CIK from moving the cutoff forward and turning an
-    IPO-contemporaneous S-8 into false prior-reporting evidence. If exact lineage
-    metadata is unavailable, retain the established date-based fallback.
+    the exact base S-1 for that registration across both current and SEC-listed
+    archived submission history. This prevents a separate concurrent S-1 under the
+    same CIK from moving the cutoff forward even when the true base S-1 has aged out
+    of ``filings.recent``. If exact lineage metadata is unavailable, retain the
+    established date-based fallback.
     """
     history = _validated_history_columns(submissions)
     target_file_number = _canonical_file_number(candidate_file_number)
     if target_file_number:
-        block = _columnar_history(submissions)
-        file_numbers = block.get("fileNumber")
-        if file_numbers is not None:
-            if not isinstance(file_numbers, list) or len(file_numbers) != len(history):
-                raise ArchivedReportingHistoryError(
-                    "SEC submissions filing history has misaligned fileNumber metadata"
-                )
-            lineage_base_dates = [
-                report_date
-                for (form, report_date), file_number in zip(history, file_numbers)
-                if form == "S-1"
-                and _canonical_file_number(file_number) == target_file_number
-                and report_date <= cutoff
-            ]
-            if lineage_base_dates:
-                return min(lineage_base_dates)
+        lineage_starts = []
+        for payload in (submissions, *tuple(archived_histories or ())):
+            sequence_start = _exact_s1_sequence_start(
+                payload, cutoff, target_file_number
+            )
+            if sequence_start is not None:
+                lineage_starts.append(sequence_start)
+        if lineage_starts:
+            return min(lineage_starts)
 
     earlier_registration_dates = [
         report_date
@@ -280,11 +305,35 @@ def has_prior_reporting_history(
         exact_file_number = _candidate_file_number_from_recent(
             submissions, candidate_accession
         )
+
+    # Usually the base S-1 is still in filings.recent and no extra archive work is
+    # needed. When exact lineage is known but that base S-1 has aged out, preload
+    # the eligible SEC archive blocks so the S-8 chronology can still anchor to
+    # the correct registration rather than an unrelated concurrent S-1.
+    archived_histories = None
+    if (
+        exact_file_number
+        and _exact_s1_sequence_start(submissions, cutoff, exact_file_number) is None
+    ):
+        archived_histories = []
+        for descriptor in _archive_descriptors(submissions, cutoff):
+            name = str(descriptor.get("name") or "").strip()
+            archived_histories.append(archive_loader(name))
+
     s8_cutoff = _s8_reporting_cutoff(
-        submissions, cutoff, candidate_file_number=exact_file_number
+        submissions,
+        cutoff,
+        candidate_file_number=exact_file_number,
+        archived_histories=archived_histories or (),
     )
     if _block_has_prior_reporting(submissions, cutoff, s8_cutoff=s8_cutoff):
         return True
+
+    if archived_histories is not None:
+        for archived in archived_histories:
+            if _block_has_prior_reporting(archived, cutoff, s8_cutoff=s8_cutoff):
+                return True
+        return False
 
     for descriptor in _archive_descriptors(submissions, cutoff):
         name = str(descriptor.get("name") or "").strip()
