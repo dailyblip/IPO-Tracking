@@ -120,6 +120,11 @@ def build_registration_lineage_resolver(rows_loader=load_registration_rows):
     agree with the SEC date for that exact S-1/S-1A accession, just as the candidate
     424B4 date is verified. This prevents stale or corrupted row chronology from
     being carried into a priced record under otherwise-valid registration lineage.
+
+    Only SEC registration evidence is cached. Published-row dates are validated on
+    every call so one valid row cannot cause a stale duplicate with the same accession
+    pair to inherit a cached True result, and one stale row cannot poison a later valid
+    row for the same exact SEC filings.
     """
     cache = {}
 
@@ -144,7 +149,7 @@ def build_registration_lineage_resolver(rows_loader=load_registration_rows):
                     (prepricing_accession, final_accession),
                 )
             except Exception:
-                cache[cache_key] = False
+                cache[cache_key] = (False, None, None)
             else:
                 prepricing_rows = [
                     row
@@ -157,7 +162,7 @@ def build_registration_lineage_resolver(rows_loader=load_registration_rows):
                     if _canonical_accession(row.get("accession_no")) == final_accession
                 ]
                 if len(prepricing_rows) != 1 or len(final_rows) != 1:
-                    cache[cache_key] = False
+                    cache[cache_key] = (False, None, None)
                 else:
                     s1_row = prepricing_rows[0]
                     final_row = final_rows[0]
@@ -167,12 +172,7 @@ def build_registration_lineage_resolver(rows_loader=load_registration_rows):
                     final_file_number = str(final_row.get("file_number") or "").strip()
                     s1_date = _canonical_date(s1_row.get("filing_date"))
                     final_date = _canonical_date(final_row.get("filing_date"))
-                    prepricing_date = _canonical_date(
-                        (prepricing or {}).get("filed")
-                        or (prepricing or {}).get("filing_date")
-                    )
-                    candidate_date = _canonical_date((final_meta or {}).get("filing_date"))
-                    cache[cache_key] = bool(
+                    sec_lineage_valid = bool(
                         s1_form in {"S-1", "S-1/A"}
                         and final_form == "424B4"
                         and s1_file_number
@@ -180,12 +180,22 @@ def build_registration_lineage_resolver(rows_loader=load_registration_rows):
                         and s1_file_number == final_file_number
                         and s1_date is not None
                         and final_date is not None
-                        and prepricing_date is not None
-                        and candidate_date is not None
-                        and prepricing_date == s1_date
                         and final_date >= s1_date
-                        and candidate_date == final_date
                     )
-        return cache[cache_key]
+                    cache[cache_key] = (sec_lineage_valid, s1_date, final_date)
+
+        sec_lineage_valid, s1_date, final_date = cache[cache_key]
+        prepricing_date = _canonical_date(
+            (prepricing or {}).get("filed")
+            or (prepricing or {}).get("filing_date")
+        )
+        candidate_date = _canonical_date((final_meta or {}).get("filing_date"))
+        return bool(
+            sec_lineage_valid
+            and prepricing_date is not None
+            and candidate_date is not None
+            and prepricing_date == s1_date
+            and candidate_date == final_date
+        )
 
     return resolve
