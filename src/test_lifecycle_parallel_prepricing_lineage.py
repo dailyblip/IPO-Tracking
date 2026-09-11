@@ -8,7 +8,7 @@ registration that actually belongs to the final prospectus.
 import lifecycle_reconciler as lr
 
 
-def test_promotion_keeps_unrelated_prepricing_registration_under_same_cik(monkeypatch):
+def _scenario():
     matched = {
         "cik": "0001234567",
         "company": "Acme Holdings",
@@ -42,15 +42,18 @@ def test_promotion_keeps_unrelated_prepricing_registration_under_same_cik(monkey
         "filed": "2026-08-15",
         "accession_no": "0001234567-26-000300",
     }
+    return matched, separate, final_meta, promoted
 
+
+def _reconcile(monkeypatch, filings):
+    matched, _separate, final_meta, promoted = _scenario()
     monkeypatch.setattr(
         lr,
         "_promote_prepricing_record",
         lambda _record, _meta, _soup: promoted,
     )
-
-    reconciled, repaired, removed = lr.reconcile_payload(
-        {"filings": [matched, separate]},
+    return lr.reconcile_payload(
+        {"filings": filings},
         [final_meta],
         lambda _meta: object(),
         lineage_resolver=lambda prepricing, _final: (
@@ -58,6 +61,22 @@ def test_promotion_keeps_unrelated_prepricing_registration_under_same_cik(monkey
         ),
     )
 
+
+def test_promotion_keeps_unrelated_prepricing_registration_under_same_cik(monkeypatch):
+    matched, separate, _final_meta, promoted = _scenario()
+
+    reconciled, repaired, removed = _reconcile(monkeypatch, [matched, separate])
+
     assert repaired == 1
     assert removed == 1
     assert reconciled["filings"] == [promoted, separate]
+
+
+def test_promotion_is_not_blocked_when_unrelated_registration_appears_first(monkeypatch):
+    matched, separate, _final_meta, promoted = _scenario()
+
+    reconciled, repaired, removed = _reconcile(monkeypatch, [separate, matched])
+
+    assert repaired == 1
+    assert removed == 1
+    assert reconciled["filings"] == [separate, promoted]
