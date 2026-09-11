@@ -8,11 +8,14 @@ a first-time operating-company IPO.
 
 A prior Exchange Act reporting form or registration statement, or a prior S-3/F-3
 short-form registration that itself requires Exchange Act reporting eligibility,
-must be filed strictly before the candidate. A prior 424B4 is separately
-conclusive that the issuer already completed an earlier public offering prospectus.
-Same-day evidence does not establish event order. Archive lookup failures block
-publication in release mode for both final 424B4 and pre-pricing S-1/S-1A candidates;
-incorrect follow-on classification is worse than temporarily withholding a row.
+must be filed strictly before the candidate. Prior S-8 employee-plan registration
+history is also affirmative reporting evidence because Form S-8 requires the
+registrant to be subject to Exchange Act reporting immediately before filing. A
+prior 424B4 is separately conclusive that the issuer already completed an earlier
+public offering prospectus. Same-day evidence does not establish event order.
+Archive lookup failures block publication in release mode for both final 424B4 and
+pre-pricing S-1/S-1A candidates; incorrect follow-on classification is worse than
+temporarily withholding a row.
 """
 
 from __future__ import annotations
@@ -42,6 +45,7 @@ REPORTING_FORMS = {
     "6-K", "6-K/A", "20-F", "20-F/A", "40-F", "40-F/A",
     "S-3", "S-3/A", "S-3ASR", "S-3ASR/A", "S-3MEF",
     "F-3", "F-3/A", "F-3ASR", "F-3ASR/A", "F-3MEF",
+    "S-8", "S-8 POS",
     "424B4",
 }
 SUBMISSIONS_BASE_URL = "https://data.sec.gov/submissions"
