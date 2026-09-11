@@ -6,7 +6,9 @@ from pathlib import Path
 DATA_PATH = Path(__file__).resolve().parents[1] / "docs" / "data" / "filings.json"
 _EMPTY = (None, "", "—")
 _FINAL_PERSON_FIELDS = ("ipo_value", "cash_realized_ipo")
+_MARKET_PERSON_FIELDS = ("cash_value", "liquid_value", "locked_value", "valuation_as_of")
 _FINAL_SIGNAL_MARKERS = ("offering priced at", "offering raised approximately")
+_MARKET_SIGNAL_MARKERS = ("currently valued", "current market value")
 
 
 class PublishedPrepricingLifecycleIntegrityTests(unittest.TestCase):
@@ -31,12 +33,20 @@ class PublishedPrepricingLifecycleIntegrityTests(unittest.TestCase):
                 failures.append(f"{label}: pre-pricing {form} row retains Pricing Date")
             if filing.get("offering_price") not in _EMPTY:
                 failures.append(f"{label}: pre-pricing {form} row retains Final IPO Price")
+            if filing.get("current_price") not in _EMPTY:
+                failures.append(
+                    f"{label}: pre-pricing {form} row retains Current Price"
+                )
+            if filing.get("price_updated") not in _EMPTY:
+                failures.append(
+                    f"{label}: pre-pricing {form} row retains quote timestamp"
+                )
 
             for person in filing.get("people") or []:
                 if not isinstance(person, dict):
                     continue
                 person_label = person.get("name") or "unknown person"
-                for field in _FINAL_PERSON_FIELDS:
+                for field in _FINAL_PERSON_FIELDS + _MARKET_PERSON_FIELDS:
                     if person.get(field) not in _EMPTY:
                         failures.append(
                             f"{label} / {person_label}: pre-pricing row retains {field}"
@@ -49,6 +59,10 @@ class PublishedPrepricingLifecycleIntegrityTests(unittest.TestCase):
                 if any(marker in folded for marker in _FINAL_SIGNAL_MARKERS):
                     failures.append(
                         f"{label}: pre-pricing row retains final-pricing signal {signal!r}"
+                    )
+                if any(marker in folded for marker in _MARKET_SIGNAL_MARKERS):
+                    failures.append(
+                        f"{label}: pre-pricing row retains current-market signal {signal!r}"
                     )
 
         self.assertGreater(len(self.filings), 0, "Public feed is empty")
