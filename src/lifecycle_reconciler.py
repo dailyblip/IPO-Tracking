@@ -599,11 +599,27 @@ def reconcile_payload(payload, final_filings, soup_loader, lineage_resolver=None
                 candidates,
                 existing_final=existing_final,
             )
+        elif lineage_resolver is not None:
+            # Multiple active S-1/S-1A registrations can share one CIK. Do not let
+            # payload ordering decide which registration is checked for a final.
+            # Select the first pre-pricing row whose exact SEC lineage resolves to a
+            # 424B4; unrelated registrations remain visible for their own lifecycle.
+            final_meta = None
+            for candidate_prepricing in prepricing_records_by_cik.get(cik, []):
+                candidate_final = _select_final_meta(
+                    candidates,
+                    prepricing=candidate_prepricing,
+                    lineage_resolver=lineage_resolver,
+                )
+                if candidate_final is not None:
+                    prepricing = candidate_prepricing
+                    final_meta = candidate_final
+                    break
         else:
             final_meta = _select_final_meta(
                 candidates,
                 prepricing=prepricing,
-                lineage_resolver=lineage_resolver,
+                lineage_resolver=None,
             )
         if not final_meta:
             continue
