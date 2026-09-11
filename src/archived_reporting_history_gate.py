@@ -114,14 +114,16 @@ def _s8_reporting_cutoff(submissions, cutoff):
     For a final 424B4, an employee-plan S-8 can be filed after the IPO S-1 has
     already begun but before the final prospectus. That S-8 is a consequence of
     the IPO process, not proof that the issuer was a reporting company before the
-    IPO. The latest earlier S-1/S-1A therefore becomes the strict S-8 cutoff. For
-    an initial S-1 candidate with no earlier registration filing, the candidate
-    date remains the cutoff.
+    IPO. The latest earlier base S-1 marks the start of the current registration
+    sequence; later S-1/A amendments must not advance the cutoff and accidentally
+    turn an IPO-contemporaneous S-8 into prior-reporting evidence. For an initial
+    S-1 candidate with no earlier base registration filing, the candidate date
+    remains the cutoff.
     """
     earlier_registration_dates = [
         report_date
         for form, report_date in _validated_history_columns(submissions)
-        if form in FORM_TYPES and report_date < cutoff
+        if form == "S-1" and report_date < cutoff
     ]
     return max(earlier_registration_dates, default=cutoff)
 
