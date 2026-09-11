@@ -187,6 +187,14 @@ class FeedSchemaContractTests(unittest.TestCase):
         )
         self.assertEqual([], validate_payload(self._payload(filing)))
 
+    def test_filing_price_source_with_registration_file_number_is_valid(self):
+        filing = self._filing(
+            filing_price="15-17",
+            price_range="15-17",
+            filing_price_source=self._filing_price_source(file_number="333-300001"),
+        )
+        self.assertEqual([], validate_payload(self._payload(filing)))
+
 
 if __name__ == "__main__":
     unittest.main()
