@@ -139,7 +139,7 @@ jobs:
         working-directory: src
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
-        run: python lifecycle_reconciler.py ../docs/data/filings.json
+        run: python lifecycle_convergence.py ../docs/data/filings.json
 
       - name: Reconcile authoritative IPO pricing dates
         working-directory: src
