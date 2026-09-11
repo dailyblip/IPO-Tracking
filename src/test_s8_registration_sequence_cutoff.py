@@ -101,5 +101,101 @@ class S8RegistrationSequenceCutoffTests(unittest.TestCase):
         )
 
 
+    def test_exact_candidate_lineage_uses_archived_base_s1(self):
+        submissions = {
+            "filings": {
+                "recent": {
+                    "accessionNumber": [
+                        "0000000000-26-000004",
+                        "0000000000-26-000002",
+                        "0000000000-26-000003",
+                    ],
+                    "form": ["424B4", "S-1", "S-8"],
+                    "fileNumber": [
+                        "333-100001",
+                        "333-200002",
+                        "333-300003",
+                    ],
+                    "filingDate": [
+                        "2026-09-01",
+                        "2026-08-01",
+                        "2026-07-15",
+                    ],
+                },
+                "files": [
+                    {
+                        "name": "CIK0000000000-submissions-001.json",
+                        "filingFrom": "2026-07-01",
+                    }
+                ],
+            }
+        }
+        archived = {
+            "accessionNumber": ["0000000000-26-000001"],
+            "form": ["S-1"],
+            "fileNumber": ["333-100001"],
+            "filingDate": ["2026-07-01"],
+        }
+
+        self.assertFalse(
+            gate.has_prior_reporting_history(
+                submissions,
+                "2026-09-01",
+                candidate_accession="0000000000-26-000004",
+                archive_loader=lambda _name: archived,
+            )
+        )
+
+    def test_archived_lineage_still_blocks_s8_before_base_s1(self):
+        submissions = {
+            "filings": {
+                "recent": {
+                    "accessionNumber": [
+                        "0000000000-26-000004",
+                        "0000000000-26-000002",
+                    ],
+                    "form": ["424B4", "S-1"],
+                    "fileNumber": [
+                        "333-100001",
+                        "333-200002",
+                    ],
+                    "filingDate": [
+                        "2026-09-01",
+                        "2026-08-01",
+                    ],
+                },
+                "files": [
+                    {
+                        "name": "CIK0000000000-submissions-001.json",
+                        "filingFrom": "2026-06-20",
+                    }
+                ],
+            }
+        }
+        archived = {
+            "accessionNumber": [
+                "0000000000-26-000003",
+                "0000000000-26-000001",
+            ],
+            "form": ["S-8", "S-1"],
+            "fileNumber": [
+                "333-300003",
+                "333-100001",
+            ],
+            "filingDate": [
+                "2026-06-20",
+                "2026-07-01",
+            ],
+        }
+
+        self.assertTrue(
+            gate.has_prior_reporting_history(
+                submissions,
+                "2026-09-01",
+                candidate_accession="0000000000-26-000004",
+                archive_loader=lambda _name: archived,
+            )
+        )
+
 if __name__ == "__main__":
     unittest.main()
