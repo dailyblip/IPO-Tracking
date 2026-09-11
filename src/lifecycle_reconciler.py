@@ -567,7 +567,9 @@ def reconcile_payload(payload, final_filings, soup_loader, lineage_resolver=None
             finals_by_cik.setdefault(cik, []).append(meta)
 
     prepricing_by_cik = {}
+    prepricing_records_by_cik = {}
     final_record_by_cik = {}
+    final_records_by_cik = {}
     for filing in filings:
         if not isinstance(filing, dict):
             continue
@@ -576,8 +578,10 @@ def reconcile_payload(payload, final_filings, soup_loader, lineage_resolver=None
             continue
         if _is_prepricing(filing):
             prepricing_by_cik.setdefault(cik, filing)
+            prepricing_records_by_cik.setdefault(cik, []).append(filing)
         elif _is_final_record(filing):
             final_record_by_cik.setdefault(cik, filing)
+            final_records_by_cik.setdefault(cik, []).append(filing)
 
     states = {}
     repaired_count = 0
@@ -667,6 +671,70 @@ def reconcile_payload(payload, final_filings, soup_loader, lineage_resolver=None
             if replacement is not None:
                 repaired_count += 1
 
+    # A CIK may contain an older completed IPO lifecycle and a distinct newer S-1.
+    # Reconcile each co-present pre-pricing registration independently, but only when
+    # the SEC registration-lineage resolver proves an exact S-1/S-1A -> 424B4 link.
+    # Never use date-only matching here: ambiguous lineage must remain visible rather
+    # than being redirected to a different offering under the same issuer CIK.
+    independent_prepricing_states = {}
+    if lineage_resolver is not None:
+        for cik, prepricing_records in prepricing_records_by_cik.items():
+            if cik not in final_record_by_cik:
+                continue
+            candidates = finals_by_cik.get(cik) or []
+            if not candidates:
+                continue
+
+            published_final_accessions = set()
+            for record in final_records_by_cik.get(cik, []):
+                accession = _canonical_accession(
+                    record.get("accession_no") or record.get("id")
+                )
+                if accession:
+                    published_final_accessions.add(accession)
+
+            for prepricing in prepricing_records:
+                final_meta = _select_final_meta(
+                    candidates,
+                    prepricing=prepricing,
+                    lineage_resolver=lineage_resolver,
+                )
+                if not final_meta:
+                    continue
+
+                final_accession = _canonical_accession(final_meta.get("accession_no"))
+                prepricing_accession = _canonical_accession(
+                    prepricing.get("accession_no") or prepricing.get("id")
+                )
+                if not final_accession or not prepricing_accession:
+                    continue
+
+                key = (cik, prepricing_accession)
+                if final_accession in published_final_accessions:
+                    independent_prepricing_states[key] = {
+                        "meta": final_meta,
+                        "replacement": None,
+                    }
+                    continue
+
+                try:
+                    soup = soup_loader(final_meta)
+                    replacement = _promote_prepricing_record(prepricing, final_meta, soup)
+                except Exception as error:
+                    print(
+                        f"[lifecycle_reconciler] Could not verify independent final terms "
+                        f"for CIK {cik}: {error}"
+                    )
+                    replacement = None
+                if replacement is None:
+                    continue
+
+                independent_prepricing_states[key] = {
+                    "meta": final_meta,
+                    "replacement": replacement,
+                }
+                repaired_count += 1
+
     reconciled = []
     removed_count = 0
     inserted_promotions = set()
@@ -675,6 +743,20 @@ def reconcile_payload(payload, final_filings, soup_loader, lineage_resolver=None
             reconciled.append(filing)
             continue
         cik = _canonical_cik(filing.get("cik"))
+
+        if _is_prepricing(filing):
+            independent_key = (
+                cik,
+                _canonical_accession(filing.get("accession_no") or filing.get("id")),
+            )
+            independent_state = independent_prepricing_states.get(independent_key)
+            if independent_state is not None:
+                removed_count += 1
+                replacement = independent_state["replacement"]
+                if replacement is not None:
+                    reconciled.append(replacement)
+                continue
+
         state = states.get(cik)
         if state is None:
             reconciled.append(filing)
