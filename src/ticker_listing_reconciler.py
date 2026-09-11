@@ -24,7 +24,7 @@ from pathlib import Path
 
 import dashboard_export
 import filing_parser
-import s1_registration_history_gate
+import registration_lineage
 
 
 _CURRENT_LISTING_PATTERNS = [
@@ -114,7 +114,9 @@ def _verified_watch_tickers(payload: dict) -> dict[tuple[str, str], str]:
 def _registration_file_numbers(records: list[dict]) -> dict[tuple[str, str], str]:
     """Return SEC registration file numbers for exact CIK+accession records.
 
-    The SEC submissions feed is authoritative for ``fileNumber`` lineage. A
+    The SEC submissions feed is authoritative for ``fileNumber`` lineage. The
+    archive-capable loader receives every required accession so registrations
+    that have aged out of ``filings.recent`` are still resolved exactly. A
     lookup failure or missing accession intentionally leaves the record unmapped;
     callers then fail closed instead of carrying a ticker across an unproven
     registration relationship.
@@ -130,7 +132,9 @@ def _registration_file_numbers(records: list[dict]) -> dict[tuple[str, str], str
     lineage: dict[tuple[str, str], str] = {}
     for cik, wanted in wanted_by_cik.items():
         try:
-            submission_rows = s1_registration_history_gate._recent_submission_rows(cik)
+            submission_rows = registration_lineage.load_registration_rows(
+                cik, tuple(wanted)
+            )
         except Exception as error:
             print(
                 f"[ticker_listing_reconciler] Warning: SEC registration-lineage "
@@ -376,9 +380,9 @@ def reconcile_file(
         if isinstance(record, dict)
         and str(record.get("form") or "").strip().upper() in {"S-1", "S-1/A"}
     ]
-    registration_lineage = _registration_file_numbers(records)
+    registration_lineage_map = _registration_file_numbers(records)
     for record in records:
-        record[_REGISTRATION_FILE_NUMBER_KEY] = registration_lineage.get(
+        record[_REGISTRATION_FILE_NUMBER_KEY] = registration_lineage_map.get(
             _record_key(record), ""
         )
 
