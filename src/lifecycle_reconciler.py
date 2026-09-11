@@ -686,8 +686,7 @@ def reconcile_payload(payload, final_filings, soup_loader, lineage_resolver=None
             # belongs to the final record being reconciled. Otherwise fail closed and
             # leave that separate registration visible for its own lifecycle.
             if (
-                state["existing"] is not None
-                and lineage_resolver is not None
+                lineage_resolver is not None
                 and not lineage_resolver(filing, state["meta"])
             ):
                 reconciled.append(filing)
