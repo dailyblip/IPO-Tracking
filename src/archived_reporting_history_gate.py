@@ -9,13 +9,15 @@ a first-time operating-company IPO.
 A prior Exchange Act reporting form or registration statement, or a prior S-3/F-3
 short-form registration that itself requires Exchange Act reporting eligibility,
 must be filed strictly before the candidate. Prior S-8 employee-plan registration
-history is also affirmative reporting evidence because Form S-8 requires the
-registrant to be subject to Exchange Act reporting immediately before filing. A
-prior 424B4 is separately conclusive that the issuer already completed an earlier
-public offering prospectus. Same-day evidence does not establish event order.
-Archive lookup failures block publication in release mode for both final 424B4 and
-pre-pricing S-1/S-1A candidates; incorrect follow-on classification is worse than
-temporarily withholding a row.
+history is also affirmative reporting evidence when it predates the current S-1
+registration sequence because Form S-8 requires the registrant to be subject to
+Exchange Act reporting immediately before filing. An S-8 filed after the current
+S-1 sequence has begun can be IPO-contemporaneous and is not standalone evidence
+that the issuer was already public before that IPO. A prior 424B4 is separately
+conclusive that the issuer already completed an earlier public offering prospectus.
+Same-day evidence does not establish event order. Archive lookup failures block
+publication in release mode for both final 424B4 and pre-pricing S-1/S-1A candidates;
+incorrect follow-on classification is worse than temporarily withholding a row.
 """
 
 from __future__ import annotations
@@ -29,6 +31,7 @@ from dashboard_export import write_dashboard_csv
 import edgar_client
 
 FORM_TYPES = {"S-1", "S-1/A"}
+S8_FORMS = {"S-8", "S-8 POS"}
 REPORTING_FORMS = {
     "8-K", "8-K/A",
     "8-K12B", "8-K12B/A",
@@ -105,9 +108,31 @@ def _validated_history_columns(payload):
     return normalized
 
 
-def _block_has_prior_reporting(payload, cutoff):
+def _s8_reporting_cutoff(submissions, cutoff):
+    """Bound S-8 evidence to before the current S-1 registration sequence.
+
+    For a final 424B4, an employee-plan S-8 can be filed after the IPO S-1 has
+    already begun but before the final prospectus. That S-8 is a consequence of
+    the IPO process, not proof that the issuer was a reporting company before the
+    IPO. The latest earlier S-1/S-1A therefore becomes the strict S-8 cutoff. For
+    an initial S-1 candidate with no earlier registration filing, the candidate
+    date remains the cutoff.
+    """
+    earlier_registration_dates = [
+        report_date
+        for form, report_date in _validated_history_columns(submissions)
+        if form in FORM_TYPES and report_date < cutoff
+    ]
+    return max(earlier_registration_dates, default=cutoff)
+
+
+def _block_has_prior_reporting(payload, cutoff, s8_cutoff=None):
+    effective_s8_cutoff = s8_cutoff or cutoff
     for form, report_date in _validated_history_columns(payload):
-        if form in REPORTING_FORMS and report_date < cutoff:
+        if form not in REPORTING_FORMS:
+            continue
+        form_cutoff = effective_s8_cutoff if form in S8_FORMS else cutoff
+        if report_date < form_cutoff:
             return True
     return False
 
@@ -181,13 +206,14 @@ def has_prior_reporting_history(submissions, candidate_date, archive_loader=_loa
     if cutoff is None:
         raise ValueError(f"Invalid candidate date: {candidate_date!r}")
 
-    if _block_has_prior_reporting(submissions, cutoff):
+    s8_cutoff = _s8_reporting_cutoff(submissions, cutoff)
+    if _block_has_prior_reporting(submissions, cutoff, s8_cutoff=s8_cutoff):
         return True
 
     for descriptor in _archive_descriptors(submissions, cutoff):
         name = str(descriptor.get("name") or "").strip()
         archived = archive_loader(name)
-        if _block_has_prior_reporting(archived, cutoff):
+        if _block_has_prior_reporting(archived, cutoff, s8_cutoff=s8_cutoff):
             return True
     return False
 
