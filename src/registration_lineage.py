@@ -113,7 +113,14 @@ def load_registration_rows(cik, required_accessions=()):
 
 
 def build_registration_lineage_resolver(rows_loader=load_registration_rows):
-    """Return a cached exact-accession resolver for S-1/S-1A -> 424B4 lineage."""
+    """Return a cached exact-accession resolver for S-1/S-1A -> 424B4 lineage.
+
+    Exact accession and file-number identity are necessary but not sufficient for a
+    release-grade lifecycle handoff. The published pre-pricing filing date must also
+    agree with the SEC date for that exact S-1/S-1A accession, just as the candidate
+    424B4 date is verified. This prevents stale or corrupted row chronology from
+    being carried into a priced record under otherwise-valid registration lineage.
+    """
     cache = {}
 
     def resolve(prepricing, final_meta):
@@ -160,6 +167,10 @@ def build_registration_lineage_resolver(rows_loader=load_registration_rows):
                     final_file_number = str(final_row.get("file_number") or "").strip()
                     s1_date = _canonical_date(s1_row.get("filing_date"))
                     final_date = _canonical_date(final_row.get("filing_date"))
+                    prepricing_date = _canonical_date(
+                        (prepricing or {}).get("filed")
+                        or (prepricing or {}).get("filing_date")
+                    )
                     candidate_date = _canonical_date((final_meta or {}).get("filing_date"))
                     cache[cache_key] = bool(
                         s1_form in {"S-1", "S-1/A"}
@@ -169,7 +180,9 @@ def build_registration_lineage_resolver(rows_loader=load_registration_rows):
                         and s1_file_number == final_file_number
                         and s1_date is not None
                         and final_date is not None
+                        and prepricing_date is not None
                         and candidate_date is not None
+                        and prepricing_date == s1_date
                         and final_date >= s1_date
                         and candidate_date == final_date
                     )
