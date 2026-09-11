@@ -1,8 +1,35 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-11T02:36:22.756250+00:00",
+  "generated_at": "2026-09-11T02:46:49.651351+00:00",
   "source": "SEC EDGAR",
   "filings": [
+    {
+      "id": "s1:0002152644",
+      "company": "Hometown Financial Group, Inc.",
+      "ticker": "HFG",
+      "cik": "0002152644",
+      "accession_no": "0001193125-26-388025",
+      "form": "S-1",
+      "filed": "2026-09-10",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "priority": "Medium",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 0,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm"
+    },
     {
       "id": "s1:0002124472",
       "company": "Orion180 Insurance Group Inc.",
@@ -21,7 +48,7 @@
       "priority": "High",
       "status": "New",
       "value": 320000000,
-      "value_label": "$320M",
+      "value_label": "$320,000,000",
       "people_count": 0,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -49,7 +76,7 @@
       "priority": "High",
       "status": "New",
       "value": 825000000,
-      "value_label": "$825M",
+      "value_label": "$825,000,000",
       "people_count": 0,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -320,7 +347,7 @@
       "priority": "High",
       "status": "New",
       "value": 50000000,
-      "value_label": "$50M",
+      "value_label": "$50,000,000",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
