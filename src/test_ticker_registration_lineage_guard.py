@@ -127,7 +127,7 @@ class TickerRegistrationLineageGuardTests(unittest.TestCase):
         self.assertEqual((updated, conflicts), (1, 0))
         self.assertEqual(payload["filings"][0]["ticker"], "")
 
-    def test_sec_submission_file_numbers_map_exact_accessions(self):
+    def test_sec_submission_file_numbers_request_exact_accessions_from_archive_loader(self):
         records = [
             {
                 "accession_no": "0001628280-26-060761",
@@ -158,10 +158,10 @@ class TickerRegistrationLineageGuardTests(unittest.TestCase):
         ]
 
         with patch.object(
-            reconciler.s1_registration_history_gate,
-            "_recent_submission_rows",
+            reconciler.registration_lineage,
+            "load_registration_rows",
             return_value=submission_rows,
-        ) as recent_rows:
+        ) as lineage_rows:
             lineage = reconciler._registration_file_numbers(records)
 
         self.assertEqual(
@@ -171,7 +171,10 @@ class TickerRegistrationLineageGuardTests(unittest.TestCase):
                 ("0002133037", "0001628280-26-059639"): "333-99999",
             },
         )
-        recent_rows.assert_called_once_with("0002133037")
+        lineage_rows.assert_called_once_with(
+            "0002133037",
+            ("000162828026060761", "000162828026059639"),
+        )
 
 
 if __name__ == "__main__":
