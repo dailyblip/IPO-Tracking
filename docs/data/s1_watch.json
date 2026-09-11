@@ -1,8 +1,31 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-10T11:03:44.483944+00:00",
+  "generated_at": "2026-09-11T02:46:49.640684+00:00",
   "source": "SEC EDGAR",
   "filings": [
+    {
+      "id": "0001193125-26-388025",
+      "company": "Hometown Financial Group, Inc.",
+      "ticker": "HFG",
+      "cik": "0002152644",
+      "accession_no": "0001193125-26-388025",
+      "form": "S-1",
+      "filed": "2026-09-10",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm"
+    },
     {
       "id": "0001628280-26-061012",
       "company": "Orion180 Insurance Group Inc.",
