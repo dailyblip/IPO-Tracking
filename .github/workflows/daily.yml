@@ -139,6 +139,15 @@ jobs:
         working-directory: src
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python lifecycle_reconciler.py ../docs/data/filings.json
+
+      # A second fixed-point pass is additive to the established lifecycle gate.
+      # It prevents two independently finalized registrations under one CIK from
+      # requiring separate publication cycles before both leave pre-pricing.
+      - name: Converge parallel 424B4 lifecycle transitions
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python lifecycle_convergence.py ../docs/data/filings.json
 
       - name: Reconcile authoritative IPO pricing dates
