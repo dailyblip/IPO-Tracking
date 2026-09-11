@@ -1,7 +1,19 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-11T02:01:59.392519+00:00",
+  "updated_at": "2026-09-11T02:55:23.172173+00:00",
   "items": {
+    "s1:0002152644": {
+      "id": "s1:0002152644",
+      "cik": "0002152644",
+      "company": "Hometown Financial Group, Inc.",
+      "form": "S-1",
+      "filed": "2026-09-10",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm"
+    },
     "s1:0002124472": {
       "id": "s1:0002124472",
       "cik": "0002124472",
@@ -988,6 +1000,13 @@
     }
   },
   "ciks": {
+    "0002152644": {
+      "company": "Hometown Financial Group, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002152644",
+      "last_filed": "2026-09-10",
+      "missing_runs": 0
+    },
     "0002124472": {
       "company": "Orion180 Insurance Group Inc.",
       "stage": "pre-pricing",
