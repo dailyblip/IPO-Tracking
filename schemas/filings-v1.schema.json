@@ -30,6 +30,7 @@
             "form": {"type": "string"},
             "filing_date": {"$ref": "#/$defs/dateOrNull"},
             "accession_no": {"type": "string"},
+            "file_number": {"type": "string", "minLength": 1},
             "sec_url": {"type": "string"}
           }
         }
