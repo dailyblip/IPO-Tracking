@@ -60,6 +60,24 @@ class AuthoritativeOfferingValueTests(unittest.TestCase):
         """
         self.assertEqual(extract_authoritative_primary_shares(text), 8_580_000)
 
+    def test_extracts_liftoff_issuer_primary_shares_from_in_this_offering_language(self):
+        text = """
+        PROSPECTUS 19,000,000 Shares Liftoff Mobile, Inc. Common Stock $23.00 per share.
+        This is the initial public offering of shares of common stock of Liftoff Mobile, Inc.
+        We are offering 19,000,000 shares in this offering. Prior to this offering,
+        there has been no public market for our common stock.
+        """
+        self.assertEqual(extract_authoritative_primary_shares(text), 19_000_000)
+
+    def test_extracts_sunshine_issuer_primary_shares_from_we_are_selling_language(self):
+        text = """
+        PROSPECTUS 20,000,000 SHARES SUNSHINE SILVER MINING & REFINING COMPANY COMMON STOCK.
+        We are selling 20,000,000 shares of common stock to the underwriters in a firm
+        commitment offering. Prior to this offering, there has been no public market for
+        our common stock. The initial public offering price is $13.50 per share.
+        """
+        self.assertEqual(extract_authoritative_primary_shares(text), 20_000_000)
+
     def test_does_not_treat_selling_stockholder_shares_as_primary(self):
         text = """
         PROSPECTUS. This is the initial public offering of Example Corp.
