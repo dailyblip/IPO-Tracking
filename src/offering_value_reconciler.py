@@ -4,9 +4,10 @@ The core parser derives gross offering value from base IPO shares × final price
 Final prospectuses sometimes publish an authoritative aggregate that can differ
 slightly from that arithmetic because the disclosed total is rounded while the
 share count must remain whole. This release-stage reconciler preserves the SEC
-table value only when the difference is either within the strict dollar tolerance
-or is exactly explainable by the same nearest whole-share count at the final price;
-larger conflicts fail closed so bad economics cannot be silently published.
+table value only when the difference is either within the strict dollar tolerance,
+is exactly explainable by the same nearest whole-share count at the final price, or
+resolves a proven issuer-primary-only subtotal produced from the same final filing.
+Other larger conflicts fail closed so bad economics cannot be silently published.
 
 It also repairs a narrower completeness case: when the final prospectus explicitly
 states that the issuer itself is offering a specific number of shares but the
@@ -29,6 +30,7 @@ ROUNDING_TOLERANCE_DOLLARS = 1.0
 RECENT_PRICING_DAYS = 45
 SOURCE_MARKER = "authoritative final 424B4 aggregate IPO price table"
 PRIMARY_SHARES_MARKER = "explicit issuer offering statement in final 424B4"
+PARTIAL_PRIMARY_SOURCE_MARKER = "final 424B4 explicit issuer-only THE OFFERING row"
 IPO_PRICE_TOTAL_PATTERNS = (
     r"initial public offering price.{0,80}?\$\s*(\d{1,4}(?:\.\d{1,5})?).{0,80}?\$\s*([\d,]{4,}(?:\.\d{1,2})?)",
     r"public offering price.{0,80}?\$\s*(\d{1,4}(?:\.\d{1,5})?).{0,80}?\$\s*([\d,]{4,}(?:\.\d{1,2})?)",
@@ -238,6 +240,42 @@ def _same_nearest_whole_share_count(current, aggregate, price):
     return abs(current - aggregate) <= (price / 2.0) + 0.01
 
 
+def _is_proven_partial_primary_subtotal(filing, current, aggregate):
+    """Recognize a lifecycle-derived issuer-primary subtotal that SEC total supersedes.
+
+    A final filing can contain both issuer and selling-holder shares even when the
+    lifecycle parser only re-extracts the issuer-primary statement. In that narrow
+    state it may temporarily calculate ``primary shares × final price`` as the whole
+    offering. The explicit 424B4 IPO-price-table aggregate is stronger evidence and
+    may replace that subtotal only when provenance identifies the issuer-only parse,
+    no secondary share quantity was published, and the current value exactly equals
+    the disclosed primary share count times the same final price. We never infer the
+    missing secondary share count.
+    """
+    source = str(filing.get("offering_size_source") or "").casefold()
+    if PARTIAL_PRIMARY_SOURCE_MARKER.casefold() not in source:
+        return False
+
+    primary = _number(filing.get("primary_offering_shares"))
+    secondary = _number(filing.get("secondary_offering_shares"))
+    price = _number(filing.get("offering_price"))
+    current = _number(current)
+    aggregate = _number(aggregate)
+    if (
+        primary is None
+        or primary <= 0
+        or secondary is not None
+        or price is None
+        or price <= 0
+        or current is None
+        or current <= 0
+        or aggregate is None
+        or aggregate <= current
+    ):
+        return False
+    return abs(current - (primary * price)) <= 0.01
+
+
 def reconcile_record(filing, aggregate, primary_shares=None):
     """Reconcile SEC cover economics and explicit issuer-primary share disclosure."""
     changed = False
@@ -249,10 +287,18 @@ def reconcile_record(filing, aggregate, primary_shares=None):
             changed = True
         else:
             difference = abs(current - aggregate)
-            if difference > ROUNDING_TOLERANCE_DOLLARS and not _same_nearest_whole_share_count(
+            large_conflict = (
+                difference > ROUNDING_TOLERANCE_DOLLARS
+                and not _same_nearest_whole_share_count(
+                    current,
+                    aggregate,
+                    filing.get("offering_price"),
+                )
+            )
+            if large_conflict and not _is_proven_partial_primary_subtotal(
+                filing,
                 current,
                 aggregate,
-                filing.get("offering_price"),
             ):
                 raise OfferingValueReconciliationError(
                     f"{filing.get('company')}: published offering value {current:,.2f} conflicts with "
