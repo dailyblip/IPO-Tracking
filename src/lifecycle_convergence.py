@@ -1,6 +1,6 @@
 """Run SEC lifecycle reconciliation until the public feed reaches a stable state.
 
-A single issuer CIK can have multiple independent S-1/S-1A registrations that
+A single issuer CIK can have multiple independent S-1/S-1/A registrations that
 reach distinct 424B4 finals at nearly the same time. ``lifecycle_reconciler``
 intentionally reconciles exact registration lineages conservatively, so one pass
 can promote one registration and expose another independent promotion only after
@@ -13,12 +13,66 @@ as stale pre-pricing for an extra feed cycle.
 from __future__ import annotations
 
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 
 import dashboard_export
 import edgar_client
 import lifecycle_reconciler
 import registration_lineage
+
+
+def _reconcile_existing_final_records(
+    payload,
+    final_filings,
+    soup_loader,
+    lineage_resolver,
+):
+    """Reconcile every published 424B4 independently by exact accession.
+
+    ``lifecycle_reconciler`` groups lifecycle state by issuer CIK so it can safely
+    hand a pre-pricing registration to its final prospectus. A CIK can also contain
+    multiple already-published 424B4 registrations. Rechecking those final rows one
+    at a time prevents the first final under the CIK from shielding a later final
+    from authoritative ticker, price, or offering-size repair.
+    """
+    filings = payload.get("filings")
+    if not isinstance(filings, list):
+        raise ValueError("Public feed must contain a filings list")
+
+    reconciled = []
+    repaired_total = 0
+    removed_total = 0
+    changed = False
+
+    for filing in filings:
+        if not isinstance(filing, dict) or not lifecycle_reconciler._is_final_record(filing):
+            reconciled.append(filing)
+            continue
+
+        focused_payload, repaired, removed = lifecycle_reconciler.reconcile_payload(
+            {"filings": [filing]},
+            final_filings,
+            soup_loader,
+            lineage_resolver=lineage_resolver,
+        )
+        focused_filings = focused_payload.get("filings")
+        if not isinstance(focused_filings, list) or len(focused_filings) > 1:
+            raise RuntimeError(
+                "Single-final lifecycle reconciliation returned an invalid record set"
+            )
+
+        repaired_total += repaired
+        removed_total += removed
+        changed = changed or bool(repaired or removed)
+        if focused_filings:
+            reconciled.append(focused_filings[0])
+
+    current = dict(payload)
+    current["filings"] = reconciled
+    if changed:
+        current["generated_at"] = datetime.now(timezone.utc).isoformat()
+    return current, repaired_total, removed_total
 
 
 def reconcile_payload_to_convergence(
@@ -40,12 +94,20 @@ def reconcile_payload_to_convergence(
     total_removed = 0
 
     for pass_number in range(1, max_passes + 2):
+        current, final_repaired, final_removed = _reconcile_existing_final_records(
+            current,
+            final_filings,
+            soup_loader,
+            lineage_resolver,
+        )
         current, repaired, removed = lifecycle_reconciler.reconcile_payload(
             current,
             final_filings,
             soup_loader,
             lineage_resolver=lineage_resolver,
         )
+        repaired += final_repaired
+        removed += final_removed
         if repaired == 0 and removed == 0:
             return current, total_repaired, total_removed, pass_number
         if pass_number > max_passes:
