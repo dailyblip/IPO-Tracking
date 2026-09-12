@@ -238,9 +238,26 @@ jobs:
       # Run the same release-blocking suite again after regeneration and all
       # sanitizers so the exact candidate feed must pass before it can be published.
       - name: Run release-blocking regression suite on generated feed
+        id: generated-feed-regression
         env:
           SKIP_LIVE_GOLDEN: '1'
-        run: python -m unittest discover -s src -p 'test_*.py' -v
+        run: |
+          set -o pipefail
+          python -m unittest discover -s src -p 'test_*.py' -v 2>&1 | tee generated-feed-regression.log
+
+      # Preserve the exact failing assertion and unpublished candidate whenever the
+      # release gate blocks publication. This is diagnostic-only and never changes
+      # feed eligibility or publishes the failed candidate.
+      - name: Upload generated-feed regression diagnostics
+        if: failure() && steps.generated-feed-regression.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-feed-regression-diagnostics
+          path: |
+            generated-feed-regression.log
+            docs/data/filings.json
+            docs/data/filings.csv
+          retention-days: 7
 
       - name: Validate generated lifecycle uniqueness
         run: python -m unittest discover -s src -p 'test_issuer_row_consistency.py' -v
