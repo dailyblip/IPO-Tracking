@@ -23,6 +23,17 @@ LA_BEAUTE_COVER = (
     "Prior to this offering, there has been no public market for our ordinary shares."
 )
 
+HOMETOWN_CONVERSION_COVER = (
+    "PRELIMINARY PROSPECTUS SUBJECT TO COMPLETION. "
+    "There is no current public or private market for our common stock. We expect to list "
+    "the common stock on the Nasdaq Capital Market upon completion of the conversion and "
+    "stock offering. Shares not purchased in the subscription offering may be offered to "
+    "the general public in a community offering. Investors may purchase common stock in "
+    "the IPO. The purchase price of each share of common stock to be sold in the stock "
+    "offering is $10.00. We are offering for sale between 51,000,000 shares and "
+    "69,000,000 shares of common stock, subject to adjustment."
+)
+
 
 class ProposedPointPriceRecoveryTests(unittest.TestCase):
     def test_expected_cover_point_price_is_authoritative(self):
@@ -111,6 +122,77 @@ class ProposedPointPriceRecoveryTests(unittest.TestCase):
         self.assertEqual(result["offering_size_confidence"], "High")
         self.assertIn("issuer-only", result["offering_size_source"])
         self.assertIsNone(result["secondary_offering_shares"])
+
+    def test_conversion_stock_offering_recovers_fixed_price_without_guessing_size(self):
+        filing = {
+            "id": "0001193125-26-388025",
+            "company": "Hometown Financial Group, Inc.",
+            "cik": "0002152644",
+            "accession_no": "0001193125-26-388025",
+            "form": "S-1",
+            "stage": "Pre-pricing",
+            "priority": "Medium",
+            "price_range": None,
+            "filing_price": None,
+            "value": None,
+            "value_label": "—",
+            "offering_size_source": None,
+            "offering_size_confidence": None,
+            "primary_offering_shares": None,
+            "secondary_offering_shares": None,
+            "signals": [
+                "Initial registration statement filed — IPO is pre-pricing",
+                "No preliminary price range or fixed offering price detected yet",
+            ],
+            "sec_url": "https://www.sec.gov/test",
+        }
+        updated, invalid, checked = gate.review_watch_payload(
+            {"filings": [filing]}, text_loader=lambda _: HOMETOWN_CONVERSION_COVER
+        )
+        result = updated["filings"][0]
+
+        self.assertEqual(checked, 1)
+        self.assertEqual(invalid, {})
+        self.assertTrue(gate.has_authoritative_fixed_price(HOMETOWN_CONVERSION_COVER, 10.00))
+        self.assertEqual(result["filing_price"], "$10.00")
+        self.assertIsNone(result["primary_offering_shares"])
+        self.assertIsNone(result["value"])
+        self.assertEqual(result["value_label"], "—")
+        self.assertIsNone(result["offering_size_source"])
+        self.assertIsNone(result["offering_size_confidence"])
+        self.assertIn(
+            "Preliminary offering price disclosed at $10.00 per share",
+            result["signals"],
+        )
+        self.assertNotIn(
+            "No preliminary price range or fixed offering price detected yet",
+            result["signals"],
+        )
+
+    def test_stock_offering_purchase_price_requires_ipo_context(self):
+        filing = {
+            "id": "no-ipo-context",
+            "company": "Example Co.",
+            "cik": "0000009876",
+            "form": "S-1",
+            "stage": "Pre-pricing",
+            "filing_price": None,
+            "price_range": None,
+            "signals": ["No preliminary price range or fixed offering price detected yet"],
+            "sec_url": "https://www.sec.gov/test",
+        }
+        text = (
+            "The purchase price of each share of common stock to be sold in the stock "
+            "offering is $10.00."
+        )
+        updated, invalid, checked = gate.review_watch_payload(
+            {"filings": [filing]}, text_loader=lambda _: text
+        )
+        result = updated["filings"][0]
+
+        self.assertEqual(checked, 0)
+        self.assertEqual(invalid, {})
+        self.assertIsNone(result["filing_price"])
 
     def test_fixed_cover_with_selling_stockholders_does_not_infer_issuer_only_size(self):
         filing = {
