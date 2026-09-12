@@ -19,6 +19,7 @@ from pathlib import Path
 import dashboard_export
 import edgar_client
 import lifecycle_reconciler
+import published_final_history
 import registration_lineage
 
 
@@ -136,6 +137,10 @@ def reconcile_feed(output_path, days_back=60, max_passes=8):
         return payload, 0, 0, 0
 
     final_filings = edgar_client.find_recent_424b4_filings(days_back=days_back)
+    final_filings = published_final_history.augment_published_final_metadata(
+        payload,
+        final_filings,
+    )
     lineage_resolver = registration_lineage.build_registration_lineage_resolver()
     payload, repaired, removed, passes = reconcile_payload_to_convergence(
         payload,
