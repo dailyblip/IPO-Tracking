@@ -240,27 +240,38 @@ def _same_nearest_whole_share_count(current, aggregate, price):
     return abs(current - aggregate) <= (price / 2.0) + 0.01
 
 
-def _is_proven_partial_primary_subtotal(filing, current, aggregate):
-    """Recognize a lifecycle-derived issuer-primary subtotal that SEC total supersedes.
+def _is_proven_partial_primary_subtotal(
+    filing,
+    current,
+    aggregate,
+    authoritative_primary_shares=None,
+):
+    """Recognize an issuer-primary subtotal that a direct SEC total supersedes.
 
-    A final filing can contain both issuer and selling-holder shares even when the
-    lifecycle parser only re-extracts the issuer-primary statement. In that narrow
-    state it may temporarily calculate ``primary shares × final price`` as the whole
-    offering. The explicit 424B4 IPO-price-table aggregate is stronger evidence and
-    may replace that subtotal only when provenance identifies the issuer-only parse,
-    no secondary share quantity was published, and the current value exactly equals
-    the disclosed primary share count times the same final price. We never infer the
-    missing secondary share count.
+    Lifecycle reparsing can temporarily reduce a mixed primary/secondary IPO to
+    ``issuer primary shares × final price`` and can also lose the older source
+    marker or stored primary count. The explicit aggregate and an explicit issuer
+    primary count extracted from the same final 424B4 are stronger evidence. Permit
+    the aggregate to replace that subtotal only when the current value exactly
+    equals the proven issuer-primary economics, no secondary quantity is published,
+    and either the preserved issuer-only provenance or same-filing direct primary
+    evidence is present. Never derive or populate a missing secondary share count.
     """
     source = str(filing.get("offering_size_source") or "").casefold()
-    if PARTIAL_PRIMARY_SOURCE_MARKER.casefold() not in source:
-        return False
-
-    primary = _number(filing.get("primary_offering_shares"))
+    published_primary = _number(filing.get("primary_offering_shares"))
+    authoritative_primary = _number(authoritative_primary_shares)
     secondary = _number(filing.get("secondary_offering_shares"))
     price = _number(filing.get("offering_price"))
     current = _number(current)
     aggregate = _number(aggregate)
+
+    if authoritative_primary is not None:
+        if authoritative_primary <= 0 or not authoritative_primary.is_integer():
+            return False
+        if published_primary is not None and int(published_primary) != int(authoritative_primary):
+            return False
+
+    primary = published_primary if published_primary is not None else authoritative_primary
     if (
         primary is None
         or primary <= 0
@@ -273,7 +284,12 @@ def _is_proven_partial_primary_subtotal(filing, current, aggregate):
         or aggregate <= current
     ):
         return False
-    return abs(current - (primary * price)) <= 0.01
+    if abs(current - (primary * price)) > 0.01:
+        return False
+
+    has_preserved_primary_provenance = PARTIAL_PRIMARY_SOURCE_MARKER.casefold() in source
+    has_direct_final_primary_evidence = authoritative_primary is not None
+    return has_preserved_primary_provenance or has_direct_final_primary_evidence
 
 
 def reconcile_record(filing, aggregate, primary_shares=None):
@@ -299,6 +315,7 @@ def reconcile_record(filing, aggregate, primary_shares=None):
                 filing,
                 current,
                 aggregate,
+                authoritative_primary_shares=primary_shares,
             ):
                 raise OfferingValueReconciliationError(
                     f"{filing.get('company')}: published offering value {current:,.2f} conflicts with "
