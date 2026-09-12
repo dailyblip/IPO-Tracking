@@ -1,7 +1,19 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-12T00:29:09.778804+00:00",
+  "updated_at": "2026-09-12T02:17:05.862700+00:00",
   "items": {
+    "s1:0002141406": {
+      "id": "s1:0002141406",
+      "cik": "0002141406",
+      "company": "Accelevation Holdings Corp.",
+      "form": "S-1/A",
+      "filed": "2026-09-11",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026061542/0001628280-26-061542-index.htm"
+    },
     "s1:0002152644": {
       "id": "s1:0002152644",
       "cik": "0002152644",
@@ -86,18 +98,6 @@
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2133022/000119312526381855/0001193125-26-381855-index.htm"
     },
-    "s1:0002141406": {
-      "id": "s1:0002141406",
-      "cik": "0002141406",
-      "company": "Accelevation Holdings Corp.",
-      "form": "S-1",
-      "filed": "2026-09-02",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026060083/0001628280-26-060083-index.htm"
-    },
     "s1:0002028464": {
       "id": "s1:0002028464",
       "cik": "0002028464",
@@ -157,18 +157,6 @@
       "priority": "High",
       "value": 50000000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2151905/000215190526000001/0002151905-26-000001-index.htm"
-    },
-    "s1:0001779977": {
-      "id": "s1:0001779977",
-      "cik": "0001779977",
-      "company": "SeeQC, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-08-28",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1779977/000121390026095175/0001213900-26-095175-index.htm"
     },
     "s1:0002088082": {
       "id": "s1:0002088082",
@@ -997,9 +985,28 @@
       "priority": "High",
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
+    },
+    "s1:0001779977": {
+      "id": "s1:0001779977",
+      "cik": "0001779977",
+      "company": "SeeQC, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-08-28",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1779977/000121390026095175/0001213900-26-095175-index.htm"
     }
   },
   "ciks": {
+    "0002141406": {
+      "company": "Accelevation Holdings Corp.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002141406",
+      "last_filed": "2026-09-11",
+      "missing_runs": 0
+    },
     "0002152644": {
       "company": "Hometown Financial Group, Inc.",
       "stage": "pre-pricing",
@@ -1049,13 +1056,6 @@
       "last_filed": "2026-09-03",
       "missing_runs": 0
     },
-    "0002141406": {
-      "company": "Accelevation Holdings Corp.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002141406",
-      "last_filed": "2026-09-02",
-      "missing_runs": 0
-    },
     "0002028464": {
       "company": "Entrata, Inc.",
       "stage": "pre-pricing",
@@ -1089,13 +1089,6 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002151905",
       "last_filed": "2026-08-31",
-      "missing_runs": 0
-    },
-    "0001779977": {
-      "company": "SeeQC, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001779977",
-      "last_filed": "2026-08-28",
       "missing_runs": 0
     },
     "0002088082": {
@@ -1580,6 +1573,13 @@
       "last_filing_id": "0001213900-25-120076",
       "last_filed": "2025-12-10",
       "missing_runs": 0
+    },
+    "0001779977": {
+      "company": "SeeQC, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001779977",
+      "last_filed": "2026-08-28",
+      "missing_runs": 1
     }
   }
 }
