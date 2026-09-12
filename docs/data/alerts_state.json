@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-12T02:17:05.862700+00:00",
+  "updated_at": "2026-09-12T02:17:24.369817+00:00",
   "items": {
     "s1:0002141406": {
       "id": "s1:0002141406",
@@ -985,18 +985,6 @@
       "priority": "High",
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
-    },
-    "s1:0001779977": {
-      "id": "s1:0001779977",
-      "cik": "0001779977",
-      "company": "SeeQC, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-08-28",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1779977/000121390026095175/0001213900-26-095175-index.htm"
     }
   },
   "ciks": {
@@ -1573,13 +1561,6 @@
       "last_filing_id": "0001213900-25-120076",
       "last_filed": "2025-12-10",
       "missing_runs": 0
-    },
-    "0001779977": {
-      "company": "SeeQC, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001779977",
-      "last_filed": "2026-08-28",
-      "missing_runs": 1
     }
   }
 }

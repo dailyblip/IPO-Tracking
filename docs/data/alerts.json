@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-12T02:17:05.862765+00:00",
-  "count": 99,
+  "generated_at": "2026-09-12T02:17:24.369891+00:00",
+  "count": 98,
   "alerts": [
     {
       "type": "new_prepricing",
@@ -929,20 +929,6 @@
       "old_value": "Medium",
       "new_value": "High",
       "key": "priority_escalation|s1:0002104277|0002104277|2026-08-24|High"
-    },
-    {
-      "type": "new_prepricing",
-      "company": "SeeQC, Inc.",
-      "cik": "0001779977",
-      "filing_id": "s1:0001779977",
-      "form": "S-1/A",
-      "filed": "2026-08-28",
-      "stage": "pre-pricing",
-      "priority": "Medium",
-      "summary": "New pre-pricing S-1/A candidate entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1779977/000121390026095175/0001213900-26-095175-index.htm",
-      "detected_at": "2026-08-29T05:05:28.958824+00:00",
-      "key": "new_prepricing|s1:0001779977|0001779977|2026-08-28|"
     },
     {
       "type": "new_prepricing",
