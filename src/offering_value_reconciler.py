@@ -136,17 +136,20 @@ def extract_authoritative_primary_shares(text):
     """Return an explicitly disclosed issuer-primary share count from the cover.
 
     This is intentionally narrower than a generic ``N shares`` extractor. The
-    sentence must identify the issuer (or ``we``) as the party offering shares of
-    its/our common stock and appear next to explicit initial-public-offering
-    language. Selling-stockholder subjects are rejected. This captures final covers
-    such as Scribe Therapeutics' ``Scribe Therapeutics Inc. is offering 8,580,000
-    shares of its common stock`` without deriving a share count from offering value.
+    sentence must identify the issuer (or ``we``) as the party offering or selling
+    the base shares and appear next to explicit initial-public-offering language.
+    Selling-stockholder subjects are rejected. Final prospectus covers commonly use
+    several equivalent issuer-only phrasings, including ``is offering N shares of
+    its common stock``, ``we are selling N shares of common stock``, and ``we are
+    offering N shares in this offering``; all are direct SEC disclosures rather than
+    arithmetic inference from aggregate proceeds.
     """
     normalized = " ".join(str(text or "").split())[:30000]
     pattern = re.compile(
         r"(?P<subject>\b(?:we|[A-Z][A-Za-z0-9&.,'’()/-]*(?:\s+[A-Za-z0-9&.,'’()/-]+){0,12}))"
-        r"\s+(?:is|are)\s+offering\s+(?P<shares>[\d,]{4,})\s+shares\s+of\s+"
-        r"(?:its|our)\s+(?:(?:class|series)\s+[A-Z0-9-]+\s+)?common\s+stock\b",
+        r"\s+(?:is|are)\s+(?:offering|selling)\s+(?P<shares>[\d,]{4,})\s+shares"
+        r"(?:\s+of\s+(?:(?:its|our)\s+)?(?:(?:class|series)\s+[A-Z0-9-]+\s+)?common\s+stock"
+        r"|\s+in\s+this\s+offering)\b",
         re.I,
     )
     for match in pattern.finditer(normalized):
