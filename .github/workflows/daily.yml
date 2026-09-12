@@ -135,6 +135,13 @@ jobs:
         working-directory: src
         run: python market_price_freshness_gate.py ../docs/data/filings.json
 
+      # Existing final rows must carry an exact SEC filing identity before any
+      # CIK-level lifecycle logic runs. Recover only from the accession-keyed id;
+      # malformed or conflicting identities block publication rather than guessing.
+      - name: Verify exact final SEC accession identity
+        working-directory: src
+        run: python final_accession_identity_guard.py ../docs/data/filings.json
+
       - name: Reconcile final 424B4 lifecycle transitions
         working-directory: src
         env:
