@@ -134,6 +134,24 @@ def _extract_authoritative_proposed_point_price(text: str):
         price = _number(match.group("price"))
         if price is not None:
             return price
+
+    # Mutual-to-stock conversions can disclose a fixed purchase price without
+    # using the generic "initial public offering price" formulation. Accept the
+    # stock-offering sentence only when the same bounded prospectus context
+    # explicitly identifies the transaction as an IPO. This keeps unrelated
+    # purchase-price references from becoming Filing Price facts.
+    stock_offering_pattern = (
+        rf"\bthe\s+purchase\s+price\s+of\s+each\s+share(?:\s+of\s+common\s+stock)?"
+        rf"\s+to\s+be\s+sold\s+in\s+the\s+(?:conversion\s+and\s+)?stock\s+offering"
+        rf"\s+is\s+\$\s*{number}\b"
+    )
+    match = re.search(stock_offering_pattern, cover, re.IGNORECASE)
+    if match and not _assumption_context(cover, match.start()):
+        nearby = cover[max(0, match.start() - 2000) : min(len(cover), match.end() + 1000)]
+        if re.search(r"\b(?:initial\s+public\s+offering|IPO)\b", nearby, re.IGNORECASE):
+            price = _number(match.group("price"))
+            if price is not None:
+                return price
     return None
 
 
