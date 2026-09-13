@@ -45,10 +45,16 @@ def _snapshot(filing: dict) -> dict:
         "filed": filing.get("filed"),
         "stage": _stage(filing),
         "price_range": _clean(filing.get("price_range")),
+        "filing_price": _clean(filing.get("filing_price")),
         "priority": filing.get("priority"),
         "value": filing.get("value"),
         "sec_url": filing.get("sec_url"),
     }
+
+
+def _preliminary_price(snapshot: dict) -> str | None:
+    """Prefer a disclosed range, falling back to an authoritative fixed filing price."""
+    return _clean(snapshot.get("price_range")) or _clean(snapshot.get("filing_price"))
 
 
 def _priority_rank(priority: str | None) -> int:
@@ -109,10 +115,13 @@ def detect_alerts(filings: list[dict], previous_state: dict | None) -> tuple[lis
 
         if old is None:
             if stage == "pre-pricing":
+                preliminary_price = _preliminary_price(snap)
                 summary = f"New pre-pricing {filing.get('form') or 'S-1'} candidate entered the researcher queue."
                 if snap.get("price_range"):
                     summary += f" Preliminary range: {snap['price_range']}."
-                alerts.append(_make_alert("new_prepricing", filing, summary, new_value=snap.get("price_range")))
+                elif snap.get("filing_price"):
+                    summary += f" Preliminary filing price: {snap['filing_price']}."
+                alerts.append(_make_alert("new_prepricing", filing, summary, new_value=preliminary_price))
             elif stage == "priced":
                 prior_stage = (previous_ciks.get(cik) or {}).get("stage") if cik else None
                 kind = "ipo_priced" if prior_stage == "pre-pricing" else "new_424b4"
@@ -123,15 +132,30 @@ def detect_alerts(filings: list[dict], previous_state: dict | None) -> tuple[lis
                 )
                 alerts.append(_make_alert(kind, filing, summary, new_value=filing.get("value_label") or filing.get("value")))
         else:
-            old_range = _clean(old.get("price_range"))
-            new_range = snap.get("price_range")
-            if stage == "pre-pricing" and old_range != new_range and new_range:
+            old_preliminary_price = _preliminary_price(old)
+            new_preliminary_price = _preliminary_price(snap)
+            legacy_fixed_price_baseline = (
+                "filing_price" not in old
+                and not _clean(old.get("price_range"))
+                and not snap.get("price_range")
+                and bool(snap.get("filing_price"))
+            )
+            if (
+                stage == "pre-pricing"
+                and old_preliminary_price != new_preliminary_price
+                and new_preliminary_price
+                and not legacy_fixed_price_baseline
+            ):
+                if snap.get("price_range"):
+                    summary = f"Preliminary IPO price range changed to {new_preliminary_price}."
+                else:
+                    summary = f"Preliminary IPO filing price changed to {new_preliminary_price}."
                 alerts.append(_make_alert(
                     "price_range_update",
                     filing,
-                    f"Preliminary IPO price range changed to {new_range}.",
-                    old_value=old_range,
-                    new_value=new_range,
+                    summary,
+                    old_value=old_preliminary_price,
+                    new_value=new_preliminary_price,
                 ))
 
             old_priority = old.get("priority")
