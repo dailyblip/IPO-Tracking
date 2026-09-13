@@ -35,8 +35,8 @@ class ProspectLiquiditySiteTests(unittest.TestCase):
         self.assertIn('id="ownerRows"', self.html)
         self.assertIn('className="owner-link"', self.html)
 
-    def test_person_liquidity_profile_is_drilldown_only(self):
-        self.assertIn('id="personDetail"', self.html)
+    def test_person_liquidity_profile_is_in_company_accordion(self):
+        self.assertIn('id="personDetail" class="owner-inline-detail" hidden', self.html)
         for label in (
             "Current holding value",
             "Liquid now",
@@ -46,8 +46,18 @@ class ProspectLiquiditySiteTests(unittest.TestCase):
             "Classification confidence",
         ):
             self.assertIn(label, self.html)
-        self.assertIn('showPerson((selectedCompany.people||[])[Number(b.dataset.person)])', self.html)
-        self.assertIn('personDetail.showModal()', self.html)
+        self.assertIn('showPerson((selectedCompany.people||[])[Number(b.dataset.person)],b)', self.html)
+        self.assertIn('personDetail.hidden=false', self.html)
+        self.assertIn('function closeExpandedOwner()', self.html)
+        self.assertIn('button.setAttribute("aria-expanded","true")', self.html)
+        self.assertNotIn('<dialog id="personDetail"', self.html)
+        self.assertNotIn('personDetail.showModal()', self.html)
+
+    def test_owner_accordion_is_single_open(self):
+        self.assertIn('expandedOwner=null', self.html)
+        self.assertIn('if(expandedOwner===button){closeExpandedOwner();return}', self.html)
+        self.assertIn('closeExpandedOwner();expandedOwner=button', self.html)
+        self.assertIn('expandedOwner.setAttribute("aria-expanded","false")', self.html)
 
     def test_liquidity_visual_distinguishes_unknown_from_locked(self):
         self.assertIn('segment("liquid"', self.html)
