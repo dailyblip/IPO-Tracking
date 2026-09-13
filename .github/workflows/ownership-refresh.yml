@@ -14,7 +14,9 @@ on:
       - 'src/stanford_sec_backfill.py'
       - 'src/filing_price_history.py'
       - 'src/pricing_date_reconciler.py'
+      - 'src/final_accession_identity_guard.py'
       - 'src/lifecycle_reconciler.py'
+      - 'src/lifecycle_convergence.py'
       - 'src/lifecycle_date_sanitizer.py'
       - 'src/final_pricing_release_gate.py'
       - 'src/followon_sanitizer.py'
@@ -39,7 +41,9 @@ on:
       - 'src/test_stanford_sec_backfill.py'
       - 'src/test_filing_price_history.py'
       - 'src/test_pricing_date_reconciler.py'
+      - 'src/test_final_accession_identity_guard.py'
       - 'src/test_lifecycle_reconciler.py'
+      - 'src/test_lifecycle_convergence.py'
       - 'src/test_lifecycle_date_sanitizer.py'
       - 'src/test_final_pricing_release_gate.py'
       - 'src/test_followon_sanitizer.py'
@@ -155,11 +159,25 @@ jobs:
       - name: Clear market quotes not refreshed in this run
         working-directory: src
         run: python market_price_freshness_gate.py ../docs/data/filings.json
+      # Existing final rows must carry an exact SEC filing identity before any
+      # CIK-level lifecycle logic runs. Recover only from the accession-keyed id;
+      # malformed or conflicting identities block publication rather than guessing.
+      - name: Verify exact final SEC accession identity
+        working-directory: src
+        run: python final_accession_identity_guard.py ../docs/data/filings.json
       - name: Reconcile final 424B4 lifecycle transitions
         working-directory: src
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python lifecycle_reconciler.py ../docs/data/filings.json
+      # A second fixed-point pass is additive to the established lifecycle gate.
+      # It prevents two independently finalized registrations under one CIK from
+      # requiring separate publication cycles before both leave pre-pricing.
+      - name: Converge parallel 424B4 lifecycle transitions
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python lifecycle_convergence.py ../docs/data/filings.json
       - name: Reconcile authoritative IPO pricing dates
         working-directory: src
         env:
