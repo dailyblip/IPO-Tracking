@@ -83,15 +83,55 @@ jobs:
       # must pass the same release-safety chain before publication. The steps below
       # repair authoritative fields where possible and fail closed on unsupported
       # secondary data; they do not expand the June-present Stanford replay window.
+      - name: Reconcile SEC-backed S-1 ticker metadata after Stanford regeneration
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python ticker_listing_reconciler.py
+
+      - name: Reconcile regenerated S-1 registration history
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_registration_history_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
+      - name: Reconcile resale-only S-1 registrations after Stanford regeneration
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python resale_registration_sanitizer.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
+      - name: Exclude non-substantive S-1 form templates after Stanford regeneration
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_substantive_registration_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
+      - name: Verify fixed pre-pricing Filing Prices after Stanford regeneration
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_preliminary_price_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
       - name: Clear market quotes not refreshed in this run
         working-directory: src
         run: python market_price_freshness_gate.py ../docs/data/filings.json
+
+      - name: Verify exact final SEC accession identity
+        working-directory: src
+        run: python final_accession_identity_guard.py ../docs/data/filings.json
 
       - name: Reconcile final 424B4 lifecycle transitions
         working-directory: src
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python lifecycle_reconciler.py ../docs/data/filings.json
+
+      - name: Converge parallel 424B4 lifecycle transitions
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python lifecycle_convergence.py ../docs/data/filings.json
 
       - name: Reconcile authoritative IPO pricing dates
         working-directory: src
@@ -112,6 +152,12 @@ jobs:
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python followon_sanitizer.py ../docs/data/filings.json
+
+      - name: Check archived SEC reporting history
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python archived_reporting_history_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
 
       - name: Recover SEC-confirmed Stanford beneficial-owner affiliations
         working-directory: src
