@@ -3,7 +3,9 @@
 The primary S-1 watcher already applies the shared IPO eligibility gate. This
 module is a final release-time defense for filing HTML whose iXBRL/layout markup
 splits otherwise definitive resale-cover language enough to evade the narrower
-upstream regex. It never infers from offering size, ticker, or missing fields.
+upstream regex. Candidate coverage includes both the S-1 watch payload and the
+public queue so regenerated queue-only rows cannot bypass this release gate. It
+never infers from offering size, ticker, or missing fields.
 """
 
 from __future__ import annotations
@@ -174,13 +176,38 @@ def sanitize_payload(payload: dict, excluded_accessions: set[str]) -> dict:
     return sanitized
 
 
+def _combined_candidate_payload(*payloads: dict) -> dict:
+    """Return unique S-1/S-1A candidates across watch and public queue payloads."""
+    by_accession: dict[str, dict] = {}
+    for payload in payloads:
+        filings = payload.get("filings", []) if isinstance(payload, dict) else []
+        if not isinstance(filings, list):
+            continue
+        for record in filings:
+            if not isinstance(record, dict):
+                continue
+            if str(record.get("form") or "").strip().upper() not in S1_FORMS:
+                continue
+            accession = str(record.get("accession_no") or record.get("id") or "").strip()
+            if not accession:
+                continue
+            existing = by_accession.get(accession)
+            if existing is None or (
+                not str(existing.get("sec_url") or "").strip()
+                and str(record.get("sec_url") or "").strip()
+            ):
+                by_accession[accession] = record
+    return {"filings": list(by_accession.values())}
+
+
 def sanitize_files(s1_watch_path: Path, queue_path: Path) -> set[str]:
     s1_payload = json.loads(s1_watch_path.read_text(encoding="utf-8"))
-    excluded = _excluded_accessions(s1_payload)
+    queue_payload = json.loads(queue_path.read_text(encoding="utf-8"))
+    candidates = _combined_candidate_payload(s1_payload, queue_payload)
+    excluded = _excluded_accessions(candidates)
     if not excluded:
         return set()
 
-    queue_payload = json.loads(queue_path.read_text(encoding="utf-8"))
     s1_payload = sanitize_payload(s1_payload, excluded)
     queue_payload = sanitize_payload(queue_payload, excluded)
 
