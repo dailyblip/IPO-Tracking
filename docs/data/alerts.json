@@ -1,8 +1,24 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-13T01:01:25.682156+00:00",
-  "count": 98,
+  "generated_at": "2026-09-13T01:45:53.748541+00:00",
+  "count": 99,
   "alerts": [
+    {
+      "type": "priority_escalation",
+      "company": "Hometown Financial Group, Inc.",
+      "cik": "0002152644",
+      "filing_id": "s1:0002152644",
+      "form": "S-1",
+      "filed": "2026-09-10",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "Research priority increased from Medium to High.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm",
+      "detected_at": "2026-09-13T01:45:53.748249+00:00",
+      "old_value": "Medium",
+      "new_value": "High",
+      "key": "priority_escalation|s1:0002152644|0002152644|2026-09-10|High"
+    },
     {
       "type": "new_prepricing",
       "company": "Hometown Financial Group, Inc.",
