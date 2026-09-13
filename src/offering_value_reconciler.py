@@ -184,6 +184,13 @@ def _needs_check(filing, today=None):
         return False
     if str(filing.get("stage") or "").casefold() != "priced":
         return False
+    source = str(filing.get("offering_size_source") or "")
+    if SOURCE_MARKER.casefold() in source.casefold():
+        # If a row claims release-grade final-prospectus aggregate provenance,
+        # revalidate it even after the ordinary freshness window. Lifecycle
+        # reparsing can otherwise overwrite the value with a primary-only subtotal
+        # while leaving the stronger authoritative source marker behind.
+        return True
     value = _number(filing.get("value"))
     if value is None:
         # Existing qualifying IPOs with unknown size remain publishable, but a
