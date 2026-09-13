@@ -1,10 +1,15 @@
+import json
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from bs4 import BeautifulSoup
 
 from resale_registration_sanitizer import (
     _visible_filing_text,
     looks_like_resale_only_cover,
+    sanitize_files,
     sanitize_payload,
 )
 
@@ -99,6 +104,67 @@ class ResaleRegistrationSanitizerTests(unittest.TestCase):
         }
         sanitized = sanitize_payload(payload, {"0001"})
         self.assertEqual([row["accession_no"] for row in sanitized["filings"]], ["0002"])
+
+    def test_sanitize_files_inspects_queue_only_s1_candidates(self):
+        watch_payload = {
+            "filings": [
+                {
+                    "id": "watch-ipo",
+                    "accession_no": "0001",
+                    "form": "S-1",
+                    "sec_url": "https://www.sec.gov/Archives/edgar/data/1/0001-index.html",
+                }
+            ]
+        }
+        queue_payload = {
+            "filings": [
+                {
+                    "id": "watch-ipo",
+                    "accession_no": "0001",
+                    "form": "S-1",
+                    "sec_url": "https://www.sec.gov/Archives/edgar/data/1/0001-index.html",
+                },
+                {
+                    "id": "queue-only-resale",
+                    "accession_no": "0002",
+                    "form": "S-1/A",
+                    "sec_url": "https://www.sec.gov/Archives/edgar/data/2/0002-index.html",
+                },
+            ]
+        }
+
+        def filing_text(record):
+            if record.get("accession_no") == "0002":
+                return (
+                    "This prospectus relates to the offer and resale from time to time "
+                    "by the Selling Stockholders named in this prospectus."
+                )
+            return "This is our initial public offering of common stock."
+
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            watch_path = root / "s1_watch.json"
+            queue_path = root / "filings.json"
+            watch_path.write_text(json.dumps(watch_payload), encoding="utf-8")
+            queue_path.write_text(json.dumps(queue_payload), encoding="utf-8")
+
+            with (
+                patch("resale_registration_sanitizer._fetch_filing_text", side_effect=filing_text),
+                patch("resale_registration_sanitizer.write_dashboard_csv"),
+            ):
+                excluded = sanitize_files(watch_path, queue_path)
+
+            self.assertEqual(excluded, {"0002"})
+            queue_after = json.loads(queue_path.read_text(encoding="utf-8"))
+            self.assertEqual(
+                [row["accession_no"] for row in queue_after["filings"]],
+                ["0001"],
+            )
+            watch_after = json.loads(watch_path.read_text(encoding="utf-8"))
+            self.assertEqual(
+                [row["accession_no"] for row in watch_after["filings"]],
+                ["0001"],
+            )
 
 
 if __name__ == "__main__":
