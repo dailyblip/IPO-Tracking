@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-13T05:03:43.879172+00:00",
+  "updated_at": "2026-09-13T08:12:05.942060+00:00",
   "items": {
     "s1:0002141406": {
       "id": "s1:0002141406",
@@ -10,6 +10,7 @@
       "filed": "2026-09-11",
       "stage": "pre-pricing",
       "price_range": null,
+      "filing_price": null,
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026061542/0001628280-26-061542-index.htm"
@@ -22,6 +23,7 @@
       "filed": "2026-09-10",
       "stage": "pre-pricing",
       "price_range": null,
+      "filing_price": "$10.00",
       "priority": "High",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm"
@@ -34,6 +36,7 @@
       "filed": "2026-09-09",
       "stage": "pre-pricing",
       "price_range": "$15.00–$17.00",
+      "filing_price": "$15.00–$17.00",
       "priority": "High",
       "value": 320000000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026061012/0001628280-26-061012-index.htm"
@@ -46,6 +49,7 @@
       "filed": "2026-09-08",
       "stage": "pre-pricing",
       "price_range": "$15.00–$18.00",
+      "filing_price": "$15.00–$18.00",
       "priority": "High",
       "value": 825000000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526384287/0001193125-26-384287-index.htm"
@@ -58,6 +62,7 @@
       "filed": "2026-09-04",
       "stage": "pre-pricing",
       "price_range": null,
+      "filing_price": null,
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026060761/0001628280-26-060761-index.htm"
@@ -70,6 +75,7 @@
       "filed": "2026-09-04",
       "stage": "pre-pricing",
       "price_range": null,
+      "filing_price": null,
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226041590/0001493152-26-041590-index.htm"
@@ -82,6 +88,7 @@
       "filed": "2026-09-04",
       "stage": "pre-pricing",
       "price_range": null,
+      "filing_price": null,
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526383838/0001193125-26-383838-index.htm"
@@ -94,6 +101,7 @@
       "filed": "2026-09-03",
       "stage": "pre-pricing",
       "price_range": null,
+      "filing_price": null,
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2133022/000119312526381855/0001193125-26-381855-index.htm"
@@ -106,6 +114,7 @@
       "filed": "2026-09-01",
       "stage": "pre-pricing",
       "price_range": null,
+      "filing_price": null,
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2028464/000162828026059692/0001628280-26-059692-index.htm"
@@ -118,6 +127,7 @@
       "filed": "2026-08-31",
       "stage": "pre-pricing",
       "price_range": null,
+      "filing_price": null,
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2125056/000162828026059572/0001628280-26-059572-index.htm"
@@ -130,6 +140,7 @@
       "filed": "2026-08-31",
       "stage": "pre-pricing",
       "price_range": null,
+      "filing_price": null,
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2045151/000121390026095715/0001213900-26-095715-index.htm"
@@ -142,6 +153,7 @@
       "filed": "2026-08-31",
       "stage": "pre-pricing",
       "price_range": null,
+      "filing_price": null,
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1718728/000119312526376166/0001193125-26-376166-index.htm"
@@ -154,6 +166,7 @@
       "filed": "2026-08-31",
       "stage": "pre-pricing",
       "price_range": null,
+      "filing_price": "$5.00",
       "priority": "High",
       "value": 50000000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2151905/000215190526000001/0002151905-26-000001-index.htm"
@@ -166,6 +179,7 @@
       "filed": "2026-08-28",
       "stage": "pre-pricing",
       "price_range": null,
+      "filing_price": null,
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526374259/0001193125-26-374259-index.htm"
@@ -178,6 +192,7 @@
       "filed": "2026-08-28",
       "stage": "pre-pricing",
       "price_range": null,
+      "filing_price": null,
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2125355/000162828026059433/0001628280-26-059433-index.htm"
@@ -190,6 +205,7 @@
       "filed": "2026-08-28",
       "stage": "pre-pricing",
       "price_range": null,
+      "filing_price": null,
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526372368/0001193125-26-372368-index.htm"
@@ -202,6 +218,7 @@
       "filed": "2026-08-21",
       "stage": "pre-pricing",
       "price_range": "$4.00–$6.00",
+      "filing_price": "$4.00–$6.00",
       "priority": "High",
       "value": 18750000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026092565/0001213900-26-092565-index.htm"
@@ -214,6 +231,7 @@
       "filed": "2026-08-21",
       "stage": "pre-pricing",
       "price_range": null,
+      "filing_price": null,
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2131613/000119312526361190/0001193125-26-361190-index.htm"
@@ -226,6 +244,7 @@
       "filed": "2026-08-19",
       "stage": "priced",
       "price_range": "19-22",
+      "filing_price": "19-22",
       "priority": "High",
       "value": 297500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm"
@@ -238,6 +257,7 @@
       "filed": "2026-08-17",
       "stage": "pre-pricing",
       "price_range": "$10.00–$12.00",
+      "filing_price": "$10.00–$12.00",
       "priority": "High",
       "value": 33000000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026090319/0001213900-26-090319-index.htm"
@@ -250,6 +270,7 @@
       "filed": "2026-08-12",
       "stage": "priced",
       "price_range": "11-13",
+      "filing_price": "11-13",
       "priority": "Medium",
       "value": 81250000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1903784/000118518526003448/0001185185-26-003448-index.htm"
@@ -262,6 +283,7 @@
       "filed": "2026-08-07",
       "stage": "priced",
       "price_range": "16-18",
+      "filing_price": "16-18",
       "priority": "High",
       "value": 345600000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2056611/000119312526340329/0001193125-26-340329-index.htm"
@@ -274,6 +296,7 @@
       "filed": "2026-08-07",
       "stage": "priced",
       "price_range": "15-17",
+      "filing_price": "15-17",
       "priority": "Medium",
       "value": 150000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1839970/000119312526340215/0001193125-26-340215-index.htm"
@@ -286,6 +309,7 @@
       "filed": "2026-08-06",
       "stage": "priced",
       "price_range": "15-17",
+      "filing_price": "15-17",
       "priority": "High",
       "value": 382500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2131524/000162828026054354/0001628280-26-054354-index.htm"
@@ -298,6 +322,7 @@
       "filed": "2026-08-05",
       "stage": "priced",
       "price_range": "15-17",
+      "filing_price": "15-17",
       "priority": "Medium",
       "value": 289000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2058707/000119312526334997/0001193125-26-334997-index.htm"
@@ -310,6 +335,7 @@
       "filed": "2026-07-31",
       "stage": "priced",
       "price_range": "21-25",
+      "filing_price": "21-25",
       "priority": "High",
       "value": 1000000003,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2127043/000119312526326453/0001193125-26-326453-index.htm"
@@ -322,6 +348,7 @@
       "filed": "2026-07-31",
       "stage": "priced",
       "price_range": "14-16",
+      "filing_price": "14-16",
       "priority": "Medium",
       "value": 192000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1745648/000119312526328422/0001193125-26-328422-index.htm"
@@ -334,6 +361,7 @@
       "filed": "2026-07-30",
       "stage": "priced",
       "price_range": "15-17",
+      "filing_price": "15-17",
       "priority": "Medium",
       "value": 210937500.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1787117/000110465926088733/0001104659-26-088733-index.htm"
@@ -346,6 +374,7 @@
       "filed": "2026-07-27",
       "stage": "priced",
       "price_range": "13-15",
+      "filing_price": "13-15",
       "priority": "Medium",
       "value": 128700000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1853921/000119312526316503/0001193125-26-316503-index.htm"
@@ -358,6 +387,7 @@
       "filed": "2026-07-16",
       "stage": "priced",
       "price_range": "18-21",
+      "filing_price": "18-21",
       "priority": "High",
       "value": 150000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2086716/000121390026078747/0001213900-26-078747-index.htm"
@@ -370,6 +400,7 @@
       "filed": "2026-07-16",
       "stage": "priced",
       "price_range": "23-27",
+      "filing_price": "23-27",
       "priority": "High",
       "value": 1050000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2105398/000110465926084293/0001104659-26-084293-index.htm"
@@ -382,6 +413,7 @@
       "filed": "2026-07-02",
       "stage": "priced",
       "price_range": "24-26",
+      "filing_price": "24-26",
       "priority": "High",
       "value": 173913050.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1699963/000162828026046635/0001628280-26-046635-index.htm"
@@ -394,6 +426,7 @@
       "filed": "2026-07-02",
       "stage": "priced",
       "price_range": "19-22",
+      "filing_price": "19-22",
       "priority": "High",
       "value": 312195136.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2110117/000119312526292853/0001193125-26-292853-index.htm"
@@ -406,6 +439,7 @@
       "filed": "2026-06-18",
       "stage": "priced",
       "price_range": "14-16",
+      "filing_price": "14-16",
       "priority": "High",
       "value": 400000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2123613/000119312526276096/0001193125-26-276096-index.htm"
@@ -418,6 +452,7 @@
       "filed": "2026-06-18",
       "stage": "priced",
       "price_range": "14-16",
+      "filing_price": "14-16",
       "priority": "Low",
       "value": 68750000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1531193/000114036126025790/0001140361-26-025790-index.htm"
@@ -430,6 +465,7 @@
       "filed": "2026-06-12",
       "stage": "priced",
       "price_range": "135",
+      "filing_price": "135",
       "priority": "High",
       "value": 74999999925.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1181412/000162828026042639/0001628280-26-042639-index.htm"
@@ -442,6 +478,7 @@
       "filed": "2026-06-11",
       "stage": "priced",
       "price_range": "18-20",
+      "filing_price": "18-20",
       "priority": "Medium",
       "value": 142200000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1925062/000162828026042580/0001628280-26-042580-index.htm"
@@ -454,6 +491,7 @@
       "filed": "2026-06-10",
       "stage": "priced",
       "price_range": "17-19",
+      "filing_price": "17-19",
       "priority": "High",
       "value": 670000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1657677/000119312526265983/0001193125-26-265983-index.htm"
@@ -466,6 +504,7 @@
       "filed": "2026-06-10",
       "stage": "priced",
       "price_range": "20-23",
+      "filing_price": "20-23",
       "priority": "High",
       "value": 600000006,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2110029/000119312526265898/0001193125-26-265898-index.htm"
@@ -478,6 +517,7 @@
       "filed": "2026-06-09",
       "stage": "priced",
       "price_range": "25-27",
+      "filing_price": "25-27",
       "priority": "Medium",
       "value": 200200000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1921603/000119312526264014/0001193125-26-264014-index.htm"
@@ -490,6 +530,7 @@
       "filed": "2026-06-05",
       "stage": "priced",
       "price_range": "13.5-16.5",
+      "filing_price": "13.5-16.5",
       "priority": "High",
       "value": 270000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2091017/000114036126024037/0001140361-26-024037-index.htm"
@@ -502,6 +543,7 @@
       "filed": "2026-06-05",
       "stage": "priced",
       "price_range": "53-55",
+      "filing_price": "53-55",
       "priority": "High",
       "value": 1680000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2110105/000162828026041003/0001628280-26-041003-index.htm"
@@ -514,6 +556,7 @@
       "filed": "2026-06-04",
       "stage": "priced",
       "price_range": "20-22",
+      "filing_price": "20-22",
       "priority": "High",
       "value": 437000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1850351/000119312526257410/0001193125-26-257410-index.htm"
@@ -526,6 +569,7 @@
       "filed": "2026-06-04",
       "stage": "priced",
       "price_range": "18-21",
+      "filing_price": "18-21",
       "priority": "High",
       "value": 650000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2118195/000119312526256356/0001193125-26-256356-index.htm"
@@ -538,6 +582,7 @@
       "filed": "2026-05-21",
       "stage": "priced",
       "price_range": "18-20",
+      "filing_price": "18-20",
       "priority": "Medium",
       "value": 420999760.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1925283/000162828026037044/0001628280-26-037044-index.htm"
@@ -550,6 +595,7 @@
       "filed": "2026-05-14",
       "stage": "priced",
       "price_range": "22-25",
+      "filing_price": "22-25",
       "priority": "High",
       "value": 478723395.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1898718/000110465926060835/0001104659-26-060835-index.htm"
@@ -562,6 +608,7 @@
       "filed": "2026-05-14",
       "stage": "priced",
       "price_range": "17-20",
+      "filing_price": "17-20",
       "priority": "High",
       "value": 320050000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2104882/000119312526224302/0001193125-26-224302-index.htm"
@@ -574,6 +621,7 @@
       "filed": "2026-05-14",
       "stage": "priced",
       "price_range": "150-160",
+      "filing_price": "150-160",
       "priority": "High",
       "value": 5550000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2021728/000162828026035214/0001628280-26-035214-index.htm"
@@ -586,6 +634,7 @@
       "filed": "2026-05-08",
       "stage": "priced",
       "price_range": "21-24",
+      "filing_price": "21-24",
       "priority": "Medium",
       "value": 186666669.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1934114/000110465926057504/0001104659-26-057504-index.htm"
@@ -598,6 +647,7 @@
       "filed": "2026-05-08",
       "stage": "priced",
       "price_range": "16-18",
+      "filing_price": "16-18",
       "priority": "Medium",
       "value": 279000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1882782/000119312526214819/0001193125-26-214819-index.htm"
@@ -610,6 +660,7 @@
       "filed": "2026-05-08",
       "stage": "priced",
       "price_range": "14-16",
+      "filing_price": "14-16",
       "priority": "Medium",
       "value": 150000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1489993/000162828026032843/0001628280-26-032843-index.htm"
@@ -622,6 +673,7 @@
       "filed": "2026-05-07",
       "stage": "priced",
       "price_range": "24-26",
+      "filing_price": "24-26",
       "priority": "Medium",
       "value": 416000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1750704/000162828026032207/0001628280-26-032207-index.htm"
@@ -634,6 +686,7 @@
       "filed": "2026-05-01",
       "stage": "priced",
       "price_range": "16-18",
+      "filing_price": "16-18",
       "priority": "High",
       "value": 254880000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2042347/000119312526201758/0001193125-26-201758-index.htm"
@@ -646,6 +699,7 @@
       "filed": "2026-05-01",
       "stage": "priced",
       "price_range": "16-18",
+      "filing_price": "16-18",
       "priority": "Medium",
       "value": 301500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2114044/000119312526201458/0001193125-26-201458-index.htm"
@@ -658,6 +712,7 @@
       "filed": "2026-04-30",
       "stage": "priced",
       "price_range": "16-18",
+      "filing_price": "16-18",
       "priority": "Medium",
       "value": 300000006.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1540171/000119312526197686/0001193125-26-197686-index.htm"
@@ -670,6 +725,7 @@
       "filed": "2026-04-27",
       "stage": "priced",
       "price_range": "16-19",
+      "filing_price": "16-19",
       "priority": "High",
       "value": 1017857157.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2088896/000110465926049515/0001104659-26-049515-index.htm"
@@ -682,6 +738,7 @@
       "filed": "2026-04-23",
       "stage": "priced",
       "price_range": "20-23",
+      "filing_price": "20-23",
       "priority": "High",
       "value": 280000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1859836/000110465926047210/0001104659-26-047210-index.htm"
@@ -694,6 +751,7 @@
       "filed": "2026-04-23",
       "stage": "priced",
       "price_range": "12-14",
+      "filing_price": "12-14",
       "priority": "Medium",
       "value": 119999992.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2101698/000121390026047144/0001213900-26-047144-index.htm"
@@ -706,6 +764,7 @@
       "filed": "2026-04-20",
       "stage": "priced",
       "price_range": "18-21",
+      "filing_price": "18-21",
       "priority": "High",
       "value": 320000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2096300/000119312526162601/0001193125-26-162601-index.htm"
@@ -718,6 +777,7 @@
       "filed": "2026-04-17",
       "stage": "priced",
       "price_range": "25-27",
+      "filing_price": "25-27",
       "priority": "High",
       "value": 2232692316.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2098430/000119312526160250/0001193125-26-160250-index.htm"
@@ -730,6 +790,7 @@
       "filed": "2026-04-17",
       "stage": "priced",
       "price_range": "14-16",
+      "filing_price": "14-16",
       "priority": "High",
       "value": 625000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2096997/000119312526161521/0001193125-26-161521-index.htm"
@@ -742,6 +803,7 @@
       "filed": "2026-04-17",
       "stage": "priced",
       "price_range": "15-17",
+      "filing_price": "15-17",
       "priority": "High",
       "value": 191250000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2104204/000119312526161647/0001193125-26-161647-index.htm"
@@ -754,6 +816,7 @@
       "filed": "2026-04-16",
       "stage": "priced",
       "price_range": "25-28",
+      "filing_price": "25-28",
       "priority": "High",
       "value": 1134000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2093536/000119312526159369/0001193125-26-159369-index.htm"
@@ -766,6 +829,7 @@
       "filed": "2026-04-01",
       "stage": "priced",
       "price_range": "19-22",
+      "filing_price": "19-22",
       "priority": "High",
       "value": 210400000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2021880/000119312526138102/0001193125-26-138102-index.htm"
@@ -778,6 +842,7 @@
       "filed": "2026-03-06",
       "stage": "priced",
       "price_range": "25-28",
+      "filing_price": "25-28",
       "priority": "High",
       "value": 560000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2062583/000162828026015648/0001628280-26-015648-index.htm"
@@ -790,6 +855,7 @@
       "filed": "2026-02-27",
       "stage": "priced",
       "price_range": "15-17",
+      "filing_price": "15-17",
       "priority": "High",
       "value": 400000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2100782/000119312526083190/0001193125-26-083190-index.htm"
@@ -802,6 +868,7 @@
       "filed": "2026-02-13",
       "stage": "priced",
       "price_range": "18-20",
+      "filing_price": "18-20",
       "priority": "Medium",
       "value": 199999998.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2080921/000119312526049767/0001193125-26-049767-index.htm"
@@ -814,6 +881,7 @@
       "filed": "2026-02-11",
       "stage": "priced",
       "price_range": "22-25",
+      "filing_price": "22-25",
       "priority": "High",
       "value": 512500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2065636/000119312526046879/0001193125-26-046879-index.htm"
@@ -826,6 +894,7 @@
       "filed": "2026-02-09",
       "stage": "priced",
       "price_range": "17-19",
+      "filing_price": "17-19",
       "priority": "Medium",
       "value": 197949762.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1696556/000119312526041885/0001193125-26-041885-index.htm"
@@ -838,6 +907,7 @@
       "filed": "2026-02-06",
       "stage": "priced",
       "price_range": "15-17",
+      "filing_price": "15-17",
       "priority": "Medium",
       "value": 150000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1778922/000162828026006068/0001628280-26-006068-index.htm"
@@ -850,6 +920,7 @@
       "filed": "2026-02-06",
       "stage": "priced",
       "price_range": "25-29",
+      "filing_price": "25-29",
       "priority": "High",
       "value": 1512000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2080126/000119312526040029/0001193125-26-040029-index.htm"
@@ -862,6 +933,7 @@
       "filed": "2026-02-05",
       "stage": "priced",
       "price_range": "16-18",
+      "filing_price": "16-18",
       "priority": "Medium",
       "value": 381196800.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1861123/000119312526039375/0001193125-26-039375-index.htm"
@@ -874,6 +946,7 @@
       "filed": "2026-02-05",
       "stage": "priced",
       "price_range": "17-19",
+      "filing_price": "17-19",
       "priority": "High",
       "value": 330650000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2085187/000162828026005868/0001628280-26-005868-index.htm"
@@ -886,6 +959,7 @@
       "filed": "2026-02-04",
       "stage": "priced",
       "price_range": "14-16",
+      "filing_price": "14-16",
       "priority": "High",
       "value": 256319999.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1827635/000162828026005505/0001628280-26-005505-index.htm"
@@ -898,6 +972,7 @@
       "filed": "2026-01-30",
       "stage": "priced",
       "price_range": "30-34",
+      "filing_price": "30-34",
       "priority": "High",
       "value": 629000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2086587/000119312526030469/0001193125-26-030469-index.htm"
@@ -910,6 +985,7 @@
       "filed": "2026-01-30",
       "stage": "priced",
       "price_range": "18-20",
+      "filing_price": "18-20",
       "priority": "High",
       "value": 199999985.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1788451/000119312526029993/0001193125-26-029993-index.htm"
@@ -922,6 +998,7 @@
       "filed": "2026-01-26",
       "stage": "priced",
       "price_range": "23.5-25.5",
+      "filing_price": "23.5-25.5",
       "priority": "High",
       "value": 747250000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1693736/000162828026003334/0001628280-26-003334-index.htm"
@@ -934,6 +1011,7 @@
       "filed": "2026-01-23",
       "stage": "priced",
       "price_range": "15-17",
+      "filing_price": "15-17",
       "priority": "Medium",
       "value": 212788710.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1740604/000162828026003180/0001628280-26-003180-index.htm"
@@ -946,6 +1024,7 @@
       "filed": "2026-01-09",
       "stage": "priced",
       "price_range": "16-18",
+      "filing_price": "16-18",
       "priority": "Medium",
       "value": 317700000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2035832/000119312526009078/0001193125-26-009078-index.htm"
@@ -958,6 +1037,7 @@
       "filed": "2025-12-17",
       "stage": "priced",
       "price_range": "14-16",
+      "filing_price": "14-16",
       "priority": "High",
       "value": 176000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2065708/000119312525322948/0001193125-25-322948-index.htm"
@@ -970,6 +1050,7 @@
       "filed": "2025-12-12",
       "stage": "priced",
       "price_range": "17-20",
+      "filing_price": "17-20",
       "priority": "High",
       "value": 462500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2071288/000119312525316455/0001193125-25-316455-index.htm"
@@ -982,6 +1063,7 @@
       "filed": "2025-12-10",
       "stage": "priced",
       "price_range": "20-22",
+      "filing_price": "20-22",
       "priority": "High",
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
