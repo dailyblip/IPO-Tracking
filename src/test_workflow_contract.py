@@ -77,7 +77,9 @@ class WorkflowContractTests(unittest.TestCase):
     def test_ownership_refresh_runs_release_safety_chain_before_validation(self):
         workflow = _ownership_workflow()
         ordered_steps = [
+            "- name: Verify exact final SEC accession identity",
             "- name: Reconcile final 424B4 lifecycle transitions",
+            "- name: Converge parallel 424B4 lifecycle transitions",
             "- name: Sanitize impossible lifecycle dates",
             "- name: Remove post-reporting follow-on/resale offerings",
             "- name: Enforce public-feed eligibility policy",
@@ -225,11 +227,15 @@ class WorkflowContractTests(unittest.TestCase):
     def test_ownership_refresh_reacts_to_release_safety_code_changes(self):
         workflow = _ownership_workflow()
         required_paths = [
+            "src/final_accession_identity_guard.py",
             "src/lifecycle_reconciler.py",
+            "src/lifecycle_convergence.py",
             "src/lifecycle_date_sanitizer.py",
             "src/followon_sanitizer.py",
             "src/prepricing_quote_sanitizer.py",
+            "src/test_final_accession_identity_guard.py",
             "src/test_lifecycle_reconciler.py",
+            "src/test_lifecycle_convergence.py",
             "src/test_lifecycle_date_sanitizer.py",
             "src/test_followon_sanitizer.py",
             "src/test_prepricing_quote_sanitizer.py",
