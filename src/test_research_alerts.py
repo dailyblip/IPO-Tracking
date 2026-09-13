@@ -17,6 +17,7 @@ class ResearchAlertsTests(unittest.TestCase):
             "filed": "2026-08-17",
             "stage": "pre-pricing",
             "price_range": None,
+            "filing_price": None,
             "priority": "Medium",
             "sec_url": "https://www.sec.gov/example",
         }
@@ -31,6 +32,14 @@ class ResearchAlertsTests(unittest.TestCase):
         self.assertEqual(state["items"]["s1:0001234567"]["stage"], "pre-pricing")
 
     @patch("research_alerts._now_iso", return_value="2026-08-17T20:00:00+00:00")
+    def test_new_prepricing_fixed_filing_price_alert(self, _):
+        alerts, state = detect_alerts([self.filing(filing_price="$10.00")], {})
+        self.assertEqual(alerts[0]["type"], "new_prepricing")
+        self.assertEqual(alerts[0]["new_value"], "$10.00")
+        self.assertIn("Preliminary filing price: $10.00.", alerts[0]["summary"])
+        self.assertEqual(state["items"]["s1:0001234567"]["filing_price"], "$10.00")
+
+    @patch("research_alerts._now_iso", return_value="2026-08-17T20:00:00+00:00")
     def test_price_range_change_alert(self, _):
         old_state = {
             "items": {"s1:0001234567": self.filing(price_range="$14-$16")},
@@ -39,6 +48,40 @@ class ResearchAlertsTests(unittest.TestCase):
         alerts, _ = detect_alerts([self.filing(form="S-1/A", price_range="$15-$17")], old_state)
         self.assertEqual([a["type"] for a in alerts], ["price_range_update"])
         self.assertEqual(alerts[0]["old_value"], "$14-$16")
+
+    @patch("research_alerts._now_iso", return_value="2026-08-17T20:00:00+00:00")
+    def test_fixed_filing_price_change_alert(self, _):
+        old = self.filing(filing_price="$9.00")
+        old_state = {
+            "items": {old["id"]: old},
+            "ciks": {"0001234567": {"stage": "pre-pricing"}},
+        }
+        alerts, _ = detect_alerts([self.filing(form="S-1/A", filing_price="$10.00")], old_state)
+        self.assertEqual([a["type"] for a in alerts], ["price_range_update"])
+        self.assertEqual(alerts[0]["old_value"], "$9.00")
+        self.assertEqual(alerts[0]["new_value"], "$10.00")
+        self.assertEqual(alerts[0]["summary"], "Preliminary IPO filing price changed to $10.00.")
+
+    @patch("research_alerts._now_iso", return_value="2026-08-17T20:00:00+00:00")
+    def test_price_range_remains_preferred_over_fixed_filing_price(self, _):
+        alerts, _ = detect_alerts([
+            self.filing(price_range="$15-$17", filing_price="$16.00")
+        ], {})
+        self.assertEqual(alerts[0]["new_value"], "$15-$17")
+        self.assertIn("Preliminary range: $15-$17.", alerts[0]["summary"])
+        self.assertNotIn("filing price", alerts[0]["summary"].lower())
+
+    @patch("research_alerts._now_iso", return_value="2026-08-17T20:00:00+00:00")
+    def test_legacy_state_seeds_fixed_filing_price_without_false_change_alert(self, _):
+        legacy_old = self.filing()
+        legacy_old.pop("filing_price")
+        old_state = {
+            "items": {legacy_old["id"]: legacy_old},
+            "ciks": {"0001234567": {"stage": "pre-pricing"}},
+        }
+        alerts, state = detect_alerts([self.filing(filing_price="$10.00")], old_state)
+        self.assertEqual(alerts, [])
+        self.assertEqual(state["items"]["s1:0001234567"]["filing_price"], "$10.00")
 
     @patch("research_alerts._now_iso", return_value="2026-08-17T20:00:00+00:00")
     def test_priced_transition_uses_cik_history(self, _):
