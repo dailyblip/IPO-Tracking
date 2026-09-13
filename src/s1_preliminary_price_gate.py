@@ -101,15 +101,17 @@ def _matches_expected_price(match, expected: float) -> bool:
 
 
 def _extract_authoritative_proposed_point_price(text: str):
-    """Recover a direct issuer-proposed IPO point price from the prospectus cover.
+    """Recover a direct issuer-proposed IPO point price from authoritative S-1 text.
 
-    Issuer statements such as "We expect the initial public offering price ...
-    to be $7.00 per share" and "The offering price per share ... is to be fixed
-    at $5.00 per share" are authoritative preliminary Filing Prices even though
-    final pricing has not occurred. Keep this deliberately narrower than generic
-    assumed/sensitivity language elsewhere in the filing.
+    Generic point-price formulations remain bounded to the prospectus cover because
+    those phrases can recur in assumptions and sensitivity disclosures. Mutual-to-
+    stock conversion prospectuses use a much narrower, explicit stock-offering
+    purchase-price sentence that can occur later in a long filing; that exact
+    sentence may be searched document-wide, but only when the same filing also
+    explicitly identifies the transaction as an IPO.
     """
-    cover = " ".join(str(text or "").split())[:COVER_TEXT_LIMIT]
+    document = " ".join(str(text or "").split())
+    cover = document[:COVER_TEXT_LIMIT]
     if _explicitly_undetermined(cover):
         return None
 
@@ -135,20 +137,21 @@ def _extract_authoritative_proposed_point_price(text: str):
         if price is not None:
             return price
 
-    # Mutual-to-stock conversions can disclose a fixed purchase price without
-    # using the generic "initial public offering price" formulation. Accept the
-    # stock-offering sentence only when the same bounded prospectus context
-    # explicitly identifies the transaction as an IPO. This keeps unrelated
-    # purchase-price references from becoming Filing Price facts.
     stock_offering_pattern = (
         rf"\bthe\s+purchase\s+price\s+of\s+each\s+share(?:\s+of\s+common\s+stock)?"
         rf"\s+to\s+be\s+sold\s+in\s+the\s+(?:conversion\s+and\s+)?stock\s+offering"
         rf"\s+is\s+\$\s*{number}\b"
     )
-    match = re.search(stock_offering_pattern, cover, re.IGNORECASE)
-    if match and not _assumption_context(cover, match.start()):
-        nearby = cover[max(0, match.start() - 2000) : min(len(cover), match.end() + 1000)]
-        if re.search(r"\b(?:initial\s+public\s+offering|IPO)\b", nearby, re.IGNORECASE):
+    match = re.search(stock_offering_pattern, document, re.IGNORECASE)
+    if match and not _assumption_context(document, match.start()):
+        nearby = document[
+            max(0, match.start() - 2000) : min(len(document), match.end() + 1000)
+        ]
+        has_ipo_context = bool(
+            re.search(r"\b(?:initial\s+public\s+offering|IPO)\b", nearby, re.IGNORECASE)
+            or re.search(r"\b(?:initial\s+public\s+offering|IPO)\b", document, re.IGNORECASE)
+        )
+        if has_ipo_context:
             price = _number(match.group("price"))
             if price is not None:
                 return price
@@ -221,7 +224,7 @@ def has_authoritative_fixed_price(text: str, expected_price: float) -> bool:
     if _explicitly_undetermined(cover):
         return False
 
-    proposed = _extract_authoritative_proposed_point_price(cover)
+    proposed = _extract_authoritative_proposed_point_price(text)
     if proposed is not None and abs(proposed - expected_price) < 0.00001:
         return True
 
@@ -256,9 +259,6 @@ def has_authoritative_fixed_price(text: str, expected_price: float) -> bool:
                         continue
                 return True
 
-    # Some fixed-price covers omit "per share" in the sentence because the SEC
-    # pricing table supplies that header separately. Accept this only very near the
-    # prospectus cover and never when the dollar amount is scaled.
     early = cover[:PLAIN_PRICE_TEXT_LIMIT]
     plain_patterns = (
         rf"\binitial\s+public\s+offering\s+price"
@@ -462,8 +462,6 @@ def review_watch_payload(
             try:
                 filing_text = text_loader(filing)
             except Exception:
-                # Missing preliminary terms may remain blank when SEC is unavailable;
-                # never manufacture a value merely to improve field completeness.
                 updated_filings.append(filing)
                 continue
             recovered = _recover_missing_preliminary_terms(filing, filing_text)
@@ -585,9 +583,6 @@ def enforce_preliminary_fixed_prices(
         if (candidate_key := _fixed_price_candidate_key(filing)) is not None
     }
 
-    # The public queue can retain qualifying S-1 records that have rolled out of
-    # s1_watch.json. First propagate any invalid watch result, then independently
-    # recover or verify every remaining queue-only point Filing Price before release.
     prechecked_queue = sanitize_queue_payload(queue_payload, watch_invalid)
     updated_queue, queue_invalid, queue_checked = review_watch_payload(
         prechecked_queue,
