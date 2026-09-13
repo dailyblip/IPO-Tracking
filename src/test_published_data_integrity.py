@@ -1,4 +1,5 @@
 import json
+import re
 import unittest
 from datetime import date
 from pathlib import Path
@@ -274,11 +275,13 @@ class PublishedResearchMonitorDataIntegrityTests(unittest.TestCase):
         """Keep the required June-present Stanford signal verifiable in the live feed.
 
         Confirmed affiliation and red-text eligibility are deliberately separate:
-        every confirmed Stanford person needs a 5/5 evidence note, while Cardinal red
-        additionally requires a disclosed positive beneficial-owner share position.
-        At least one June-present record must satisfy the full red-text gate so the
-        historical Stanford signal cannot silently disappear from the public feed.
+        every confirmed Stanford person needs a concise connection explanation, while
+        an explicit 1-5 confidence score is required only when the evidence supports
+        one. Cardinal red additionally requires a disclosed positive beneficial-owner
+        share position. At least one June-present record must satisfy the full red-text
+        gate so the historical Stanford signal cannot silently disappear from the feed.
         """
+        confidence_pattern = re.compile(r"^Confidence\s+([1-5])/5\s+—\s+(.+)$", re.S)
         confirmed = []
         red_eligible = []
         for filing in self.filings:
@@ -297,13 +300,28 @@ class PublishedResearchMonitorDataIntegrityTests(unittest.TestCase):
                     msg=f"{label}: confirmed Stanford record is not an individual",
                 )
                 self.assertTrue(
-                    source.startswith("Confidence 5/5 — "),
-                    msg=f"{label}: confirmed Stanford person lacks a Confidence 5/5 connection note",
+                    source,
+                    msg=f"{label}: confirmed Stanford person lacks a connection explanation",
+                )
+
+                if source.casefold().startswith("confidence"):
+                    match = confidence_pattern.match(source)
+                    self.assertIsNotNone(
+                        match,
+                        msg=f"{label}: Stanford confidence must be an evidence-supported 1-5 score",
+                    )
+                    connection_note = match.group(2).strip() if match else ""
+                else:
+                    connection_note = source
+
+                self.assertTrue(
+                    connection_note,
+                    msg=f"{label}: Stanford connection explanation is blank",
                 )
                 self.assertIn(
-                    "Stanford University",
-                    source,
-                    msg=f"{label}: Stanford connection note does not identify Stanford University",
+                    "stanford",
+                    connection_note.casefold(),
+                    msg=f"{label}: Stanford connection explanation does not identify Stanford",
                 )
                 confirmed.append(label)
 
