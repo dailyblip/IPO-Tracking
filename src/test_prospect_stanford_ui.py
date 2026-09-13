@@ -29,7 +29,8 @@ class ProspectStanfordUiTests(unittest.TestCase):
         self.assertIn('$("stanfordSource").textContent=research.note', self.html)
 
     def test_non_beneficial_stanford_research_can_display_without_triggering_red(self):
-        self.assertIn('confidence=match?Number(match[1]):(hasStanfordResearch(p)?5:null)', self.html)
+        self.assertIn('confidence=match?Number(match[1]):null', self.html)
+        self.assertIn('research.confidence?`Confidence ${research.confidence}/5`:"Research lead"', self.html)
         self.assertIn('sp.hidden=research.confidence===null&&!research.note', self.html)
         self.assertIn('function hasStanfordResearch(p){return p?.stanford_affiliation_confirmed===true||p?.stanford_university_bio===true||stanfordOverrides.has', self.html)
         self.assertIn('function isStanfordPerson(p){return hasStanfordResearch(p)&&p?.is_beneficial_owner===true}', self.html)
