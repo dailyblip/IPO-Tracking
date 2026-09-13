@@ -16,7 +16,7 @@ class ProspectStanfordUiTests(unittest.TestCase):
         self.assertNotIn('badge("Stanford","stanford")', self.html)
         self.assertNotIn('badge("Confirmed Stanford-affiliated beneficial owner","stanford")', self.html)
         self.assertIn('d.className=hasStanford(f)?"company cardinal":"company"', self.html)
-        self.assertIn('b.className="owner-link"+(isStanfordPerson(p)?" cardinal":"")', self.html)
+        self.assertIn('b.className="owner-link";if(isStanfordPerson(p))b.classList.add("cardinal")', self.html)
         self.assertIn('$("personName").className=isStanfordPerson(p)?"cardinal":""', self.html)
 
     def test_person_record_shows_stanford_note_and_one_to_five_confidence(self):
