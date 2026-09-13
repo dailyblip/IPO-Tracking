@@ -29,6 +29,25 @@ class DailyS1ReleaseSafetyTests(unittest.TestCase):
         self.assertIn(required_env, workflow[history:resale])
         self.assertIn(required_env, workflow[resale:tests])
 
+    def test_daily_rechecks_resale_cover_after_regeneration(self):
+        workflow = DAILY_WORKFLOW.read_text(encoding="utf-8")
+
+        pipeline = workflow.index("- name: Run daily pipeline")
+        history = workflow.index("- name: Reconcile regenerated S-1 registration history")
+        resale = workflow.index("- name: Reconcile resale-only S-1 registrations after daily regeneration")
+        substantive = workflow.index("- name: Exclude non-substantive S-1 form templates after daily regeneration")
+
+        self.assertEqual(
+            [pipeline, history, resale, substantive],
+            sorted([pipeline, history, resale, substantive]),
+        )
+        self.assertIn(
+            "python resale_registration_sanitizer.py ../docs/data/s1_watch.json ../docs/data/filings.json",
+            workflow[resale:substantive],
+        )
+        required_env = "SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}"
+        self.assertIn(required_env, workflow[resale:substantive])
+
 
 if __name__ == "__main__":
     unittest.main()
