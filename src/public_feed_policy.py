@@ -127,11 +127,12 @@ def _has_safe_s1_size_provenance(filing):
     """Reject unsafe S-1 size arithmetic without making size a publication gate.
 
     A preliminary range is inherently offering-specific. For fixed-price S-1 rows
-    with a populated offering value, require explicit issuer-offering provenance
-    before trusting that numeric value. Selling-stockholder/resale language always
-    wins over generic cover-page wording. If no numeric size is known, do not reject
-    an otherwise qualifying IPO merely for the missing size; upstream IPO/product
-    classification and the resale markers below remain the safeguards.
+    with a populated offering value, require explicit SEC-backed offering
+    provenance before trusting that numeric value. Selling-stockholder/resale
+    language always wins over generic cover-page wording. If no numeric size is
+    known, do not reject an otherwise qualifying IPO merely for the missing size;
+    upstream IPO/product classification and the resale markers below remain the
+    safeguards.
     """
     form = str((filing or {}).get("form") or "").strip().upper()
     if form not in {"S-1", "S-1/A"}:
@@ -158,6 +159,28 @@ def _has_safe_s1_size_provenance(filing):
         return True
 
     confidence = str((filing or {}).get("offering_size_confidence") or "").strip().lower()
+    if confidence != "high":
+        return False
+
+    # Mutual-to-stock conversion IPOs can publish a fixed point price together
+    # with explicit minimum/midpoint/maximum total-offering share scenarios. The
+    # preliminary-price gate accepts only an explicitly labeled midpoint at that
+    # independently verified point price and intentionally does not mislabel those
+    # scenario shares as holder-level issuer-primary shares. Treat that dedicated
+    # SEC provenance as release-grade total-offering evidence without weakening the
+    # resale guard or accepting a generic midpoint/arithmetic inference.
+    midpoint_scenario = (
+        "sec preliminary prospectus" in source
+        and "explicit midpoint offering-share scenario" in source
+        and (
+            "proposed point price" in source
+            or "verified point price" in source
+        )
+        and (_number((filing or {}).get("filing_price")) or 0) > 0
+    )
+    if midpoint_scenario:
+        return True
+
     issuer_markers = (
         "issuer-only",
         "issuer only",
@@ -165,7 +188,7 @@ def _has_safe_s1_size_provenance(filing):
         "company offering",
         "primary offering",
     )
-    return confidence == "high" and any(marker in source for marker in issuer_markers)
+    return any(marker in source for marker in issuer_markers)
 
 
 def _has_consistent_priced_offering_value(filing):
