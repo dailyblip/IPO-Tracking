@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-14T05:58:48.585327+00:00",
+  "updated_at": "2026-09-14T06:09:19.680076+00:00",
   "items": {
     "s1:0002141406": {
       "id": "s1:0002141406",
@@ -1054,19 +1054,6 @@
       "priority": "High",
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
-    },
-    "s1:0002152644": {
-      "id": "s1:0002152644",
-      "cik": "0002152644",
-      "company": "Hometown Financial Group, Inc.",
-      "form": "S-1",
-      "filed": "2026-09-10",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": "$10.00",
-      "priority": "High",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm"
     }
   },
   "ciks": {
@@ -1636,13 +1623,6 @@
       "last_filing_id": "0001213900-25-120076",
       "last_filed": "2025-12-10",
       "missing_runs": 0
-    },
-    "0002152644": {
-      "company": "Hometown Financial Group, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002152644",
-      "last_filed": "2026-09-10",
-      "missing_runs": 1
     }
   }
 }
