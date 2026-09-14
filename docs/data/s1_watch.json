@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-14T06:01:43.295047+00:00",
+  "generated_at": "2026-09-14T10:07:28.067167+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
       "id": "0001628280-26-061542",
       "company": "Accelevation Holdings Corp.",
-      "ticker": "",
+      "ticker": "ACCV",
       "cik": "0002141406",
       "accession_no": "0001628280-26-061542",
       "form": "S-1/A",
@@ -193,7 +193,7 @@
     {
       "id": "0001628280-26-060083",
       "company": "Accelevation Holdings Corp.",
-      "ticker": "",
+      "ticker": "ACCV",
       "cik": "0002141406",
       "accession_no": "0001628280-26-060083",
       "form": "S-1",
@@ -262,7 +262,7 @@
     {
       "id": "0001628280-26-059572",
       "company": "Wella Co",
-      "ticker": "",
+      "ticker": "WELA",
       "cik": "0002125056",
       "accession_no": "0001628280-26-059572",
       "form": "S-1",
@@ -308,7 +308,7 @@
     {
       "id": "0001193125-26-376166",
       "company": "Syntiant Corp.",
-      "ticker": "",
+      "ticker": "SYTN",
       "cik": "0001718728",
       "accession_no": "0001193125-26-376166",
       "form": "S-1/A",
@@ -378,7 +378,7 @@
     {
       "id": "0001628280-26-059433",
       "company": "Bamboo Insurance Services, Inc.",
-      "ticker": "",
+      "ticker": "BMB",
       "cik": "0002125355",
       "accession_no": "0001628280-26-059433",
       "form": "S-1",
@@ -495,7 +495,7 @@
     {
       "id": "0001493152-26-038800",
       "company": "Varsal Tech, Inc.",
-      "ticker": "",
+      "ticker": "VAT",
       "cik": "0002109801",
       "accession_no": "0001493152-26-038800",
       "form": "S-1/A",
@@ -565,7 +565,7 @@
     {
       "id": "0001493152-26-037415",
       "company": "Fast Finance Pay Corp.",
-      "ticker": "",
+      "ticker": "FFPP",
       "cik": "0002109616",
       "accession_no": "0001493152-26-037415",
       "form": "S-1",
