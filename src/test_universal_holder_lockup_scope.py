@@ -79,10 +79,39 @@ class UniversalHolderLockupScopeTests(unittest.TestCase):
             {},
             as_of_date="2026-09-01",
         )
-        self.assertEqual(result["liquidity_status"], "Unclassified")
+        self.assertEqual(
+            result["liquidity_status"],
+            "Liquidity not classified — holder-specific lock-up not established",
+        )
+        self.assertIn(
+            "does not support a holder-specific lock-up allocation",
+            result["liquidity_confidence"],
+        )
         self.assertEqual(result["lockup_schedule"], [])
         self.assertIsNone(result["locked_shares"])
         self.assertIsNone(result["liquid_shares"])
+
+    def test_missing_share_count_reports_clear_unquantified_status(self):
+        result = dashboard_export._person_liquidity(
+            None,
+            None,
+            17,
+            {"terms": [], "scope_tags": []},
+            "Example Holder",
+            {"role": None},
+            {},
+            as_of_date="2026-09-01",
+        )
+        self.assertEqual(
+            result["liquidity_status"],
+            "Liquidity not quantified — share count unavailable",
+        )
+        self.assertIn(
+            "liquid and locked quantities are not shown",
+            result["liquidity_confidence"],
+        )
+        for field in ("liquid_shares", "liquid_value", "locked_shares", "locked_value"):
+            self.assertIsNone(result[field])
 
 
 if __name__ == "__main__":
