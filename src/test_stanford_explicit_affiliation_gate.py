@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch
 
+import main
 import stanford_grader
 
 
@@ -24,6 +25,8 @@ class StanfordExplicitAffiliationGateTests(unittest.TestCase):
             )
 
         self.assertEqual(result["grade"], 0)
+        self.assertTrue(main._mentions_stanford_university(bio))
+        self.assertFalse(main._stanford_affiliation_confirmed(result))
         llm.assert_called_once()
 
     def test_degree_abbreviation_remains_direct_grade_five_evidence(self):
@@ -36,6 +39,7 @@ class StanfordExplicitAffiliationGateTests(unittest.TestCase):
         self.assertEqual(result["grade"], 5)
         self.assertEqual(result["source"], "filing_bio")
         self.assertIn("Stanford University", result["justification"])
+        self.assertTrue(main._stanford_affiliation_confirmed(result))
         llm.assert_not_called()
 
     def test_customer_or_partner_reference_is_not_direct_affiliation(self):
@@ -49,6 +53,18 @@ class StanfordExplicitAffiliationGateTests(unittest.TestCase):
                         bio, person_name="Jane Doe"
                     )
                 )
+
+    def test_pipeline_never_promotes_bare_mentions_to_confirmation(self):
+        source = open(main.__file__, encoding="utf-8").read()
+        self.assertNotIn(
+            'stanford_university_in_bio or stanford_result.get("grade")',
+            source,
+        )
+        self.assertNotIn(
+            'direct_stanford or stanford_result.get("grade")',
+            source,
+        )
+        self.assertGreaterEqual(source.count("_stanford_affiliation_confirmed(stanford_result)"), 2)
 
 
 if __name__ == "__main__":
