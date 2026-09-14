@@ -306,10 +306,28 @@ def _person_liquidity(shares, current_value, ipo_price, lockup, name, metadata, 
                 "lockup_schedule": schedule,
                 "lockup_end_date": final_end,
             }
-        return {**base, "liquid_shares": None, "liquid_value": None, "locked_shares": None, "locked_value": None, "liquidity_status": "Unknown", "liquidity_confidence": "Unknown — share count unavailable", "lockup_schedule": []}
+        return {
+            **base,
+            "liquid_shares": None,
+            "liquid_value": None,
+            "locked_shares": None,
+            "locked_value": None,
+            "liquidity_status": "Liquidity not quantified — share count unavailable",
+            "liquidity_confidence": "No share count is available and the filing does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
+            "lockup_schedule": [],
+        }
 
     if not schedule:
-        return {**base, "liquid_shares": None, "liquid_value": None, "locked_shares": None, "locked_value": None, "liquidity_status": "Unclassified", "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping", "lockup_schedule": []}
+        return {
+            **base,
+            "liquid_shares": None,
+            "liquid_value": None,
+            "locked_shares": None,
+            "locked_value": None,
+            "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+            "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
+            "lockup_schedule": [],
+        }
 
     today = _as_of_date(as_of_date or row.get("Last Updated"))
 
