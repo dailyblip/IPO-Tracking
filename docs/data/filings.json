@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-13T23:22:21.570442+00:00",
+  "generated_at": "2026-09-14T01:07:14.378956+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -75,7 +75,7 @@
       "priority": "High",
       "status": "New",
       "value": 320000000,
-      "value_label": "$320,000,000",
+      "value_label": "$320M",
       "people_count": 0,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -103,7 +103,7 @@
       "priority": "High",
       "status": "New",
       "value": 825000000,
-      "value_label": "$825,000,000",
+      "value_label": "$825M",
       "people_count": 0,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -347,7 +347,7 @@
       "priority": "High",
       "status": "New",
       "value": 50000000,
-      "value_label": "$50,000,000",
+      "value_label": "$50M",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
@@ -6426,7 +6426,7 @@
       "value_label": "$192M",
       "primary_offering_shares": 12000000,
       "secondary_offering_shares": null,
-      "offering_size_source": "final 424B4 explicit issuer-only THE OFFERING row; authoritative final 424B4 aggregate IPO price table; explicit issuer offering statement in final 424B4",
+      "offering_size_source": "final 424B4 explicit issuer-only THE OFFERING row",
       "offering_size_confidence": "High",
       "filing_price": "14-16",
       "offering_price": 16.0,
