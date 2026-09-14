@@ -16,6 +16,9 @@ import json
 import math
 import re
 from pathlib import Path
+from urllib.parse import urljoin
+
+from bs4 import BeautifulSoup
 
 import dashboard_export
 import filing_parser
@@ -23,6 +26,8 @@ import filing_parser
 
 COVER_TEXT_LIMIT = 30000
 PLAIN_PRICE_TEXT_LIMIT = 12000
+FEE_TABLE_CONFLICT_TOLERANCE = 0.20
+ISSUER_ONLY_SOURCE_MARKER = "issuer-only"
 
 
 class PreliminaryPriceGateError(RuntimeError):
@@ -35,6 +40,13 @@ def _number(value):
     except (TypeError, ValueError):
         return None
     return number if math.isfinite(number) and number > 0 else None
+
+
+def _money_number(value):
+    text = str(value or "").strip().replace("$", "").replace(",", "")
+    if text.startswith("(") and text.endswith(")"):
+        text = f"-{text[1:-1]}"
+    return _number(text)
 
 
 def _fixed_price_label(value):
@@ -345,6 +357,149 @@ def _load_sec_primary_text(filing: dict) -> str:
     return soup.get_text(" ", strip=True)
 
 
+def _extract_fee_table_equity_terms(document):
+    """Return one internally consistent equity row from an SEC EX-FILING FEES table.
+
+    Registration-fee tables are never used to populate IPO size. They are used only
+    as an independent contradiction check against an already derived issuer-only
+    fixed-price size. Multiple candidate equity rows fail closed to no comparison.
+    """
+    soup = document if hasattr(document, "find_all") else BeautifulSoup(str(document or ""), "lxml")
+    candidates = set()
+    for row in soup.find_all("tr"):
+        cells = [cell.get_text(" ", strip=True) for cell in row.find_all(["td", "th"])]
+        if not cells or not any(cell.strip().casefold() == "equity" for cell in cells):
+            continue
+        for index, cell in enumerate(cells):
+            if not re.fullmatch(r"457\([a-z0-9]+\)", cell.strip(), re.IGNORECASE):
+                continue
+            if len(cells) <= index + 3:
+                continue
+            shares = _money_number(cells[index + 1])
+            per_unit = _money_number(cells[index + 2])
+            aggregate = _money_number(cells[index + 3])
+            if shares is None or per_unit is None or aggregate is None:
+                continue
+            if not float(shares).is_integer():
+                continue
+            expected_aggregate = shares * per_unit
+            if abs(expected_aggregate - aggregate) > max(1.0, aggregate * 0.001):
+                continue
+            candidates.add((int(shares), round(per_unit, 6), round(aggregate, 2)))
+    if len(candidates) != 1:
+        return None
+    shares, per_unit, aggregate = next(iter(candidates))
+    return {"shares": shares, "price": per_unit, "aggregate": aggregate}
+
+
+def _load_sec_fee_terms(filing: dict):
+    """Fetch the same accession's EX-FILING FEES exhibit and return comparable terms."""
+    index_url = str(filing.get("sec_url") or "").strip()
+    if not index_url.startswith("https://www.sec.gov/"):
+        return None
+    index_soup = filing_parser.fetch_document(index_url)
+    exhibit_urls = []
+    for row in index_soup.find_all("tr"):
+        cells = [cell.get_text(" ", strip=True) for cell in row.find_all("td")]
+        if not any(cell.strip().upper() == "EX-FILING FEES" for cell in cells):
+            continue
+        link = row.find("a", href=True)
+        if link:
+            exhibit_urls.append(urljoin(index_url, link["href"]))
+    if len(set(exhibit_urls)) != 1:
+        return None
+    exhibit_soup = filing_parser.fetch_document(exhibit_urls[0])
+    return _extract_fee_table_equity_terms(exhibit_soup)
+
+
+def _published_issuer_only_size_conflicts_with_fee_table(filing: dict, fee_terms) -> bool:
+    """Detect a material same-price contradiction without treating fee data as IPO size.
+
+    A normal registration can include modest headroom for over-allotments or Rule
+    462 adjustments. Therefore this guard requires a greater-than-20% disagreement
+    in both aggregate value and explicit issuer-primary shares when both are known.
+    It applies only to issuer-only fixed-price size provenance, never to regulatory
+    midpoint scenarios such as mutual-to-stock conversions.
+    """
+    if not isinstance(fee_terms, dict):
+        return False
+    source = str(filing.get("offering_size_source") or "").casefold()
+    if ISSUER_ONLY_SOURCE_MARKER not in source:
+        return False
+    if str(filing.get("price_range") or "").strip():
+        return False
+
+    expected_price = _fixed_price_label(filing.get("filing_price"))
+    published_value = _number(filing.get("ipo_size")) or _number(filing.get("value"))
+    fee_shares = _number(fee_terms.get("shares"))
+    fee_price = _number(fee_terms.get("price"))
+    fee_aggregate = _number(fee_terms.get("aggregate"))
+    if (
+        expected_price is None
+        or published_value is None
+        or fee_shares is None
+        or fee_price is None
+        or fee_aggregate is None
+    ):
+        return False
+    if abs(fee_price - expected_price) > 0.01:
+        return False
+    if abs((fee_shares * fee_price) - fee_aggregate) > max(1.0, fee_aggregate * 0.001):
+        return False
+
+    value_gap = abs(published_value - fee_aggregate) / max(published_value, fee_aggregate)
+    if value_gap <= FEE_TABLE_CONFLICT_TOLERANCE:
+        return False
+
+    primary_shares = _number(filing.get("primary_offering_shares"))
+    if primary_shares is None:
+        return True
+    share_gap = abs(primary_shares - fee_shares) / max(primary_shares, fee_shares)
+    return share_gap > FEE_TABLE_CONFLICT_TOLERANCE
+
+
+def _clear_conflicting_offering_size(filing: dict) -> dict:
+    cleaned = dict(filing)
+    if "ipo_size" in cleaned:
+        cleaned["ipo_size"] = None
+    if "value" in cleaned:
+        cleaned["value"] = None
+        cleaned["value_label"] = "—"
+    if "primary_offering_shares" in cleaned:
+        cleaned["primary_offering_shares"] = None
+    if "offering_size_source" in cleaned:
+        cleaned["offering_size_source"] = None
+    if "offering_size_confidence" in cleaned:
+        cleaned["offering_size_confidence"] = None
+    cleaned["signals"] = [
+        signal
+        for signal in cleaned.get("signals") or []
+        if not str(signal or "").startswith("IPO size disclosed or derived at approximately ")
+    ]
+    return cleaned
+
+
+def _apply_fee_table_size_guard(filing: dict, fee_terms_loader=None) -> dict:
+    if fee_terms_loader is None:
+        return filing
+    source = str(filing.get("offering_size_source") or "").casefold()
+    has_size = _number(filing.get("ipo_size")) is not None or _number(filing.get("value")) is not None
+    if not has_size or ISSUER_ONLY_SOURCE_MARKER not in source:
+        return filing
+    if str(filing.get("price_range") or "").strip():
+        return filing
+    try:
+        fee_terms = fee_terms_loader(filing)
+    except Exception as error:
+        raise PreliminaryPriceGateError(
+            f"{filing.get('company') or filing.get('id')}: could not inspect same-accession "
+            f"EX-FILING FEES terms before publishing issuer-only offering size: {error}"
+        ) from error
+    if _published_issuer_only_size_conflicts_with_fee_table(filing, fee_terms):
+        return _clear_conflicting_offering_size(filing)
+    return filing
+
+
 def _clean_signals(signals):
     cleaned = []
     for signal in signals or []:
@@ -509,6 +664,7 @@ def review_watch_payload(
     payload: dict,
     text_loader=_load_sec_primary_text,
     skip_candidate_keys=None,
+    fee_terms_loader=None,
 ):
     """Recover and verify point-price S-1 rows, reusing exact prior checks only."""
     filings = payload.get("filings")
@@ -540,9 +696,15 @@ def review_watch_payload(
                 updated_filings.append(filing)
                 continue
             recovered = _recover_missing_preliminary_terms(filing, filing_text)
+            recovered = _apply_fee_table_size_guard(recovered, fee_terms_loader=fee_terms_loader)
             if recovered != filing:
                 checked += 1
             updated_filings.append(recovered)
+            continue
+
+        guarded = _apply_fee_table_size_guard(filing, fee_terms_loader=fee_terms_loader)
+        if guarded != filing:
+            updated_filings.append(guarded)
             continue
 
         candidate_key = _fixed_price_candidate_key(filing)
@@ -571,9 +733,9 @@ def review_watch_payload(
             ) from error
 
         if has_authoritative_fixed_price(filing_text, expected):
-            updated_filings.append(
-                _recover_verified_fixed_price_size(filing, filing_text, expected)
-            )
+            recovered = _recover_verified_fixed_price_size(filing, filing_text, expected)
+            recovered = _apply_fee_table_size_guard(recovered, fee_terms_loader=fee_terms_loader)
+            updated_filings.append(recovered)
             continue
 
         cik = re.sub(r"\D", "", str(filing.get("cik") or "")).zfill(10)
@@ -630,27 +792,51 @@ def enforce_preliminary_fixed_prices(
     watch_path,
     queue_path,
     text_loader=_load_sec_primary_text,
+    fee_terms_loader=None,
 ):
     watch_path = Path(watch_path)
     queue_path = Path(queue_path)
     watch_payload = json.loads(watch_path.read_text(encoding="utf-8"))
     queue_payload = json.loads(queue_path.read_text(encoding="utf-8"))
 
-    text_cache = {}
+    # Production uses the same-accession fee-table contradiction check. Tests and
+    # other callers that inject a synthetic primary-text loader can opt in by also
+    # injecting a fee loader, avoiding accidental network access in unit fixtures.
+    if fee_terms_loader is None and text_loader is _load_sec_primary_text:
+        fee_terms_loader = _load_sec_fee_terms
 
-    def cached_text_loader(filing):
-        source_identity = str(
+    text_cache = {}
+    fee_terms_cache = {}
+
+    def _source_identity(filing):
+        return str(
             filing.get("accession_no") or filing.get("sec_url") or filing.get("id") or ""
         ).strip()
+
+    def cached_text_loader(filing):
+        source_identity = _source_identity(filing)
         if not source_identity:
             return text_loader(filing)
         if source_identity not in text_cache:
             text_cache[source_identity] = text_loader(filing)
         return text_cache[source_identity]
 
+    def cached_fee_terms_loader(filing):
+        if fee_terms_loader is None:
+            return None
+        source_identity = _source_identity(filing)
+        if not source_identity:
+            return fee_terms_loader(filing)
+        if source_identity not in fee_terms_cache:
+            fee_terms_cache[source_identity] = fee_terms_loader(filing)
+        return fee_terms_cache[source_identity]
+
+    effective_fee_loader = cached_fee_terms_loader if fee_terms_loader is not None else None
+
     updated_watch, watch_invalid, watch_checked = review_watch_payload(
         watch_payload,
         text_loader=cached_text_loader,
+        fee_terms_loader=effective_fee_loader,
     )
     checked_watch_keys = {
         candidate_key
@@ -663,6 +849,7 @@ def enforce_preliminary_fixed_prices(
         prechecked_queue,
         text_loader=cached_text_loader,
         skip_candidate_keys=checked_watch_keys,
+        fee_terms_loader=effective_fee_loader,
     )
 
     invalid_by_cik = dict(watch_invalid)
