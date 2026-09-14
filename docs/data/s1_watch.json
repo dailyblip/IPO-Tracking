@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-14T12:03:07.326471+00:00",
+  "generated_at": "2026-09-14T14:23:16.311262+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -518,7 +518,7 @@
     {
       "id": "0001213900-26-090319",
       "company": "Alopexx, Inc.",
-      "ticker": "",
+      "ticker": "ALPX",
       "cik": "0001880995",
       "accession_no": "0001213900-26-090319",
       "form": "S-1/A",
