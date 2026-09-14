@@ -16,7 +16,7 @@ import json
 import math
 import re
 from pathlib import Path
-from urllib.parse import urljoin
+from urllib.parse import parse_qs, urljoin, urlparse
 
 from bs4 import BeautifulSoup
 
@@ -392,6 +392,21 @@ def _extract_fee_table_equity_terms(document):
     return {"shares": shares, "price": per_unit, "aggregate": aggregate}
 
 
+def _resolve_sec_exhibit_url(index_url: str, href: str) -> str:
+    """Resolve an EDGAR exhibit link, unwrapping SEC inline-XBRL viewer URLs only."""
+    resolved = urljoin(index_url, href)
+    parsed = urlparse(resolved)
+    if (
+        parsed.scheme == "https"
+        and parsed.netloc.lower() == "www.sec.gov"
+        and parsed.path.rstrip("/").lower() in {"/ix", "/ixviewer/doc/action"}
+    ):
+        document_values = parse_qs(parsed.query).get("doc", [])
+        if len(document_values) == 1 and document_values[0].startswith("/Archives/"):
+            return urljoin("https://www.sec.gov", document_values[0])
+    return resolved
+
+
 def _load_sec_fee_terms(filing: dict):
     """Fetch the same accession's EX-FILING FEES exhibit and return comparable terms."""
     index_url = str(filing.get("sec_url") or "").strip()
@@ -405,7 +420,7 @@ def _load_sec_fee_terms(filing: dict):
             continue
         link = row.find("a", href=True)
         if link:
-            exhibit_urls.append(urljoin(index_url, link["href"]))
+            exhibit_urls.append(_resolve_sec_exhibit_url(index_url, link["href"]))
     if len(set(exhibit_urls)) != 1:
         return None
     exhibit_soup = filing_parser.fetch_document(exhibit_urls[0])
