@@ -30,6 +30,9 @@ import registration_lineage
 _CURRENT_LISTING_PATTERNS = [
     r"\bwe\s+(?:have\s+|has\s+)?applied\s+to\s+list\b.{0,600}?"
     r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"'“‘]?([A-Z](?:[A-Z0-9.-]{0,8}[A-Z0-9])?)[\"'”’]?",
+    r"\bwe\s+(?:have\s+|has\s+)?applied\s+to\s+have\s+"
+    r"(?:our\s+|the\s+)?(?:class\s+[A-Z0-9]+\s+)?(?:common\s+stock|shares?)\s+listed\b.{0,600}?"
+    r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"'“‘]?([A-Z](?:[A-Z0-9.-]{0,8}[A-Z0-9])?)[\"'”’]?",
     r"\bapplication\s+(?:has\s+been|is)\s+(?:made|submitted)\s+(?:to|for)\s+(?:list|listing)\b.{0,600}?"
     r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"'“‘]?([A-Z](?:[A-Z0-9.-]{0,8}[A-Z0-9])?)[\"'”’]?",
     r"\bwe\s+(?:intend|expect|plan)\s+to\s+(?:apply\s+to\s+)?(?:list|trade)\b.{0,600}?"
