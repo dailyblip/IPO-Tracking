@@ -1,8 +1,23 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-14T11:59:52.080500+00:00",
-  "count": 97,
+  "generated_at": "2026-09-14T12:11:25.339342+00:00",
+  "count": 98,
   "alerts": [
+    {
+      "type": "new_prepricing",
+      "company": "Hometown Financial Group, Inc.",
+      "cik": "0002152644",
+      "filing_id": "s1:0002152644",
+      "form": "S-1",
+      "filed": "2026-09-10",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "New pre-pricing S-1 candidate entered the researcher queue. Preliminary filing price: $10.00.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm",
+      "detected_at": "2026-09-14T12:11:25.339024+00:00",
+      "new_value": "$10.00",
+      "key": "new_prepricing|s1:0002152644|0002152644|2026-09-10|$10.00"
+    },
     {
       "type": "price_range_update",
       "company": "Orion180 Insurance Group Inc.",
