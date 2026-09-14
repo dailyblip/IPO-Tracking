@@ -18,6 +18,15 @@ LA_BEAUTE_COVER = (
     "ordinary shares."
 )
 
+HOMETOWN_MIDPOINT_SCENARIO = (
+    "FORM S-1. This is the initial public offering of Hometown Financial Group, Inc. "
+    "The amount of common stock that we are offering is based on an independent appraisal "
+    "and an offering range. The purchase price of each share of common stock to be sold "
+    "in the stock offering is $10.00. At or for the year ended June 30, 2026, based upon "
+    "the Sale at $10.00 Per Share of Minimum 51,000,000 Shares Midpoint 60,000,000 Shares "
+    "Maximum 69,000,000 Shares Adjusted Maximum 79,350,000 Shares."
+)
+
 
 def _row(*, queue=False):
     row = {
@@ -42,6 +51,21 @@ def _row(*, queue=False):
         row["value_label"] = "—"
     else:
         row["ipo_size"] = None
+    return row
+
+
+def _hometown_row(*, queue=True):
+    row = _row(queue=queue)
+    row.update(
+        {
+            "id": "s1:0002152644" if queue else "0001193125-26-388025",
+            "company": "Hometown Financial Group, Inc.",
+            "cik": "0002152644",
+            "accession_no": "0001193125-26-388025",
+            "filing_price": "$10.00",
+            "signals": ["Preliminary offering price disclosed at $10.00 per share"],
+        }
+    )
     return row
 
 
@@ -102,6 +126,56 @@ class VerifiedFixedPriceSizeRecoveryTests(unittest.TestCase):
         self.assertIsNone(result["primary_offering_shares"])
         self.assertIsNone(result["value"])
         self.assertIsNone(result["secondary_offering_shares"])
+
+    def test_explicit_midpoint_share_scenario_recovers_total_offering_value(self):
+        updated, invalid, checked = gate.review_watch_payload(
+            {"filings": [_hometown_row(queue=True)]},
+            text_loader=lambda _: HOMETOWN_MIDPOINT_SCENARIO,
+        )
+        result = updated["filings"][0]
+
+        self.assertEqual(checked, 1)
+        self.assertEqual(invalid, {})
+        self.assertEqual(result["filing_price"], "$10.00")
+        self.assertEqual(result["value"], 600_000_000)
+        self.assertEqual(result["value_label"], "$600,000,000")
+        self.assertIsNone(result["primary_offering_shares"])
+        self.assertEqual(result["offering_size_confidence"], "High")
+        self.assertIn("explicit midpoint offering-share scenario", result["offering_size_source"])
+
+    def test_minimum_and_maximum_without_explicit_midpoint_are_not_averaged(self):
+        no_midpoint = HOMETOWN_MIDPOINT_SCENARIO.replace(
+            "Midpoint 60,000,000 Shares ", ""
+        )
+        updated, invalid, checked = gate.review_watch_payload(
+            {"filings": [_hometown_row(queue=True)]},
+            text_loader=lambda _: no_midpoint,
+        )
+        result = updated["filings"][0]
+
+        self.assertEqual(checked, 1)
+        self.assertEqual(invalid, {})
+        self.assertEqual(result["filing_price"], "$10.00")
+        self.assertIsNone(result["value"])
+        self.assertIsNone(result["primary_offering_shares"])
+        self.assertIsNone(result["offering_size_source"])
+
+    def test_midpoint_scenario_must_match_verified_per_share_price(self):
+        mismatched_scenario = HOMETOWN_MIDPOINT_SCENARIO.replace(
+            "Sale at $10.00 Per Share", "Sale at $11.00 Per Share"
+        )
+        updated, invalid, checked = gate.review_watch_payload(
+            {"filings": [_hometown_row(queue=True)]},
+            text_loader=lambda _: mismatched_scenario,
+        )
+        result = updated["filings"][0]
+
+        self.assertEqual(checked, 1)
+        self.assertEqual(invalid, {})
+        self.assertEqual(result["filing_price"], "$10.00")
+        self.assertIsNone(result["value"])
+        self.assertIsNone(result["primary_offering_shares"])
+        self.assertIsNone(result["offering_size_source"])
 
 
 if __name__ == "__main__":
