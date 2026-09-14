@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-14T02:56:03.358408+00:00",
+  "generated_at": "2026-09-14T05:18:51.670595+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -31,33 +31,6 @@
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026061542/0001628280-26-061542-index.htm"
     },
     {
-      "id": "s1:0002152644",
-      "company": "Hometown Financial Group, Inc.",
-      "ticker": "HFG",
-      "cik": "0002152644",
-      "accession_no": "0001193125-26-388025",
-      "form": "S-1",
-      "filed": "2026-09-10",
-      "stage": "Pre-pricing",
-      "price_range": null,
-      "filing_price": "$10.00",
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": null,
-      "secondary_offering_shares": null,
-      "priority": "High",
-      "status": "New",
-      "value": null,
-      "value_label": "—",
-      "people_count": 0,
-      "signals": [
-        "Initial registration statement filed — IPO is pre-pricing",
-        "Preliminary offering price disclosed at $10.00 per share"
-      ],
-      "people": [],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm"
-    },
-    {
       "id": "s1:0002124472",
       "company": "Orion180 Insurance Group Inc.",
       "ticker": "OIG",
@@ -75,7 +48,7 @@
       "priority": "High",
       "status": "New",
       "value": 320000000,
-      "value_label": "$320,000,000",
+      "value_label": "$320M",
       "people_count": 0,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -103,7 +76,7 @@
       "priority": "High",
       "status": "New",
       "value": 825000000,
-      "value_label": "$825,000,000",
+      "value_label": "$825M",
       "people_count": 0,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -347,7 +320,7 @@
       "priority": "High",
       "status": "New",
       "value": 50000000,
-      "value_label": "$50,000,000",
+      "value_label": "$50M",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
