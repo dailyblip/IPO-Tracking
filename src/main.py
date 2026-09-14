@@ -91,6 +91,14 @@ def _mentions_stanford_university(bio_text):
     return bool(re.search(r"\bstanford\s+university\b", str(bio_text or ""), re.I))
 
 
+def _stanford_affiliation_confirmed(stanford_result):
+    """Confirm only grader-supported exact-person Stanford affiliations."""
+    return bool(
+        isinstance(stanford_result, dict)
+        and stanford_result.get("grade") in (5, "5")
+    )
+
+
 def _role_from_bio(bio_text):
     """Extract a conservative current title from the holder's filing bio."""
     text = " ".join(str(bio_text or "").split())
@@ -368,7 +376,7 @@ def process_filing(filing_meta: dict) -> list:
                 "Stanford Grade": stanford_result["grade"],
                 "Stanford Justification": stanford_result["justification"],
                 "Stanford University in Bio": stanford_university_in_bio,
-                "Stanford Affiliation Confirmed": bool(stanford_university_in_bio or stanford_result.get("grade") in (5, "5")),
+                "Stanford Affiliation Confirmed": _stanford_affiliation_confirmed(stanford_result),
                 "Lock-Up Expiry": "",
                 "Lock-Up Text": lockup.get("raw_text") or "",
                 "Lock-Up Duration Days": lockup.get("duration_days"),
@@ -409,9 +417,7 @@ def process_filing(filing_meta: dict) -> list:
                 continue
 
             direct_stanford = _mentions_stanford_university(person_bio_text)
-            confirmed = bool(
-                direct_stanford or stanford_result.get("grade") in (5, "5")
-            )
+            confirmed = _stanford_affiliation_confirmed(stanford_result)
             if not confirmed:
                 continue
 
