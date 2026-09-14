@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-14T05:07:47.818213+00:00",
+  "updated_at": "2026-09-14T05:58:48.585327+00:00",
   "items": {
     "s1:0002141406": {
       "id": "s1:0002141406",
@@ -14,19 +14,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026061542/0001628280-26-061542-index.htm"
-    },
-    "s1:0002152644": {
-      "id": "s1:0002152644",
-      "cik": "0002152644",
-      "company": "Hometown Financial Group, Inc.",
-      "form": "S-1",
-      "filed": "2026-09-10",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": "$10.00",
-      "priority": "High",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm"
     },
     "s1:0002124472": {
       "id": "s1:0002124472",
@@ -337,7 +324,7 @@
       "price_range": "21-25",
       "filing_price": "21-25",
       "priority": "High",
-      "value": 1000000003,
+      "value": 1000000003.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2127043/000119312526326453/0001193125-26-326453-index.htm"
     },
     "0001193125-26-328422": {
@@ -1067,6 +1054,19 @@
       "priority": "High",
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
+    },
+    "s1:0002152644": {
+      "id": "s1:0002152644",
+      "cik": "0002152644",
+      "company": "Hometown Financial Group, Inc.",
+      "form": "S-1",
+      "filed": "2026-09-10",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": "$10.00",
+      "priority": "High",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm"
     }
   },
   "ciks": {
@@ -1075,13 +1075,6 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002141406",
       "last_filed": "2026-09-11",
-      "missing_runs": 0
-    },
-    "0002152644": {
-      "company": "Hometown Financial Group, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002152644",
-      "last_filed": "2026-09-10",
       "missing_runs": 0
     },
     "0002124472": {
@@ -1643,6 +1636,13 @@
       "last_filing_id": "0001213900-25-120076",
       "last_filed": "2025-12-10",
       "missing_runs": 0
+    },
+    "0002152644": {
+      "company": "Hometown Financial Group, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002152644",
+      "last_filed": "2026-09-10",
+      "missing_runs": 1
     }
   }
 }
