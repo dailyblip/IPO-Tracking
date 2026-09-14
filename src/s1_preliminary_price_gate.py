@@ -206,6 +206,60 @@ def _extract_authoritative_primary_share_count(text: str):
     return shares if shares > 0 else None
 
 
+def _extract_authoritative_midpoint_offering_share_count(text: str, expected_price: float):
+    """Return only an explicitly labeled midpoint share count from an IPO scenario.
+
+    Some mutual-to-stock conversion S-1s disclose a fixed per-share price while the
+    actual base offering varies across a regulatory minimum/midpoint/maximum range.
+    A generic single-share-count parser correctly fails closed on those filings.
+    Recover the midpoint only when the SEC filing itself explicitly labels all three
+    scenarios in a ``Based upon the Sale at $X Per Share`` construction and the
+    scenario price exactly matches the independently verified Filing Price.
+
+    The midpoint is never calculated from the endpoints. Multiple conflicting
+    midpoint scenarios fail closed, and this helper does not label the midpoint as
+    issuer-primary shares because the scenario table establishes total offering
+    economics rather than holder-level provenance.
+    """
+    expected = _number(expected_price)
+    if expected is None:
+        return None
+
+    document = " ".join(str(text or "").split())
+    if not re.search(r"\b(?:initial\s+public\s+offering|IPO)\b", document, re.IGNORECASE):
+        return None
+    if not re.search(r"\boffering\s+range\b", document, re.IGNORECASE):
+        return None
+
+    pattern = re.compile(
+        r"\bbased\s+upon\s+the\s+sale\s+at\s+\$\s*"
+        r"(?P<price>\d{1,4}(?:\.\d{1,4})?)\s+per\s+share\s+of\b"
+        r".{0,1200}?\bminimum\s+(?P<minimum>[\d,]{4,})\s+shares\b"
+        r".{0,700}?\bmidpoint\s+(?P<midpoint>[\d,]{4,})\s+shares\b"
+        r".{0,700}?\bmaximum\s+(?P<maximum>[\d,]{4,})\s+shares\b",
+        re.IGNORECASE,
+    )
+
+    candidates = set()
+    for match in pattern.finditer(document):
+        scenario_price = _number(match.group("price"))
+        if scenario_price is None or abs(scenario_price - expected) >= 0.00001:
+            continue
+        try:
+            minimum = int(match.group("minimum").replace(",", ""))
+            midpoint = int(match.group("midpoint").replace(",", ""))
+            maximum = int(match.group("maximum").replace(",", ""))
+        except (TypeError, ValueError):
+            continue
+        if minimum <= 0 or midpoint <= 0 or maximum <= 0:
+            continue
+        if not minimum < midpoint < maximum:
+            continue
+        candidates.add(midpoint)
+
+    return next(iter(candidates)) if len(candidates) == 1 else None
+
+
 def has_authoritative_fixed_price(text: str, expected_price: float) -> bool:
     """Return True only for explicit prospective per-share IPO terms.
 
@@ -327,20 +381,24 @@ def _clear_unverified_fixed_price(filing: dict) -> dict:
 
 
 def _recover_verified_fixed_price_size(filing: dict, filing_text: str, price: float) -> dict:
-    """Fill missing issuer-only size after the same fixed Filing Price is SEC-verified.
+    """Fill missing size after the same fixed Filing Price is SEC-verified.
 
-    A fixed Filing Price can already be present from the generic parser while its
-    cover-table share count is missing. Once that exact price has independently
-    passed the cover-term gate, use only an explicit issuer-only share count from
-    the same SEC cover to fill the otherwise blank base offering value. Conflicting
-    existing share counts are left untouched and selling-holder deals remain blank.
+    Prefer an explicit issuer-only cover share count. When a regulatory conversion
+    IPO instead publishes explicit minimum/midpoint/maximum share scenarios at the
+    same verified price, preserve the filing's labeled midpoint total without
+    claiming those scenario shares are issuer-primary holder data.
     """
-    shares = _extract_authoritative_primary_share_count(filing_text)
+    primary_shares = _extract_authoritative_primary_share_count(filing_text)
+    midpoint_scenario = False
+    shares = primary_shares
+    if shares is None:
+        shares = _extract_authoritative_midpoint_offering_share_count(filing_text, price)
+        midpoint_scenario = shares is not None
     if shares is None:
         return filing
 
     existing_shares = _number(filing.get("primary_offering_shares"))
-    if existing_shares is not None and int(round(existing_shares)) != shares:
+    if not midpoint_scenario and existing_shares is not None and int(round(existing_shares)) != shares:
         return filing
 
     offering_value = int(round(shares * price))
@@ -348,7 +406,7 @@ def _recover_verified_fixed_price_size(filing: dict, filing_text: str, price: fl
     changed = False
     size_filled = False
 
-    if existing_shares is None:
+    if not midpoint_scenario and existing_shares is None:
         recovered["primary_offering_shares"] = shares
         changed = True
 
@@ -364,9 +422,15 @@ def _recover_verified_fixed_price_size(filing: dict, filing_text: str, price: fl
 
     if changed:
         if not str(recovered.get("offering_size_source") or "").strip():
-            recovered["offering_size_source"] = (
-                "SEC preliminary prospectus cover: primary offering; issuer-only; verified point price"
-            )
+            if midpoint_scenario:
+                recovered["offering_size_source"] = (
+                    "SEC preliminary prospectus: explicit midpoint offering-share scenario; "
+                    "verified point price"
+                )
+            else:
+                recovered["offering_size_source"] = (
+                    "SEC preliminary prospectus cover: primary offering; issuer-only; verified point price"
+                )
         if not str(recovered.get("offering_size_confidence") or "").strip():
             recovered["offering_size_confidence"] = "High"
         if size_filled:
@@ -409,13 +473,24 @@ def _recover_missing_preliminary_terms(filing: dict, filing_text: str) -> dict:
         cleaned_signals.append(signal)
     cleaned_signals.append(f"Preliminary offering price disclosed at {price_label} per share")
 
-    shares = _extract_authoritative_primary_share_count(filing_text)
+    primary_shares = _extract_authoritative_primary_share_count(filing_text)
+    midpoint_scenario = False
+    shares = primary_shares
+    if shares is None:
+        shares = _extract_authoritative_midpoint_offering_share_count(filing_text, price)
+        midpoint_scenario = shares is not None
     if shares is not None:
         offering_value = int(round(shares * price))
-        recovered["primary_offering_shares"] = shares
-        recovered["offering_size_source"] = (
-            "SEC preliminary prospectus cover: primary offering; issuer-only; proposed point price"
-        )
+        if not midpoint_scenario:
+            recovered["primary_offering_shares"] = shares
+            recovered["offering_size_source"] = (
+                "SEC preliminary prospectus cover: primary offering; issuer-only; proposed point price"
+            )
+        else:
+            recovered["offering_size_source"] = (
+                "SEC preliminary prospectus: explicit midpoint offering-share scenario; "
+                "proposed point price"
+            )
         recovered["offering_size_confidence"] = "High"
         if "ipo_size" in recovered:
             recovered["ipo_size"] = offering_value
