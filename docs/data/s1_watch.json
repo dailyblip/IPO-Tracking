@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-15T19:45:25.223046+00:00",
+  "generated_at": "2026-09-15T21:17:28.292021+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -20,33 +20,33 @@
       "offering_size_confidence": null,
       "primary_offering_shares": 3750000,
       "secondary_offering_shares": null,
-      "people_count": 8,
+      "people_count": 6,
       "people": [
         {
-          "name": "Joshua Green, President, Chairman",
-          "shares": 3054454,
+          "name": "Joshua Green",
+          "shares": null,
           "stanford_university_bio": false,
           "is_beneficial_owner": true,
           "holder_type": "Individual",
           "ownership_percent": null,
           "ownership_percent_before": null,
           "ownership_percent_after": null,
-          "shares_before_ipo": 3054454,
+          "shares_before_ipo": null,
           "shares_sold_ipo": null,
-          "shares_after_ipo": 3054454
+          "shares_after_ipo": null
         },
         {
-          "name": "Samuel Adetunji, CEO, Director",
-          "shares": 3060218,
+          "name": "Samuel Adetunji",
+          "shares": null,
           "stanford_university_bio": false,
           "is_beneficial_owner": true,
           "holder_type": "Individual",
           "ownership_percent": null,
           "ownership_percent_before": null,
           "ownership_percent_after": null,
-          "shares_before_ipo": 3060218,
+          "shares_before_ipo": null,
           "shares_sold_ipo": null,
-          "shares_after_ipo": 3060218
+          "shares_after_ipo": null
         },
         {
           "name": "Faisal Malik, CFO",
@@ -99,37 +99,11 @@
           "shares_before_ipo": 0,
           "shares_sold_ipo": null,
           "shares_after_ipo": 0
-        },
-        {
-          "name": "Joshua Green",
-          "shares": 50,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": null,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 50,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 50
-        },
-        {
-          "name": "Samuel Adetunji",
-          "shares": 50,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": null,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 50,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 50
         }
       ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
-        "8 named beneficial owners disclosed",
+        "6 named beneficial owners disclosed",
         "No preliminary price range or fixed offering price detected yet"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2078149/000109690626001366/0001096906-26-001366-index.htm",
@@ -1078,7 +1052,7 @@
       "offering_size_confidence": null,
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
-      "people_count": 5,
+      "people_count": 4,
       "people": [
         {
           "name": "Karen Wheeler-Hall",
@@ -1131,25 +1105,12 @@
           "shares_before_ipo": 200000,
           "shares_sold_ipo": null,
           "shares_after_ipo": null
-        },
-        {
-          "name": "Karen Wheeler-Hall (Chairman of the Board and Chief Executive Officer)",
-          "shares": 30000000,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Unknown",
-          "ownership_percent": null,
-          "ownership_percent_before": null,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 30000000,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 30000000
         }
       ],
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
         "No preliminary price range or fixed offering price detected yet",
-        "5 named beneficial owners disclosed"
+        "4 named beneficial owners disclosed"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226041590/0001493152-26-041590-index.htm",
       "ownership_source": {
