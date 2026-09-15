@@ -9,6 +9,7 @@ permissions:
 concurrency:
   group: research-monitor-feed-writers
   cancel-in-progress: false
+  queue: max
 
 on:
   pull_request:
