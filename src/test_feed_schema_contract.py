@@ -31,7 +31,10 @@ class FeedSchemaContractTests(unittest.TestCase):
             "people_count": 0,
             "signals": [],
             "people": [],
-            "sec_url": "https://www.sec.gov/example",
+            "sec_url": (
+                "https://www.sec.gov/Archives/edgar/data/1234567/"
+                "000119312526123456/example-424b4.htm"
+            ),
         }
         filing.update(overrides)
         return filing
@@ -89,6 +92,64 @@ class FeedSchemaContractTests(unittest.TestCase):
         }
         failures = validate_payload(payload)
         self.assertTrue(any("No public-feed schema is registered" in failure for failure in failures))
+
+    def test_public_row_requires_canonical_issuer_cik(self):
+        failures = validate_payload(self._payload(self._filing(cik="1234567")))
+        self.assertTrue(
+            any("canonical 10-digit issuer CIK" in failure for failure in failures),
+            failures,
+        )
+
+    def test_public_row_requires_canonical_accession_number(self):
+        failures = validate_payload(
+            self._payload(self._filing(accession_no="000119312526123456"))
+        )
+        self.assertTrue(
+            any("canonical SEC accession number" in failure for failure in failures),
+            failures,
+        )
+
+    def test_public_row_rejects_cross_issuer_sec_url(self):
+        failures = validate_payload(
+            self._payload(
+                self._filing(
+                    sec_url=(
+                        "https://www.sec.gov/Archives/edgar/data/7654321/"
+                        "000119312526123456/example-424b4.htm"
+                    )
+                )
+            )
+        )
+        self.assertTrue(
+            any("SEC URL issuer CIK does not match row CIK" in failure for failure in failures),
+            failures,
+        )
+
+    def test_public_row_rejects_wrong_accession_sec_url(self):
+        failures = validate_payload(
+            self._payload(
+                self._filing(
+                    sec_url=(
+                        "https://www.sec.gov/Archives/edgar/data/1234567/"
+                        "000119312526999999/example-424b4.htm"
+                    )
+                )
+            )
+        )
+        self.assertTrue(
+            any("accession directory does not match row accession" in failure for failure in failures),
+            failures,
+        )
+
+    def test_public_row_rejects_noncanonical_sec_url(self):
+        for suffix in ("?output=1", "#filing"):
+            with self.subTest(suffix=suffix):
+                filing = self._filing(sec_url=self._filing()["sec_url"] + suffix)
+                failures = validate_payload(self._payload(filing))
+                self.assertTrue(
+                    any("canonical SEC Archives filing URL" in failure for failure in failures),
+                    failures,
+                )
 
     def test_prepricing_current_price_is_release_blocking(self):
         filing = self._filing(
