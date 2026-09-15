@@ -27,6 +27,7 @@ class FeedSchemaContractTests(unittest.TestCase):
             "status": "New",
             "value": 150000000,
             "value_label": "$150M",
+            "offering_price": 17.0,
             "people_count": 0,
             "signals": [],
             "people": [],
@@ -88,6 +89,69 @@ class FeedSchemaContractTests(unittest.TestCase):
         }
         failures = validate_payload(payload)
         self.assertTrue(any("No public-feed schema is registered" in failure for failure in failures))
+
+    def test_prepricing_current_price_is_release_blocking(self):
+        filing = self._filing(
+            form="S-1/A",
+            stage="Pre-pricing",
+            pricing_date=None,
+            offering_price=None,
+            current_price=22.5,
+        )
+        failures = validate_payload(self._payload(filing))
+        self.assertTrue(
+            any("Current Price is permitted only for a 424B4/Priced" in failure for failure in failures),
+            failures,
+        )
+
+    def test_priced_stage_requires_final_424b4_form(self):
+        filing = self._filing(form="S-1/A", stage="Priced")
+        failures = validate_payload(self._payload(filing))
+        self.assertTrue(
+            any("must pair form 424B4 with stage Priced" in failure for failure in failures),
+            failures,
+        )
+
+    def test_final_424b4_requires_priced_stage(self):
+        filing = self._filing(form="424B4", stage="Pre-pricing")
+        failures = validate_payload(self._payload(filing))
+        self.assertTrue(
+            any("must pair form 424B4 with stage Priced" in failure for failure in failures),
+            failures,
+        )
+
+    def test_priced_424b4_requires_positive_final_ipo_price(self):
+        for invalid_price in (None, 0, -1):
+            with self.subTest(invalid_price=invalid_price):
+                filing = self._filing(offering_price=invalid_price)
+                failures = validate_payload(self._payload(filing))
+                self.assertTrue(
+                    any("must have a positive Final IPO Price" in failure for failure in failures),
+                    failures,
+                )
+
+    def test_priced_424b4_requires_canonical_pricing_date(self):
+        filing = self._filing(pricing_date=None)
+        failures = validate_payload(self._payload(filing))
+        self.assertTrue(
+            any("priced 424B4 must have a canonical Pricing Date" in failure for failure in failures),
+            failures,
+        )
+
+    def test_initial_filing_date_after_pricing_date_is_release_blocking(self):
+        filing = self._filing(
+            filing_date="2026-08-21",
+            pricing_date="2026-08-20",
+        )
+        failures = validate_payload(self._payload(filing))
+        self.assertTrue(
+            any("initial filing date cannot postdate Pricing Date" in failure for failure in failures),
+            failures,
+        )
+
+    def test_valid_priced_current_price_state_is_allowed(self):
+        filing = self._filing(current_price=19.25)
+        self.assertEqual([], validate_payload(self._payload(filing)))
 
     def test_filing_price_source_without_preliminary_price_is_rejected(self):
         filing = self._filing(
