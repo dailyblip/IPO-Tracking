@@ -5,7 +5,7 @@ import argparse
 import json
 import math
 import re
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
@@ -55,6 +55,19 @@ def _canonical_date(value):
     except ValueError:
         return None
     return parsed if parsed.isoformat() == raw else None
+
+
+def _aware_datetime(value):
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed
 
 
 def _positive_number(value):
@@ -114,6 +127,7 @@ def _lifecycle_semantic_errors(index: int, filing: dict) -> list[str]:
         )
 
     current_price = filing.get("current_price")
+    price_updated = filing.get("price_updated")
     if current_price not in (None, ""):
         if not priced_final:
             failures.append(
@@ -123,6 +137,32 @@ def _lifecycle_semantic_errors(index: int, filing: dict) -> list[str]:
             failures.append(
                 f"{prefix}.current_price: Current Price must be a positive finite number when populated"
             )
+        else:
+            quote_time = _aware_datetime(price_updated)
+            if quote_time is None:
+                failures.append(
+                    f"{prefix}.price_updated: Current Price requires a timezone-aware provider timestamp"
+                )
+            else:
+                quote_utc = quote_time.astimezone(timezone.utc)
+                quote_date = quote_utc.date()
+                if quote_utc > datetime.now(timezone.utc):
+                    failures.append(
+                        f"{prefix}.price_updated: Current Price provider timestamp cannot be in the future"
+                    )
+                pricing_date = _canonical_date(filing.get("pricing_date"))
+                if pricing_date is not None and quote_date < pricing_date:
+                    failures.append(
+                        f"{prefix}.price_updated: Current Price provider timestamp cannot predate Pricing Date"
+                    )
+                if filed_date is not None and quote_date < filed_date:
+                    failures.append(
+                        f"{prefix}.price_updated: Current Price provider timestamp cannot predate the final 424B4 filing date"
+                    )
+    elif price_updated not in (None, ""):
+        failures.append(
+            f"{prefix}.price_updated: provider timestamp cannot remain populated without Current Price"
+        )
 
     if priced_final:
         if _positive_number(filing.get("offering_price")) is None:
