@@ -88,6 +88,41 @@ class S1MonitorTests(unittest.TestCase):
         self.assertIsNone(people[1]["ownership_percent"])
         self.assertFalse(people[0]["stanford_university_bio"])
 
+    def test_ownership_people_deduplicates_role_suffixes_and_blanks_class_conflicts(self):
+        people = s1_monitor._ownership_people({
+            "principal_stockholders": [
+                {
+                    "name": "Joshua Green, President, Chairman",
+                    "shares_before": 3_054_454,
+                    "shares_after": 3_054_454,
+                },
+                {
+                    "name": "Joshua Green",
+                    "shares_before": 50,
+                    "shares_after": 50,
+                },
+                {
+                    "name": "Karen Wheeler-Hall",
+                    "shares_before": 30_000_000,
+                    "shares_after": 30_000_000,
+                },
+                {
+                    "name": "Karen Wheeler-Hall (Chairman of the Board and Chief Executive Officer)",
+                    "shares_before": 30_000_000,
+                    "shares_after": 30_000_000,
+                },
+            ]
+        })
+
+        self.assertEqual(
+            [person["name"] for person in people],
+            ["Joshua Green", "Karen Wheeler-Hall"],
+        )
+        self.assertIsNone(people[0]["shares"])
+        self.assertIsNone(people[0]["shares_before_ipo"])
+        self.assertIsNone(people[0]["shares_after_ipo"])
+        self.assertEqual(people[1]["shares"], 30_000_000)
+
     def test_micro_self_underwritten_registration_without_exchange_is_rejected(self):
         self.assertTrue(s1_monitor._is_micro_self_underwritten_offering(
             "The offering is being conducted on a self-underwritten, best-efforts basis.",

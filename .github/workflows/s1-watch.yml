@@ -107,7 +107,10 @@ jobs:
         working-directory: src
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
-          DAYS_BACK: ${{ github.event_name == 'workflow_dispatch' && inputs.days_back || '14' }}
+          # Workflow-file changes use a bounded 45-day repair window so parser or
+          # orchestration fixes can repopulate the active pre-pricing queue. The
+          # normal post-Daily cadence remains a 14-day incremental refresh.
+          DAYS_BACK: ${{ github.event_name == 'workflow_dispatch' && inputs.days_back || github.event_name == 'push' && '45' || '14' }}
         run: python s1_monitor.py "$DAYS_BACK"
       - name: Reconcile S-1 tickers from current SEC listing language
         working-directory: src
