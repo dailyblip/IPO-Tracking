@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-15T21:13:25.317985+00:00",
+  "updated_at": "2026-09-15T21:43:25.195364+00:00",
   "items": {
     "s1:0002078149": {
       "id": "s1:0002078149",
@@ -275,6 +275,19 @@
       "value": 297500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2132582/000119312526356916/0001193125-26-356916-index.htm"
     },
+    "s1:0002109801": {
+      "id": "s1:0002109801",
+      "cik": "0002109801",
+      "company": "Varsal Tech, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-08-17",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2109801/000149315226038800/0001493152-26-038800-index.htm"
+    },
     "s1:0001880995": {
       "id": "s1:0001880995",
       "cik": "0001880995",
@@ -300,6 +313,32 @@
       "priority": "Medium",
       "value": 81250000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1903784/000118518526003448/0001185185-26-003448-index.htm"
+    },
+    "s1:0002109616": {
+      "id": "s1:0002109616",
+      "cik": "0002109616",
+      "company": "Fast Finance Pay Corp.",
+      "form": "S-1",
+      "filed": "2026-08-12",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2109616/000149315226037415/0001493152-26-037415-index.htm"
+    },
+    "s1:0001838003": {
+      "id": "s1:0001838003",
+      "cik": "0001838003",
+      "company": "Encore Medical, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-08-10",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1838003/000110465926093252/0001104659-26-093252-index.htm"
     },
     "0001193125-26-340329": {
       "id": "0001193125-26-340329",
@@ -340,6 +379,19 @@
       "value": 382500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2131524/000162828026054354/0001628280-26-054354-index.htm"
     },
+    "s1:0001900851": {
+      "id": "s1:0001900851",
+      "cik": "0001900851",
+      "company": "Ambitious Entertainment, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-08-06",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1900851/000149315226036294/0001493152-26-036294-index.htm"
+    },
     "0001193125-26-334997": {
       "id": "0001193125-26-334997",
       "cik": "0002058707",
@@ -352,6 +404,19 @@
       "priority": "Medium",
       "value": 289000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2058707/000119312526334997/0001193125-26-334997-index.htm"
+    },
+    "s1:0001875655": {
+      "id": "s1:0001875655",
+      "cik": "0001875655",
+      "company": "AEI CapForce II Investment Corp",
+      "form": "S-1/A",
+      "filed": "2026-08-03",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1875655/000149315226035799/0001493152-26-035799-index.htm"
     },
     "0001193125-26-326453": {
       "id": "0001193125-26-326453",
@@ -1243,6 +1308,13 @@
       "last_filed": "2026-08-19",
       "missing_runs": 0
     },
+    "0002109801": {
+      "company": "Varsal Tech, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002109801",
+      "last_filed": "2026-08-17",
+      "missing_runs": 0
+    },
     "0001880995": {
       "company": "Alopexx, Inc.",
       "stage": "pre-pricing",
@@ -1255,6 +1327,20 @@
       "stage": "priced",
       "last_filing_id": "0001185185-26-003448",
       "last_filed": "2026-08-12",
+      "missing_runs": 0
+    },
+    "0002109616": {
+      "company": "Fast Finance Pay Corp.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002109616",
+      "last_filed": "2026-08-12",
+      "missing_runs": 0
+    },
+    "0001838003": {
+      "company": "Encore Medical, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001838003",
+      "last_filed": "2026-08-10",
       "missing_runs": 0
     },
     "0002056611": {
@@ -1278,11 +1364,25 @@
       "last_filed": "2026-08-06",
       "missing_runs": 0
     },
+    "0001900851": {
+      "company": "Ambitious Entertainment, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001900851",
+      "last_filed": "2026-08-06",
+      "missing_runs": 0
+    },
     "0002058707": {
       "company": "Attovia Therapeutics, Inc.",
       "stage": "priced",
       "last_filing_id": "0001193125-26-334997",
       "last_filed": "2026-08-05",
+      "missing_runs": 0
+    },
+    "0001875655": {
+      "company": "AEI CapForce II Investment Corp",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001875655",
+      "last_filed": "2026-08-03",
       "missing_runs": 0
     },
     "0002127043": {
