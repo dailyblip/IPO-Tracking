@@ -103,6 +103,16 @@ def _lifecycle_semantic_errors(index: int, filing: dict) -> list[str]:
             f"{prefix}: final lifecycle state must pair form 424B4 with stage Priced"
         )
 
+    filed_date = _canonical_date(filing.get("filed"))
+    if filed_date is None:
+        failures.append(
+            f"{prefix}.filed: SEC filing date must be a canonical calendar date"
+        )
+    elif filed_date > date.today():
+        failures.append(
+            f"{prefix}.filed: SEC filing date cannot be in the future"
+        )
+
     current_price = filing.get("current_price")
     if current_price not in (None, ""):
         if not priced_final:
@@ -124,6 +134,14 @@ def _lifecycle_semantic_errors(index: int, filing: dict) -> list[str]:
         if pricing_date is None:
             failures.append(
                 f"{prefix}.pricing_date: priced 424B4 must have a canonical Pricing Date"
+            )
+        elif pricing_date > date.today():
+            failures.append(
+                f"{prefix}.pricing_date: priced 424B4 Pricing Date cannot be in the future"
+            )
+        elif filed_date is not None and pricing_date > filed_date:
+            failures.append(
+                f"{prefix}.pricing_date: Pricing Date cannot postdate the final 424B4 filing date"
             )
 
         filing_date_raw = filing.get("filing_date")
