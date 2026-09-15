@@ -1,7 +1,85 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-15T04:03:01.337678+00:00",
+  "updated_at": "2026-09-15T04:38:55.598822+00:00",
   "items": {
+    "s1:0002078149": {
+      "id": "s1:0002078149",
+      "cik": "0002078149",
+      "company": "Veri MedTech Holdings, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-14",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2078149/000109690626001366/0001096906-26-001366-index.htm"
+    },
+    "s1:0002152813": {
+      "id": "s1:0002152813",
+      "cik": "0002152813",
+      "company": "MFB Bancorp, Inc.",
+      "form": "S-1",
+      "filed": "2026-09-14",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152813/000110465926107563/0001104659-26-107563-index.htm"
+    },
+    "s1:0002065821": {
+      "id": "s1:0002065821",
+      "cik": "0002065821",
+      "company": "Little West Holdings Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-14",
+      "stage": "pre-pricing",
+      "price_range": "$4.00–$6.00",
+      "filing_price": "$4.00–$6.00",
+      "priority": "High",
+      "value": 18750000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026099701/0001213900-26-099701-index.htm"
+    },
+    "s1:0002088082": {
+      "id": "s1:0002088082",
+      "cik": "0002088082",
+      "company": "Electra Therapeutics, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-14",
+      "stage": "pre-pricing",
+      "price_range": "$14.00–$16.00",
+      "filing_price": "$14.00–$16.00",
+      "priority": "High",
+      "value": 325000005,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526389755/0001193125-26-389755-index.htm"
+    },
+    "s1:0002125355": {
+      "id": "s1:0002125355",
+      "cik": "0002125355",
+      "company": "Bamboo Insurance Services, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-14",
+      "stage": "pre-pricing",
+      "price_range": "$18.00–$20.00",
+      "filing_price": "$18.00–$20.00",
+      "priority": "High",
+      "value": 665000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2125355/000162828026061664/0001628280-26-061664-index.htm"
+    },
+    "s1:0001802369": {
+      "id": "s1:0001802369",
+      "cik": "0001802369",
+      "company": "ADARx Pharmaceuticals, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-14",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526390724/0001193125-26-390724-index.htm"
+    },
     "s1:0002141406": {
       "id": "s1:0002141406",
       "cik": "0002141406",
@@ -79,19 +157,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226041590/0001493152-26-041590-index.htm"
-    },
-    "s1:0001802369": {
-      "id": "s1:0001802369",
-      "cik": "0001802369",
-      "company": "ADARx Pharmaceuticals, Inc.",
-      "form": "S-1",
-      "filed": "2026-09-04",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526383838/0001193125-26-383838-index.htm"
     },
     "s1:0002133022": {
       "id": "s1:0002133022",
@@ -171,32 +236,6 @@
       "value": 50000000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2151905/000215190526000001/0002151905-26-000001-index.htm"
     },
-    "s1:0002088082": {
-      "id": "s1:0002088082",
-      "cik": "0002088082",
-      "company": "Electra Therapeutics, Inc.",
-      "form": "S-1",
-      "filed": "2026-08-28",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526374259/0001193125-26-374259-index.htm"
-    },
-    "s1:0002125355": {
-      "id": "s1:0002125355",
-      "cik": "0002125355",
-      "company": "Bamboo Insurance Services, Inc.",
-      "form": "S-1",
-      "filed": "2026-08-28",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2125355/000162828026059433/0001628280-26-059433-index.htm"
-    },
     "s1:0002141616": {
       "id": "s1:0002141616",
       "cik": "0002141616",
@@ -209,19 +248,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526372368/0001193125-26-372368-index.htm"
-    },
-    "s1:0002065821": {
-      "id": "s1:0002065821",
-      "cik": "0002065821",
-      "company": "Little West Holdings Inc.",
-      "form": "S-1/A",
-      "filed": "2026-08-21",
-      "stage": "pre-pricing",
-      "price_range": "$4.00–$6.00",
-      "filing_price": "$4.00–$6.00",
-      "priority": "High",
-      "value": 18750000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026092565/0001213900-26-092565-index.htm"
     },
     "s1:0002131613": {
       "id": "s1:0002131613",
@@ -337,7 +363,7 @@
       "price_range": "21-25",
       "filing_price": "21-25",
       "priority": "High",
-      "value": 1000000003.0,
+      "value": 1000000003,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2127043/000119312526326453/0001193125-26-326453-index.htm"
     },
     "0001193125-26-328422": {
@@ -1070,6 +1096,48 @@
     }
   },
   "ciks": {
+    "0002078149": {
+      "company": "Veri MedTech Holdings, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002078149",
+      "last_filed": "2026-09-14",
+      "missing_runs": 0
+    },
+    "0002152813": {
+      "company": "MFB Bancorp, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002152813",
+      "last_filed": "2026-09-14",
+      "missing_runs": 0
+    },
+    "0002065821": {
+      "company": "Little West Holdings Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002065821",
+      "last_filed": "2026-09-14",
+      "missing_runs": 0
+    },
+    "0002088082": {
+      "company": "Electra Therapeutics, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002088082",
+      "last_filed": "2026-09-14",
+      "missing_runs": 0
+    },
+    "0002125355": {
+      "company": "Bamboo Insurance Services, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002125355",
+      "last_filed": "2026-09-14",
+      "missing_runs": 0
+    },
+    "0001802369": {
+      "company": "ADARx Pharmaceuticals, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001802369",
+      "last_filed": "2026-09-14",
+      "missing_runs": 0
+    },
     "0002141406": {
       "company": "Accelevation Holdings Corp.",
       "stage": "pre-pricing",
@@ -1109,13 +1177,6 @@
       "company": "Rothe Development, Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002108671",
-      "last_filed": "2026-09-04",
-      "missing_runs": 0
-    },
-    "0001802369": {
-      "company": "ADARx Pharmaceuticals, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001802369",
       "last_filed": "2026-09-04",
       "missing_runs": 0
     },
@@ -1161,32 +1222,11 @@
       "last_filed": "2026-08-31",
       "missing_runs": 0
     },
-    "0002088082": {
-      "company": "Electra Therapeutics, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002088082",
-      "last_filed": "2026-08-28",
-      "missing_runs": 0
-    },
-    "0002125355": {
-      "company": "Bamboo Insurance Services, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002125355",
-      "last_filed": "2026-08-28",
-      "missing_runs": 0
-    },
     "0002141616": {
       "company": "Amaero Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002141616",
       "last_filed": "2026-08-28",
-      "missing_runs": 0
-    },
-    "0002065821": {
-      "company": "Little West Holdings Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002065821",
-      "last_filed": "2026-08-21",
       "missing_runs": 0
     },
     "0002131613": {
