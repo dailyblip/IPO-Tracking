@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-15T18:07:18.684808+00:00",
+  "generated_at": "2026-09-15T19:33:02.416848+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -20,11 +20,126 @@
       "offering_size_confidence": null,
       "primary_offering_shares": 3750000,
       "secondary_offering_shares": null,
+      "people_count": 8,
+      "people": [
+        {
+          "name": "Joshua Green, President, Chairman",
+          "shares": 3054454,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 3054454,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 3054454
+        },
+        {
+          "name": "Samuel Adetunji, CEO, Director",
+          "shares": 3060218,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 3060218,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 3060218
+        },
+        {
+          "name": "Faisal Malik, CFO",
+          "shares": 0,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 0,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 0
+        },
+        {
+          "name": "Scott Dunnagan, Director Nominee",
+          "shares": 0,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 0,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 0
+        },
+        {
+          "name": "Todd Jones, Director Nominee",
+          "shares": 0,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 0,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 0
+        },
+        {
+          "name": "Vijay Viswanathan, Director Nominee",
+          "shares": 0,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 0,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 0
+        },
+        {
+          "name": "Joshua Green",
+          "shares": 50,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 50,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 50
+        },
+        {
+          "name": "Samuel Adetunji",
+          "shares": 50,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 50,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 50
+        }
+      ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
+        "8 named beneficial owners disclosed",
         "No preliminary price range or fixed offering price detected yet"
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2078149/000109690626001366/0001096906-26-001366-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2078149/000109690626001366/0001096906-26-001366-index.htm",
+      "ownership_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-14",
+        "accession_no": "0001096906-26-001366",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2078149/000109690626001366/0001096906-26-001366-index.htm"
+      }
     },
     {
       "id": "0001104659-26-107563",
@@ -43,11 +158,126 @@
       "offering_size_confidence": null,
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
+      "people_count": 8,
+      "people": [
+        {
+          "name": "Mutual Federal, MHC",
+          "shares": 2545813,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 77.4,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        },
+        {
+          "name": "Stanley Balzekas III",
+          "shares": 68155,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 2.07,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        },
+        {
+          "name": "John L. Garlanger, C.P.A.",
+          "shares": 37479,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 1.14,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        },
+        {
+          "name": "Robert P. Kazan, M.D.",
+          "shares": 28564,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 0.87,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        },
+        {
+          "name": "Amy P. Keane, C.P.A.",
+          "shares": 13138,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 0.4,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        },
+        {
+          "name": "Julie H. Oksas",
+          "shares": 44243,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 1.34,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        },
+        {
+          "name": "Stephen M. Oksas",
+          "shares": 107299,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 3.21,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        },
+        {
+          "name": "Rodney D. Stickle, C.P.A.",
+          "shares": 25000,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 0.75,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        }
+      ],
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
+        "No preliminary price range or fixed offering price detected yet",
+        "8 named beneficial owners disclosed"
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152813/000110465926107563/0001104659-26-107563-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152813/000110465926107563/0001104659-26-107563-index.htm",
+      "ownership_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1",
+        "filing_date": "2026-09-14",
+        "accession_no": "0001104659-26-107563",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2152813/000110465926107563/0001104659-26-107563-index.htm"
+      }
     },
     {
       "id": "0001213900-26-099701",
@@ -66,12 +296,36 @@
       "offering_size_confidence": "High",
       "primary_offering_shares": 3750000,
       "secondary_offering_shares": null,
+      "people_count": 1,
+      "people": [
+        {
+          "name": "Veg House Holdings Inc.",
+          "shares": 5000000,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Entity",
+          "ownership_percent": 57.1,
+          "ownership_percent_before": 100.0,
+          "ownership_percent_after": 57.1,
+          "shares_before_ipo": 5000000,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 5000000
+        }
+      ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
         "Preliminary offering range disclosed at $4.00–$6.00",
-        "IPO size disclosed or derived at approximately $18,750,000"
+        "IPO size disclosed or derived at approximately $18,750,000",
+        "1 named beneficial owner disclosed"
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026099701/0001213900-26-099701-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026099701/0001213900-26-099701-index.htm",
+      "ownership_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-14",
+        "accession_no": "0001213900-26-099701",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026099701/0001213900-26-099701-index.htm"
+      }
     },
     {
       "id": "0001193125-26-389755",
@@ -90,12 +344,205 @@
       "offering_size_confidence": "High",
       "primary_offering_shares": 21666667,
       "secondary_offering_shares": null,
+      "people_count": 14,
+      "people": [
+        {
+          "name": "Electra Therapeutics LLC",
+          "shares": null,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Entity",
+          "ownership_percent": null,
+          "ownership_percent_before": 38.2,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 15065741,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        },
+        {
+          "name": "Entities affiliated with OrbiMed",
+          "shares": 5548593,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Entity",
+          "ownership_percent": 9.1,
+          "ownership_percent_before": 9.0,
+          "ownership_percent_after": 9.1,
+          "shares_before_ipo": 3549527,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 5548593
+        },
+        {
+          "name": "Entities affiliated with Westlake BioPartners Fund I, L.P.",
+          "shares": 6341824,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Entity",
+          "ownership_percent": 10.4,
+          "ownership_percent_before": 7.1,
+          "ownership_percent_after": 10.4,
+          "shares_before_ipo": 2820403,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 6341824
+        },
+        {
+          "name": "Redmile Biopharma Investments II, L.P.",
+          "shares": 4793000,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Fund",
+          "ownership_percent": 7.8,
+          "ownership_percent_before": 7.1,
+          "ownership_percent_after": 7.8,
+          "shares_before_ipo": 2811887,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 4793000
+        },
+        {
+          "name": "Aventis Inc.",
+          "shares": 2461948,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Entity",
+          "ownership_percent": 4.0,
+          "ownership_percent_before": 6.2,
+          "ownership_percent_after": 4.0,
+          "shares_before_ipo": 2461948,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 2461948
+        },
+        {
+          "name": "LSP 7 Coöperatief U.A.",
+          "shares": 2461948,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 4.0,
+          "ownership_percent_before": 6.2,
+          "ownership_percent_after": 4.0,
+          "shares_before_ipo": 2461948,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 2461948
+        },
+        {
+          "name": "Entities affiliated with New Leaf Ventures",
+          "shares": 3245831,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Entity",
+          "ownership_percent": 5.3,
+          "ownership_percent_before": 4.4,
+          "ownership_percent_after": 5.3,
+          "shares_before_ipo": 1722233,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 3245831
+        },
+        {
+          "name": "Quehuong (Kathy) Dong, Pharm.D., M.B.A.",
+          "shares": 1853543,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 3.0,
+          "ownership_percent_before": 3.4,
+          "ownership_percent_after": 3.0,
+          "shares_before_ipo": 1399175,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 1853543
+        },
+        {
+          "name": "Gary S. Koe, Ph.D.",
+          "shares": 444364,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 380837,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 444364
+        },
+        {
+          "name": "Kim-Hien Dao, D.O., Ph.D.",
+          "shares": 547202,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": 1.4,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 547202,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 547202
+        },
+        {
+          "name": "Matthew Fust, M.B.A.",
+          "shares": 136800,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 136800,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 136800
+        },
+        {
+          "name": "Carl L. Gordon, Ph.D., C.F.A.",
+          "shares": 5548593,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 9.1,
+          "ownership_percent_before": 9.0,
+          "ownership_percent_after": 9.1,
+          "shares_before_ipo": 3549527,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 5548593
+        },
+        {
+          "name": "Beth Seidenberg, M.D.",
+          "shares": 6341824,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 10.4,
+          "ownership_percent_before": 7.1,
+          "ownership_percent_after": 10.4,
+          "shares_before_ipo": 2820403,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 6341824
+        },
+        {
+          "name": "Nancy Stagliano, Ph.D.",
+          "shares": 638472,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 1.0,
+          "ownership_percent_before": null,
+          "ownership_percent_after": 1.0,
+          "shares_before_ipo": 383352,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 638472
+        }
+      ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
         "Preliminary offering range disclosed at $14.00–$16.00",
-        "IPO size disclosed or derived at approximately $325,000,005"
+        "IPO size disclosed or derived at approximately $325,000,005",
+        "14 named beneficial owners disclosed"
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526389755/0001193125-26-389755-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526389755/0001193125-26-389755-index.htm",
+      "ownership_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-14",
+        "accession_no": "0001193125-26-389755",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526389755/0001193125-26-389755-index.htm"
+      }
     },
     {
       "id": "0001628280-26-061664",
@@ -114,12 +561,114 @@
       "offering_size_confidence": "High",
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
+      "people_count": 7,
+      "people": [
+        {
+          "name": "CVC Blocker Holdco",
+          "shares": null,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 15.0,
+          "ownership_percent_before": null,
+          "ownership_percent_after": 15.0,
+          "shares_before_ipo": 34215530,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        },
+        {
+          "name": "Miramar Blocker Holdco",
+          "shares": null,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 43.0,
+          "ownership_percent_before": null,
+          "ownership_percent_after": 43.0,
+          "shares_before_ipo": 96549383,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        },
+        {
+          "name": "John Chu",
+          "shares": 9414771,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 6.0,
+          "ownership_percent_before": null,
+          "ownership_percent_after": 6.0,
+          "shares_before_ipo": 9414771,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 9414771
+        },
+        {
+          "name": "Tim Tuller",
+          "shares": 1083097,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 1.0,
+          "ownership_percent_before": null,
+          "ownership_percent_after": 1.0,
+          "shares_before_ipo": 1083097,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 1083097
+        },
+        {
+          "name": "Taylor Mobley",
+          "shares": 1529216,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 1.0,
+          "ownership_percent_before": null,
+          "ownership_percent_after": 1.0,
+          "shares_before_ipo": 1529216,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 1529216
+        },
+        {
+          "name": "Ty Shay",
+          "shares": 26914,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 26914,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 26914
+        },
+        {
+          "name": "Mark Anquillare",
+          "shares": 24468,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 24468,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 24468
+        }
+      ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
         "Preliminary offering range disclosed at $18.00–$20.00",
-        "IPO size disclosed or derived at approximately $665,000,000"
+        "IPO size disclosed or derived at approximately $665,000,000",
+        "7 named beneficial owners disclosed"
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2125355/000162828026061664/0001628280-26-061664-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2125355/000162828026061664/0001628280-26-061664-index.htm",
+      "ownership_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-14",
+        "accession_no": "0001628280-26-061664",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2125355/000162828026061664/0001628280-26-061664-index.htm"
+      }
     },
     {
       "id": "0001193125-26-390724",
@@ -138,11 +687,178 @@
       "offering_size_confidence": null,
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
+      "people_count": 10,
+      "people": [
+        {
+          "name": "Entities affiliated with OrbiMed",
+          "shares": 27248813,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Entity",
+          "ownership_percent": null,
+          "ownership_percent_before": 30.8,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 27248813
+        },
+        {
+          "name": "Entities affiliated with LAV Fund",
+          "shares": 13894789,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Entity",
+          "ownership_percent": null,
+          "ownership_percent_before": 15.7,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 13894789
+        },
+        {
+          "name": "Entities affiliated with SR One",
+          "shares": 9768069,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Entity",
+          "ownership_percent": null,
+          "ownership_percent_before": 11.1,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 9768069
+        },
+        {
+          "name": "Zhen Li, Ph.D.",
+          "shares": 12714780,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": 14.4,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 12714780
+        },
+        {
+          "name": "BCLS Fund III Investments, LP",
+          "shares": 6009615,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Fund",
+          "ownership_percent": null,
+          "ownership_percent_before": 6.8,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 6009615
+        },
+        {
+          "name": "A. Robert MacLeod, Ph.D.",
+          "shares": 620205,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 620205
+        },
+        {
+          "name": "Chen Yu, M.D., M.B.A.",
+          "shares": 4206731,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": 4.8,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 4206731
+        },
+        {
+          "name": "Simeon George, M.D., M.B.A.",
+          "shares": 9768069,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": 11.1,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 9768069
+        },
+        {
+          "name": "Erez Chimovits, M.B.A.",
+          "shares": 10815390,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": 12.2,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 10815390
+        },
+        {
+          "name": "Carl L. Gordon, Ph.D., CFA",
+          "shares": 27248813,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": 30.8,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 27248813
+        }
+      ],
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "10 named beneficial owners disclosed",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526390724/0001193125-26-390724-index.htm",
+      "ownership_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-14",
+        "accession_no": "0001193125-26-390724",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526390724/0001193125-26-390724-index.htm"
+      }
+    },
+    {
+      "id": "0001628280-26-061542",
+      "company": "Accelevation Holdings Corp.",
+      "ticker": "ACCV",
+      "cik": "0002141406",
+      "accession_no": "0001628280-26-061542",
+      "form": "S-1/A",
+      "filed": "2026-09-11",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "people_count": 0,
+      "people": [],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
         "No preliminary price range or fixed offering price detected yet"
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526390724/0001193125-26-390724-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026061542/0001628280-26-061542-index.htm",
+      "ownership_source": null
     },
     {
       "id": "0001193125-26-388025",
@@ -161,12 +877,15 @@
       "offering_size_confidence": "High",
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
+      "people_count": 0,
+      "people": [],
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
         "Preliminary offering price disclosed at $10.00 per share",
         "IPO size disclosed or derived at approximately $600,000,000"
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm",
+      "ownership_source": null
     },
     {
       "id": "0001628280-26-061012",
@@ -185,12 +904,75 @@
       "offering_size_confidence": "High",
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
+      "people_count": 4,
+      "people": [
+        {
+          "name": "Kenneth Gregg",
+          "shares": 59935260,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 100.0,
+          "ownership_percent_before": 100.0,
+          "ownership_percent_after": 100.0,
+          "shares_before_ipo": 59935260,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 59935260
+        },
+        {
+          "name": "DARLING STRATEGIC INVESTMENTS LLC",
+          "shares": null,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Entity",
+          "ownership_percent": 14.6,
+          "ownership_percent_before": 29.9,
+          "ownership_percent_after": 14.6,
+          "shares_before_ipo": 5703100,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        },
+        {
+          "name": "Christoph Birchler",
+          "shares": null,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 104337,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        },
+        {
+          "name": "Ryan Jesenik",
+          "shares": null,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 8.4,
+          "ownership_percent_before": 18.7,
+          "ownership_percent_after": 8.4,
+          "shares_before_ipo": 3577248,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        }
+      ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
         "Preliminary offering range disclosed at $15.00–$17.00",
-        "IPO size disclosed or derived at approximately $320,000,000"
+        "IPO size disclosed or derived at approximately $320,000,000",
+        "4 named beneficial owners disclosed"
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026061012/0001628280-26-061012-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026061012/0001628280-26-061012-index.htm",
+      "ownership_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-09",
+        "accession_no": "0001628280-26-061012",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026061012/0001628280-26-061012-index.htm"
+      }
     },
     {
       "id": "0001193125-26-384287",
@@ -209,12 +991,49 @@
       "offering_size_confidence": "High",
       "primary_offering_shares": 50000000,
       "secondary_offering_shares": null,
+      "people_count": 2,
+      "people": [
+        {
+          "name": "Entities affiliated with Holtec Holdings",
+          "shares": 516666667,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Entity",
+          "ownership_percent": null,
+          "ownership_percent_before": 100.0,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 516666667
+        },
+        {
+          "name": "Dr. Krishna P. Singh",
+          "shares": 516666667,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": 100.0,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 516666667
+        }
+      ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
         "Preliminary offering range disclosed at $15.00–$18.00",
-        "IPO size disclosed or derived at approximately $825,000,000"
+        "IPO size disclosed or derived at approximately $825,000,000",
+        "2 named beneficial owners disclosed"
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526384287/0001193125-26-384287-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526384287/0001193125-26-384287-index.htm",
+      "ownership_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-08",
+        "accession_no": "0001193125-26-384287",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526384287/0001193125-26-384287-index.htm"
+      }
     },
     {
       "id": "0001628280-26-060761",
@@ -233,11 +1052,14 @@
       "offering_size_confidence": null,
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
+      "people_count": 0,
+      "people": [],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
         "No preliminary price range or fixed offering price detected yet"
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026060761/0001628280-26-060761-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026060761/0001628280-26-060761-index.htm",
+      "ownership_source": null
     },
     {
       "id": "0001493152-26-041590",
@@ -256,11 +1078,87 @@
       "offering_size_confidence": null,
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
+      "people_count": 5,
+      "people": [
+        {
+          "name": "Karen Wheeler-Hall",
+          "shares": 30000000,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 30000000,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 30000000
+        },
+        {
+          "name": "Rowland W. Day II",
+          "shares": null,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 300000,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        },
+        {
+          "name": "Ronnie Martin",
+          "shares": null,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 250000,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        },
+        {
+          "name": "Patricia Stoll",
+          "shares": null,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 200000,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        },
+        {
+          "name": "Karen Wheeler-Hall (Chairman of the Board and Chief Executive Officer)",
+          "shares": 30000000,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Unknown",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 30000000,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 30000000
+        }
+      ],
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
+        "No preliminary price range or fixed offering price detected yet",
+        "5 named beneficial owners disclosed"
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226041590/0001493152-26-041590-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226041590/0001493152-26-041590-index.htm",
+      "ownership_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1",
+        "filing_date": "2026-09-04",
+        "accession_no": "0001493152-26-041590",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226041590/0001493152-26-041590-index.htm"
+      }
     },
     {
       "id": "0001193125-26-383838",
@@ -279,11 +1177,165 @@
       "offering_size_confidence": null,
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
+      "people_count": 11,
+      "people": [
+        {
+          "name": "Entities affiliated with OrbiMed",
+          "shares": 27248813,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Entity",
+          "ownership_percent": null,
+          "ownership_percent_before": 30.8,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 27248813
+        },
+        {
+          "name": "Entities affiliated with LAV Fund",
+          "shares": 13894789,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Entity",
+          "ownership_percent": null,
+          "ownership_percent_before": 15.7,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 13894789
+        },
+        {
+          "name": "Entities affiliated with SR One",
+          "shares": 9768069,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Entity",
+          "ownership_percent": null,
+          "ownership_percent_before": 11.1,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 9768069
+        },
+        {
+          "name": "Zhen Li, Ph.D.",
+          "shares": 12714780,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": 14.4,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 12714780
+        },
+        {
+          "name": "BCLS Fund III Investments, LP",
+          "shares": 6009615,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Fund",
+          "ownership_percent": null,
+          "ownership_percent_before": 6.8,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 6009615
+        },
+        {
+          "name": "A. Robert MacLeod, Ph.D.",
+          "shares": 620205,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 620205
+        },
+        {
+          "name": "Ricky Sun, Ph.D., M.B.A.",
+          "shares": 6009615,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": 6.8,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 6009615
+        },
+        {
+          "name": "Chen Yu, M.D., M.B.A.",
+          "shares": 4206731,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": 4.8,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 4206731
+        },
+        {
+          "name": "Simeon George, M.D., M.B.A.",
+          "shares": 9768069,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": 11.1,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 9768069
+        },
+        {
+          "name": "Erez Chimovits, M.B.A.",
+          "shares": 10815390,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": 12.2,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 10815390
+        },
+        {
+          "name": "Carl L. Gordon, Ph.D., CFA",
+          "shares": 27248813,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": 30.8,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 27248813
+        }
+      ],
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
+        "No preliminary price range or fixed offering price detected yet",
+        "11 named beneficial owners disclosed"
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526383838/0001193125-26-383838-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526383838/0001193125-26-383838-index.htm",
+      "ownership_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1",
+        "filing_date": "2026-09-04",
+        "accession_no": "0001193125-26-383838",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526383838/0001193125-26-383838-index.htm"
+      }
     },
     {
       "id": "0001193125-26-381855",
@@ -302,11 +1354,14 @@
       "offering_size_confidence": null,
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
+      "people_count": 0,
+      "people": [],
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
         "No preliminary price range or fixed offering price detected yet"
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133022/000119312526381855/0001193125-26-381855-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133022/000119312526381855/0001193125-26-381855-index.htm",
+      "ownership_source": null
     },
     {
       "id": "0001628280-26-060083",
@@ -325,11 +1380,14 @@
       "offering_size_confidence": null,
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
+      "people_count": 0,
+      "people": [],
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
         "No preliminary price range or fixed offering price detected yet"
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026060083/0001628280-26-060083-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026060083/0001628280-26-060083-index.htm",
+      "ownership_source": null
     },
     {
       "id": "0001628280-26-059639",
@@ -348,11 +1406,14 @@
       "offering_size_confidence": null,
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
+      "people_count": 0,
+      "people": [],
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
         "No preliminary price range or fixed offering price detected yet"
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026059639/0001628280-26-059639-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026059639/0001628280-26-059639-index.htm",
+      "ownership_source": null
     },
     {
       "id": "0001628280-26-059692",
@@ -371,11 +1432,14 @@
       "offering_size_confidence": null,
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
+      "people_count": 0,
+      "people": [],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
         "No preliminary price range or fixed offering price detected yet"
       ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2028464/000162828026059692/0001628280-26-059692-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2028464/000162828026059692/0001628280-26-059692-index.htm",
+      "ownership_source": null
     },
     {
       "id": "0001628280-26-059572",
