@@ -34,10 +34,10 @@ class FeedSchemaQuoteTimestampContractTests(unittest.TestCase):
         filing.update(overrides)
         return filing
 
-    def _payload(self, filing):
+    def _payload(self, filing, generated_at="2026-08-21T16:00:00+00:00"):
         return {
             "schema_version": SCHEMA_VERSION,
-            "generated_at": "2026-08-21T16:00:00+00:00",
+            "generated_at": generated_at,
             "source": "SEC EDGAR",
             "filings": [filing],
         }
@@ -93,6 +93,37 @@ class FeedSchemaQuoteTimestampContractTests(unittest.TestCase):
             any("provider timestamp cannot be in the future" in failure for failure in failures),
             failures,
         )
+
+    def test_current_price_timestamp_cannot_be_stale_at_feed_generation(self):
+        failures = validate_payload(
+            self._payload(
+                self._filing(price_updated="2026-08-21T15:30:00+00:00"),
+                generated_at="2026-08-29T15:30:01+00:00",
+            )
+        )
+        self.assertTrue(
+            any("too old for the feed generation time" in failure for failure in failures),
+            failures,
+        )
+
+    def test_current_price_timestamp_cannot_exceed_provider_future_skew_at_generation(self):
+        failures = validate_payload(
+            self._payload(
+                self._filing(price_updated="2026-08-21T15:06:00+00:00"),
+                generated_at="2026-08-21T15:00:00+00:00",
+            )
+        )
+        self.assertTrue(
+            any("too far after the feed generation time" in failure for failure in failures),
+            failures,
+        )
+
+    def test_provider_clock_skew_within_release_window_is_allowed(self):
+        payload = self._payload(
+            self._filing(price_updated="2026-08-21T15:04:00+00:00"),
+            generated_at="2026-08-21T15:00:00+00:00",
+        )
+        self.assertEqual([], validate_payload(payload))
 
     def test_orphan_provider_timestamp_is_release_blocking(self):
         failures = validate_payload(
