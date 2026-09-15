@@ -14,6 +14,13 @@ LA_BEAUTE_COVER = (
     "at $5.00 per share."
 )
 
+UNCORROBORATED_FIXED_PRICE_COVER = (
+    "PRELIMINARY PROSPECTUS SUBJECT TO COMPLETION. "
+    "This is the initial public offering of ordinary shares of Example Issuer. "
+    "The offering price per share of our ordinary shares in this offering is to be fixed "
+    "at $5.00 per share."
+)
+
 LA_BEAUTE_FEE_HTML = """
 <table>
   <tr>
@@ -64,11 +71,29 @@ class FeeTableConflictTests(unittest.TestCase):
             {"shares": 100_000, "price": 5.0, "aggregate": 500_000.0},
         )
 
-    def test_material_same_price_fee_conflict_clears_size_but_preserves_filing_price(self):
+    def test_primary_prospectus_corroboration_preserves_size_despite_fee_conflict(self):
         terms = _extract_fee_table_equity_terms(LA_BEAUTE_FEE_HTML)
         updated, invalid, checked = review_watch_payload(
             {"filings": [_row()]},
             text_loader=lambda _: LA_BEAUTE_COVER,
+            fee_terms_loader=lambda _: terms,
+        )
+        result = updated["filings"][0]
+        self.assertEqual(invalid, {})
+        self.assertEqual(checked, 1)
+        self.assertEqual(result["filing_price"], "$5.00")
+        self.assertEqual(result["value"], 50_000_000)
+        self.assertEqual(result["value_label"], "$50,000,000")
+        self.assertEqual(result["primary_offering_shares"], 10_000_000)
+        self.assertIn("issuer-only", result["offering_size_source"])
+        self.assertEqual(result["offering_size_confidence"], "High")
+        self.assertTrue(any("IPO size disclosed" in signal for signal in result["signals"]))
+
+    def test_unresolved_same_price_fee_conflict_still_clears_size(self):
+        terms = _extract_fee_table_equity_terms(LA_BEAUTE_FEE_HTML)
+        updated, invalid, checked = review_watch_payload(
+            {"filings": [_row()]},
+            text_loader=lambda _: UNCORROBORATED_FIXED_PRICE_COVER,
             fee_terms_loader=lambda _: terms,
         )
         result = updated["filings"][0]

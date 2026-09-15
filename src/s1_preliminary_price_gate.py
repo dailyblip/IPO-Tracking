@@ -473,6 +473,37 @@ def _published_issuer_only_size_conflicts_with_fee_table(filing: dict, fee_terms
     return share_gap > FEE_TABLE_CONFLICT_TOLERANCE
 
 
+def _primary_prospectus_corroborates_issuer_only_size(filing: dict, filing_text: str) -> bool:
+    """Resolve a fee-table conflict only with exact primary-prospectus economics.
+
+    EX-FILING FEES remains contradiction-only evidence. A materially different fee
+    row does not invalidate issuer-only IPO size when the primary S-1 itself states
+    the same issuer share count and fixed per-share price and those terms exactly
+    reproduce the published offering value. Anything less remains unresolved and
+    therefore fails closed to a blank offering size.
+    """
+    expected_price = _fixed_price_label(filing.get("filing_price"))
+    published_value = _number(filing.get("ipo_size")) or _number(filing.get("value"))
+    published_shares = _number(filing.get("primary_offering_shares"))
+    primary_shares = _extract_authoritative_primary_share_count(filing_text)
+    if (
+        expected_price is None
+        or published_value is None
+        or published_shares is None
+        or primary_shares is None
+    ):
+        return False
+    if not float(published_shares).is_integer():
+        return False
+    if int(round(published_shares)) != primary_shares:
+        return False
+    if not has_authoritative_fixed_price(filing_text, expected_price):
+        return False
+
+    corroborated_value = primary_shares * expected_price
+    return abs(published_value - corroborated_value) <= max(1.0, corroborated_value * 0.000001)
+
+
 def _clear_conflicting_offering_size(filing: dict) -> dict:
     cleaned = dict(filing)
     if "ipo_size" in cleaned:
@@ -494,7 +525,12 @@ def _clear_conflicting_offering_size(filing: dict) -> dict:
     return cleaned
 
 
-def _apply_fee_table_size_guard(filing: dict, fee_terms_loader=None) -> dict:
+def _apply_fee_table_size_guard(
+    filing: dict,
+    fee_terms_loader=None,
+    text_loader=None,
+    filing_text=None,
+) -> dict:
     if fee_terms_loader is None:
         return filing
     source = str(filing.get("offering_size_source") or "").casefold()
@@ -510,9 +546,20 @@ def _apply_fee_table_size_guard(filing: dict, fee_terms_loader=None) -> dict:
             f"{filing.get('company') or filing.get('id')}: could not inspect same-accession "
             f"EX-FILING FEES terms before publishing issuer-only offering size: {error}"
         ) from error
-    if _published_issuer_only_size_conflicts_with_fee_table(filing, fee_terms):
-        return _clear_conflicting_offering_size(filing)
-    return filing
+    if not _published_issuer_only_size_conflicts_with_fee_table(filing, fee_terms):
+        return filing
+
+    if filing_text is None and text_loader is not None:
+        try:
+            filing_text = text_loader(filing)
+        except Exception as error:
+            raise PreliminaryPriceGateError(
+                f"{filing.get('company') or filing.get('id')}: could not resolve same-accession "
+                f"EX-FILING FEES conflict against the primary S-1: {error}"
+            ) from error
+    if filing_text and _primary_prospectus_corroborates_issuer_only_size(filing, filing_text):
+        return filing
+    return _clear_conflicting_offering_size(filing)
 
 
 def _clean_signals(signals):
@@ -711,13 +758,21 @@ def review_watch_payload(
                 updated_filings.append(filing)
                 continue
             recovered = _recover_missing_preliminary_terms(filing, filing_text)
-            recovered = _apply_fee_table_size_guard(recovered, fee_terms_loader=fee_terms_loader)
+            recovered = _apply_fee_table_size_guard(
+                recovered,
+                fee_terms_loader=fee_terms_loader,
+                filing_text=filing_text,
+            )
             if recovered != filing:
                 checked += 1
             updated_filings.append(recovered)
             continue
 
-        guarded = _apply_fee_table_size_guard(filing, fee_terms_loader=fee_terms_loader)
+        guarded = _apply_fee_table_size_guard(
+            filing,
+            fee_terms_loader=fee_terms_loader,
+            text_loader=text_loader,
+        )
         if guarded != filing:
             updated_filings.append(guarded)
             continue
@@ -749,7 +804,11 @@ def review_watch_payload(
 
         if has_authoritative_fixed_price(filing_text, expected):
             recovered = _recover_verified_fixed_price_size(filing, filing_text, expected)
-            recovered = _apply_fee_table_size_guard(recovered, fee_terms_loader=fee_terms_loader)
+            recovered = _apply_fee_table_size_guard(
+                recovered,
+                fee_terms_loader=fee_terms_loader,
+                filing_text=filing_text,
+            )
             updated_filings.append(recovered)
             continue
 
