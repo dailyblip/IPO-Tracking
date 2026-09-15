@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-14T23:34:39.212788+00:00",
+  "generated_at": "2026-09-15T00:09:28.634554+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -5965,7 +5965,7 @@
       "stage": "Priced",
       "priority": "High",
       "status": "New",
-      "value": 1000000003,
+      "value": 1000000003.0,
       "value_label": "$1.0B",
       "primary_offering_shares": 13782609,
       "secondary_offering_shares": null,
@@ -6041,7 +6041,7 @@
       "people_count": 8,
       "signals": [
         "Offering priced at $23.00 per share",
-        "Offering raised approximately $317M",
+        "Offering raised approximately $1.0B",
         "8 named beneficial owners disclosed",
         "Largest named holding currently valued at approximately $660M",
         "Lock-up terms captured for liquidity-event follow-up"
@@ -7274,6 +7274,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": "",
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -7317,6 +7318,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": "",
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -7360,6 +7362,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": "Confidence 5/5 — SEC 424B4 management biography confirms a degree from Stanford University. Source: https://www.sec.gov/Archives/edgar/data/1787117/000110465926088733/tm2513004-17_424b4.htm",
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -7403,6 +7406,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": null,
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -7446,6 +7450,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": null,
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -7489,6 +7494,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": null,
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -7532,6 +7538,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": null,
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -7575,6 +7582,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": null,
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -7618,6 +7626,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": "",
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -7661,6 +7670,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": "",
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -9540,8 +9550,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -9571,8 +9581,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -9602,8 +9612,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -9633,8 +9643,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -9792,8 +9802,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -9823,8 +9833,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -9854,8 +9864,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         }
       ],
@@ -11250,8 +11260,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -11281,8 +11291,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -11312,8 +11322,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -11343,8 +11353,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -11374,8 +11384,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -11405,8 +11415,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -11436,8 +11446,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         }
       ],
@@ -11538,8 +11548,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unknown",
-          "liquidity_confidence": "Unknown — share count unavailable",
+          "liquidity_status": "Liquidity not quantified — share count unavailable",
+          "liquidity_confidence": "No share count is available and the filing does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -11568,8 +11578,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unknown",
-          "liquidity_confidence": "Unknown — share count unavailable",
+          "liquidity_status": "Liquidity not quantified — share count unavailable",
+          "liquidity_confidence": "No share count is available and the filing does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -11598,8 +11608,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unknown",
-          "liquidity_confidence": "Unknown — share count unavailable",
+          "liquidity_status": "Liquidity not quantified — share count unavailable",
+          "liquidity_confidence": "No share count is available and the filing does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -11628,8 +11638,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unknown",
-          "liquidity_confidence": "Unknown — share count unavailable",
+          "liquidity_status": "Liquidity not quantified — share count unavailable",
+          "liquidity_confidence": "No share count is available and the filing does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         }
       ],
@@ -13033,8 +13043,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13064,8 +13074,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13095,8 +13105,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13126,8 +13136,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13157,8 +13167,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13188,8 +13198,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13219,8 +13229,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         }
       ],
@@ -13303,8 +13313,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13334,8 +13344,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13365,8 +13375,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13396,8 +13406,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13427,8 +13437,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13458,8 +13468,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13489,8 +13499,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13520,8 +13530,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         }
       ],
@@ -13604,8 +13614,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13635,8 +13645,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13666,8 +13676,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         }
       ],
@@ -13785,8 +13795,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13816,8 +13826,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13847,8 +13857,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13878,8 +13888,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13909,8 +13919,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13940,8 +13950,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -13971,8 +13981,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         },
         {
@@ -14002,8 +14012,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         }
       ],
@@ -14086,8 +14096,8 @@
           "liquid_value": null,
           "locked_shares": null,
           "locked_value": null,
-          "liquidity_status": "Unclassified",
-          "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
+          "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
+          "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
         }
       ],
