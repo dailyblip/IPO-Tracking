@@ -100,6 +100,13 @@ class DashboardExportTests(unittest.TestCase):
                 "stage": "Pre-pricing",
                 "price_range": "$18.00–$20.00",
                 "people": [],
+                "ownership_source": {
+                    "source": "SEC EDGAR",
+                    "form": "S-1/A",
+                    "filing_date": "2026-08-17",
+                    "accession_no": "0001234567-26-000001",
+                    "sec_url": "https://www.sec.gov/s1",
+                },
                 "internal_note": "must not publish",
             }]
             output.write_text(json.dumps(existing), encoding="utf-8")
@@ -109,6 +116,10 @@ class DashboardExportTests(unittest.TestCase):
             filing = exported["filings"][0]
             self.assertEqual(filing["stage"], "Pre-pricing")
             self.assertEqual(filing["price_range"], "$18.00–$20.00")
+            self.assertEqual(
+                filing["ownership_source"]["accession_no"],
+                "0001234567-26-000001",
+            )
             self.assertNotIn("internal_note", filing)
 
     def test_export_merges_existing_history(self):

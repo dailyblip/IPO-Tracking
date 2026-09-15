@@ -186,6 +186,16 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertNotIn("  push:", trigger_block)
         self.assertNotIn("  workflow_run:", trigger_block)
 
+    def test_s1_manual_dispatch_supports_bounded_owner_backfill(self):
+        workflow = _workflow(S1_WORKFLOW)
+        self.assertIn("days_back:", workflow)
+        self.assertIn("default: '14'", workflow)
+        self.assertIn(
+            "DAYS_BACK: ${{ github.event_name == 'workflow_dispatch' && inputs.days_back || '14' }}",
+            workflow,
+        )
+        self.assertIn('run: python s1_monitor.py "$DAYS_BACK"', workflow)
+
     def test_daily_writer_defers_live_golden_until_after_regeneration(self):
         workflow = _workflow(DAILY_WORKFLOW)
         unit_test_step = workflow.index("- name: Run unit tests")
