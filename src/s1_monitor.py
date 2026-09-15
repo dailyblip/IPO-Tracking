@@ -32,6 +32,11 @@ OUTPUT_PATH = Path(__file__).resolve().parents[1] / "docs" / "data" / "s1_watch.
 QUEUE_PATH = Path(__file__).resolve().parents[1] / "docs" / "data" / "filings.json"
 MAX_RECORDS = 250
 FORM_TYPES = {"S-1", "S-1/A"}
+OWNER_ROLE_TERMS = re.compile(
+    r"\b(?:chair(?:man|woman|person)|chief executive officer|chief financial officer|"
+    r"president|treasurer|secretary|director|ceo|cfo|founder|principal financial)\b",
+    re.IGNORECASE,
+)
 
 
 def _headers() -> dict:
@@ -296,6 +301,47 @@ def _size_provenance(cover: dict, ipo_size) -> tuple[str | None, str | None]:
     return source or None, confidence or None
 
 
+def _owner_identity_key(name: str) -> str:
+    """Collapse only explicit role suffixes when comparing owner identities."""
+    identity = " ".join(str(name or "").split()).strip().casefold()
+    parenthetical = re.fullmatch(r"(.+?)\s+\(([^()]*)\)", identity)
+    if parenthetical and OWNER_ROLE_TERMS.search(parenthetical.group(2)):
+        identity = parenthetical.group(1).strip()
+    comma_suffix = re.fullmatch(r"(.+?),\s*(.+)", identity)
+    if comma_suffix and OWNER_ROLE_TERMS.match(comma_suffix.group(2)):
+        identity = comma_suffix.group(1).strip()
+    return identity
+
+
+def _merge_duplicate_owner(existing: dict, candidate: dict) -> None:
+    """Merge one identity conservatively across security-class owner tables."""
+    existing_name = str(existing.get("name") or "")
+    candidate_name = str(candidate.get("name") or "")
+    if len(candidate_name) < len(existing_name):
+        existing["name"] = candidate_name
+        existing["holder_type"] = holder_type(candidate_name)
+
+    metric_fields = (
+        "shares",
+        "ownership_percent",
+        "ownership_percent_before",
+        "ownership_percent_after",
+        "shares_before_ipo",
+        "shares_sold_ipo",
+        "shares_after_ipo",
+    )
+    for field in metric_fields:
+        current = existing.get(field)
+        incoming = candidate.get(field)
+        if current is None:
+            existing[field] = incoming
+        elif incoming is not None and incoming != current:
+            # Multiple security-class tables can disclose different holdings for
+            # the same person. The public schema has no class dimension, so do
+            # not publish one class's value as if it were a consolidated total.
+            existing[field] = None
+
+
 def _ownership_people(parsed: dict) -> list[dict]:
     """Normalize filing-supported S-1 beneficial owners for the public feed.
 
@@ -306,21 +352,20 @@ def _ownership_people(parsed: dict) -> list[dict]:
     the affiliation.
     """
     people = []
-    seen = set()
+    index_by_identity = {}
     for holder in (parsed or {}).get("principal_stockholders") or []:
         if not isinstance(holder, dict):
             continue
         name = " ".join(str(holder.get("name") or "").split()).strip()
-        identity = name.casefold()
-        aggregate_group = "as a group" in identity and (
-            "director" in identity or "executive officer" in identity
+        raw_identity = name.casefold()
+        aggregate_group = "as a group" in raw_identity and (
+            "director" in raw_identity or "executive officer" in raw_identity
         )
         if (
             not name
-            or identity in GENERIC_HOLDER_LABELS
+            or raw_identity in GENERIC_HOLDER_LABELS
             or aggregate_group
             or looks_like_document_heading(name)
-            or identity in seen
         ):
             continue
 
@@ -336,7 +381,7 @@ def _ownership_people(parsed: dict) -> list[dict]:
         if ownership_percent is None:
             ownership_percent = valid_ownership_percent(holder.get("percent"))
 
-        people.append({
+        candidate = {
             "name": name,
             "shares": shares,
             "stanford_university_bio": False,
@@ -348,10 +393,14 @@ def _ownership_people(parsed: dict) -> list[dict]:
             "shares_before_ipo": shares_before,
             "shares_sold_ipo": shares_sold,
             "shares_after_ipo": shares_after,
-        })
-        seen.add(identity)
+        }
+        identity = _owner_identity_key(name)
+        if identity in index_by_identity:
+            _merge_duplicate_owner(people[index_by_identity[identity]], candidate)
+            continue
+        index_by_identity[identity] = len(people)
+        people.append(candidate)
     return people
-
 
 def _ownership_source(record: dict) -> dict | None:
     """Return the exact SEC filing provenance for a non-empty owner snapshot."""
