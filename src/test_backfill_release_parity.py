@@ -15,6 +15,7 @@ class BackfillReleaseParityTests(unittest.TestCase):
             "- name: Reconcile regenerated S-1 registration history after backfill",
             "- name: Reconcile resale-only S-1 registrations after backfill regeneration",
             "- name: Exclude non-substantive S-1 form templates after backfill regeneration",
+            "- name: Verify fixed pre-pricing Filing Prices against SEC cover terms",
             "- name: Remove post-reporting follow-on/resale offerings",
             "- name: Check archived SEC reporting history after backfill",
             "- name: Enforce public-feed eligibility policy",
@@ -42,9 +43,26 @@ class BackfillReleaseParityTests(unittest.TestCase):
             workflow,
         )
         self.assertIn(
+            "python s1_preliminary_price_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json",
+            workflow,
+        )
+        self.assertIn(
             "python archived_reporting_history_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json",
             workflow,
         )
+
+    def test_backfill_verifies_preliminary_price_before_lifecycle_promotion(self):
+        workflow = BACKFILL_WORKFLOW.read_text(encoding="utf-8")
+        preliminary_price_gate = workflow.index(
+            "- name: Verify fixed pre-pricing Filing Prices against SEC cover terms"
+        )
+        lifecycle_reconcile = workflow.index("- name: Reconcile final 424B4 lifecycle transitions")
+        final_pricing_gate = workflow.index("- name: Remove unresolved final pricing states")
+        publish_step = workflow.index("- name: Publish Research Monitor data")
+
+        self.assertLess(preliminary_price_gate, lifecycle_reconcile)
+        self.assertLess(lifecycle_reconcile, final_pricing_gate)
+        self.assertLess(final_pricing_gate, publish_step)
 
 
 if __name__ == "__main__":
