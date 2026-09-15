@@ -118,6 +118,14 @@ jobs:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python s1_substantive_registration_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
 
+      # Keep fixed preliminary SEC price terms intact before 424B4 lifecycle
+      # promotion can replace a regenerated pre-pricing row with its final record.
+      - name: Verify fixed pre-pricing Filing Prices against SEC cover terms
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_preliminary_price_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
       # Manual historical replacement must pass the same release-safety chain as
       # daily regeneration. These steps repair authoritative fields where possible
       # and fail closed on unsupported/stale secondary data; they do not widen the
