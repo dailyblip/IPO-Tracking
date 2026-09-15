@@ -150,7 +150,10 @@ class FeedSchemaContractTests(unittest.TestCase):
         )
 
     def test_valid_priced_current_price_state_is_allowed(self):
-        filing = self._filing(current_price=19.25)
+        filing = self._filing(
+            current_price=19.25,
+            price_updated="2026-08-21T15:30:00+00:00",
+        )
         self.assertEqual([], validate_payload(self._payload(filing)))
 
     def test_filing_price_source_without_preliminary_price_is_rejected(self):
