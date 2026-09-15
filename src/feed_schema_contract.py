@@ -13,6 +13,7 @@ from price_lookup import MAX_FUTURE_SKEW_SECONDS, MAX_QUOTE_AGE_SECONDS
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_DIR = ROOT / "schemas"
+CIK_PATTERN = re.compile(r"^\d{10}$")
 ACCESSION_PATTERN = re.compile(r"^\d{10}-\d{2}-\d{6}$")
 SEC_ARCHIVES_FILING_PATTERN = re.compile(
     r"^https://www\.sec\.gov/Archives/edgar/data/(\d+)/(\d{18})/[^/?#]+$",
@@ -87,6 +88,52 @@ def _positive_number(value):
 def _normalize_cik(value):
     digits = re.sub(r"\D", "", str(value or ""))
     return int(digits) if digits else None
+
+
+def _sec_identity_errors(index: int, filing: dict) -> list[str]:
+    """Require canonical same-issuer SEC identity on every public filing row."""
+    prefix = f"$.filings[{index}]"
+    failures = []
+
+    cik = str(filing.get("cik") or "").strip()
+    accession = str(filing.get("accession_no") or "").strip()
+    sec_url = str(filing.get("sec_url") or "").strip()
+
+    row_cik = int(cik) if CIK_PATTERN.fullmatch(cik) else None
+    if row_cik is None:
+        failures.append(
+            f"{prefix}.cik: public row must use a canonical 10-digit issuer CIK"
+        )
+
+    canonical_accession = (
+        accession.replace("-", "")
+        if ACCESSION_PATTERN.fullmatch(accession)
+        else ""
+    )
+    if not canonical_accession:
+        failures.append(
+            f"{prefix}.accession_no: public row must use a canonical SEC accession number"
+        )
+
+    sec_url_match = SEC_ARCHIVES_FILING_PATTERN.fullmatch(sec_url)
+    if sec_url_match is None:
+        failures.append(
+            f"{prefix}.sec_url: public row must use a canonical SEC Archives filing URL without query or fragment data"
+        )
+        return failures
+
+    sec_url_cik = int(sec_url_match.group(1))
+    sec_url_accession = sec_url_match.group(2)
+    if row_cik is not None and sec_url_cik != row_cik:
+        failures.append(
+            f"{prefix}.sec_url: SEC URL issuer CIK does not match row CIK"
+        )
+    if canonical_accession and sec_url_accession != canonical_accession:
+        failures.append(
+            f"{prefix}.sec_url: SEC URL accession directory does not match row accession"
+        )
+
+    return failures
 
 
 def _is_priced_424b4(filing: dict) -> bool:
@@ -307,6 +354,7 @@ def _semantic_errors(payload: dict) -> list[str]:
                 f"$.filings[{index}].filing_price_source: SEC Filing Price provenance "
                 "cannot remain populated when both filing_price and price_range are blank"
             )
+        failures.extend(_sec_identity_errors(index, filing))
         failures.extend(_lifecycle_semantic_errors(index, filing, generated_at))
         failures.extend(_priced_filing_price_provenance_errors(index, filing))
     return failures

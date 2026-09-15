@@ -27,7 +27,10 @@ class FeedSchemaFinalChronologyTests(unittest.TestCase):
             "people_count": 0,
             "signals": [],
             "people": [],
-            "sec_url": "https://www.sec.gov/example",
+            "sec_url": (
+                "https://www.sec.gov/Archives/edgar/data/1234567/"
+                "000119312526123456/example-424b4.htm"
+            ),
         }
         filing.update(overrides)
         return {
