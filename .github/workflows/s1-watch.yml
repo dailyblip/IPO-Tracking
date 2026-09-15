@@ -62,7 +62,12 @@ on:
       - completed
     branches:
       - main
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      days_back:
+        description: 'Bounded SEC lookback for an ownership/history refresh'
+        required: false
+        default: '14'
 
 jobs:
   test:
@@ -102,7 +107,8 @@ jobs:
         working-directory: src
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
-        run: python s1_monitor.py 14
+          DAYS_BACK: ${{ github.event_name == 'workflow_dispatch' && inputs.days_back || '14' }}
+        run: python s1_monitor.py "$DAYS_BACK"
       - name: Reconcile S-1 tickers from current SEC listing language
         working-directory: src
         env:

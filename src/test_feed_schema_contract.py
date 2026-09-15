@@ -61,6 +61,11 @@ class FeedSchemaContractTests(unittest.TestCase):
         source.update(overrides)
         return source
 
+    def _ownership_source(self, **overrides):
+        source = self._filing_price_source()
+        source.update(overrides)
+        return source
+
     def test_checked_in_feed_matches_registered_schema(self):
         failures = validate_file(ROOT / "docs" / "data" / "filings.json")
         self.assertEqual([], failures, "\n".join(failures))
@@ -82,6 +87,39 @@ class FeedSchemaContractTests(unittest.TestCase):
             "unexpected": True,
         }
         self.assertTrue(validate_payload(payload))
+
+    def test_valid_sec_ownership_provenance_is_accepted(self):
+        filing = self._filing(
+            people_count=1,
+            people=[{"name": "Jane Example", "stanford_university_bio": False}],
+            ownership_source=self._ownership_source(),
+        )
+        self.assertEqual([], validate_payload(self._payload(filing)))
+
+    def test_ownership_provenance_requires_named_owners(self):
+        filing = self._filing(ownership_source=self._ownership_source())
+        failures = validate_payload(self._payload(filing))
+        self.assertTrue(
+            any("cannot exist without named owners" in failure for failure in failures),
+            failures,
+        )
+
+    def test_ownership_provenance_rejects_cross_issuer_sec_url(self):
+        filing = self._filing(
+            people_count=1,
+            people=[{"name": "Jane Example", "stanford_university_bio": False}],
+            ownership_source=self._ownership_source(
+                sec_url=(
+                    "https://www.sec.gov/Archives/edgar/data/7654321/"
+                    "000119312526123455/example-s1a.htm"
+                )
+            ),
+        )
+        failures = validate_payload(self._payload(filing))
+        self.assertTrue(
+            any("ownership SEC URL issuer CIK does not match row CIK" in failure for failure in failures),
+            failures,
+        )
 
     def test_unregistered_schema_version_is_rejected(self):
         payload = {

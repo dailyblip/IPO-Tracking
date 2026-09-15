@@ -589,6 +589,8 @@ def enforce_public_feed_policy(output_path, followon_submissions_loader=None):
         normalized = _scrub_stanford_operational_errors(normalized)
         normalized = _normalize_market_value_consistency(normalized)
         normalized = suppress_unsupported_person_economics(normalized)
+        if not normalized.get("people"):
+            normalized.pop("ownership_source", None)
         qualifying.append(normalized)
 
     removed = len(removed_followons) + len(filings) - len(qualifying)

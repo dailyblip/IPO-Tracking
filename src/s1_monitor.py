@@ -20,6 +20,13 @@ import requests
 from dashboard_export import write_dashboard_csv
 import edgar_client
 import filing_parser
+from ownership_parser import looks_like_document_heading
+from prospect_research import (
+    GENERIC_HOLDER_LABELS,
+    holder_type,
+    valid_ownership_percent,
+    valid_share_count,
+)
 
 OUTPUT_PATH = Path(__file__).resolve().parents[1] / "docs" / "data" / "s1_watch.json"
 QUEUE_PATH = Path(__file__).resolve().parents[1] / "docs" / "data" / "filings.json"
@@ -289,6 +296,137 @@ def _size_provenance(cover: dict, ipo_size) -> tuple[str | None, str | None]:
     return source or None, confidence or None
 
 
+def _ownership_people(parsed: dict) -> list[dict]:
+    """Normalize filing-supported S-1 beneficial owners for the public feed.
+
+    The filing parser already handles SEC table geometry and rejects unsafe
+    class-specific arithmetic. Keep this final mapping deliberately narrow: only
+    named rows and explicit, valid ownership metrics are published. Stanford
+    highlighting stays false until a separate evidence-backed enrichment confirms
+    the affiliation.
+    """
+    people = []
+    seen = set()
+    for holder in (parsed or {}).get("principal_stockholders") or []:
+        if not isinstance(holder, dict):
+            continue
+        name = " ".join(str(holder.get("name") or "").split()).strip()
+        identity = name.casefold()
+        aggregate_group = "as a group" in identity and (
+            "director" in identity or "executive officer" in identity
+        )
+        if (
+            not name
+            or identity in GENERIC_HOLDER_LABELS
+            or aggregate_group
+            or looks_like_document_heading(name)
+            or identity in seen
+        ):
+            continue
+
+        shares_before = valid_share_count(holder.get("shares_before"))
+        shares_sold = valid_share_count(holder.get("shares_sold"))
+        shares_after = valid_share_count(holder.get("shares_after"))
+        shares = shares_after
+        if shares is None:
+            shares = valid_share_count(holder.get("shares"))
+        percent_before = valid_ownership_percent(holder.get("percent_before"))
+        percent_after = valid_ownership_percent(holder.get("percent_after"))
+        ownership_percent = percent_after
+        if ownership_percent is None:
+            ownership_percent = valid_ownership_percent(holder.get("percent"))
+
+        people.append({
+            "name": name,
+            "shares": shares,
+            "stanford_university_bio": False,
+            "is_beneficial_owner": True,
+            "holder_type": holder_type(name),
+            "ownership_percent": ownership_percent,
+            "ownership_percent_before": percent_before,
+            "ownership_percent_after": percent_after,
+            "shares_before_ipo": shares_before,
+            "shares_sold_ipo": shares_sold,
+            "shares_after_ipo": shares_after,
+        })
+        seen.add(identity)
+    return people
+
+
+def _ownership_source(record: dict) -> dict | None:
+    """Return the exact SEC filing provenance for a non-empty owner snapshot."""
+    if not (record or {}).get("people"):
+        return None
+    accession_no = str(record.get("accession_no") or record.get("id") or "").strip()
+    sec_url = str(record.get("sec_url") or "").strip()
+    if not accession_no or not sec_url:
+        return None
+    return {
+        "source": "SEC EDGAR",
+        "form": str(record.get("form") or "S-1").strip().upper(),
+        "filing_date": _normalize_filing_date(record.get("filed") or "") or None,
+        "accession_no": accession_no,
+        "sec_url": sec_url,
+    }
+
+
+def _preserve_prior_ownership_lineage(records: list[dict], history: list[dict]) -> list[dict]:
+    """Carry the latest unambiguous SEC owner snapshot across an empty amendment.
+
+    A newer amendment can omit the grid or expose markup the conservative parser
+    cannot validate. In that case, retain only the most recent strictly earlier
+    exact-CIK S-1/S-1A snapshot and its original SEC provenance. If equally recent
+    candidates disagree, publish no owners rather than guessing.
+    """
+    candidates_by_cik = {}
+    for item in list(history or []) + list(records or []):
+        if not isinstance(item, dict) or not item.get("people"):
+            continue
+        if str(item.get("form") or "").strip().upper() not in FORM_TYPES:
+            continue
+        cik = str(item.get("cik") or "").zfill(10) if item.get("cik") else ""
+        filed = _normalize_filing_date(item.get("filed") or "")
+        source = item.get("ownership_source") or _ownership_source(item)
+        if cik and filed and source:
+            candidates_by_cik.setdefault(cik, []).append((filed, item, source))
+
+    for record in records or []:
+        if not isinstance(record, dict) or record.get("people"):
+            continue
+        cik = str(record.get("cik") or "").zfill(10) if record.get("cik") else ""
+        filed = _normalize_filing_date(record.get("filed") or "")
+        if not cik or not filed:
+            continue
+        prior = [entry for entry in candidates_by_cik.get(cik, []) if entry[0] < filed]
+        if not prior:
+            continue
+        latest_date = max(entry[0] for entry in prior)
+        latest = [entry for entry in prior if entry[0] == latest_date]
+        signatures = {
+            tuple(
+                sorted(
+                    json.dumps(person, sort_keys=True, ensure_ascii=False)
+                    for person in entry[1].get("people") or []
+                    if isinstance(person, dict)
+                    and str(person.get("name") or "").strip()
+                )
+            )
+            for entry in latest
+        }
+        if len(signatures) != 1:
+            continue
+        source_record = latest[0][1]
+        record["people"] = [dict(person) for person in source_record.get("people") or []]
+        record["people_count"] = len(record["people"])
+        record["ownership_source"] = dict(latest[0][2])
+        signal = f"Beneficial-owner detail carried from SEC filing dated {latest_date}"
+        signals = list(record.get("signals") or [])
+        if signal not in signals:
+            signals.append(signal)
+        record["signals"] = signals
+    return records
+
+
 def enrich_record(meta: dict, *, raise_errors: bool = False) -> dict | None:
     """Validate an S-1 candidate and capture lightweight IPO-stage signals."""
     cik = meta.get("cik")
@@ -340,6 +478,7 @@ def enrich_record(meta: dict, *, raise_errors: bool = False) -> dict | None:
         filing_price_label = range_label or fixed_price_label
         ipo_size = _extract_ipo_size(filing_text, parsed, price_range)
         offering_size_source, offering_size_confidence = _size_provenance(cover, ipo_size)
+        people = _ownership_people(parsed)
 
         ticker = str(cover.get("ticker") or "").strip().upper() or None
         if not ticker:
@@ -361,8 +500,13 @@ def enrich_record(meta: dict, *, raise_errors: bool = False) -> dict | None:
             signals.append("No preliminary price range or fixed offering price detected yet")
         if ipo_size:
             signals.append(f"IPO size disclosed or derived at approximately ${ipo_size:,.0f}")
+        if people:
+            signals.append(
+                f"{len(people)} named beneficial owner"
+                f"{'s' if len(people) != 1 else ''} disclosed"
+            )
 
-        return {
+        record = {
             "id": meta["accession_no"],
             "company": company,
             "ticker": ticker or "",
@@ -379,9 +523,13 @@ def enrich_record(meta: dict, *, raise_errors: bool = False) -> dict | None:
             "offering_size_confidence": offering_size_confidence,
             "primary_offering_shares": cover.get("primary_offering_shares"),
             "secondary_offering_shares": cover.get("secondary_offering_shares"),
+            "people_count": len(people),
+            "people": people,
             "signals": signals,
             "sec_url": index_url,
         }
+        record["ownership_source"] = _ownership_source(record)
+        return record
     except Exception as error:
         if raise_errors:
             raise
@@ -473,6 +621,7 @@ def export_feed(
             existing = []
 
     _preserve_unambiguous_ticker_lineage(records, existing)
+    _preserve_prior_ownership_lineage(records, existing)
     processed_ciks = {
         str(cik or "").zfill(10) for cik in (processed_ciks or set()) if cik
     }
@@ -501,6 +650,11 @@ def _queue_record(record: dict) -> dict:
     """Normalize a pre-pricing record to the V1 public dashboard schema."""
     cik = str(record.get("cik") or "").zfill(10) if record.get("cik") else ""
     ipo_size = record.get("ipo_size")
+    people = [
+        dict(person)
+        for person in record.get("people") or []
+        if isinstance(person, dict)
+    ]
     return {
         "id": f"s1:{cik or record.get('company', '')}",
         "company": record.get("company") or "Unknown",
@@ -520,9 +674,10 @@ def _queue_record(record: dict) -> dict:
         "status": "New",
         "value": ipo_size,
         "value_label": "—" if not ipo_size else f"${ipo_size:,.0f}",
-        "people_count": 0,
+        "people_count": len(people),
         "signals": list(record.get("signals") or []),
-        "people": [],
+        "people": people,
+        "ownership_source": record.get("ownership_source"),
         "sec_url": record.get("sec_url") or "https://www.sec.gov/edgar/search/",
     }
 
@@ -540,6 +695,7 @@ def sync_research_queue(
             existing = []
 
     _preserve_unambiguous_ticker_lineage(records, existing)
+    _preserve_prior_ownership_lineage(records, existing)
     priced_ciks = {
         str(item.get("cik") or "").zfill(10)
         for item in existing

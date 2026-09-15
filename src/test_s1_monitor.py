@@ -60,6 +60,34 @@ class S1MonitorTests(unittest.TestCase):
         )
         self.assertIsNone(value)
 
+    def test_ownership_people_preserves_only_valid_named_sec_rows(self):
+        people = s1_monitor._ownership_people({
+            "principal_stockholders": [
+                {
+                    "name": "Blackstone",
+                    "shares_before": 1_500_000,
+                    "shares_after": 1_200_000,
+                    "percent_before": 15.0,
+                    "percent_after": 12.0,
+                },
+                {"name": "Other selling stockholders", "shares": 400_000},
+                {"name": "Directors and executive officers as a group", "shares": 800_000},
+                {"name": "Description of Capital Stock", "shares": 200_000},
+                {"name": "Example Ventures LP", "shares": -1, "percent": 140},
+            ]
+        })
+
+        self.assertEqual(
+            [person["name"] for person in people],
+            ["Blackstone", "Example Ventures LP"],
+        )
+        self.assertEqual(people[0]["holder_type"], "Entity")
+        self.assertEqual(people[0]["shares"], 1_200_000)
+        self.assertEqual(people[0]["ownership_percent_after"], 12.0)
+        self.assertIsNone(people[1]["shares"])
+        self.assertIsNone(people[1]["ownership_percent"])
+        self.assertFalse(people[0]["stanford_university_bio"])
+
     def test_micro_self_underwritten_registration_without_exchange_is_rejected(self):
         self.assertTrue(s1_monitor._is_micro_self_underwritten_offering(
             "The offering is being conducted on a self-underwritten, best-efforts basis.",
@@ -128,7 +156,13 @@ class S1MonitorTests(unittest.TestCase):
         soup = Mock()
         soup.get_text.return_value = "This is the initial public offering of our common stock."
         fetch_doc.return_value = soup
-        parse_filing.return_value = {"price_range": {"range_low": 18, "range_high": 20}, "cover_page": {"exchange": "Nasdaq", "offering_price": 19}}
+        parse_filing.return_value = {
+            "price_range": {"range_low": 18, "range_high": 20},
+            "cover_page": {"exchange": "Nasdaq", "offering_price": 19},
+            "principal_stockholders": [
+                {"name": "Jane Example", "shares_after": 2_000_000, "percent_after": 12.5}
+            ],
+        }
 
         record = s1_monitor.enrich_record({
             "company_name": "Acme Robotics, Inc.",
@@ -143,6 +177,21 @@ class S1MonitorTests(unittest.TestCase):
         self.assertEqual(record["filing_price"], "$18.00–$20.00")
         self.assertEqual(record["priority"], "High")
         self.assertIn("Preliminary offering range disclosed", record["signals"][1])
+        self.assertEqual(record["people_count"], 1)
+        self.assertEqual(record["people"][0]["name"], "Jane Example")
+        self.assertEqual(record["people"][0]["shares"], 2_000_000)
+        self.assertEqual(record["people"][0]["ownership_percent"], 12.5)
+        self.assertIn("1 named beneficial owner disclosed", record["signals"])
+        self.assertEqual(record["ownership_source"], {
+            "source": "SEC EDGAR",
+            "form": "S-1/A",
+            "filing_date": "2026-08-17",
+            "accession_no": "0001234567-26-000001",
+            "sec_url": (
+                "https://www.sec.gov/Archives/edgar/data/1234567/"
+                "000123456726000001/0001234567-26-000001-index.htm"
+            ),
+        })
 
     @patch("s1_monitor.edgar_client.is_us_based", return_value=False)
     def test_enrich_record_rejects_non_us_filer(self, us_based):
@@ -241,7 +290,109 @@ class S1MonitorTests(unittest.TestCase):
             payload = s1_monitor.export_feed([new], path, processed_ciks={"1234567"})
             self.assertEqual([item["id"] for item in payload["filings"]], ["new-accession"])
 
+    def test_export_feed_preserves_latest_prior_sec_owner_snapshot(self):
+        owner = {
+            "name": "Jane Example",
+            "shares": 2_000_000,
+            "stanford_university_bio": False,
+            "is_beneficial_owner": True,
+        }
+        old = {
+            "id": "0001234567-26-000001",
+            "company": "Acme Robotics, Inc.",
+            "cik": "0001234567",
+            "accession_no": "0001234567-26-000001",
+            "filed": "2026-08-10",
+            "form": "S-1",
+            "people_count": 1,
+            "people": [owner],
+            "signals": [],
+            "sec_url": (
+                "https://www.sec.gov/Archives/edgar/data/1234567/"
+                "000123456726000001/acme-s1.htm"
+            ),
+        }
+        new = {
+            "id": "0001234567-26-000002",
+            "company": "Acme Robotics, Inc.",
+            "cik": "0001234567",
+            "accession_no": "0001234567-26-000002",
+            "filed": "2026-08-17",
+            "form": "S-1/A",
+            "people_count": 0,
+            "people": [],
+            "signals": [],
+            "sec_url": (
+                "https://www.sec.gov/Archives/edgar/data/1234567/"
+                "000123456726000002/acme-s1a.htm"
+            ),
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "s1_watch.json"
+            path.write_text(json.dumps({"filings": [old]}), encoding="utf-8")
+            payload = s1_monitor.export_feed([new], path, processed_ciks={"1234567"})
+
+        filing = payload["filings"][0]
+        self.assertEqual(filing["id"], new["id"])
+        self.assertEqual(filing["people"], [owner])
+        self.assertEqual(filing["people_count"], 1)
+        self.assertEqual(filing["ownership_source"]["accession_no"], old["accession_no"])
+        self.assertIn(
+            "Beneficial-owner detail carried from SEC filing dated 2026-08-10",
+            filing["signals"],
+        )
+
+    def test_owner_lineage_fails_closed_when_same_day_snapshots_disagree(self):
+        history = []
+        for accession, shares in (
+            ("0001234567-26-000001", 1_000_000),
+            ("0001234567-26-000002", 2_000_000),
+        ):
+            history.append({
+                "id": accession,
+                "company": "Acme Robotics, Inc.",
+                "cik": "0001234567",
+                "accession_no": accession,
+                "filed": "2026-08-10",
+                "form": "S-1/A",
+                "people": [{
+                    "name": "Jane Example",
+                    "shares": shares,
+                    "stanford_university_bio": False,
+                }],
+                "sec_url": (
+                    "https://www.sec.gov/Archives/edgar/data/1234567/"
+                    f"{accession.replace('-', '')}/example-s1a.htm"
+                ),
+            })
+        current = {
+            "id": "0001234567-26-000003",
+            "company": "Acme Robotics, Inc.",
+            "cik": "0001234567",
+            "accession_no": "0001234567-26-000003",
+            "filed": "2026-08-17",
+            "form": "S-1/A",
+            "people": [],
+            "signals": [],
+            "sec_url": (
+                "https://www.sec.gov/Archives/edgar/data/1234567/"
+                "000123456726000003/example-s1a.htm"
+            ),
+        }
+
+        s1_monitor._preserve_prior_ownership_lineage([current], history)
+
+        self.assertEqual(current["people"], [])
+        self.assertNotIn("ownership_source", current)
+
     def test_queue_record_uses_stable_issuer_id_and_v1_size_field(self):
+        ownership_source = {
+            "source": "SEC EDGAR",
+            "form": "S-1/A",
+            "filing_date": "2026-08-17",
+            "accession_no": "0001234567-26-000001",
+            "sec_url": "https://www.sec.gov/test",
+        }
         filing = s1_monitor._queue_record({
             "id": "0001234567-26-000001",
             "company": "Acme Robotics, Inc.",
@@ -251,11 +402,22 @@ class S1MonitorTests(unittest.TestCase):
             "filed": "2026-08-17",
             "priority": "High",
             "ipo_size": 95_000_000,
+            "people": [
+                {
+                    "name": "Jane Example",
+                    "shares": 2_000_000,
+                    "stanford_university_bio": False,
+                    "is_beneficial_owner": True,
+                }
+            ],
+            "ownership_source": ownership_source,
             "signals": ["Preliminary offering range disclosed at $18.00–$20.00"],
             "sec_url": "https://www.sec.gov/test",
         })
         self.assertEqual(filing["id"], "s1:0001234567")
-        self.assertEqual(filing["people"], [])
+        self.assertEqual([person["name"] for person in filing["people"]], ["Jane Example"])
+        self.assertEqual(filing["people_count"], 1)
+        self.assertEqual(filing["ownership_source"], ownership_source)
         self.assertEqual(filing["value"], 95_000_000)
         self.assertNotIn("ipo_size", filing)
 

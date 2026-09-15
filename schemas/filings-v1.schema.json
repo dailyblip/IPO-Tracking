@@ -138,6 +138,7 @@
         "price_range": {"type": ["string", "null"]},
         "filing_price": {"type": ["string", "number", "null"]},
         "filing_price_source": {"$ref": "#/$defs/filingPriceSource"},
+        "ownership_source": {"$ref": "#/$defs/filingPriceSource"},
         "offering_price": {"type": ["number", "null"]},
         "current_price": {"type": ["number", "null"]},
         "price_updated": {"type": ["string", "null"]},
