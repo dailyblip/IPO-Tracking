@@ -36,6 +36,11 @@ GENERIC_HOLDER_LABELS = {
     "other selling shareholders",
     "selling stockholders",
     "selling shareholders",
+    # SEC ownership tables can include summary/metric rows in the same grid as
+    # named holders. These labels describe the table total, not a person or legal
+    # entity, and must never become researcher-facing beneficial owners.
+    "total shares",
+    "total voting power",
 }
 # Some SEC ownership tables use an institution's public brand rather than its full
 # legal entity name. Keep this list deliberately narrow and evidence-backed so
