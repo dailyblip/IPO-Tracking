@@ -9,6 +9,7 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
+from price_lookup import MAX_FUTURE_SKEW_SECONDS, MAX_QUOTE_AGE_SECONDS
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_DIR = ROOT / "schemas"
@@ -95,13 +96,17 @@ def _is_priced_424b4(filing: dict) -> bool:
     )
 
 
-def _lifecycle_semantic_errors(index: int, filing: dict) -> list[str]:
+def _lifecycle_semantic_errors(
+    index: int,
+    filing: dict,
+    generated_at=None,
+) -> list[str]:
     """Reject impossible lifecycle/market states at the shared release boundary.
 
     All public-feed writers invoke this schema contract before publication. Keep the
     most important lifecycle invariants here as defense in depth so an upstream
     sanitizer or workflow-ordering regression cannot publish a pre-pricing quote,
-    an unresolved final price, or impossible IPO chronology.
+    a stale quote, an unresolved final price, or impossible IPO chronology.
     """
     prefix = f"$.filings[{index}]"
     failures = []
@@ -150,6 +155,21 @@ def _lifecycle_semantic_errors(index: int, filing: dict) -> list[str]:
                     failures.append(
                         f"{prefix}.price_updated: Current Price provider timestamp cannot be in the future"
                     )
+
+                feed_generated_at = _aware_datetime(generated_at)
+                if feed_generated_at is not None:
+                    quote_age_seconds = (
+                        feed_generated_at.astimezone(timezone.utc) - quote_utc
+                    ).total_seconds()
+                    if quote_age_seconds > MAX_QUOTE_AGE_SECONDS:
+                        failures.append(
+                            f"{prefix}.price_updated: Current Price provider timestamp is too old for the feed generation time"
+                        )
+                    elif quote_age_seconds < -MAX_FUTURE_SKEW_SECONDS:
+                        failures.append(
+                            f"{prefix}.price_updated: Current Price provider timestamp is too far after the feed generation time"
+                        )
+
                 pricing_date = _canonical_date(filing.get("pricing_date"))
                 if pricing_date is not None and quote_date < pricing_date:
                     failures.append(
@@ -278,6 +298,7 @@ def _semantic_errors(payload: dict) -> list[str]:
     if not isinstance(filings, list):
         return failures
 
+    generated_at = payload.get("generated_at")
     for index, filing in enumerate(filings):
         if not isinstance(filing, dict):
             continue
@@ -286,7 +307,7 @@ def _semantic_errors(payload: dict) -> list[str]:
                 f"$.filings[{index}].filing_price_source: SEC Filing Price provenance "
                 "cannot remain populated when both filing_price and price_range are blank"
             )
-        failures.extend(_lifecycle_semantic_errors(index, filing))
+        failures.extend(_lifecycle_semantic_errors(index, filing, generated_at))
         failures.extend(_priced_filing_price_provenance_errors(index, filing))
     return failures
 
