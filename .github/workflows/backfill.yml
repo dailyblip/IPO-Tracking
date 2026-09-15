@@ -88,6 +88,36 @@ jobs:
           --backfill-start "$BACKFILL_START"
           --backfill-end "$BACKFILL_END"
 
+      # main.py can regenerate an S-1 amendment without the ticker evidence carried
+      # by an earlier exact-CIK, exact-registration-lineage filing. Restore only
+      # SEC-backed listing metadata before release classification consumes it.
+      - name: Reconcile SEC-backed S-1 ticker metadata after backfill regeneration
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python ticker_listing_reconciler.py
+
+      # Historical regeneration can also recreate queue-only S-1/S-1A rows that
+      # were absent from the checked-in S-1 watch snapshot. Apply the same SEC
+      # registration/resale/template release gates used by Daily before publishing.
+      - name: Reconcile regenerated S-1 registration history after backfill
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_registration_history_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
+      - name: Reconcile resale-only S-1 registrations after backfill regeneration
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python resale_registration_sanitizer.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
+      - name: Exclude non-substantive S-1 form templates after backfill regeneration
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_substantive_registration_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
       # Manual historical replacement must pass the same release-safety chain as
       # daily regeneration. These steps repair authoritative fields where possible
       # and fail closed on unsupported/stale secondary data; they do not widen the
@@ -121,6 +151,15 @@ jobs:
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python followon_sanitizer.py ../docs/data/filings.json
+
+      # SEC's inline submissions block is bounded. Check archived SEC-listed
+      # history as well so a long-reporting issuer cannot be replayed as a new IPO
+      # simply because its older Exchange Act filings aged out of the inline block.
+      - name: Check archived SEC reporting history after backfill
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python archived_reporting_history_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
 
       - name: Normalize issuer display names
         working-directory: src
