@@ -338,6 +338,52 @@ def _priced_filing_price_provenance_errors(index: int, filing: dict) -> list[str
     return failures
 
 
+def _ownership_provenance_errors(index: int, filing: dict) -> list[str]:
+    """Validate an optional SEC owner snapshot without requiring legacy backfill."""
+    source = filing.get("ownership_source")
+    if source is None:
+        return []
+
+    prefix = f"$.filings[{index}].ownership_source"
+    failures = []
+    if not filing.get("people"):
+        failures.append(f"{prefix}: ownership provenance cannot exist without named owners")
+    if not isinstance(source, dict):
+        return failures
+
+    if str(source.get("source") or "").strip().casefold() != "sec edgar":
+        failures.append(f"{prefix}.source: ownership source must be SEC EDGAR")
+    if str(source.get("form") or "").strip().upper() not in {"S-1", "S-1/A", "424B4"}:
+        failures.append(f"{prefix}.form: ownership source must be S-1, S-1/A, or 424B4")
+
+    accession = str(source.get("accession_no") or "").strip()
+    canonical_accession = accession.replace("-", "") if ACCESSION_PATTERN.fullmatch(accession) else ""
+    if not canonical_accession:
+        failures.append(f"{prefix}.accession_no: ownership source must use a canonical SEC accession number")
+
+    source_date = _canonical_date(source.get("filing_date"))
+    if source_date is None:
+        failures.append(f"{prefix}.filing_date: ownership source must use a canonical SEC filing date")
+    row_date = _canonical_date(filing.get("filed"))
+    if source_date is not None and row_date is not None and source_date > row_date:
+        failures.append(f"{prefix}.filing_date: ownership source cannot postdate the public filing row")
+
+    sec_url = str(source.get("sec_url") or "").strip()
+    sec_url_match = SEC_ARCHIVES_FILING_PATTERN.fullmatch(sec_url)
+    if sec_url_match is None:
+        failures.append(
+            f"{prefix}.sec_url: ownership source must use a canonical SEC Archives filing URL without query or fragment data"
+        )
+        return failures
+
+    row_cik = _normalize_cik(filing.get("cik"))
+    if row_cik is not None and int(sec_url_match.group(1)) != row_cik:
+        failures.append(f"{prefix}.sec_url: ownership SEC URL issuer CIK does not match row CIK")
+    if canonical_accession and sec_url_match.group(2) != canonical_accession:
+        failures.append(f"{prefix}.sec_url: ownership SEC URL does not match source accession")
+    return failures
+
+
 def _semantic_errors(payload: dict) -> list[str]:
     """Enforce cross-field provenance rules that JSON Schema alone cannot express."""
     failures = []
@@ -357,6 +403,7 @@ def _semantic_errors(payload: dict) -> list[str]:
         failures.extend(_sec_identity_errors(index, filing))
         failures.extend(_lifecycle_semantic_errors(index, filing, generated_at))
         failures.extend(_priced_filing_price_provenance_errors(index, filing))
+        failures.extend(_ownership_provenance_errors(index, filing))
     return failures
 
 
