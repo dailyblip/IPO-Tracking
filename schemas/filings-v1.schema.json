@@ -116,6 +116,23 @@
         "stage", "priority", "status", "value", "value_label", "people_count",
         "signals", "people", "sec_url"
       ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {"form": {"enum": ["S-1", "S-1/A"]}},
+            "required": ["form"]
+          },
+          "then": {
+            "properties": {
+              "stage": {"const": "Pre-pricing"},
+              "pricing_date": {"type": "null"},
+              "offering_price": {"type": "null"},
+              "current_price": {"type": "null"},
+              "price_updated": {"type": "null"}
+            }
+          }
+        }
+      ],
       "properties": {
         "id": {"type": "string", "minLength": 1},
         "company": {"type": "string", "minLength": 1},
