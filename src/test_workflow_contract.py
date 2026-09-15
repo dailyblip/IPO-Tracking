@@ -191,7 +191,7 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertIn("days_back:", workflow)
         self.assertIn("default: '14'", workflow)
         self.assertIn(
-            "DAYS_BACK: ${{ github.event_name == 'workflow_dispatch' && inputs.days_back || '14' }}",
+            "DAYS_BACK: ${{ github.event_name == 'workflow_dispatch' && inputs.days_back || github.event_name == 'push' && '45' || '14' }}",
             workflow,
         )
         self.assertIn('run: python s1_monitor.py "$DAYS_BACK"', workflow)
