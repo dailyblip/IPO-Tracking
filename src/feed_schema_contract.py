@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import re
 from datetime import date
 from pathlib import Path
@@ -56,6 +57,19 @@ def _canonical_date(value):
     return parsed if parsed.isoformat() == raw else None
 
 
+def _positive_number(value):
+    """Return a finite positive numeric value, otherwise None."""
+    if value in (None, "") or isinstance(value, bool):
+        return None
+    try:
+        number = float(str(value).replace(",", "").replace("$", "").strip())
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(number) or number <= 0:
+        return None
+    return number
+
+
 def _normalize_cik(value):
     digits = re.sub(r"\D", "", str(value or ""))
     return int(digits) if digits else None
@@ -66,6 +80,64 @@ def _is_priced_424b4(filing: dict) -> bool:
         str(filing.get("form") or "").strip().upper() == "424B4"
         and str(filing.get("stage") or "").strip().casefold() == "priced"
     )
+
+
+def _lifecycle_semantic_errors(index: int, filing: dict) -> list[str]:
+    """Reject impossible lifecycle/market states at the shared release boundary.
+
+    All public-feed writers invoke this schema contract before publication. Keep the
+    most important lifecycle invariants here as defense in depth so an upstream
+    sanitizer or workflow-ordering regression cannot publish a pre-pricing quote,
+    an unresolved final price, or impossible IPO chronology.
+    """
+    prefix = f"$.filings[{index}]"
+    failures = []
+    form = str(filing.get("form") or "").strip().upper()
+    stage = str(filing.get("stage") or "").strip().casefold()
+    final_form = form == "424B4"
+    priced_stage = stage == "priced"
+    priced_final = final_form and priced_stage
+
+    if final_form != priced_stage:
+        failures.append(
+            f"{prefix}: final lifecycle state must pair form 424B4 with stage Priced"
+        )
+
+    current_price = filing.get("current_price")
+    if current_price not in (None, ""):
+        if not priced_final:
+            failures.append(
+                f"{prefix}.current_price: Current Price is permitted only for a 424B4/Priced lifecycle state"
+            )
+        elif _positive_number(current_price) is None:
+            failures.append(
+                f"{prefix}.current_price: Current Price must be a positive finite number when populated"
+            )
+
+    if priced_final:
+        if _positive_number(filing.get("offering_price")) is None:
+            failures.append(
+                f"{prefix}.offering_price: priced 424B4 must have a positive Final IPO Price"
+            )
+
+        pricing_date = _canonical_date(filing.get("pricing_date"))
+        if pricing_date is None:
+            failures.append(
+                f"{prefix}.pricing_date: priced 424B4 must have a canonical Pricing Date"
+            )
+
+        filing_date_raw = filing.get("filing_date")
+        filing_date = _canonical_date(filing_date_raw)
+        if filing_date_raw not in (None, "") and filing_date is None:
+            failures.append(
+                f"{prefix}.filing_date: initial filing date must be canonical when populated"
+            )
+        elif filing_date is not None and pricing_date is not None and filing_date > pricing_date:
+            failures.append(
+                f"{prefix}.filing_date: initial filing date cannot postdate Pricing Date"
+            )
+
+    return failures
 
 
 def _priced_filing_price_provenance_errors(index: int, filing: dict) -> list[str]:
@@ -156,6 +228,7 @@ def _semantic_errors(payload: dict) -> list[str]:
                 f"$.filings[{index}].filing_price_source: SEC Filing Price provenance "
                 "cannot remain populated when both filing_price and price_range are blank"
             )
+        failures.extend(_lifecycle_semantic_errors(index, filing))
         failures.extend(_priced_filing_price_provenance_errors(index, filing))
     return failures
 
