@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-15T17:56:01.893699+00:00",
+  "generated_at": "2026-09-15T18:07:18.695594+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -75,7 +75,7 @@
       "priority": "High",
       "status": "New",
       "value": 18750000,
-      "value_label": "$19M",
+      "value_label": "$18,750,000",
       "people_count": 0,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -103,7 +103,7 @@
       "priority": "High",
       "status": "New",
       "value": 325000005,
-      "value_label": "$325M",
+      "value_label": "$325,000,005",
       "people_count": 0,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -131,7 +131,7 @@
       "priority": "High",
       "status": "New",
       "value": 665000000,
-      "value_label": "$665M",
+      "value_label": "$665,000,000",
       "people_count": 0,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -169,33 +169,6 @@
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526390724/0001193125-26-390724-index.htm"
     },
     {
-      "id": "s1:0002141406",
-      "company": "Accelevation Holdings Corp.",
-      "ticker": "ACCV",
-      "cik": "0002141406",
-      "accession_no": "0001628280-26-061542",
-      "form": "S-1/A",
-      "filed": "2026-09-11",
-      "stage": "Pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": null,
-      "secondary_offering_shares": null,
-      "priority": "Medium",
-      "status": "New",
-      "value": null,
-      "value_label": "—",
-      "people_count": 0,
-      "signals": [
-        "Registration statement amended — IPO remains pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "people": [],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026061542/0001628280-26-061542-index.htm"
-    },
-    {
       "id": "s1:0002152644",
       "company": "Hometown Financial Group, Inc.",
       "ticker": "HFG",
@@ -213,7 +186,7 @@
       "priority": "High",
       "status": "New",
       "value": 600000000,
-      "value_label": "$600M",
+      "value_label": "$600,000,000",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
@@ -241,7 +214,7 @@
       "priority": "High",
       "status": "New",
       "value": 320000000,
-      "value_label": "$320M",
+      "value_label": "$320,000,000",
       "people_count": 0,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -269,7 +242,7 @@
       "priority": "High",
       "status": "New",
       "value": 825000000,
-      "value_label": "$825M",
+      "value_label": "$825,000,000",
       "people_count": 0,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -359,6 +332,33 @@
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2133022/000119312526381855/0001193125-26-381855-index.htm"
+    },
+    {
+      "id": "s1:0002141406",
+      "company": "Accelevation Holdings Corp.",
+      "ticker": "ACCV",
+      "cik": "0002141406",
+      "accession_no": "0001628280-26-060083",
+      "form": "S-1",
+      "filed": "2026-09-02",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "priority": "Medium",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 0,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026060083/0001628280-26-060083-index.htm"
     },
     {
       "id": "s1:0002028464",
