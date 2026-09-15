@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-15T02:06:26.658794+00:00",
+  "updated_at": "2026-09-15T04:03:01.337678+00:00",
   "items": {
     "s1:0002141406": {
       "id": "s1:0002141406",
@@ -168,7 +168,7 @@
       "price_range": null,
       "filing_price": "$5.00",
       "priority": "High",
-      "value": null,
+      "value": 50000000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2151905/000215190526000001/0002151905-26-000001-index.htm"
     },
     "s1:0002088082": {
