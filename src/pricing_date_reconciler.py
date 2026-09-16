@@ -310,6 +310,14 @@ def reconcile_payload(payload, soup_loader=_load_final_soup):
             failures.append(
                 f"{filing.get('company') or filing.get('id') or '<unknown>'}: {error}"
             )
+            # main.py historically seeded the SEC filing date as Pricing Date. If
+            # the authoritative 424B4 cannot be loaded, that exact fallback remains
+            # unverified and must not survive into the downstream release gate.
+            stored = str(filing.get("pricing_date") or "").strip()
+            filed = str(filing.get("filed") or "").strip()
+            if stored and filed and stored == filed:
+                filing["pricing_date"] = None
+                changed += 1
             continue
 
         authoritative = extract_authoritative_pricing_date(soup, filing.get("filed"))
