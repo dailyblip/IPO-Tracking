@@ -23,6 +23,10 @@ class InstitutionalHolderTypeTests(unittest.TestCase):
     def test_ag_legal_form_is_entity(self):
         self.assertEqual(holder_type("Fast Finance 24 Holding AG"), "Entity")
 
+    def test_holdco_legal_form_is_entity(self):
+        self.assertEqual(holder_type("CVC Blocker Holdco"), "Entity")
+        self.assertEqual(holder_type("Miramar Blocker Holdco"), "Entity")
+
     def test_plural_fund_labels_are_not_people(self):
         self.assertEqual(holder_type("MDP Funds"), "Fund")
         self.assertEqual(holder_type("Example Healthcare Funds"), "Fund")
