@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-16T21:01:49.027255+00:00",
+  "updated_at": "2026-09-16T21:59:38.818238+00:00",
   "items": {
     "s1:0002141616": {
       "id": "s1:0002141616",
@@ -14,19 +14,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526391284/0001193125-26-391284-index.htm"
-    },
-    "s1:0002078149": {
-      "id": "s1:0002078149",
-      "cik": "0002078149",
-      "company": "Veri MedTech Holdings, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-09-14",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2078149/000109690626001366/0001096906-26-001366-index.htm"
     },
     "s1:0002152813": {
       "id": "s1:0002152813",
@@ -1158,6 +1145,19 @@
       "priority": "High",
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
+    },
+    "s1:0002078149": {
+      "id": "s1:0002078149",
+      "cik": "0002078149",
+      "company": "Veri MedTech Holdings, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-14",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2078149/000109690626001366/0001096906-26-001366-index.htm"
     }
   },
   "ciks": {
@@ -1166,13 +1166,6 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002141616",
       "last_filed": "2026-09-15",
-      "missing_runs": 0
-    },
-    "0002078149": {
-      "company": "Veri MedTech Holdings, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002078149",
-      "last_filed": "2026-09-14",
       "missing_runs": 0
     },
     "0002152813": {
@@ -1783,6 +1776,13 @@
       "last_filing_id": "0001213900-25-120076",
       "last_filed": "2025-12-10",
       "missing_runs": 0
+    },
+    "0002078149": {
+      "company": "Veri MedTech Holdings, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002078149",
+      "last_filed": "2026-09-14",
+      "missing_runs": 1
     }
   }
 }
