@@ -13,7 +13,7 @@ ENTITY_MARKERS = (
     "lp", "l.p.", "llc", "ltd", "limited", "inc", "corp", "corporation",
     "company", "scsp", "s.c.sp.", "holdings", "holdco", "foundation", "bank", "management",
     "advisors", "nominees", "asa", "plc", "gmbh", "a/s", "s.a.", "b.v.", "n.v.",
-    "mhc", "mutual holding company", "coöperatief", "cooperatief", "ag",
+    "mhc", "mutual holding company", "coöperatief", "cooperatief", "ag", "srl", "s.r.l.",
 )
 INSTITUTION_MARKERS = (
     "authority", "university", "college", "institute", "association", "pension",
