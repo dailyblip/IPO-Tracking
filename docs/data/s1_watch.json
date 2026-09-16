@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-16T08:00:08.636362+00:00",
+  "generated_at": "2026-09-16T10:14:22.318143+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -741,7 +741,7 @@
           "shares": null,
           "stanford_university_bio": false,
           "is_beneficial_owner": true,
-          "holder_type": "Individual",
+          "holder_type": "Entity",
           "ownership_percent": 15.0,
           "ownership_percent_before": null,
           "ownership_percent_after": 15.0,
@@ -754,7 +754,7 @@
           "shares": null,
           "stanford_university_bio": false,
           "is_beneficial_owner": true,
-          "holder_type": "Individual",
+          "holder_type": "Entity",
           "ownership_percent": 43.0,
           "ownership_percent_before": null,
           "ownership_percent_after": 43.0,
