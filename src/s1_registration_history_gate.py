@@ -14,6 +14,11 @@ offerings are capital-raising registrations, not initial public offerings, even
 when a newly formed successor issuer uses Form S-1 in connection with a business
 combination.
 
+The gate also excludes a current S-1/S-1A when the prospectus itself explicitly
+confirms that the issuer's common stock already trades in a public OTC market and
+reports a pre-offering market price. An exchange uplisting or underwritten offering
+by an already publicly traded issuer is not an initial public offering.
+
 The gate also excludes an S-1/S-1A when SEC filing history proves the issuer was
 already a reporting company before the candidate registration. This catches
 post-SPAC/de-SPAC and other already-public issuers that can file a new S-1 before
@@ -60,6 +65,26 @@ RIGHTS_OFFERING_PATTERNS = (
         r"\bnon[- ]?transferable\b.{0,500}\bsubscription rights\b.{0,6000}\bright(?:s)? offering\b",
         re.IGNORECASE | re.DOTALL,
     ),
+)
+EXISTING_PUBLIC_MARKET_PATTERNS = (
+    re.compile(
+        r"\bour\s+common\s+(?:stock|shares)\s+(?:is|are)\s+(?:currently\s+|presently\s+)?"
+        r"(?:quoted|listed|traded)\s+on\s+(?:the\s+)?OTC[A-Z0-9]*\s+Market\b"
+        r".{0,3000}\b(?:last\s+reported|last\s+sale|closing)\s+price\b",
+        re.IGNORECASE | re.DOTALL,
+    ),
+    re.compile(
+        r"\b(?:our\s+)?(?:common\s+)?(?:stock|shares)\s+(?:is|are)\s+(?:currently\s+|presently\s+)?"
+        r"(?:quoted|listed|traded)\s+on\s+(?:the\s+)?OTC(?:QX|QB|ID|IQ)?\b"
+        r".{0,3000}\b(?:last\s+reported|last\s+sale|closing)\s+price\b",
+        re.IGNORECASE | re.DOTALL,
+    ),
+)
+RIGHTS_OFFERING_EXCLUSION_REASON = (
+    "current SEC registration is a non-transferable subscription-rights offering"
+)
+EXISTING_PUBLIC_MARKET_EXCLUSION_REASON = (
+    "current SEC prospectus confirms a pre-existing public OTC trading market"
 )
 
 
@@ -233,24 +258,17 @@ def _primary_document_url(cik: str, filing: dict) -> str:
     return f"{edgar_client.EDGAR_ARCHIVES_BASE}/{int(cik)}/{folder}/{document}"
 
 
-def current_registration_is_rights_offering(record: dict) -> bool:
-    """Return True only when the current SEC registration explicitly is a rights offering.
-
-    A rights offering can use Form S-1/S-1A and a newly formed successor issuer,
-    so reporting-history and resale gates alone do not prove it is non-IPO. Require
-    both the filing's explicit ``Rights Offering`` label and non-transferable
-    subscription-rights language near the front of the current prospectus. That is
-    affirmative transaction evidence, not a company-name or dollar-size heuristic.
-    """
+def _current_registration_front_text(record: dict):
+    """Return normalized front-of-prospectus text for the exact current S-1 filing."""
     if str(record.get("form") or "").strip().upper() not in FORM_TYPES:
-        return False
+        return None
     if str(record.get("stage") or "").strip().casefold() != "pre-pricing":
-        return False
+        return None
 
     cik = str(record.get("cik") or "").strip()
     accession_no = str(record.get("accession_no") or record.get("id") or "").strip()
     if not cik or not accession_no:
-        return False
+        return None
 
     try:
         rows = _recent_submission_rows(cik)
@@ -260,17 +278,32 @@ def current_registration_is_rights_offering(record: dict) -> bool:
             None,
         )
         if not current or not current.get("primary_document"):
-            return False
+            return None
         soup = filing_parser.fetch_document(_primary_document_url(cik, current))
-        normalized = " ".join(soup.get_text(" ", strip=True).split())[:125000]
+        return " ".join(soup.get_text(" ", strip=True).split())[:125000]
     except Exception as error:
         print(
             f"[s1_registration_history_gate] Current filing lookup failed for "
             f"{record.get('company') or accession_no}: {error}"
         )
-        return False
+        return None
 
-    return any(pattern.search(normalized) for pattern in RIGHTS_OFFERING_PATTERNS)
+
+def current_registration_exclusion_reason(record: dict):
+    """Return an explicit current-prospectus non-IPO reason, otherwise None."""
+    normalized = _current_registration_front_text(record)
+    if not normalized:
+        return None
+    if any(pattern.search(normalized) for pattern in RIGHTS_OFFERING_PATTERNS):
+        return RIGHTS_OFFERING_EXCLUSION_REASON
+    if any(pattern.search(normalized) for pattern in EXISTING_PUBLIC_MARKET_PATTERNS):
+        return EXISTING_PUBLIC_MARKET_EXCLUSION_REASON
+    return None
+
+
+def current_registration_is_rights_offering(record: dict) -> bool:
+    """Return True only when the current SEC registration explicitly is a rights offering."""
+    return current_registration_exclusion_reason(record) == RIGHTS_OFFERING_EXCLUSION_REASON
 
 
 def amendment_inherits_resale_exclusion(record: dict) -> bool:
@@ -368,19 +401,21 @@ def apply_gate(s1_watch_path: Path, queue_path: Path) -> set[str]:
     excluded_ciks = set()
     for record in _candidate_records(watch_payload, queue_payload):
         already_reporting = already_reporting_before_registration(record)
-        rights_offering = False if already_reporting else current_registration_is_rights_offering(record)
+        transaction_reason = (
+            None if already_reporting else current_registration_exclusion_reason(record)
+        )
         resale_history = (
-            False if (already_reporting or rights_offering)
+            False if (already_reporting or transaction_reason)
             else amendment_inherits_resale_exclusion(record)
         )
-        if already_reporting or rights_offering or resale_history:
+        if already_reporting or transaction_reason or resale_history:
             cik = str(record.get("cik") or "").zfill(10)
             if cik.strip("0"):
                 excluded_ciks.add(cik)
                 if already_reporting:
                     reason = "SEC reporting forms predate the candidate S-1/S-1A"
-                elif rights_offering:
-                    reason = "current SEC registration is a non-transferable subscription-rights offering"
+                elif transaction_reason:
+                    reason = transaction_reason
                 else:
                     reason = "prior filing in the same SEC registration statement is resale/direct-listing only"
                 print(
@@ -389,7 +424,10 @@ def apply_gate(s1_watch_path: Path, queue_path: Path) -> set[str]:
                 )
 
     if not excluded_ciks:
-        print("[s1_registration_history_gate] No reporting-history, rights-offering, or resale exclusions found")
+        print(
+            "[s1_registration_history_gate] No reporting-history, current-prospectus, "
+            "or resale exclusions found"
+        )
         return set()
 
     watch_payload["filings"] = [
@@ -413,7 +451,7 @@ def apply_gate(s1_watch_path: Path, queue_path: Path) -> set[str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Exclude pre-pricing rows with prior reporting, rights-offering, or resale evidence"
+        description="Exclude pre-pricing rows with prior reporting, current non-IPO, or resale evidence"
     )
     parser.add_argument("s1_watch")
     parser.add_argument("queue")
