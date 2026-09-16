@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-16T08:00:08.650966+00:00",
+  "generated_at": "2026-09-16T08:46:28.931577+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -415,7 +415,7 @@
       "priority": "High",
       "status": "New",
       "value": 18750000,
-      "value_label": "$18,750,000",
+      "value_label": "$19M",
       "people_count": 1,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -465,7 +465,7 @@
       "priority": "High",
       "status": "New",
       "value": 325000005,
-      "value_label": "$325,000,005",
+      "value_label": "$325M",
       "people_count": 14,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -684,7 +684,7 @@
       "priority": "High",
       "status": "New",
       "value": 665000000,
-      "value_label": "$665,000,000",
+      "value_label": "$665M",
       "people_count": 7,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -1005,7 +1005,7 @@
       "priority": "High",
       "status": "New",
       "value": 600000000,
-      "value_label": "$600,000,000",
+      "value_label": "$600M",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
@@ -1033,7 +1033,7 @@
       "priority": "High",
       "status": "New",
       "value": 320000000,
-      "value_label": "$320,000,000",
+      "value_label": "$320M",
       "people_count": 4,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -1122,7 +1122,7 @@
       "priority": "High",
       "status": "New",
       "value": 825000000,
-      "value_label": "$825,000,000",
+      "value_label": "$825M",
       "people_count": 2,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -7552,8 +7552,8 @@
       "value": 1000000003.0,
       "value_label": "$1.0B",
       "primary_offering_shares": 13782609,
-      "secondary_offering_shares": null,
-      "offering_size_source": "explicit issuer + selling-holder cover blocks; cover title preceding IPO statement; authoritative final 424B4 aggregate IPO price table; explicit issuer offering statement in final 424B4",
+      "secondary_offering_shares": 29695652,
+      "offering_size_source": "final 424B4 explicit issuer + selling-holder blocks",
       "offering_size_confidence": "High",
       "filing_price": "21-25",
       "offering_price": 23.0,
