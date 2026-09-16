@@ -114,16 +114,10 @@ def _verified_watch_tickers(payload: dict) -> dict[tuple[str, str], str]:
     return verified
 
 
-def _registration_file_numbers(records: list[dict]) -> dict[tuple[str, str], str]:
-    """Return SEC registration file numbers for exact CIK+accession records.
-
-    The SEC submissions feed is authoritative for ``fileNumber`` lineage. The
-    archive-capable loader receives every required accession so registrations
-    that have aged out of ``filings.recent`` are still resolved exactly. A
-    lookup failure or missing accession intentionally leaves the record unmapped;
-    callers then fail closed instead of carrying a ticker across an unproven
-    registration relationship.
-    """
+def _registration_context(
+    records: list[dict],
+) -> tuple[dict[tuple[str, str], str], dict[str, list[dict]]]:
+    """Return exact file-number mappings plus authoritative SEC filing rows."""
     wanted_by_cik: dict[str, dict[str, tuple[str, str]]] = {}
     for record in records:
         key = _record_key(record)
@@ -133,6 +127,7 @@ def _registration_file_numbers(records: list[dict]) -> dict[tuple[str, str], str
         wanted_by_cik.setdefault(key[0], {})[normalized_accession] = key
 
     lineage: dict[tuple[str, str], str] = {}
+    rows_by_cik: dict[str, list[dict]] = {}
     for cik, wanted in wanted_by_cik.items():
         try:
             submission_rows = registration_lineage.load_registration_rows(
@@ -145,6 +140,7 @@ def _registration_file_numbers(records: list[dict]) -> dict[tuple[str, str], str
             )
             continue
 
+        rows_by_cik[cik] = submission_rows
         for row in submission_rows:
             accession = _normalized_accession(row.get("accession_no"))
             file_number = str(row.get("file_number") or "").strip()
@@ -152,13 +148,116 @@ def _registration_file_numbers(records: list[dict]) -> dict[tuple[str, str], str
             if original_key and file_number:
                 lineage[original_key] = file_number
 
+    return lineage, rows_by_cik
+
+
+def _registration_file_numbers(records: list[dict]) -> dict[tuple[str, str], str]:
+    """Return SEC registration file numbers for exact CIK+accession records.
+
+    The SEC submissions feed is authoritative for ``fileNumber`` lineage. The
+    archive-capable loader receives every required accession so registrations
+    that have aged out of ``filings.recent`` are still resolved exactly. A
+    lookup failure or missing accession intentionally leaves the record unmapped;
+    callers then fail closed instead of carrying a ticker across an unproven
+    registration relationship.
+    """
+    lineage, _rows_by_cik = _registration_context(records)
     return lineage
+
+
+def _sec_index_url(cik: str, accession_no: str) -> str:
+    """Build an EDGAR index URL only from a canonical SEC accession."""
+    cik = str(cik or "").strip()
+    accession_no = str(accession_no or "").strip()
+    if not cik or not re.fullmatch(r"\d{10}-\d{2}-\d{6}", accession_no):
+        return ""
+    digits = _normalized_accession(accession_no)
+    try:
+        cik_path = str(int(cik))
+    except ValueError:
+        return ""
+    return (
+        f"https://www.sec.gov/Archives/edgar/data/{cik_path}/"
+        f"{digits}/{accession_no}-index.htm"
+    )
+
+
+def _missing_registration_lineage_records(
+    records: list[dict],
+    registration_lineage_map: dict[tuple[str, str], str],
+    submission_rows_by_cik: dict[str, list[dict]],
+) -> list[dict]:
+    """Recover omitted earlier S-1 lineage as transient SEC evidence.
+
+    The public watch intentionally keeps current issuer state compact, so an
+    exhibits-only S-1/A can outlive the earlier S-1 that disclosed the proposed
+    ticker. Use SEC submissions metadata to reintroduce only same-file-number,
+    same-CIK S-1/S-1A rows up to the current filing date. These records are used
+    for reconciliation only and are never persisted to the public feed.
+    """
+    existing_keys = {
+        _record_key(record)
+        for record in records
+        if isinstance(record, dict) and all(_record_key(record))
+    }
+    max_dates_by_registration: dict[tuple[str, str], str] = {}
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        cik = _normalized_cik(record)
+        filed = _filed(record)
+        file_number = str(
+            registration_lineage_map.get(_record_key(record)) or ""
+        ).strip()
+        if not cik or not filed or not file_number:
+            continue
+        key = (cik, file_number)
+        previous = max_dates_by_registration.get(key, "")
+        if filed > previous:
+            max_dates_by_registration[key] = filed
+
+    recovered = []
+    seen = set(existing_keys)
+    for (cik, file_number), latest_public_date in max_dates_by_registration.items():
+        for row in submission_rows_by_cik.get(cik, []):
+            form = str(row.get("form") or "").strip().upper()
+            row_file_number = str(row.get("file_number") or "").strip()
+            filed = str(row.get("filing_date") or "").strip()
+            accession_no = str(row.get("accession_no") or "").strip()
+            key = (cik, accession_no)
+            if (
+                form not in {"S-1", "S-1/A"}
+                or row_file_number != file_number
+                or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", filed)
+                or filed > latest_public_date
+                or key in seen
+            ):
+                continue
+            sec_url = _sec_index_url(cik, accession_no)
+            if not sec_url:
+                continue
+            seen.add(key)
+            recovered.append(
+                {
+                    "id": accession_no,
+                    "accession_no": accession_no,
+                    "company": "<SEC registration lineage>",
+                    "cik": cik,
+                    "ticker": "",
+                    "form": form,
+                    "filed": filed,
+                    "sec_url": sec_url,
+                    _REGISTRATION_FILE_NUMBER_KEY: file_number,
+                }
+            )
+    return recovered
 
 
 def reconcile_payload(
     payload: dict,
     fetch_text=_fetch_filing_text,
     verified_lineage: dict[tuple[str, str], str] | None = None,
+    lineage_records: list[dict] | None = None,
 ) -> tuple[int, int]:
     """Reconcile S-1 tickers in place; return ``(updated, conflicts)``.
 
@@ -171,6 +270,8 @@ def reconcile_payload(
     filings inside the same registration statement are never ordered by inference.
     ``verified_lineage`` is reserved for the exact same CIK+accession already
     reconciled in ``s1_watch.json`` before the public queue is processed.
+    ``lineage_records`` contains transient SEC rows omitted from the compact public
+    watch; they can contribute evidence but are never mutated or published.
     """
     records = [
         record
@@ -179,6 +280,14 @@ def reconcile_payload(
         and str(record.get("form") or "").strip().upper() in {"S-1", "S-1/A"}
         and str(record.get("sec_url") or "").strip()
     ]
+    lineage_records = [
+        record
+        for record in (lineage_records or [])
+        if isinstance(record, dict)
+        and str(record.get("form") or "").strip().upper() in {"S-1", "S-1/A"}
+        and str(record.get("sec_url") or "").strip()
+    ]
+    evidence_records = records + lineage_records
     verified_lineage = verified_lineage or {}
     strict_registration_lineage = any(
         _REGISTRATION_FILE_NUMBER_KEY in record for record in records
@@ -189,7 +298,7 @@ def reconcile_payload(
     # registration statements that appear later in the payload.
     evidence: dict[int, set[str]] = {}
     failed: set[int] = set()
-    for record in records:
+    for record in evidence_records:
         try:
             evidence[id(record)] = extract_current_listing_tickers(fetch_text(record))
         except Exception as error:
@@ -287,7 +396,7 @@ def reconcile_payload(
 
         same_day = [
             other
-            for other in records
+            for other in evidence_records
             if other is not record
             and cik
             and _normalized_cik(other) == cik
@@ -314,7 +423,7 @@ def reconcile_payload(
 
         prior = [
             other
-            for other in records
+            for other in evidence_records
             if other is not record
             and cik
             and _normalized_cik(other) == cik
@@ -383,16 +492,22 @@ def reconcile_file(
         if isinstance(record, dict)
         and str(record.get("form") or "").strip().upper() in {"S-1", "S-1/A"}
     ]
-    registration_lineage_map = _registration_file_numbers(records)
+    registration_lineage_map, submission_rows_by_cik = _registration_context(records)
     for record in records:
         record[_REGISTRATION_FILE_NUMBER_KEY] = registration_lineage_map.get(
             _record_key(record), ""
         )
+    lineage_records = _missing_registration_lineage_records(
+        records,
+        registration_lineage_map,
+        submission_rows_by_cik,
+    )
 
     try:
-        updated, conflicts = reconcile_payload(
-            payload, verified_lineage=verified_lineage
-        )
+        reconcile_kwargs = {"verified_lineage": verified_lineage}
+        if lineage_records:
+            reconcile_kwargs["lineage_records"] = lineage_records
+        updated, conflicts = reconcile_payload(payload, **reconcile_kwargs)
     finally:
         # File-number lineage is a release-gate implementation detail, not part
         # of the public feed schema. Never persist it to JSON or CSV.
