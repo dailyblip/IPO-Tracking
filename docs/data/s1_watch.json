@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-16T17:12:06.539238+00:00",
+  "generated_at": "2026-09-16T19:03:23.312476+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -730,10 +730,10 @@
       "price_range": "$18.00–$20.00",
       "filing_price": "$18.00–$20.00",
       "ipo_size": 665000000,
-      "offering_size_source": "prospectus cover title",
+      "offering_size_source": "explicit selling-holder cover statement; prospectus cover title",
       "offering_size_confidence": "High",
       "primary_offering_shares": null,
-      "secondary_offering_shares": null,
+      "secondary_offering_shares": 35000000,
       "people_count": 7,
       "people": [
         {
