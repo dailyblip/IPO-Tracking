@@ -479,6 +479,31 @@ def extract_offering_terms(soup: BeautifulSoup) -> dict:
         )
         if m:
             secondary = _share_int(m.group(1))
+
+    # Selling-holder cover prose can be authoritative even when there is no
+    # issuer-primary leg. This is common in secondary-only IPOs such as Bamboo
+    # Insurance's S-1/A, whose cover says the Selling Stockholders are offering
+    # the base shares. Preserve the explicitly disclosed secondary component only
+    # when it appears in nearby initial-public-offering context; do not infer a
+    # zero primary count or derive anything from offering-value arithmetic.
+    if secondary is None:
+        for m in re.finditer(
+            r"selling\s+(?:stockholders|shareholders)\b[^.]{0,900}?"
+            r"(?:are\s+offering|are\s+selling|will\s+sell|offer)\s+"
+            r"(?:(?:an\s+additional|an\s+aggregate\s+of)\s+)?([\d,]{4,})\s+shares\b",
+            cover[:30000],
+            re.I,
+        ):
+            nearby = cover[
+                max(0, m.start() - 2500): min(len(cover), m.end() + 2500)
+            ].lower()
+            if "initial public offering" not in nearby:
+                continue
+            secondary = _share_int(m.group(1))
+            if secondary is not None:
+                sources.append("explicit selling-holder cover statement")
+                break
+
     if total is None and primary is not None and secondary is not None:
         total = primary + secondary
         sources.append("THE OFFERING primary + secondary rows")
