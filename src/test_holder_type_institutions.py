@@ -27,6 +27,10 @@ class InstitutionalHolderTypeTests(unittest.TestCase):
         self.assertEqual(holder_type("CVC Blocker Holdco"), "Entity")
         self.assertEqual(holder_type("Miramar Blocker Holdco"), "Entity")
 
+    def test_italian_srl_legal_forms_are_entities(self):
+        self.assertEqual(holder_type("OGGI Equity Srl."), "Entity")
+        self.assertEqual(holder_type("Example S.r.l."), "Entity")
+
     def test_plural_fund_labels_are_not_people(self):
         self.assertEqual(holder_type("MDP Funds"), "Fund")
         self.assertEqual(holder_type("Example Healthcare Funds"), "Fund")
