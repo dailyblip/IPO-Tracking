@@ -10,7 +10,7 @@ import math
 import re
 
 ENTITY_MARKERS = (
-    "lp", "l.p.", "llc", "ltd", "limited", "inc", "corp", "corporation",
+    "lp", "l.p", "l.p.", "llc", "ltd", "limited", "inc", "corp", "corporation",
     "company", "scsp", "s.c.sp.", "holdings", "holdco", "foundation", "bank", "management",
     "advisors", "nominees", "asa", "plc", "gmbh", "a/s", "s.a.", "b.v.", "n.v.",
     "mhc", "mutual holding company", "coöperatief", "cooperatief", "ag", "srl", "s.r.l.",
@@ -19,7 +19,7 @@ INSTITUTION_MARKERS = (
     "authority", "university", "college", "institute", "association", "pension",
     "retirement system", "endowment", "government", "ministry",
 )
-FUND_MARKERS = ("fund", "funds", "capital", "ventures", "partners", "partnership", "lp", "l.p.")
+FUND_MARKERS = ("fund", "funds", "capital", "ventures", "partners", "partnership", "lp", "l.p", "l.p.")
 TRUST_MARKERS = ("trust", "trustee")
 PERSON_ROLE_MARKERS = (
     "chief", "officer", "director", "president", "chair", "chairman", "chairwoman",
