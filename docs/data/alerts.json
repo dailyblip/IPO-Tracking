@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-16T21:59:38.818311+00:00",
-  "count": 109,
+  "generated_at": "2026-09-16T22:10:31.524489+00:00",
+  "count": 108,
   "alerts": [
     {
       "type": "new_prepricing",
@@ -72,20 +72,6 @@
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1875655/000149315226035799/0001493152-26-035799-index.htm",
       "detected_at": "2026-09-15T21:43:25.195199+00:00",
       "key": "new_prepricing|s1:0001875655|0001875655|2026-08-03|"
-    },
-    {
-      "type": "new_prepricing",
-      "company": "Veri MedTech Holdings, Inc.",
-      "cik": "0002078149",
-      "filing_id": "s1:0002078149",
-      "form": "S-1/A",
-      "filed": "2026-09-14",
-      "stage": "pre-pricing",
-      "priority": "Medium",
-      "summary": "New pre-pricing S-1/A candidate entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2078149/000109690626001366/0001096906-26-001366-index.htm",
-      "detected_at": "2026-09-15T04:38:55.598542+00:00",
-      "key": "new_prepricing|s1:0002078149|0002078149|2026-09-14|"
     },
     {
       "type": "new_prepricing",
