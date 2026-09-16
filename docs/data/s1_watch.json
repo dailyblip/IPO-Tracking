@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-16T19:03:23.312476+00:00",
+  "generated_at": "2026-09-16T22:02:21.568995+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -200,118 +200,6 @@
         "filing_date": "2026-09-15",
         "accession_no": "0001193125-26-391284",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526391284/0001193125-26-391284-index.htm"
-      }
-    },
-    {
-      "id": "0001096906-26-001366",
-      "company": "Veri MedTech Holdings, Inc.",
-      "ticker": "VRHI",
-      "cik": "0002078149",
-      "accession_no": "0001096906-26-001366",
-      "form": "S-1/A",
-      "filed": "2026-09-14",
-      "stage": "Pre-pricing",
-      "priority": "Medium",
-      "price_range": null,
-      "filing_price": null,
-      "ipo_size": null,
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": 3750000,
-      "secondary_offering_shares": null,
-      "people_count": 6,
-      "people": [
-        {
-          "name": "Joshua Green",
-          "shares": null,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": null,
-          "ownership_percent_after": null,
-          "shares_before_ipo": null,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": null
-        },
-        {
-          "name": "Samuel Adetunji",
-          "shares": null,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": null,
-          "ownership_percent_after": null,
-          "shares_before_ipo": null,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": null
-        },
-        {
-          "name": "Faisal Malik, CFO",
-          "shares": 0,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": null,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 0,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 0
-        },
-        {
-          "name": "Scott Dunnagan, Director Nominee",
-          "shares": 0,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": null,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 0,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 0
-        },
-        {
-          "name": "Todd Jones, Director Nominee",
-          "shares": 0,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": null,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 0,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 0
-        },
-        {
-          "name": "Vijay Viswanathan, Director Nominee",
-          "shares": 0,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": null,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 0,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 0
-        }
-      ],
-      "signals": [
-        "Registration statement amended — IPO remains pre-pricing",
-        "6 named beneficial owners disclosed",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2078149/000109690626001366/0001096906-26-001366-index.htm",
-      "ownership_source": {
-        "source": "SEC EDGAR",
-        "form": "S-1/A",
-        "filing_date": "2026-09-14",
-        "accession_no": "0001096906-26-001366",
-        "sec_url": "https://www.sec.gov/Archives/edgar/data/2078149/000109690626001366/0001096906-26-001366-index.htm"
       }
     },
     {
