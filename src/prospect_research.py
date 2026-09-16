@@ -13,6 +13,7 @@ ENTITY_MARKERS = (
     "lp", "l.p.", "llc", "ltd", "limited", "inc", "corp", "corporation",
     "company", "scsp", "s.c.sp.", "holdings", "foundation", "bank", "management",
     "advisors", "nominees", "asa", "plc", "gmbh", "a/s", "s.a.", "b.v.", "n.v.",
+    "mhc", "mutual holding company",
 )
 INSTITUTION_MARKERS = (
     "authority", "university", "college", "institute", "association", "pension",
