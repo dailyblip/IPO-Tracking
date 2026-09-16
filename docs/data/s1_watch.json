@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-16T04:16:44.801295+00:00",
+  "generated_at": "2026-09-16T07:46:15.178979+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -589,7 +589,7 @@
           "shares": 2461948,
           "stanford_university_bio": false,
           "is_beneficial_owner": true,
-          "holder_type": "Individual",
+          "holder_type": "Entity",
           "ownership_percent": 4.0,
           "ownership_percent_before": 6.2,
           "ownership_percent_after": 4.0,
