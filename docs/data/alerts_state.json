@@ -1,7 +1,20 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-16T00:04:52.355777+00:00",
+  "updated_at": "2026-09-16T03:04:09.211359+00:00",
   "items": {
+    "s1:0002141616": {
+      "id": "s1:0002141616",
+      "cik": "0002141616",
+      "company": "Amaero Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-15",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526391284/0001193125-26-391284-index.htm"
+    },
     "s1:0002078149": {
       "id": "s1:0002078149",
       "cik": "0002078149",
@@ -236,19 +249,6 @@
       "value": 50000000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2151905/000215190526000001/0002151905-26-000001-index.htm"
     },
-    "s1:0002141616": {
-      "id": "s1:0002141616",
-      "cik": "0002141616",
-      "company": "Amaero Inc.",
-      "form": "S-1",
-      "filed": "2026-08-28",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526372368/0001193125-26-372368-index.htm"
-    },
     "s1:0002131613": {
       "id": "s1:0002131613",
       "cik": "0002131613",
@@ -428,7 +428,7 @@
       "price_range": "21-25",
       "filing_price": "21-25",
       "priority": "High",
-      "value": 1000000003,
+      "value": 1000000003.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2127043/000119312526326453/0001193125-26-326453-index.htm"
     },
     "0001193125-26-328422": {
@@ -1161,6 +1161,13 @@
     }
   },
   "ciks": {
+    "0002141616": {
+      "company": "Amaero Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002141616",
+      "last_filed": "2026-09-15",
+      "missing_runs": 0
+    },
     "0002078149": {
       "company": "Veri MedTech Holdings, Inc.",
       "stage": "pre-pricing",
@@ -1285,13 +1292,6 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002151905",
       "last_filed": "2026-08-31",
-      "missing_runs": 0
-    },
-    "0002141616": {
-      "company": "Amaero Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002141616",
-      "last_filed": "2026-08-28",
       "missing_runs": 0
     },
     "0002131613": {
