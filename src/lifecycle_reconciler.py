@@ -88,10 +88,10 @@ def extract_final_offering_terms(soup):
             }
 
     combined = re.search(
-        r"we\s+(?:are|will\s+be)\s+offering\s+([\d,]{4,})\s+shares.{0,2200}?"
+        r"we\s+(?:are|will\s+be)\s+(?:offering|selling)\s+([\d,]{4,})\s+shares.{0,2200}?"
         r"selling\s+(?:stockholders|shareholders).{0,1200}?"
-        r"(?:are\s+offering|are\s+selling|will\s+sell|offer)(?:\s+an\s+additional)?\s+"
-        r"([\d,]{4,})\s+shares",
+        r"(?:are\s+offering|are\s+selling|will\s+sell|offer)"
+        r"(?:\s+(?:an\s+additional|an\s+aggregate\s+of))?\s+([\d,]{4,})\s+shares",
         text,
         re.I | re.S,
     )
@@ -158,6 +158,38 @@ def _has_release_grade_final_size(filing):
         and str(filing.get("offering_size_confidence") or "").strip().casefold() == "high"
         and bool(str(filing.get("offering_size_source") or "").strip())
     )
+
+
+def _needs_final_share_split_recheck(filing):
+    """Return True when supported aggregate economics show a split may be incomplete.
+
+    This arithmetic is only a refetch trigger. It never supplies or publishes an
+    inferred share count: the final 424B4 must explicitly disclose the missing leg
+    before lifecycle reconciliation can populate it.
+    """
+    if not _has_release_grade_final_size(filing):
+        return False
+
+    price = _number(filing.get("offering_price"))
+    value = _number(filing.get("value"))
+    primary = _share_int(filing.get("primary_offering_shares"))
+    secondary = _share_int(filing.get("secondary_offering_shares"))
+    if (
+        price is None
+        or price <= 0
+        or value is None
+        or value <= 0
+        or primary is None
+        or primary <= 0
+        or secondary is not None
+    ):
+        return False
+
+    implied_total = value / price
+    nearest_share = round(implied_total)
+    if abs(implied_total - nearest_share) > 1e-6:
+        return False
+    return nearest_share > primary
 
 
 def _final_metadata_ticker_mismatch(filing, filing_meta):
@@ -627,6 +659,7 @@ def reconcile_payload(payload, final_filings, soup_loader, lineage_resolver=None
         if existing_final is not None:
             if (
                 _has_release_grade_final_size(existing_final)
+                and not _needs_final_share_split_recheck(existing_final)
                 and _can_preserve_release_grade_final(existing_final, final_meta)
             ):
                 states[cik] = {
