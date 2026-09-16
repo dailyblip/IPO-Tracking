@@ -86,7 +86,11 @@ def test_gate_removes_rights_offering_from_watch_and_public_queue(tmp_path, monk
     queue_path.write_text(json.dumps({"filings": [record]}), encoding="utf-8")
 
     monkeypatch.setattr(gate, "already_reporting_before_registration", lambda row: False)
-    monkeypatch.setattr(gate, "current_registration_is_rights_offering", lambda row: True)
+    monkeypatch.setattr(
+        gate,
+        "current_registration_exclusion_reason",
+        lambda row: gate.RIGHTS_OFFERING_EXCLUSION_REASON,
+    )
 
     def _unexpected_resale_check(row):
         raise AssertionError("rights-offering exclusion should short-circuit resale history")
