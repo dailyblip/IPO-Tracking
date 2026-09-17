@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-17T05:28:09.036134+00:00",
+  "updated_at": "2026-09-17T05:44:54.518489+00:00",
   "items": {
     "s1:0001966126": {
       "id": "s1:0001966126",
@@ -1158,19 +1158,6 @@
       "priority": "High",
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
-    },
-    "s1:0002147457": {
-      "id": "s1:0002147457",
-      "cik": "0002147457",
-      "company": "Lower Cross Acquisitions Corp",
-      "form": "S-1",
-      "filed": "2026-09-16",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2147457/000118518526004071/0001185185-26-004071-index.htm"
     }
   },
   "ciks": {
@@ -1796,13 +1783,6 @@
       "last_filing_id": "0001213900-25-120076",
       "last_filed": "2025-12-10",
       "missing_runs": 0
-    },
-    "0002147457": {
-      "company": "Lower Cross Acquisitions Corp",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002147457",
-      "last_filed": "2026-09-16",
-      "missing_runs": 1
     }
   }
 }
