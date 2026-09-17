@@ -8,8 +8,11 @@ interest. The same fail-closed rule applies when an SEC beneficial-ownership tab
 reports one household/group position under multiple people but does not establish
 that the full position is economically attributable to each person individually. It
 also rejects holder-level IPO sale economics that contradict the same holder's
-disclosed pre-IPO position. Incorrect personal economics are worse than a blank
-derived value.
+disclosed pre-IPO position. Public-offering price multiplied by shares sold is not
+published as holder-level cash realized because selling stockholders can bear
+underwriting discounts and commissions; without explicit holder-level proceeds
+provenance, that derived amount is not authoritative realized cash. Incorrect
+personal economics are worse than a blank derived value.
 
 The issuer-specific registry is intentionally narrow. Each entry must be tied to a
 specific issuer, IPO accession, holder identity, disclosed share count, and primary
@@ -215,7 +218,8 @@ def suppress_unsupported_person_economics(filing: dict) -> dict:
     economic attribution is unsupported. Separately, when the same holder has an
     authoritative pre-IPO share count, a claimed IPO sale cannot exceed that position;
     impossible sale/realized-cash fields fail closed while the underlying ownership
-    facts remain intact.
+    facts remain intact. A public offering price is the buyer-facing price and is not
+    treated as holder-level cash realized without explicit proceeds provenance.
 
     Issuer-specific accession entries apply only while the exact disclosed share
     count still matches. The lifecycle registry is likewise exact-count constrained,
@@ -243,6 +247,15 @@ def suppress_unsupported_person_economics(filing: dict) -> dict:
             continue
 
         normalized_person = dict(person)
+
+        # The pipeline currently derives this field from shares sold times the
+        # public offering price. That is a gross buyer-price amount, not supported
+        # holder-level realized cash: selling stockholders can pay underwriting
+        # discounts/commissions and the filing may not allocate net proceeds by
+        # holder. Preserve the explicit sale share count, but fail closed on cash.
+        if normalized_person.get("cash_realized_ipo") not in (None, ""):
+            normalized_person["cash_realized_ipo"] = None
+            changed = True
 
         shares_before_ipo = _number(person.get("shares_before_ipo"))
         shares_sold_ipo = _number(person.get("shares_sold_ipo"))
