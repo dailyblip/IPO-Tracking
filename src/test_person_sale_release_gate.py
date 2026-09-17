@@ -57,12 +57,14 @@ class PersonSaleReleaseGateTests(unittest.TestCase):
             self.assertIsNone(people[0]["shares_sold_ipo"])
             self.assertIsNone(people[0]["cash_realized_ipo"])
             self.assertEqual(people[1]["shares_sold_ipo"], 1_000_000)
-            self.assertEqual(people[1]["cash_realized_ipo"], 15_000_000.0)
+            self.assertIsNone(people[1]["cash_realized_ipo"])
 
             persisted = json.loads(output.read_text(encoding="utf-8"))
             persisted_people = persisted["filings"][0]["people"]
             self.assertIsNone(persisted_people[0]["shares_sold_ipo"])
             self.assertIsNone(persisted_people[0]["cash_realized_ipo"])
+            self.assertEqual(persisted_people[1]["shares_sold_ipo"], 1_000_000)
+            self.assertIsNone(persisted_people[1]["cash_realized_ipo"])
 
             with output.with_suffix(".csv").open(encoding="utf-8", newline="") as handle:
                 rows = list(csv.DictReader(handle))
@@ -70,7 +72,7 @@ class PersonSaleReleaseGateTests(unittest.TestCase):
             self.assertEqual(by_holder["Entities affiliated with Permira"]["shares_sold_ipo"], "")
             self.assertEqual(by_holder["Entities affiliated with Permira"]["cash_realized_ipo"], "")
             self.assertEqual(by_holder["Supported Selling Holder"]["shares_sold_ipo"], "1000000")
-            self.assertEqual(by_holder["Supported Selling Holder"]["cash_realized_ipo"], "15000000.0")
+            self.assertEqual(by_holder["Supported Selling Holder"]["cash_realized_ipo"], "")
 
     def test_aggregate_holder_sales_above_secondary_fail_closed(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -138,7 +140,7 @@ class PersonSaleReleaseGateTests(unittest.TestCase):
                 self.assertEqual(row["shares_sold_ipo"], "")
                 self.assertEqual(row["cash_realized_ipo"], "")
 
-    def test_aggregate_holder_sales_at_secondary_limit_are_preserved(self):
+    def test_aggregate_holder_sales_at_secondary_limit_preserve_shares_not_unsourced_cash(self):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "filings.json"
             payload = {
@@ -185,9 +187,9 @@ class PersonSaleReleaseGateTests(unittest.TestCase):
             self.assertEqual(removed, 0)
             people = filtered["filings"][0]["people"]
             self.assertEqual(people[0]["shares_sold_ipo"], 600_000)
-            self.assertEqual(people[0]["cash_realized_ipo"], 12_000_000.0)
+            self.assertIsNone(people[0]["cash_realized_ipo"])
             self.assertEqual(people[1]["shares_sold_ipo"], 400_000)
-            self.assertEqual(people[1]["cash_realized_ipo"], 8_000_000.0)
+            self.assertIsNone(people[1]["cash_realized_ipo"])
 
 
 if __name__ == "__main__":
