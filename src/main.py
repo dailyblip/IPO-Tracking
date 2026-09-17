@@ -115,6 +115,21 @@ def _role_from_bio(bio_text):
     return None
 
 
+def _holder_share_positions(holder):
+    """Return filing-supported ownership positions without deriving missing after shares.
+
+    A prospectus may show a holder's pre-offering shares and IPO sale while leaving
+    the post-offering column blank because a concurrent distribution, conversion, or
+    other transaction changes the position. Treat that blank as unresolved rather
+    than assuming ``before - sold`` is the holder's final ownership.
+    """
+    shares_before = holder.get("shares_before")
+    shares_sold = holder.get("shares_sold")
+    shares_after = holder.get("shares_after")
+    shares = shares_after if shares_after is not None else holder.get("shares")
+    return shares_before, shares_sold, shares_after, shares
+
+
 def _refresh_dashboard_prices(dashboard):
     """Refresh delayed quotes only for canonically priced IPOs in the public queue."""
     tickers = sorted({
@@ -308,14 +323,7 @@ def process_filing(filing_meta: dict) -> list:
 
         for holder in holders:
             holder_name = holder["name"]
-            shares_before = holder.get("shares_before")
-            shares_sold = holder.get("shares_sold")
-            shares_after = holder.get("shares_after")
-            if shares_after is None and shares_before is not None and shares_sold is not None:
-                derived_after = shares_before - shares_sold
-                if derived_after >= 0:
-                    shares_after = derived_after
-            shares = shares_after if shares_after is not None else holder.get("shares")
+            shares_before, shares_sold, shares_after, shares = _holder_share_positions(holder)
             percent_before = holder.get("percent_before")
             percent_after = holder.get("percent_after") if holder.get("percent_after") is not None else holder.get("percent")
 
