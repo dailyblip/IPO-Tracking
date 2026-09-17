@@ -1,13 +1,16 @@
-"""Recover missing pre-pricing IPO ranges from authoritative SEC registration history.
+"""Recover and preserve authoritative pre-pricing IPO price provenance.
 
 The S-1 monitor parses the newest filing in isolation. An amendment can omit a
 range that was publicly disclosed in an earlier S-1/S-1A from the same
 registration statement, so a blank Filing Price must not be accepted until that
 exact SEC registration lineage has been reviewed.
 
-This module recovers only non-degenerate price ranges. Fixed/point prices remain
-the responsibility of ``s1_preliminary_price_gate.py`` so this history pass cannot
-weaken its stricter cover-page validation.
+This pass also prevents a populated pre-pricing Filing Price from losing its SEC
+provenance. Non-degenerate ranges are revalidated against exact same-registration
+history when source metadata is absent. Point prices remain subject to the stricter
+cover-page validation in ``s1_preliminary_price_gate.py``; after that gate succeeds,
+this module attaches the exact current S-1/S-1A identity as provenance rather than
+reinterpreting the point price with a weaker parser.
 """
 
 from __future__ import annotations
@@ -71,16 +74,109 @@ def _format_range(low, high) -> str:
     return f"${float(low):,.2f}–${float(high):,.2f}"
 
 
-def _is_blank_prepricing_row(filing) -> bool:
+def _is_prepricing_row(filing) -> bool:
     if not isinstance(filing, dict):
         return False
     if str(filing.get("form") or "").strip().upper() not in FORMS:
         return False
-    if str(filing.get("stage") or "").strip().casefold() != "pre-pricing":
+    return str(filing.get("stage") or "").strip().casefold() == "pre-pricing"
+
+
+def _is_blank_prepricing_row(filing) -> bool:
+    if not _is_prepricing_row(filing):
         return False
     return not str(
         filing.get("filing_price") or filing.get("price_range") or ""
     ).strip()
+
+
+def _has_authoritative_prepricing_source(filing) -> bool:
+    """Validate persisted SEC provenance without assuming current-accession source.
+
+    A range can legitimately come from an earlier amendment in the same
+    registration, so the source accession does not need to equal the current row.
+    It must still be an S-1/S-1A for the same issuer, no later than the current
+    filing, with an SEC Archives URL that agrees with its accession.
+    """
+    if not _is_prepricing_row(filing):
+        return False
+    source = filing.get("filing_price_source")
+    if not isinstance(source, dict):
+        return False
+    if str(source.get("source") or "").strip().casefold() != "sec edgar":
+        return False
+    if str(source.get("form") or "").strip().upper() not in FORMS:
+        return False
+
+    source_day = _canonical_date(source.get("filing_date"))
+    row_day = _canonical_date(filing.get("filed"))
+    if source_day is None or row_day is None or source_day > row_day:
+        return False
+
+    source_accession = _canonical_accession(source.get("accession_no"))
+    cik = _canonical_cik(filing.get("cik"))
+    sec_url = str(source.get("sec_url") or "").strip()
+    if not source_accession or not cik or not sec_url:
+        return False
+    expected_cik_path = f"/Archives/edgar/data/{int(cik)}/"
+    if not sec_url.startswith("https://www.sec.gov/Archives/edgar/data/"):
+        return False
+    if expected_cik_path not in sec_url:
+        return False
+    if source_accession not in re.sub(r"\D", "", sec_url):
+        return False
+    return True
+
+
+def _attach_verified_current_point_source(filing):
+    """Attach exact-current SEC provenance after the strict point-price gate.
+
+    ``s1_preliminary_price_gate.py`` runs immediately before this module in both
+    feed-writer workflows. It independently verifies populated point prices against
+    the exact current S-1/S-1A cover and clears unsupported values. This function
+    therefore does not perform a second, weaker price extraction; it only preserves
+    the exact SEC identity for a point price that survived that stricter gate.
+    """
+    if not _is_prepricing_row(filing):
+        return filing, False
+    if str(filing.get("price_range") or "").strip():
+        return filing, False
+    if not str(filing.get("filing_price") or "").strip():
+        return filing, False
+    if _has_authoritative_prepricing_source(filing):
+        return filing, False
+
+    form = str(filing.get("form") or "").strip().upper()
+    filed_day = _canonical_date(filing.get("filed"))
+    accession = str(filing.get("accession_no") or filing.get("id") or "").strip()
+    accession_digits = _canonical_accession(accession)
+    cik = _canonical_cik(filing.get("cik"))
+    sec_url = str(filing.get("sec_url") or "").strip()
+    label = filing.get("company") or filing.get("id") or "unknown issuer"
+
+    if filed_day is None or not accession_digits or not cik or not sec_url:
+        raise S1PriceRangeHistoryError(
+            f"{label}: verified pre-pricing point price lacks exact current SEC provenance"
+        )
+    expected_cik_path = f"/Archives/edgar/data/{int(cik)}/"
+    if (
+        not sec_url.startswith("https://www.sec.gov/Archives/edgar/data/")
+        or expected_cik_path not in sec_url
+        or accession_digits not in re.sub(r"\D", "", sec_url)
+    ):
+        raise S1PriceRangeHistoryError(
+            f"{label}: verified pre-pricing point price SEC URL does not match current issuer/accession"
+        )
+
+    updated = dict(filing)
+    updated["filing_price_source"] = {
+        "source": "SEC EDGAR",
+        "form": form,
+        "filing_date": filed_day.isoformat(),
+        "accession_no": accession,
+        "sec_url": sec_url,
+    }
+    return updated, True
 
 
 def _current_history_row(filing, history):
@@ -93,11 +189,11 @@ def _current_history_row(filing, history):
 
     if not cik or not accession:
         raise S1PriceRangeHistoryError(
-            f"{filing.get('company') or filing.get('id')}: blank pre-pricing Filing Price lacks exact SEC identity"
+            f"{filing.get('company') or filing.get('id')}: pre-pricing Filing Price lacks exact SEC identity"
         )
     if filed_day is None:
         raise S1PriceRangeHistoryError(
-            f"{filing.get('company') or filing.get('id')}: blank pre-pricing Filing Price has a non-canonical filing date"
+            f"{filing.get('company') or filing.get('id')}: pre-pricing Filing Price has a non-canonical filing date"
         )
 
     matches = [
@@ -183,7 +279,15 @@ def _recover_one(
     history_loader=filing_price_history.sec_s1_history,
     registration_loader=filing_price_history.parse_s1_history_entry,
 ):
-    if not _is_blank_prepricing_row(filing):
+    if not _is_prepricing_row(filing):
+        return filing, False
+
+    existing_range = str(filing.get("price_range") or "").strip()
+    existing_price = str(filing.get("filing_price") or "").strip()
+    if existing_price and not existing_range:
+        # Fixed/point prices are intentionally left to the stricter cover gate.
+        return filing, False
+    if existing_range and _has_authoritative_prepricing_source(filing):
         return filing, False
 
     cik = _canonical_cik(filing.get("cik"))
@@ -220,7 +324,8 @@ def _recover_one(
     # chronology inference.
     current_range, current_url = _parse_history_range(cik, current, registration_loader)
     if current_range is not None:
-        return _apply_range(filing, current_range, current, current_url), True
+        repaired = _apply_range(filing, current_range, current, current_url)
+        return repaired, repaired != filing
 
     current_accession = _canonical_accession(current.get("accession_no"))
 
@@ -238,7 +343,7 @@ def _recover_one(
         candidate_range, _ = _parse_history_range(cik, metadata, registration_loader)
         if candidate_range is not None:
             raise S1PriceRangeHistoryError(
-                f"{filing.get('company') or filing.get('id')}: same-day SEC S-1/S-1A range "
+                f"{filing.get('company') or filing.get('id')}: same-day SEC S-1/S-1/A range "
                 "cannot be ordered relative to the current amendment"
             )
 
@@ -275,10 +380,14 @@ def _recover_one(
             key=lambda item: _canonical_accession(item[1].get("accession_no"))
         )
         candidate_range, metadata, index_url = parsed_ranges[0]
-        return _apply_range(
-            filing, candidate_range, metadata, index_url
-        ), True
+        repaired = _apply_range(filing, candidate_range, metadata, index_url)
+        return repaired, repaired != filing
 
+    if existing_range:
+        raise S1PriceRangeHistoryError(
+            f"{filing.get('company') or filing.get('id')}: populated pre-pricing range "
+            "could not be verified in same-registration SEC S-1/S-1A history"
+        )
     return filing, False
 
 
@@ -294,17 +403,18 @@ def recover_payload_prepricing_ranges(
 
     updated = dict(payload)
     updated_filings = []
-    recovered = 0
+    repaired_count = 0
     for filing in filings:
-        repaired, changed = _recover_one(
-            filing,
+        point_repaired, point_changed = _attach_verified_current_point_source(filing)
+        repaired, range_changed = _recover_one(
+            point_repaired,
             history_loader=history_loader,
             registration_loader=registration_loader,
         )
         updated_filings.append(repaired)
-        recovered += int(changed)
+        repaired_count += int(point_changed or range_changed)
     updated["filings"] = updated_filings
-    return updated, recovered
+    return updated, repaired_count
 
 
 def synchronize_queue_ranges(queue_payload, watch_payload):
@@ -328,7 +438,7 @@ def synchronize_queue_ranges(queue_payload, watch_payload):
             continue
         key = (
             _canonical_cik(filing.get("cik")),
-            _canonical_accession(filing.get("accession_no")),
+            _canonical_accession(filing.get("accession_no") or filing.get("id")),
         )
         watch = watch_by_identity.get(key)
         if not watch or not str(watch.get("filing_price") or "").strip():
@@ -377,9 +487,12 @@ def repair_files(watch_path, queue_path):
     watch_payload = _load_payload(watch_path)
     queue_payload = _load_payload(queue_path)
 
-    repaired_watch, recovered = recover_payload_prepricing_ranges(watch_payload)
-    repaired_queue, queue_changed = synchronize_queue_ranges(
+    repaired_watch, watch_repaired = recover_payload_prepricing_ranges(watch_payload)
+    synchronized_queue, queue_synced = synchronize_queue_ranges(
         queue_payload, repaired_watch
+    )
+    repaired_queue, queue_repaired = recover_payload_prepricing_ranges(
+        synchronized_queue
     )
 
     if repaired_watch != watch_payload:
@@ -390,7 +503,7 @@ def repair_files(watch_path, queue_path):
             repaired_queue.get("filings", []), queue_path
         )
 
-    return recovered, queue_changed
+    return watch_repaired + queue_repaired, queue_synced + queue_repaired
 
 
 def main(argv=None):
@@ -399,10 +512,10 @@ def main(argv=None):
         raise SystemExit(
             "Usage: python s1_price_range_history.py <s1_watch.json> <filings.json>"
         )
-    recovered, queue_changed = repair_files(argv[0], argv[1])
+    repaired, queue_changed = repair_files(argv[0], argv[1])
     print(
-        f"Recovered {recovered} authoritative pre-pricing range(s); "
-        f"synchronized {queue_changed} researcher-queue row(s)"
+        f"Repaired {repaired} authoritative pre-pricing Filing Price provenance record(s); "
+        f"synchronized/repaired {queue_changed} researcher-queue row(s)"
     )
 
 

@@ -39,6 +39,14 @@ def _filing():
     }
 
 
+def _sec_index(accession="0001234567-26-000003"):
+    digits = accession.replace("-", "")
+    return (
+        "https://www.sec.gov/Archives/edgar/data/1234567/"
+        f"{digits}/{accession}-index.htm"
+    )
+
+
 class S1PriceRangeHistoryTests(unittest.TestCase):
     def test_nuvox_style_anticipated_between_range_is_supported_by_sec_parser(self):
         parsed = filing_price_history._extract_explicit_price_range_from_text(
@@ -56,7 +64,7 @@ class S1PriceRangeHistoryTests(unittest.TestCase):
             self.assertEqual(metadata["accession_no"], filing["accession_no"])
             return (
                 {"price_range": {"range_low": 6, "range_high": 8}},
-                "https://www.sec.gov/current-index.htm",
+                _sec_index(),
             )
 
         payload, count = history.recover_payload_prepricing_ranges(
@@ -94,11 +102,11 @@ class S1PriceRangeHistoryTests(unittest.TestCase):
             if metadata["accession_no"] == current["accession_no"]:
                 return (
                     {"price_range": {"range_low": None, "range_high": None}},
-                    "https://www.sec.gov/current.htm",
+                    _sec_index(current["accession_no"]),
                 )
             return (
                 {"price_range": {"range_low": 18, "range_high": 20}},
-                "https://www.sec.gov/prior.htm",
+                _sec_index(prior["accession_no"]),
             )
 
         payload, count = history.recover_payload_prepricing_ranges(
@@ -159,11 +167,11 @@ class S1PriceRangeHistoryTests(unittest.TestCase):
             if metadata["accession_no"] == current["accession_no"]:
                 return (
                     {"price_range": {"range_low": None, "range_high": None}},
-                    "https://www.sec.gov/current.htm",
+                    _sec_index(current["accession_no"]),
                 )
             return (
                 {"price_range": {"range_low": 40, "range_high": 50}},
-                "https://www.sec.gov/other.htm",
+                _sec_index(other_registration["accession_no"]),
             )
 
         payload, count = history.recover_payload_prepricing_ranges(
@@ -185,15 +193,15 @@ class S1PriceRangeHistoryTests(unittest.TestCase):
             if metadata["accession_no"] == current["accession_no"]:
                 return (
                     {"price_range": {"range_low": None, "range_high": None}},
-                    "https://www.sec.gov/current.htm",
+                    _sec_index(current["accession_no"]),
                 )
             return (
                 {"price_range": {"range_low": 9, "range_high": 11}},
-                "https://www.sec.gov/same-day.htm",
+                _sec_index(same_day["accession_no"]),
             )
 
         with self.assertRaisesRegex(
-            history.S1PriceRangeHistoryError, "same-day SEC S-1/S-1A range"
+            history.S1PriceRangeHistoryError, "same-day SEC S-1/S-1/A range"
         ):
             history.recover_payload_prepricing_ranges(
                 {"filings": [filing]},
@@ -221,7 +229,7 @@ class S1PriceRangeHistoryTests(unittest.TestCase):
                 result = {"range_low": 10, "range_high": 12}
             else:
                 result = {"range_low": 11, "range_high": 13}
-            return {"price_range": result}, f"https://www.sec.gov/{accession}.htm"
+            return {"price_range": result}, _sec_index(accession)
 
         with self.assertRaisesRegex(
             history.S1PriceRangeHistoryError, "conflicting preliminary ranges"
@@ -232,10 +240,40 @@ class S1PriceRangeHistoryTests(unittest.TestCase):
                 registration_loader=registration_loader,
             )
 
-    def test_existing_preliminary_price_is_not_reinterpreted(self):
+    def test_existing_range_without_source_is_revalidated_and_gets_provenance(self):
         filing = _filing()
         filing["price_range"] = "$18.00–$20.00"
         filing["filing_price"] = "$18.00–$20.00"
+        current = _row()
+
+        payload, count = history.recover_payload_prepricing_ranges(
+            {"filings": [filing]},
+            history_loader=lambda cik, filed: [current],
+            registration_loader=lambda cik, metadata: (
+                {"price_range": {"range_low": 18, "range_high": 20}},
+                _sec_index(metadata["accession_no"]),
+            ),
+        )
+
+        repaired = payload["filings"][0]
+        self.assertEqual(count, 1)
+        self.assertEqual(repaired["filing_price"], "$18.00–$20.00")
+        self.assertEqual(
+            repaired["filing_price_source"]["accession_no"],
+            current["accession_no"],
+        )
+
+    def test_existing_range_with_valid_sec_source_is_not_reparsed(self):
+        filing = _filing()
+        filing["price_range"] = "$18.00–$20.00"
+        filing["filing_price"] = "$18.00–$20.00"
+        filing["filing_price_source"] = {
+            "source": "SEC EDGAR",
+            "form": "S-1/A",
+            "filing_date": "2026-08-20",
+            "accession_no": "0001234567-26-000002",
+            "sec_url": _sec_index("0001234567-26-000002"),
+        }
 
         def should_not_run(*args, **kwargs):
             raise AssertionError("history loader should not run")
@@ -250,6 +288,51 @@ class S1PriceRangeHistoryTests(unittest.TestCase):
             payload["filings"][0]["filing_price"], "$18.00–$20.00"
         )
 
+    def test_existing_range_without_sec_support_fails_closed(self):
+        filing = _filing()
+        filing["price_range"] = "$18.00–$20.00"
+        filing["filing_price"] = "$18.00–$20.00"
+        current = _row()
+
+        with self.assertRaisesRegex(
+            history.S1PriceRangeHistoryError,
+            "populated pre-pricing range could not be verified",
+        ):
+            history.recover_payload_prepricing_ranges(
+                {"filings": [filing]},
+                history_loader=lambda cik, filed: [current],
+                registration_loader=lambda cik, metadata: (
+                    {"price_range": {"range_low": None, "range_high": None}},
+                    _sec_index(metadata["accession_no"]),
+                ),
+            )
+
+    def test_verified_point_price_gets_exact_current_sec_provenance(self):
+        filing = _filing()
+        filing["filing_price"] = "$7.00"
+        filing["sec_url"] = _sec_index(filing["accession_no"])
+
+        def should_not_run(*args, **kwargs):
+            raise AssertionError("range history should not reinterpret point price")
+
+        payload, count = history.recover_payload_prepricing_ranges(
+            {"filings": [filing]},
+            history_loader=should_not_run,
+            registration_loader=should_not_run,
+        )
+
+        repaired = payload["filings"][0]
+        self.assertEqual(count, 1)
+        self.assertEqual(repaired["filing_price"], "$7.00")
+        self.assertEqual(repaired["filing_price_source"]["source"], "SEC EDGAR")
+        self.assertEqual(
+            repaired["filing_price_source"]["accession_no"],
+            filing["accession_no"],
+        )
+        self.assertEqual(
+            repaired["filing_price_source"]["sec_url"], filing["sec_url"]
+        )
+
     def test_degenerate_point_price_is_left_for_fixed_price_gate(self):
         filing = _filing()
         current = _row()
@@ -259,7 +342,7 @@ class S1PriceRangeHistoryTests(unittest.TestCase):
             history_loader=lambda cik, filed: [current],
             registration_loader=lambda cik, metadata: (
                 {"price_range": {"range_low": 7, "range_high": 7}},
-                "https://www.sec.gov/current.htm",
+                _sec_index(metadata["accession_no"]),
             ),
         )
 
