@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-17T06:33:39.910065+00:00",
+  "generated_at": "2026-09-17T06:54:37.293034+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -618,7 +618,7 @@
       "priority": "High",
       "status": "New",
       "value": 18750000,
-      "value_label": "$18,750,000",
+      "value_label": "$19M",
       "people_count": 1,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -669,7 +669,7 @@
       "priority": "High",
       "status": "New",
       "value": 325000005,
-      "value_label": "$325,000,005",
+      "value_label": "$325M",
       "people_count": 14,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -889,7 +889,7 @@
       "priority": "High",
       "status": "New",
       "value": 665000000,
-      "value_label": "$665,000,000",
+      "value_label": "$665M",
       "people_count": 7,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -1211,7 +1211,7 @@
       "priority": "High",
       "status": "New",
       "value": 600000000,
-      "value_label": "$600,000,000",
+      "value_label": "$600M",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
@@ -1240,7 +1240,7 @@
       "priority": "High",
       "status": "New",
       "value": 320000000,
-      "value_label": "$320,000,000",
+      "value_label": "$320M",
       "people_count": 4,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -1330,7 +1330,7 @@
       "priority": "High",
       "status": "New",
       "value": 825000000,
-      "value_label": "$825,000,000",
+      "value_label": "$825M",
       "people_count": 2,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -1644,7 +1644,7 @@
       "priority": "High",
       "status": "New",
       "value": 50000000,
-      "value_label": "$50,000,000",
+      "value_label": "$50M",
       "people_count": 1,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
@@ -3895,7 +3895,7 @@
       "priority": "High",
       "status": "New",
       "value": 33000000,
-      "value_label": "$33,000,000",
+      "value_label": "$33M",
       "people_count": 9,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
