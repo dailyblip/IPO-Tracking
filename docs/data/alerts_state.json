@@ -1,7 +1,33 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-17T01:44:51.163056+00:00",
+  "updated_at": "2026-09-17T03:23:58.959235+00:00",
   "items": {
+    "s1:0001966126": {
+      "id": "s1:0001966126",
+      "cik": "0001966126",
+      "company": "NuvOx Therapeutics, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-16",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1966126/000121390026100586/0001213900-26-100586-index.htm"
+    },
+    "s1:0002147457": {
+      "id": "s1:0002147457",
+      "cik": "0002147457",
+      "company": "Lower Cross Acquisitions Corp",
+      "form": "S-1",
+      "filed": "2026-09-16",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2147457/000118518526004071/0001185185-26-004071-index.htm"
+    },
     "s1:0002141616": {
       "id": "s1:0002141616",
       "cik": "0002141616",
@@ -1148,6 +1174,20 @@
     }
   },
   "ciks": {
+    "0001966126": {
+      "company": "NuvOx Therapeutics, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001966126",
+      "last_filed": "2026-09-16",
+      "missing_runs": 0
+    },
+    "0002147457": {
+      "company": "Lower Cross Acquisitions Corp",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002147457",
+      "last_filed": "2026-09-16",
+      "missing_runs": 0
+    },
     "0002141616": {
       "company": "Amaero Inc.",
       "stage": "pre-pricing",
