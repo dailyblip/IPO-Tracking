@@ -33,7 +33,7 @@ REQUEST_DELAY_SECONDS = 0.15  # keeps us under SEC's ~10 req/sec limit
 # RMG ML Sports Holdings, and GigCapital), while deliberately avoiding a blanket
 # "Holdings" exclusion.
 SPAC_NAME_PATTERN = re.compile(
-    r"\b(?:acquisition|blank check)\b|"
+    r"\b(?:acquisitions?|blank check)\b|"
     r"\bcapital\s+(?:corp|partners?)\b|"
     r"\bgores\s+holdings\b|"
     r"\brmg\s+ml\s+sports\s+holdings\b|"
