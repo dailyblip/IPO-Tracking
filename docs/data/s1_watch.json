@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-17T19:43:05.655143+00:00",
+  "generated_at": "2026-09-17T22:30:51.651613+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -338,6 +338,13 @@
         "filing_date": "2026-09-15",
         "accession_no": "0001185185-26-004027",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526004027/0001185185-26-004027-index.htm"
+      },
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-15",
+        "accession_no": "0001185185-26-004027",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526004027/0001185185-26-004027-index.htm"
       }
     },
     {
@@ -651,9 +658,9 @@
       ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
-        "Preliminary offering range disclosed at $4.00–$6.00",
         "IPO size disclosed or derived at approximately $18,750,000",
-        "1 named beneficial owner disclosed"
+        "1 named beneficial owner disclosed",
+        "Preliminary offering range disclosed at $4.00–$6.00"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026099701/0001213900-26-099701-index.htm",
       "ownership_source": {
@@ -661,6 +668,14 @@
         "form": "S-1/A",
         "filing_date": "2026-09-14",
         "accession_no": "0001213900-26-099701",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026099701/0001213900-26-099701-index.htm"
+      },
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-14",
+        "accession_no": "0001213900-26-099701",
+        "file_number": "333-292507",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026099701/0001213900-26-099701-index.htm"
       }
     },
@@ -868,9 +883,9 @@
       ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
-        "Preliminary offering range disclosed at $14.00–$16.00",
         "IPO size disclosed or derived at approximately $325,000,005",
-        "14 named beneficial owners disclosed"
+        "14 named beneficial owners disclosed",
+        "Preliminary offering range disclosed at $14.00–$16.00"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526389755/0001193125-26-389755-index.htm",
       "ownership_source": {
@@ -878,6 +893,14 @@
         "form": "S-1/A",
         "filing_date": "2026-09-14",
         "accession_no": "0001193125-26-389755",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526389755/0001193125-26-389755-index.htm"
+      },
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-14",
+        "accession_no": "0001193125-26-389755",
+        "file_number": "333-298617",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526389755/0001193125-26-389755-index.htm"
       }
     },
@@ -994,9 +1017,9 @@
       ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
-        "Preliminary offering range disclosed at $18.00–$20.00",
         "IPO size disclosed or derived at approximately $665,000,000",
-        "7 named beneficial owners disclosed"
+        "7 named beneficial owners disclosed",
+        "Preliminary offering range disclosed at $18.00–$20.00"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2125355/000162828026061664/0001628280-26-061664-index.htm",
       "ownership_source": {
@@ -1004,6 +1027,14 @@
         "form": "S-1/A",
         "filing_date": "2026-09-14",
         "accession_no": "0001628280-26-061664",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2125355/000162828026061664/0001628280-26-061664-index.htm"
+      },
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-14",
+        "accession_no": "0001628280-26-061664",
+        "file_number": "333-298639",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2125355/000162828026061664/0001628280-26-061664-index.htm"
       }
     },
@@ -1222,7 +1253,14 @@
         "IPO size disclosed or derived at approximately $600,000,000"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm",
-      "ownership_source": null
+      "ownership_source": null,
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1",
+        "filing_date": "2026-09-10",
+        "accession_no": "0001193125-26-388025",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm"
+      }
     },
     {
       "id": "0001628280-26-061012",
@@ -1298,9 +1336,9 @@
       ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
-        "Preliminary offering range disclosed at $15.00–$17.00",
         "IPO size disclosed or derived at approximately $320,000,000",
-        "4 named beneficial owners disclosed"
+        "4 named beneficial owners disclosed",
+        "Preliminary offering range disclosed at $15.00–$17.00"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026061012/0001628280-26-061012-index.htm",
       "ownership_source": {
@@ -1308,6 +1346,14 @@
         "form": "S-1/A",
         "filing_date": "2026-09-09",
         "accession_no": "0001628280-26-061012",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026061012/0001628280-26-061012-index.htm"
+      },
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-09",
+        "accession_no": "0001628280-26-061012",
+        "file_number": "333-298453",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026061012/0001628280-26-061012-index.htm"
       }
     },
@@ -1359,9 +1405,9 @@
       ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
-        "Preliminary offering range disclosed at $15.00–$18.00",
         "IPO size disclosed or derived at approximately $825,000,000",
-        "2 named beneficial owners disclosed"
+        "2 named beneficial owners disclosed",
+        "Preliminary offering range disclosed at $15.00–$18.00"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526384287/0001193125-26-384287-index.htm",
       "ownership_source": {
@@ -1369,6 +1415,14 @@
         "form": "S-1/A",
         "filing_date": "2026-09-08",
         "accession_no": "0001193125-26-384287",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526384287/0001193125-26-384287-index.htm"
+      },
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-08",
+        "accession_no": "0001193125-26-384287",
+        "file_number": "333-297395",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526384287/0001193125-26-384287-index.htm"
       }
     },
@@ -1837,6 +1891,13 @@
         "filing_date": "2026-08-31",
         "accession_no": "0002151905-26-000001",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2151905/000215190526000001/0002151905-26-000001-index.htm"
+      },
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1",
+        "filing_date": "2026-08-31",
+        "accession_no": "0002151905-26-000001",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2151905/000215190526000001/0002151905-26-000001-index.htm"
       }
     },
     {
@@ -2150,9 +2211,9 @@
       ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
-        "Preliminary offering range disclosed at $10.00–$12.00",
         "IPO size disclosed or derived at approximately $33,000,000",
-        "9 named beneficial owners disclosed"
+        "9 named beneficial owners disclosed",
+        "Preliminary offering range disclosed at $10.00–$12.00"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026090319/0001213900-26-090319-index.htm",
       "ownership_source": {
@@ -2160,6 +2221,14 @@
         "form": "S-1/A",
         "filing_date": "2026-08-17",
         "accession_no": "0001213900-26-090319",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026090319/0001213900-26-090319-index.htm"
+      },
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-08-17",
+        "accession_no": "0001213900-26-090319",
+        "file_number": "333-263328",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026090319/0001213900-26-090319-index.htm"
       }
     },
@@ -2963,9 +3032,9 @@
       ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
-        "Preliminary offering range disclosed at $11.00–$13.00",
         "IPO size disclosed or derived at approximately $75,000,000",
-        "9 named beneficial owners disclosed"
+        "9 named beneficial owners disclosed",
+        "Preliminary offering range disclosed at $11.00–$13.00"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1903784/000118518526003353/0001185185-26-003353-index.htm",
       "ownership_source": {
@@ -2973,6 +3042,14 @@
         "form": "S-1/A",
         "filing_date": "2026-08-10",
         "accession_no": "0001185185-26-003353",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/1903784/000118518526003353/0001185185-26-003353-index.htm"
+      },
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-08-10",
+        "accession_no": "0001185185-26-003353",
+        "file_number": "333-297487",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1903784/000118518526003353/0001185185-26-003353-index.htm"
       }
     },
@@ -3979,9 +4056,9 @@
       ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
-        "Preliminary offering range disclosed at $16.00–$18.00",
         "IPO size disclosed or derived at approximately $272,000,000",
-        "12 named beneficial owners disclosed"
+        "12 named beneficial owners disclosed",
+        "Preliminary offering range disclosed at $16.00–$18.00"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2056611/000119312526331205/0001193125-26-331205-index.htm",
       "ownership_source": {
@@ -3989,6 +4066,14 @@
         "form": "S-1/A",
         "filing_date": "2026-08-04",
         "accession_no": "0001193125-26-331205",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2056611/000119312526331205/0001193125-26-331205-index.htm"
+      },
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-08-04",
+        "accession_no": "0001193125-26-331205",
+        "file_number": "333-297518",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2056611/000119312526331205/0001193125-26-331205-index.htm"
       }
     },
@@ -4520,9 +4605,9 @@
       ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
-        "Preliminary offering range disclosed at $16.00–$18.00",
         "IPO size disclosed or derived at approximately $272,000,000",
-        "12 named beneficial owners disclosed"
+        "12 named beneficial owners disclosed",
+        "Preliminary offering range disclosed at $16.00–$18.00"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2056611/000119312526329431/0001193125-26-329431-index.htm",
       "ownership_source": {
@@ -4530,6 +4615,14 @@
         "form": "S-1/A",
         "filing_date": "2026-08-03",
         "accession_no": "0001193125-26-329431",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2056611/000119312526329431/0001193125-26-329431-index.htm"
+      },
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-08-03",
+        "accession_no": "0001193125-26-329431",
+        "file_number": "333-297518",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2056611/000119312526329431/0001193125-26-329431-index.htm"
       }
     },
@@ -4737,9 +4830,9 @@
       ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
-        "Preliminary offering range disclosed at $15.00–$17.00",
         "IPO size disclosed or derived at approximately $125,000,000",
-        "14 named beneficial owners disclosed"
+        "14 named beneficial owners disclosed",
+        "Preliminary offering range disclosed at $15.00–$17.00"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1839970/000119312526329416/0001193125-26-329416-index.htm",
       "ownership_source": {
@@ -4747,6 +4840,14 @@
         "form": "S-1/A",
         "filing_date": "2026-08-03",
         "accession_no": "0001193125-26-329416",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/1839970/000119312526329416/0001193125-26-329416-index.htm"
+      },
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-08-03",
+        "accession_no": "0001193125-26-329416",
+        "file_number": "333-297512",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1839970/000119312526329416/0001193125-26-329416-index.htm"
       }
     },
