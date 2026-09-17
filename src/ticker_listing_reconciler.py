@@ -37,6 +37,10 @@ _CURRENT_LISTING_PATTERNS = [
     r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"'“‘]?([A-Z](?:[A-Z0-9.-]{0,8}[A-Z0-9])?)[\"'”’]?",
     r"\bwe\s+(?:intend|expect|plan)\s+to\s+(?:apply\s+to\s+)?(?:list|trade)\b.{0,600}?"
     r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"'“‘]?([A-Z](?:[A-Z0-9.-]{0,8}[A-Z0-9])?)[\"'”’]?",
+    r"\b(?:we\s+(?:expect|anticipate)|it\s+is\s+(?:expected|anticipated))\s+(?:that\s+)?"
+    r"(?:our\s+|the\s+)?(?:class\s+[A-Z0-9]+\s+)?(?:common\s+stock|shares?)\s+"
+    r"(?:will\s+be|to\s+be)\s+(?:quoted|traded|listed)\b.{0,600}?"
+    r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"'“‘]?([A-Z](?:[A-Z0-9.-]{0,8}[A-Z0-9])?)[\"'”’]?",
     r"\b(?:our\s+common\s+stock|the\s+common\s+stock|our\s+shares|the\s+shares)\s+"
     r"(?:has|have)\s+been\s+(?:approved|authorized)\s+for\s+listing\b.{0,600}?"
     r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"'“‘]?([A-Z](?:[A-Z0-9.-]{0,8}[A-Z0-9])?)[\"'”’]?",
