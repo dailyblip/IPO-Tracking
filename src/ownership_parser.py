@@ -80,6 +80,15 @@ _SHARE_TO_PERCENT = {
 _SHARE_CLASS_RE = re.compile(
     r"\bclass\s+([a-z0-9]+)\s+(?:common\s+)?(?:stock|shares?)\b", re.I
 )
+# The public Research Monitor ownership schema describes common-stock economics.
+# SEC prospectuses can include separate beneficial-ownership tables for preferred
+# securities that convert at the IPO. Those rows are valid filing disclosures but
+# are not common-stock sale/disposition rows and must not be flattened into the
+# generic before/after fields.
+_NON_COMMON_SECURITY_RE = re.compile(
+    r"\b(?:series\s+[a-z0-9.-]+\s+)?(?:convertible\s+)?preferred\s+(?:stock|shares?)\b",
+    re.I,
+)
 
 
 def _clean(text):
@@ -282,6 +291,11 @@ def _share_class(header):
     return match.group(1).lower() if match else None
 
 
+def _explicit_non_common_security(header):
+    """Return True when a column is explicitly tied to a non-common security."""
+    return bool(_NON_COMMON_SECURITY_RE.search(str(header or "")))
+
+
 def _safe_paired_multiclass_kinds(headers):
     """Return temporal share fields that can be safely aggregated across classes.
 
@@ -408,6 +422,7 @@ def parse_ownership_table(table):
     matrix = _matrix(table)
     headers, start = _composite_headers(matrix)
     base_kinds = [_kind(header) for header in headers]
+    non_common_security_headers = [_explicit_non_common_security(header) for header in headers]
     share_classes = {share_class for header in headers if (share_class := _share_class(header))}
     multi_class = len(share_classes) > 1
     safe_multiclass_kinds = _safe_paired_multiclass_kinds(headers) if multi_class else set()
@@ -419,13 +434,16 @@ def parse_ownership_table(table):
     # flatten an explicitly class-specific count or percentage directly into a
     # generic ownership field. Explicitly complete multi-class temporal share
     # groups are aggregated below; isolated one-class continuation tables stay
-    # blank unless another table supplies class-agnostic support. An unqualified
-    # predecessor count is also suppressed when the opposite temporal group is
-    # explicitly multi-class, because those security bases are not safely
+    # blank unless another table supplies class-agnostic support. Explicitly
+    # non-common securities such as preferred stock are also suppressed because
+    # their conversion at the IPO is not a common-stock sale or disposition. An
+    # unqualified predecessor count is also suppressed when the opposite temporal
+    # group is explicitly multi-class, because those security bases are not safely
     # comparable in the generic public schema.
     kinds = [
         None if (
             _share_class(header)
+            or non_common_security_headers[i]
             or (
                 multi_class
                 and base_kinds[i] in unsafe_unqualified_temporal_kinds
@@ -475,12 +493,13 @@ def parse_ownership_table(table):
 
         # A lone numeric cell is only a safe share-count fallback when the row did
         # not already yield a percentage and the table has no explicit share-class
-        # dimension. SEC ownership tables commonly split a percentage value and
-        # its "%" marker across cells/continuation tables; reusing that disclosed
-        # percentage or an isolated class-specific count as shares fabricates a
-        # class-agnostic holding value.
+        # or non-common-security dimension. SEC ownership tables commonly split a
+        # percentage value and its "%" marker across cells/continuation tables;
+        # reusing that disclosed percentage or an isolated security-specific count
+        # as shares fabricates a class-agnostic holding value.
         if (
             not share_classes
+            and not any(non_common_security_headers)
             and all(data[k] is None for k in ("shares_before", "shares_sold", "shares_after", "shares"))
             and all(data[k] is None for k in ("percent_before", "percent_after", "percent"))
         ):
