@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-17T06:17:14.322326+00:00",
+  "updated_at": "2026-09-17T07:07:21.004058+00:00",
   "items": {
     "s1:0001966126": {
       "id": "s1:0001966126",
@@ -9,9 +9,9 @@
       "form": "S-1/A",
       "filed": "2026-09-16",
       "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
+      "price_range": "$6.00–$8.00",
+      "filing_price": "$6.00–$8.00",
+      "priority": "High",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1966126/000121390026100586/0001213900-26-100586-index.htm"
     },
@@ -282,9 +282,9 @@
       "form": "S-1/A",
       "filed": "2026-08-17",
       "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
+      "price_range": "$5.00–$6.00",
+      "filing_price": "$5.00–$6.00",
+      "priority": "High",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2109801/000149315226038800/0001493152-26-038800-index.htm"
     },
@@ -386,9 +386,9 @@
       "form": "S-1/A",
       "filed": "2026-08-06",
       "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
+      "price_range": "$4.00–$5.00",
+      "filing_price": "$4.00–$5.00",
+      "priority": "High",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1900851/000149315226036294/0001493152-26-036294-index.htm"
     },
