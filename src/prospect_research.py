@@ -34,6 +34,7 @@ AGGREGATE_ENTITY_MARKERS = (
 )
 EXPLICIT_ENTITY_NOUNS = ("entities", "aggregator")
 GENERIC_HOLDER_LABELS = {
+    "other",
     "other selling stockholders",
     "other selling shareholders",
     "selling stockholders",
