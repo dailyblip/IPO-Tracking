@@ -140,6 +140,12 @@ jobs:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python s1_preliminary_price_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
 
+      - name: Preserve pre-pricing Filing Price provenance
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_price_range_history.py ../docs/data/s1_watch.json ../docs/data/filings.json
+
       - name: Clear market quotes not refreshed in this run
         working-directory: src
         run: python market_price_freshness_gate.py ../docs/data/filings.json
