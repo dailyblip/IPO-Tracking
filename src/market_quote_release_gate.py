@@ -10,6 +10,10 @@ Quote freshness is revalidated here against the final repaired lifecycle state b
 provider/SEC identity review. This prevents a quote that was valid before lifecycle or
 pricing reconciliation from surviving after authoritative filing/pricing dates advance.
 
+Before quote review, blank priced-IPO tickers receive one bounded recovery pass against
+the exact final 424B4. This is SEC identity repair only: a symbol is restored only when
+the final prospectus explicitly confirms it, and no Current Price is restored with it.
+
 Every quote that survives the market profile check must also receive a second-factor
 CIK/ticker check against the authoritative SEC issuer profile. Provider identity is
 necessary but not sufficient: if SEC identity verification is unavailable or
@@ -26,6 +30,7 @@ import signal
 from pathlib import Path
 
 import dashboard_export
+import final_ticker_reconciler as final_ticker
 import market_price_freshness_gate as freshness
 import market_quote_identity as identity
 
@@ -193,7 +198,7 @@ def enforce_release_gate(
     api_key: str | None = None,
     time_budget_seconds: float | None = IDENTITY_AUDIT_TIME_BUDGET_SECONDS,
 ) -> tuple[int, int]:
-    """Revalidate freshness, then identity; blank quotes on provider outage/budget."""
+    """Recover final SEC ticker identity, then revalidate quote freshness/identity."""
     path = Path(path)
     api_key = api_key or os.environ.get("MARKET_DATA_API_KEY")
     if not api_key:
@@ -201,6 +206,11 @@ def enforce_release_gate(
             "MARKET_DATA_API_KEY is required to verify populated Current Price values"
         )
 
+    # Lifecycle remains fail-closed when its one final-document fetch is unavailable.
+    # Give blank priced tickers a bounded second chance against the exact same 424B4.
+    # Recovery never restores Current Price, which remains subject to the independent
+    # freshness, provider-identity, and SEC CIK/ticker gates below.
+    final_ticker.recover_feed(path)
     _revalidate_quote_freshness(path)
 
     try:
