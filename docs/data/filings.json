@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-17T01:31:48.413143+00:00",
+  "generated_at": "2026-09-17T02:33:01.320623+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -301,7 +301,7 @@
       "priority": "High",
       "status": "New",
       "value": 18750000,
-      "value_label": "$18,750,000",
+      "value_label": "$19M",
       "people_count": 1,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -351,7 +351,7 @@
       "priority": "High",
       "status": "New",
       "value": 325000005,
-      "value_label": "$325,000,005",
+      "value_label": "$325M",
       "people_count": 14,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -570,7 +570,7 @@
       "priority": "High",
       "status": "New",
       "value": 665000000,
-      "value_label": "$665,000,000",
+      "value_label": "$665M",
       "people_count": 7,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -891,7 +891,7 @@
       "priority": "High",
       "status": "New",
       "value": 600000000,
-      "value_label": "$600,000,000",
+      "value_label": "$600M",
       "people_count": 0,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
@@ -919,7 +919,7 @@
       "priority": "High",
       "status": "New",
       "value": 320000000,
-      "value_label": "$320,000,000",
+      "value_label": "$320M",
       "people_count": 4,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -1008,7 +1008,7 @@
       "priority": "High",
       "status": "New",
       "value": 825000000,
-      "value_label": "$825,000,000",
+      "value_label": "$825M",
       "people_count": 2,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -7425,7 +7425,7 @@
     {
       "id": "0001193125-26-326453",
       "company": "Jersey Mike's Subs Inc.",
-      "ticker": "",
+      "ticker": "JMKE",
       "cik": "0002127043",
       "accession_no": "0001193125-26-326453",
       "form": "424B4",
@@ -14402,8 +14402,6 @@
       "offering_size_confidence": "High",
       "filing_price": "25-27",
       "offering_price": 26.0,
-      "current_price": 27.32,
-      "price_updated": "2026-09-16T20:00:00+00:00",
       "location": "Philadelphia, PA",
       "location_source": "S-1 principal executive office",
       "lockup_end_date": "2027-06-08",
@@ -14437,14 +14435,12 @@
         "Offering priced at $26.00 per share",
         "Offering raised approximately $200M",
         "7 named beneficial owners disclosed",
-        "Largest named holding currently valued at approximately $89M",
         "Lock-up terms captured for liquidity-event follow-up"
       ],
       "people": [
         {
           "name": "Omega Capital Partners, LP",
           "shares": 3261216.0,
-          "cash_value": 89096421.12,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-06-08",
           "lockup_scope": "filing-level-unmapped",
@@ -14452,7 +14448,6 @@
           "lockup_duration_value": 365,
           "lockup_duration_unit": "days",
           "lockup_text": "Additionally, our amended and restated certificate of incorporation will provide that, subject to certain exceptions, all of the shares of Class A common stock held by the Legacy Common Stock Investors may not be sold, pledged, transferred or otherwise disposed of for 365 days following the consummation of this offering, or such shorter period as determined by the board of directors, but in no event less than 180 days without the prior written consent of the managing underwriter of this offering",
-          "valuation_as_of": "2026-09-16",
           "holder_type": "Fund",
           "is_beneficial_owner": true,
           "role": null,
@@ -14465,9 +14460,7 @@
           "stanford_source": "",
           "ipo_value": 84791616.0,
           "liquid_shares": null,
-          "liquid_value": null,
           "locked_shares": null,
-          "locked_value": null,
           "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
           "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
@@ -14475,7 +14468,6 @@
         {
           "name": "Wayne Cooperman",
           "shares": 867280.0,
-          "cash_value": 23694089.6,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-06-08",
           "lockup_scope": "filing-level-unmapped",
@@ -14483,7 +14475,6 @@
           "lockup_duration_value": 365,
           "lockup_duration_unit": "days",
           "lockup_text": "Additionally, our amended and restated certificate of incorporation will provide that, subject to certain exceptions, all of the shares of Class A common stock held by the Legacy Common Stock Investors may not be sold, pledged, transferred or otherwise disposed of for 365 days following the consummation of this offering, or such shorter period as determined by the board of directors, but in no event less than 180 days without the prior written consent of the managing underwriter of this offering",
-          "valuation_as_of": "2026-09-16",
           "holder_type": "Individual",
           "is_beneficial_owner": true,
           "role": null,
@@ -14496,9 +14487,7 @@
           "stanford_source": null,
           "ipo_value": 22549280.0,
           "liquid_shares": null,
-          "liquid_value": null,
           "locked_shares": null,
-          "locked_value": null,
           "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
           "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
@@ -14506,7 +14495,6 @@
         {
           "name": "Jeffrey Slotterback",
           "shares": 14369.0,
-          "cash_value": 392561.08,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-06-08",
           "lockup_scope": "filing-level-unmapped",
@@ -14514,7 +14502,6 @@
           "lockup_duration_value": 365,
           "lockup_duration_unit": "days",
           "lockup_text": "Additionally, our amended and restated certificate of incorporation will provide that, subject to certain exceptions, all of the shares of Class A common stock held by the Legacy Common Stock Investors may not be sold, pledged, transferred or otherwise disposed of for 365 days following the consummation of this offering, or such shorter period as determined by the board of directors, but in no event less than 180 days without the prior written consent of the managing underwriter of this offering",
-          "valuation_as_of": "2026-09-16",
           "holder_type": "Individual",
           "is_beneficial_owner": true,
           "role": null,
@@ -14527,9 +14514,7 @@
           "stanford_source": null,
           "ipo_value": 373594.0,
           "liquid_shares": null,
-          "liquid_value": null,
           "locked_shares": null,
-          "locked_value": null,
           "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
           "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
@@ -14537,7 +14522,6 @@
         {
           "name": "Stephen Pilatzke",
           "shares": 5503.0,
-          "cash_value": 150341.96,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-06-08",
           "lockup_scope": "filing-level-unmapped",
@@ -14545,7 +14529,6 @@
           "lockup_duration_value": 365,
           "lockup_duration_unit": "days",
           "lockup_text": "Additionally, our amended and restated certificate of incorporation will provide that, subject to certain exceptions, all of the shares of Class A common stock held by the Legacy Common Stock Investors may not be sold, pledged, transferred or otherwise disposed of for 365 days following the consummation of this offering, or such shorter period as determined by the board of directors, but in no event less than 180 days without the prior written consent of the managing underwriter of this offering",
-          "valuation_as_of": "2026-09-16",
           "holder_type": "Individual",
           "is_beneficial_owner": true,
           "role": null,
@@ -14558,9 +14541,7 @@
           "stanford_source": null,
           "ipo_value": 143078.0,
           "liquid_shares": null,
-          "liquid_value": null,
           "locked_shares": null,
-          "locked_value": null,
           "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
           "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
@@ -14568,7 +14549,6 @@
         {
           "name": "Michael Downs",
           "shares": 14369.0,
-          "cash_value": 392561.08,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-06-08",
           "lockup_scope": "filing-level-unmapped",
@@ -14576,7 +14556,6 @@
           "lockup_duration_value": 365,
           "lockup_duration_unit": "days",
           "lockup_text": "Additionally, our amended and restated certificate of incorporation will provide that, subject to certain exceptions, all of the shares of Class A common stock held by the Legacy Common Stock Investors may not be sold, pledged, transferred or otherwise disposed of for 365 days following the consummation of this offering, or such shorter period as determined by the board of directors, but in no event less than 180 days without the prior written consent of the managing underwriter of this offering",
-          "valuation_as_of": "2026-09-16",
           "holder_type": "Individual",
           "is_beneficial_owner": true,
           "role": null,
@@ -14589,9 +14568,7 @@
           "stanford_source": null,
           "ipo_value": 373594.0,
           "liquid_shares": null,
-          "liquid_value": null,
           "locked_shares": null,
-          "locked_value": null,
           "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
           "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
@@ -14599,7 +14576,6 @@
         {
           "name": "Matthew Heinlein",
           "shares": 5584.0,
-          "cash_value": 152554.88,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-06-08",
           "lockup_scope": "filing-level-unmapped",
@@ -14607,7 +14583,6 @@
           "lockup_duration_value": 365,
           "lockup_duration_unit": "days",
           "lockup_text": "Additionally, our amended and restated certificate of incorporation will provide that, subject to certain exceptions, all of the shares of Class A common stock held by the Legacy Common Stock Investors may not be sold, pledged, transferred or otherwise disposed of for 365 days following the consummation of this offering, or such shorter period as determined by the board of directors, but in no event less than 180 days without the prior written consent of the managing underwriter of this offering",
-          "valuation_as_of": "2026-09-16",
           "holder_type": "Individual",
           "is_beneficial_owner": true,
           "role": null,
@@ -14620,9 +14595,7 @@
           "stanford_source": null,
           "ipo_value": 145184.0,
           "liquid_shares": null,
-          "liquid_value": null,
           "locked_shares": null,
-          "locked_value": null,
           "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
           "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
@@ -14630,7 +14603,6 @@
         {
           "name": "Jeffery Smith",
           "shares": 33212.0,
-          "cash_value": 907351.84,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-06-08",
           "lockup_scope": "filing-level-unmapped",
@@ -14638,7 +14610,6 @@
           "lockup_duration_value": 365,
           "lockup_duration_unit": "days",
           "lockup_text": "Additionally, our amended and restated certificate of incorporation will provide that, subject to certain exceptions, all of the shares of Class A common stock held by the Legacy Common Stock Investors may not be sold, pledged, transferred or otherwise disposed of for 365 days following the consummation of this offering, or such shorter period as determined by the board of directors, but in no event less than 180 days without the prior written consent of the managing underwriter of this offering",
-          "valuation_as_of": "2026-09-16",
           "holder_type": "Individual",
           "is_beneficial_owner": true,
           "role": null,
@@ -14651,9 +14622,7 @@
           "stanford_source": null,
           "ipo_value": 863512.0,
           "liquid_shares": null,
-          "liquid_value": null,
           "locked_shares": null,
-          "locked_value": null,
           "liquidity_status": "Liquidity not classified — holder-specific lock-up not established",
           "liquidity_confidence": "The filing supports the disclosed holding, but does not support a holder-specific lock-up allocation; liquid and locked quantities are not shown",
           "lockup_schedule": []
