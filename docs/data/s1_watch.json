@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-17T03:09:38.237810+00:00",
+  "generated_at": "2026-09-17T05:31:12.759683+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -309,32 +309,6 @@
         "accession_no": "0001213900-26-100586",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1966126/000121390026100586/0001213900-26-100586-index.htm"
       }
-    },
-    {
-      "id": "0001185185-26-004071",
-      "company": "Lower Cross Acquisitions Corp",
-      "ticker": "",
-      "cik": "0002147457",
-      "accession_no": "0001185185-26-004071",
-      "form": "S-1",
-      "filed": "2026-09-16",
-      "stage": "Pre-pricing",
-      "priority": "Medium",
-      "price_range": null,
-      "filing_price": null,
-      "ipo_size": null,
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": null,
-      "secondary_offering_shares": null,
-      "people_count": 0,
-      "people": [],
-      "signals": [
-        "Initial registration statement filed — IPO is pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2147457/000118518526004071/0001185185-26-004071-index.htm",
-      "ownership_source": null
     },
     {
       "id": "0001185185-26-004027",
