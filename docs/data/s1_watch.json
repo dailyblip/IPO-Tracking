@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-17T12:09:50.219994+00:00",
+  "generated_at": "2026-09-17T14:09:48.429926+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -20,7 +20,7 @@
       "offering_size_confidence": null,
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
-      "people_count": 21,
+      "people_count": 18,
       "people": [
         {
           "name": "Evan Unger",
@@ -255,50 +255,11 @@
           "shares_before_ipo": 176021,
           "shares_sold_ipo": null,
           "shares_after_ipo": 176021
-        },
-        {
-          "name": "Bryan Unger",
-          "shares": 0,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": 6.1,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 51903,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 0
-        },
-        {
-          "name": "Lucy Unger",
-          "shares": 0,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": 6.1,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 51903,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 0
-        },
-        {
-          "name": "William C Elms and Zheng Guo",
-          "shares": 0,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": 5.8,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 137301,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 0
         }
       ],
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
-        "21 named beneficial owners disclosed",
+        "18 named beneficial owners disclosed",
         "Preliminary offering range disclosed at $6.00–$8.00"
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1966126/000121390026100586/0001213900-26-100586-index.htm",
@@ -1729,7 +1690,7 @@
     {
       "id": "0001628280-26-059692",
       "company": "Entrata, Inc.",
-      "ticker": "ENT",
+      "ticker": "",
       "cik": "0002028464",
       "accession_no": "0001628280-26-059692",
       "form": "S-1/A",
