@@ -2,7 +2,7 @@ import unittest
 
 from bs4 import BeautifulSoup
 
-from ownership_parser import parse_ownership_table
+from ownership_parser import extract_rich_stockholders, parse_ownership_table
 
 
 class OwnershipClassSemanticsTests(unittest.TestCase):
@@ -71,6 +71,41 @@ class OwnershipClassSemanticsTests(unittest.TestCase):
         </table>"""
         rows = parse_ownership_table(BeautifulSoup(html, "lxml").find("table"))
         self.assertEqual(rows, [])
+
+    def test_preferred_conversion_table_does_not_imply_common_stock_disposition(self):
+        """Preferred shares converting at IPO cannot become generic before/after holdings."""
+        html = """
+        <table>
+          <tr>
+            <th>Name of Beneficial Owner</th>
+            <th>Shares Beneficially Owned Prior to This Offering</th>
+            <th>Shares Beneficially Owned After This Offering</th>
+          </tr>
+          <tr><td>Evan Unger</td><td>3,413,556</td><td>3,413,556</td></tr>
+        </table>
+        <table>
+          <tr>
+            <th>Name of Beneficial Owner</th>
+            <th>Shares of Series A-1 Preferred Stock Beneficially Owned Prior to This Offering</th>
+            <th>Shares of Series A-1 Preferred Stock Beneficially Owned After This Offering</th>
+          </tr>
+          <tr><td>Bryan Unger</td><td>51,903</td><td>0</td></tr>
+          <tr><td>Lucy Unger</td><td>51,903</td><td>0</td></tr>
+        </table>
+        <table>
+          <tr>
+            <th>Name of Beneficial Owner</th>
+            <th>Shares of Series A-2 Preferred Stock Beneficially Owned Prior to This Offering</th>
+            <th>Shares of Series A-2 Preferred Stock Beneficially Owned After This Offering</th>
+          </tr>
+          <tr><td>William C Elms and Zheng Guo</td><td>137,301</td><td>0</td></tr>
+        </table>
+        """
+        rows = extract_rich_stockholders(BeautifulSoup(html, "lxml"))
+        self.assertEqual([row["name"] for row in rows], ["Evan Unger"])
+        self.assertEqual(rows[0]["shares_before"], 3413556)
+        self.assertEqual(rows[0]["shares_after"], 3413556)
+        self.assertIsNone(rows[0]["shares_sold"])
 
 
 if __name__ == "__main__":
