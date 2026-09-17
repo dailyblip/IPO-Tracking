@@ -7,6 +7,7 @@ def test_known_spac_franchise_names_are_excluded():
     assert edgar_client.check_spac_indicators("", company_name="Gores Holdings XII, Inc.")
     assert edgar_client.check_spac_indicators("", company_name="GigCapital10 Corp.")
     assert edgar_client.check_spac_indicators("", company_name="Graf Industrial Corp. II")
+    assert edgar_client.check_spac_indicators("", company_name="Lower Cross Acquisitions Corp")
 
 
 def test_operating_company_holdings_name_is_not_blanket_excluded():
