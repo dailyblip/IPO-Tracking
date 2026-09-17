@@ -74,13 +74,14 @@ class PersonSalePositionIntegrityTests(unittest.TestCase):
             self.assertEqual(supported["shares_before_ipo"], 300)
             self.assertEqual(supported["shares_sold_ipo"], 50)
             self.assertEqual(supported["shares_after_ipo"], 250)
-            self.assertEqual(supported["cash_realized_ipo"], 500.0)
+            self.assertIsNone(supported["cash_realized_ipo"])
 
             persisted = json.loads(output.read_text(encoding="utf-8"))
             persisted_people = persisted["filings"][0]["people"]
             self.assertIsNone(persisted_people[0]["shares_sold_ipo"])
             self.assertIsNone(persisted_people[0]["cash_realized_ipo"])
             self.assertEqual(persisted_people[1]["shares_sold_ipo"], 50)
+            self.assertIsNone(persisted_people[1]["cash_realized_ipo"])
 
 
 if __name__ == "__main__":

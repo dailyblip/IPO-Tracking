@@ -79,7 +79,7 @@ class PublicPersonShareDerivativeTests(unittest.TestCase):
         self.assertIsNone(person["shares"])
         self.assertIsNone(person["ipo_value"])
 
-    def test_supported_share_counts_keep_supported_derivatives(self):
+    def test_supported_share_counts_keep_supported_derivatives_except_unsourced_realized_cash(self):
         person = self._run_policy(
             {
                 "name": "Jane Example",
@@ -97,7 +97,7 @@ class PublicPersonShareDerivativeTests(unittest.TestCase):
 
         self.assertEqual(person["shares"], 1_000)
         self.assertEqual(person["ipo_value"], 15_000.0)
-        self.assertEqual(person["cash_realized_ipo"], 1_500.0)
+        self.assertIsNone(person["cash_realized_ipo"])
         self.assertAlmostEqual(person["cash_value"], 18_810.0)
         self.assertAlmostEqual(person["liquid_value"], 3_762.0)
         self.assertAlmostEqual(person["locked_value"], 15_048.0)
