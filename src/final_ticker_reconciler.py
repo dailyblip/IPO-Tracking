@@ -4,8 +4,8 @@ Lifecycle reconciliation intentionally fails closed when the final prospectus ca
 be fetched to affirm an already-stored ticker. A transient SEC fetch failure can
 therefore leave a valid priced IPO with a blank ticker. This bounded post-lifecycle
 repair retries the exact final filing and restores a symbol only when that same
-424B4 cover page explicitly discloses it. It never restores Current Price or any
-quote-derived value.
+424B4 cover page explicitly discloses an exchange listing/trading symbol. It never
+restores Current Price or any quote-derived value.
 """
 
 from __future__ import annotations
@@ -23,6 +23,13 @@ import filing_parser
 
 MAX_FETCH_ATTEMPTS = 3
 RETRY_DELAY_SECONDS = 0.5
+
+_LISTING_PATTERNS = (
+    r"\b(?:list|listed|listing|trade|traded|trading|quote|quoted|quotation)\b.{0,300}?"
+    r"\bunder\s+(?:the\s+)?(?:ticker\s+|trading\s+)?symbol\s*[\"“]?([A-Z]{1,6})[\"”]?",
+    r"\bunder\s+(?:the\s+)?ticker\s+symbol\s*[\"“]?([A-Z]{1,6})[\"”]?",
+    r"\btrading\s+symbol\s*[:\-]?\s*[\"“]?([A-Z]{1,6})[\"”]?",
+)
 
 
 def _canonical_cik(value) -> str:
@@ -54,6 +61,20 @@ def _is_blank_priced_final(record: dict) -> bool:
         and not str(record.get("ticker") or "").strip()
         and record.get("offering_price") not in (None, "")
     )
+
+
+def _extract_explicit_listing_ticker(soup) -> str:
+    """Return one unambiguous final-cover listing symbol; reject generic mentions."""
+    cover_text = soup.get_text(" ", strip=True)[:100000]
+    tickers = set()
+    for pattern in _LISTING_PATTERNS:
+        for match in re.finditer(pattern, cover_text, re.IGNORECASE):
+            ticker = match.group(1)
+            if ticker == ticker.upper():
+                tickers.add(ticker)
+    if len(tickers) != 1:
+        return ""
+    return next(iter(tickers))
 
 
 def _load_exact_final_soup(record: dict):
@@ -124,9 +145,8 @@ def recover_payload(
         if soup is None:
             continue
 
-        cover = filing_parser.extract_cover_page_data(soup)
-        ticker = str((cover or {}).get("ticker") or "").strip().upper()
-        if not ticker or not re.fullmatch(r"[A-Z][A-Z0-9.\-]{0,9}", ticker):
+        ticker = _extract_explicit_listing_ticker(soup)
+        if not ticker:
             continue
 
         filing["ticker"] = ticker
@@ -172,7 +192,7 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser(
         description=(
             "Recover a blank priced-IPO ticker only when the exact final 424B4 "
-            "explicitly confirms the symbol."
+            "explicitly confirms the exchange listing/trading symbol."
         )
     )
     parser.add_argument("feed", help="Path to docs/data/filings.json")
