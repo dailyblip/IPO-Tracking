@@ -34,6 +34,7 @@ REQUEST_DELAY_SECONDS = 0.15  # keeps us under SEC's ~10 req/sec limit
 # "Holdings" exclusion.
 SPAC_NAME_PATTERN = re.compile(
     r"\b(?:acquisitions?|blank check)\b|"
+    r"\baei\s+capforce(?:\s+[ivx]+)?\s+investment\s+corp(?:oration)?\.?(?=\W|$)|"
     r"\bcapital\s+(?:corp|partners?)\b|"
     r"\bgores\s+holdings\b|"
     r"\brmg\s+ml\s+sports\s+holdings\b|"
