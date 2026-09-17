@@ -65,6 +65,12 @@ _DOCUMENT_SECTION_HEADING_PREFIXES = (
     "material us federal income tax consequences for ",
 )
 
+# Generic aggregate labels can carry real table totals without identifying any
+# person or entity. Publishing them as a beneficial owner would falsely imply a
+# holder identity. Keep this deliberately exact so legitimate names containing
+# the word "Other" remain eligible.
+_NON_IDENTIFIABLE_HOLDER_LABELS = {"other"}
+
 _PERCENT_MARKERS = {"%", "percent", "percentage"}
 _SHARE_TO_PERCENT = {
     "shares": "percent",
@@ -373,11 +379,17 @@ def _aggregate_class_counts(row, headers, base_kinds, aggregate_kind):
     return total if total > 0 else None
 
 
+def _aggregate_label(value):
+    return canonical_holder_name(value) in _NON_IDENTIFIABLE_HOLDER_LABELS
+
+
 def _name_from_row(row):
     for cell in row:
         text = _clean(cell)
         if not text:
             continue
+        if _aggregate_label(text):
+            return None
         if any(ch.isalpha() for ch in text) and not re.search(
             r"beneficial|before|after|offering|percent|percentage|number of|shares owned", text, re.I
         ):
