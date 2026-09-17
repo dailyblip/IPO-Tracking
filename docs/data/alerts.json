@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-17T08:16:42.357807+00:00",
-  "count": 115,
+  "generated_at": "2026-09-17T08:31:25.264465+00:00",
+  "count": 114,
   "alerts": [
     {
       "type": "price_range_update",
@@ -165,20 +165,6 @@
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1900851/000149315226036294/0001493152-26-036294-index.htm",
       "detected_at": "2026-09-15T21:43:25.195191+00:00",
       "key": "new_prepricing|s1:0001900851|0001900851|2026-08-06|"
-    },
-    {
-      "type": "new_prepricing",
-      "company": "AEI CapForce II Investment Corp",
-      "cik": "0001875655",
-      "filing_id": "s1:0001875655",
-      "form": "S-1/A",
-      "filed": "2026-08-03",
-      "stage": "pre-pricing",
-      "priority": "Medium",
-      "summary": "New pre-pricing S-1/A candidate entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1875655/000149315226035799/0001493152-26-035799-index.htm",
-      "detected_at": "2026-09-15T21:43:25.195199+00:00",
-      "key": "new_prepricing|s1:0001875655|0001875655|2026-08-03|"
     },
     {
       "type": "new_prepricing",

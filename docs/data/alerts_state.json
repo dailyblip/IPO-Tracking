@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-17T08:16:42.357732+00:00",
+  "updated_at": "2026-09-17T08:31:25.264395+00:00",
   "items": {
     "s1:0001966126": {
       "id": "s1:0001966126",
@@ -1145,19 +1145,6 @@
       "priority": "High",
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
-    },
-    "s1:0001875655": {
-      "id": "s1:0001875655",
-      "cik": "0001875655",
-      "company": "AEI CapForce II Investment Corp",
-      "form": "S-1/A",
-      "filed": "2026-08-03",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1875655/000149315226035799/0001493152-26-035799-index.htm"
     }
   },
   "ciks": {
@@ -1776,13 +1763,6 @@
       "last_filing_id": "0001213900-25-120076",
       "last_filed": "2025-12-10",
       "missing_runs": 0
-    },
-    "0001875655": {
-      "company": "AEI CapForce II Investment Corp",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001875655",
-      "last_filed": "2026-08-03",
-      "missing_runs": 1
     }
   }
 }
