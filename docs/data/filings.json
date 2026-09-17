@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-17T05:31:12.775166+00:00",
+  "generated_at": "2026-09-17T06:33:39.910065+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -12,21 +12,21 @@
       "form": "S-1/A",
       "filed": "2026-09-16",
       "stage": "Pre-pricing",
-      "price_range": null,
-      "filing_price": null,
+      "price_range": "$6.00–$8.00",
+      "filing_price": "$6.00–$8.00",
       "offering_size_source": null,
       "offering_size_confidence": null,
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
-      "priority": "Medium",
+      "priority": "High",
       "status": "New",
       "value": null,
       "value_label": "—",
       "people_count": 21,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
-        "No preliminary price range or fixed offering price detected yet",
-        "21 named beneficial owners disclosed"
+        "21 named beneficial owners disclosed",
+        "Preliminary offering range disclosed at $6.00–$8.00"
       ],
       "people": [
         {
@@ -310,7 +310,15 @@
         "accession_no": "0001213900-26-100586",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1966126/000121390026100586/0001213900-26-100586-index.htm"
       },
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1966126/000121390026100586/0001213900-26-100586-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1966126/000121390026100586/0001213900-26-100586-index.htm",
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-16",
+        "accession_no": "0001213900-26-100586",
+        "file_number": "333-297520",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/1966126/000121390026100586/0001213900-26-100586-index.htm"
+      }
     },
     {
       "id": "s1:0002141616",
@@ -640,7 +648,8 @@
         "accession_no": "0001213900-26-099701",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026099701/0001213900-26-099701-index.htm"
       },
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026099701/0001213900-26-099701-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026099701/0001213900-26-099701-index.htm",
+      "filing_price_source": null
     },
     {
       "id": "s1:0002088082",
@@ -859,7 +868,8 @@
         "accession_no": "0001193125-26-389755",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526389755/0001193125-26-389755-index.htm"
       },
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526389755/0001193125-26-389755-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526389755/0001193125-26-389755-index.htm",
+      "filing_price_source": null
     },
     {
       "id": "s1:0002125355",
@@ -987,7 +997,8 @@
         "accession_no": "0001628280-26-061664",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2125355/000162828026061664/0001628280-26-061664-index.htm"
       },
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2125355/000162828026061664/0001628280-26-061664-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2125355/000162828026061664/0001628280-26-061664-index.htm",
+      "filing_price_source": null
     },
     {
       "id": "s1:0001802369",
@@ -1208,7 +1219,8 @@
         "IPO size disclosed or derived at approximately $600,000,000"
       ],
       "people": [],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm",
+      "filing_price_source": null
     },
     {
       "id": "s1:0002124472",
@@ -1297,7 +1309,8 @@
         "accession_no": "0001628280-26-061012",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026061012/0001628280-26-061012-index.htm"
       },
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026061012/0001628280-26-061012-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026061012/0001628280-26-061012-index.htm",
+      "filing_price_source": null
     },
     {
       "id": "s1:0002104277",
@@ -1360,7 +1373,8 @@
         "accession_no": "0001193125-26-384287",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526384287/0001193125-26-384287-index.htm"
       },
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526384287/0001193125-26-384287-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526384287/0001193125-26-384287-index.htm",
+      "filing_price_source": null
     },
     {
       "id": "s1:0002133037",
@@ -1630,7 +1644,7 @@
       "priority": "High",
       "status": "New",
       "value": 50000000,
-      "value_label": "$50M",
+      "value_label": "$50,000,000",
       "people_count": 1,
       "signals": [
         "Initial registration statement filed — IPO is pre-pricing",
@@ -1660,7 +1674,8 @@
         "accession_no": "0002151905-26-000001",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2151905/000215190526000001/0002151905-26-000001-index.htm"
       },
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2151905/000215190526000001/0002151905-26-000001-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2151905/000215190526000001/0002151905-26-000001-index.htm",
+      "filing_price_source": null
     },
     {
       "id": "s1:0002131613",
@@ -3723,13 +3738,13 @@
       "form": "S-1/A",
       "filed": "2026-08-17",
       "stage": "Pre-pricing",
-      "price_range": null,
-      "filing_price": null,
+      "price_range": "$5.00–$6.00",
+      "filing_price": "$5.00–$6.00",
       "offering_size_source": null,
       "offering_size_confidence": null,
       "primary_offering_shares": null,
       "secondary_offering_shares": null,
-      "priority": "Medium",
+      "priority": "High",
       "status": "New",
       "value": null,
       "value_label": "—",
@@ -3737,7 +3752,7 @@
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
         "8 named beneficial owners disclosed",
-        "No preliminary price range or fixed offering price detected yet"
+        "Preliminary offering range disclosed at $5.00–$6.00"
       ],
       "people": [
         {
@@ -3852,7 +3867,15 @@
         "accession_no": "0001493152-26-038800",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2109801/000149315226038800/0001493152-26-038800-index.htm"
       },
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2109801/000149315226038800/0001493152-26-038800-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2109801/000149315226038800/0001493152-26-038800-index.htm",
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-08-17",
+        "accession_no": "0001493152-26-038800",
+        "file_number": "333-296254",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2109801/000149315226038800/0001493152-26-038800-index.htm"
+      }
     },
     {
       "id": "s1:0001880995",
@@ -3872,7 +3895,7 @@
       "priority": "High",
       "status": "New",
       "value": 33000000,
-      "value_label": "$33M",
+      "value_label": "$33,000,000",
       "people_count": 9,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
@@ -4006,7 +4029,8 @@
         "accession_no": "0001213900-26-090319",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026090319/0001213900-26-090319-index.htm"
       },
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026090319/0001213900-26-090319-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026090319/0001213900-26-090319-index.htm",
+      "filing_price_source": null
     },
     {
       "id": "0001185185-26-003448",
@@ -6920,13 +6944,13 @@
       "form": "S-1/A",
       "filed": "2026-08-06",
       "stage": "Pre-pricing",
-      "price_range": null,
-      "filing_price": null,
+      "price_range": "$4.00–$5.00",
+      "filing_price": "$4.00–$5.00",
       "offering_size_source": null,
       "offering_size_confidence": null,
       "primary_offering_shares": 4000000,
       "secondary_offering_shares": null,
-      "priority": "Medium",
+      "priority": "High",
       "status": "New",
       "value": null,
       "value_label": "—",
@@ -6934,7 +6958,7 @@
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
         "7 named beneficial owners disclosed",
-        "No preliminary price range or fixed offering price detected yet"
+        "Preliminary offering range disclosed at $4.00–$5.00"
       ],
       "people": [
         {
@@ -7036,7 +7060,15 @@
         "accession_no": "0001493152-26-036294",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1900851/000149315226036294/0001493152-26-036294-index.htm"
       },
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1900851/000149315226036294/0001493152-26-036294-index.htm"
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1900851/000149315226036294/0001493152-26-036294-index.htm",
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-08-06",
+        "accession_no": "0001493152-26-036294",
+        "file_number": "333-295935",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/1900851/000149315226036294/0001493152-26-036294-index.htm"
+      }
     },
     {
       "id": "0001193125-26-334997",
