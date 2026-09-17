@@ -13,7 +13,10 @@ derived value.
 
 The issuer-specific registry is intentionally narrow. Each entry must be tied to a
 specific issuer, IPO accession, holder identity, disclosed share count, and primary
-SEC evidence.
+SEC evidence. A separate lifecycle registry is reserved for SEC-supported aggregate
+fund positions whose exact post-offering share count may carry unchanged into a
+later 424B4 accession; those entries still require the same issuer, holder identity,
+and exact disclosed share count before suppression applies.
 """
 
 from __future__ import annotations
@@ -143,6 +146,33 @@ _UNSUPPORTED_PERSON_ECONOMICS = {
     ): 46_225_020,
 }
 
+# Electra Therapeutics' 2026-09-14 S-1/A (File No. 333-298617) reports identical
+# aggregate positions under the affiliated fund rows and directors Carl L. Gordon
+# and Beth Seidenberg. Footnote (13) maps Dr. Gordon's entire 5,548,593-share
+# post-offering count to the OrbiMed fund position in footnote (2); that footnote
+# states that Dr. Gordon is one of the OrbiMed Advisors management-committee members
+# and expressly disclaims beneficial ownership of the underlying fund shares.
+# Footnote (14) maps Dr. Seidenberg's entire 6,341,824-share post-offering count to
+# the Westlake fund position in footnote (3). Footnote (3) says the securities are
+# held by Westlake Fund I / Fund II and that Dr. Seidenberg may be deemed to have
+# voting and dispositive power as the sole managing director of the funds' general
+# partners; it does not establish that the entire fund position is her personal
+# economic interest. Preserve the SEC beneficial-ownership counts while suppressing
+# personal paper value/liquidity. These exact post-offering counts are allowed to
+# survive an S-1/A -> 424B4 accession change only while issuer, holder, and share
+# count all remain unchanged.
+# https://www.sec.gov/Archives/edgar/data/2088082/000119312526389755/d61940ds1a.htm
+_UNSUPPORTED_PERSON_ECONOMICS_LIFECYCLE = {
+    (
+        "0002088082",
+        canonical_holder_name("Carl L. Gordon, Ph.D., C.F.A."),
+    ): 5_548_593,
+    (
+        "0002088082",
+        canonical_holder_name("Beth Seidenberg, M.D."),
+    ): 6_341_824,
+}
+
 _DERIVED_ECONOMIC_FIELDS = (
     "cash_value",
     "ipo_value",
@@ -187,9 +217,11 @@ def suppress_unsupported_person_economics(filing: dict) -> dict:
     impossible sale/realized-cash fields fail closed while the underlying ownership
     facts remain intact.
 
-    Issuer-specific registry entries apply only while the exact disclosed share count
-    still matches, so later authoritative ownership changes do not inherit a stale
-    exception silently.
+    Issuer-specific accession entries apply only while the exact disclosed share
+    count still matches. The lifecycle registry is likewise exact-count constrained,
+    but may persist across an accession change for the same issuer/holder when SEC
+    evidence already establishes that the reported position is an aggregate fund
+    position rather than supported personal economics.
     """
     if not isinstance(filing, dict):
         return filing
@@ -225,8 +257,11 @@ def suppress_unsupported_person_economics(filing: dict) -> dict:
                     normalized_person[field] = None
                     changed = True
 
-        key = (cik, accession, canonical_holder_name(person.get("name")))
+        holder_key = canonical_holder_name(person.get("name"))
+        key = (cik, accession, holder_key)
         expected_shares = _UNSUPPORTED_PERSON_ECONOMICS.get(key)
+        if expected_shares is None:
+            expected_shares = _UNSUPPORTED_PERSON_ECONOMICS_LIFECYCLE.get((cik, holder_key))
         observed_shares = _number(person.get("shares"))
 
         if expected_shares is not None and observed_shares == float(expected_shares):
