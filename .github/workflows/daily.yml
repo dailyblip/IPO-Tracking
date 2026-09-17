@@ -28,7 +28,7 @@ jobs:
     # legitimately need extra time when external providers retry transient 5xx
     # responses. Keep enough headroom for identity validation to finish rather
     # than cancelling the job before release-blocking checks can report a result.
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     steps:
       - name: Check out repo
