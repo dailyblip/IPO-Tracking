@@ -79,6 +79,45 @@ class FinalTickerReconcilerTests(unittest.TestCase):
         self.assertEqual(recovered, 0)
         self.assertEqual(payload["filings"][0]["ticker"], "")
 
+    def test_generic_symbol_mention_without_listing_evidence_remains_blank(self):
+        payload = self._payload()
+        generic = BeautifulSoup(
+            "<html><body><p>For reference, symbol JMKE appears in this discussion.</p></body></html>",
+            "lxml",
+        )
+
+        payload, recovered = final_ticker_reconciler.recover_payload(
+            payload,
+            soup_loader=lambda record: generic,
+            attempts=1,
+            retry_delay_seconds=0,
+        )
+
+        self.assertEqual(recovered, 0)
+        self.assertEqual(payload["filings"][0]["ticker"], "")
+
+    def test_conflicting_explicit_listing_symbols_remain_blank(self):
+        payload = self._payload()
+        conflicting = BeautifulSoup(
+            """
+            <html><body>
+            <p>Approved for listing on the NYSE under the trading symbol “JMKE”.</p>
+            <p>Trading symbol: WRONG.</p>
+            </body></html>
+            """,
+            "lxml",
+        )
+
+        payload, recovered = final_ticker_reconciler.recover_payload(
+            payload,
+            soup_loader=lambda record: conflicting,
+            attempts=1,
+            retry_delay_seconds=0,
+        )
+
+        self.assertEqual(recovered, 0)
+        self.assertEqual(payload["filings"][0]["ticker"], "")
+
     def test_exhausted_final_fetch_failure_remains_blank(self):
         payload = self._payload()
         calls = []
