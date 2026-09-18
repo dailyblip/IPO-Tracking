@@ -13,6 +13,7 @@ on:
       - 'src/stanford_grader.py'
       - 'src/stanford_sec_backfill.py'
       - 'src/filing_price_history.py'
+      - 'src/s1_price_range_history.py'
       - 'src/pricing_date_reconciler.py'
       - 'src/final_accession_identity_guard.py'
       - 'src/lifecycle_reconciler.py'
@@ -40,6 +41,7 @@ on:
       - 'src/test_stanford_management_scope.py'
       - 'src/test_stanford_sec_backfill.py'
       - 'src/test_filing_price_history.py'
+      - 'src/test_s1_price_range_history.py'
       - 'src/test_pricing_date_reconciler.py'
       - 'src/test_final_accession_identity_guard.py'
       - 'src/test_lifecycle_reconciler.py'
@@ -156,6 +158,11 @@ jobs:
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python s1_preliminary_price_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json
+      - name: Preserve pre-pricing Filing Price provenance after ownership regeneration
+        working-directory: src
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: python s1_price_range_history.py ../docs/data/s1_watch.json ../docs/data/filings.json
       - name: Clear market quotes not refreshed in this run
         working-directory: src
         run: python market_price_freshness_gate.py ../docs/data/filings.json
