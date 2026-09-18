@@ -23,8 +23,8 @@ The gate also excludes an S-1/S-1A when SEC filing history proves the issuer was
 already a reporting company before the candidate registration. This catches
 post-SPAC/de-SPAC and other already-public issuers that can file a new S-1 before
 they have a 10-K, including issuers whose prior Exchange Act reporting used
-transition or foreign-private-issuer forms. Only reporting forms filed strictly
-before the candidate S-1/S-1A are used.
+transition, foreign-private-issuer, or S-3/F-3 short-form registrations. Only
+reporting forms filed strictly before the candidate S-1/S-1A are used.
 
 Candidate coverage is the union of the S-1 watch payload and the public queue.
 That prevents a regenerated or otherwise queue-only pre-pricing row from bypassing
@@ -55,6 +55,8 @@ REPORTING_FORMS = {
     "10-Q", "10-Q/A", "10-QT", "10-QT/A",
     "10-K", "10-K/A", "10-KT", "10-KT/A",
     "6-K", "6-K/A", "20-F", "20-F/A", "40-F", "40-F/A",
+    "S-3", "S-3/A", "S-3ASR", "S-3ASR/A", "S-3D", "S-3DPOS", "S-3MEF",
+    "F-3", "F-3/A", "F-3ASR", "F-3ASR/A", "F-3D", "F-3DPOS", "F-3MEF",
 }
 RIGHTS_OFFERING_PATTERNS = (
     re.compile(
@@ -149,12 +151,11 @@ def _recent_submission_rows(cik: str) -> list[dict]:
 def already_reporting_before_registration(record: dict) -> bool:
     """Return True when SEC history proves the issuer reported before this S-1.
 
-    A prior 8-K (including successor/assumption variants), 10-Q, 10-K, 10-QT,
-    10-KT, 6-K, 20-F, or 40-F (including amendments) is affirmative evidence
-    that the issuer was already subject to Exchange Act reporting. The chronology
-    cutoff comes from the exact candidate accession in SEC submissions metadata,
-    not the mutable public-feed date. Requiring a strictly earlier SEC filing date
-    avoids inferring event order from same-day accessions.
+    A prior Exchange Act report or an S-3/F-3-family short-form registration is
+affirmative evidence that the issuer was already subject to Exchange Act reporting.
+    The chronology cutoff comes from the exact candidate accession in SEC submissions
+    metadata, not the mutable public-feed date. Requiring a strictly earlier SEC
+    filing date avoids inferring event order from same-day accessions.
     """
     if str(record.get("form") or "").strip().upper() not in FORM_TYPES:
         return False
