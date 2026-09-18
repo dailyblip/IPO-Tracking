@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-18T01:38:32.346634+00:00",
+  "generated_at": "2026-09-18T02:07:44.713796+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -9056,6 +9056,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": "",
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -9099,6 +9100,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": "",
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -9142,6 +9144,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": "Confidence 5/5 — SEC 424B4 management biography confirms a degree from Stanford University. Source: https://www.sec.gov/Archives/edgar/data/1787117/000110465926088733/tm2513004-17_424b4.htm",
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -9185,6 +9188,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": null,
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -9228,6 +9232,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": null,
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -9271,6 +9276,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": null,
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -9314,6 +9320,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": null,
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -9357,6 +9364,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": null,
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -9400,6 +9408,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": "",
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -9443,6 +9452,7 @@
           "shares_sold_ipo": null,
           "shares_after_ipo": null,
           "stanford_source": "",
+          "cash_realized_ipo": null,
           "liquid_shares": null,
           "liquid_value": null,
           "locked_shares": null,
@@ -31374,7 +31384,9 @@
           "locked_shares": null,
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "lockup_schedule": [],
+          "cash_value": 77187309.16,
+          "valuation_as_of": "2026-09-17"
         },
         {
           "name": "Edward Reginelli",
@@ -31402,7 +31414,9 @@
           "locked_shares": null,
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "lockup_schedule": [],
+          "cash_value": 2904542.1599999997,
+          "valuation_as_of": "2026-09-17"
         },
         {
           "name": "Chen Fang",
@@ -31430,7 +31444,9 @@
           "locked_shares": null,
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "lockup_schedule": [],
+          "cash_value": 11857357.719999999,
+          "valuation_as_of": "2026-09-17"
         },
         {
           "name": "Jody Mettler",
@@ -31458,7 +31474,9 @@
           "locked_shares": null,
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "lockup_schedule": [],
+          "cash_value": 1126662.16,
+          "valuation_as_of": "2026-09-17"
         },
         {
           "name": "Jeff Horowitz",
@@ -31486,7 +31504,9 @@
           "locked_shares": null,
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "lockup_schedule": [],
+          "cash_value": 2693217.8,
+          "valuation_as_of": "2026-09-17"
         },
         {
           "name": "Brian Murray",
@@ -31513,7 +31533,9 @@
           "locked_shares": null,
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "lockup_schedule": [],
+          "cash_value": 21016.84,
+          "valuation_as_of": "2026-09-17"
         },
         {
           "name": "Justin Evans",
@@ -31540,7 +31562,9 @@
           "locked_shares": null,
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "lockup_schedule": [],
+          "cash_value": 40560.0,
+          "valuation_as_of": "2026-09-17"
         },
         {
           "name": "Sunita Parasuraman",
@@ -31567,7 +31591,9 @@
           "locked_shares": null,
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "lockup_schedule": [],
+          "cash_value": 40560.0,
+          "valuation_as_of": "2026-09-17"
         },
         {
           "name": "Brian Brooks",
@@ -31594,7 +31620,9 @@
           "locked_shares": null,
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "lockup_schedule": [],
+          "cash_value": 463060.0,
+          "valuation_as_of": "2026-09-17"
         },
         {
           "name": "Entities affiliated with Redpoint",
@@ -31621,7 +31649,9 @@
           "locked_shares": null,
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "lockup_schedule": [],
+          "cash_value": 72689928.48,
+          "valuation_as_of": "2026-09-17"
         },
         {
           "name": "Entities affiliated with Valor",
@@ -31648,7 +31678,9 @@
           "locked_shares": null,
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "lockup_schedule": [],
+          "cash_value": 84760990.08,
+          "valuation_as_of": "2026-09-17"
         },
         {
           "name": "Entities affiliated with Craft Ventures",
@@ -31675,7 +31707,9 @@
           "locked_shares": null,
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "lockup_schedule": [],
+          "cash_value": 50171712.76,
+          "valuation_as_of": "2026-09-17"
         },
         {
           "name": "Entities affiliated with Bridgescale",
@@ -31702,7 +31736,9 @@
           "locked_shares": null,
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "lockup_schedule": [],
+          "cash_value": 41527707.519999996,
+          "valuation_as_of": "2026-09-17"
         },
         {
           "name": "Peter Pong",
@@ -31730,7 +31766,9 @@
           "locked_shares": null,
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "lockup_schedule": [],
+          "cash_value": 9659952.12,
+          "valuation_as_of": "2026-09-17"
         },
         {
           "name": "Youngro Lee",
@@ -31758,7 +31796,9 @@
           "locked_shares": null,
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "lockup_schedule": [],
+          "cash_value": 1690953.16,
+          "valuation_as_of": "2026-09-17"
         },
         {
           "name": "Michelle Neufeld",
@@ -31786,7 +31826,9 @@
           "locked_shares": null,
           "liquidity_status": "Unclassified",
           "liquidity_confidence": "Unknown — filing has no defensible holder-specific lock-up mapping",
-          "lockup_schedule": []
+          "lockup_schedule": [],
+          "cash_value": 948725.44,
+          "valuation_as_of": "2026-09-17"
         }
       ],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1740604/000162828026003180/0001628280-26-003180-index.htm",
@@ -31798,7 +31840,9 @@
         "accession_no": "0001628280-26-001756",
         "file_number": "333-290409",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1740604/000162828026001756/0001628280-26-001756-index.htm"
-      }
+      },
+      "current_price": 6.76,
+      "price_updated": "2026-09-17T20:00:00+00:00"
     },
     {
       "id": "0001193125-26-009078",
