@@ -4,11 +4,11 @@ Research Monitor tracks company IPOs, not later registered offerings by companie
 that are already SEC reporting issuers. A prior Exchange Act reporting form
 before the candidate 424B4 is authoritative evidence that the company had already
 entered the SEC reporting system before this offering. A prior Form S-3 or F-3,
-including automatic-shelf and Rule 462(b) additional-registration variants, is
-also affirmative reporting-history evidence because those short forms require
-Exchange Act reporting eligibility. A prior Form 424B4 is separately dispositive
-that the issuer already completed an earlier public offering prospectus and the
-later 424B4 cannot be its first IPO.
+including automatic-shelf, dividend/reinvestment-plan, and Rule 462(b)
+additional-registration variants, is also affirmative reporting-history evidence
+because those short forms require Exchange Act reporting eligibility. A prior Form
+424B4 is separately dispositive that the issuer already completed an earlier public
+offering prospectus and the later 424B4 cannot be its first IPO.
 
 This pass is deliberately conservative and date-aware. Same-day filings are
 ordered only when SEC submissions supplies acceptance timestamps for both the
@@ -44,8 +44,8 @@ REPORTING_FORMS = {
     # from a Securities Act registration that never resulted in a completed IPO.
     "15-12B", "15-12B/A", "15-12G", "15-12G/A",
     "6-K", "6-K/A", "20-F", "20-F/A", "40-F", "40-F/A",
-    "S-3", "S-3/A", "S-3ASR", "S-3ASR/A", "S-3MEF",
-    "F-3", "F-3/A", "F-3ASR", "F-3ASR/A", "F-3MEF",
+    "S-3", "S-3/A", "S-3ASR", "S-3ASR/A", "S-3D", "S-3DPOS", "S-3MEF",
+    "F-3", "F-3/A", "F-3ASR", "F-3ASR/A", "F-3D", "F-3DPOS", "F-3MEF",
     "424B4",
 }
 ACCESSION_PATTERN = re.compile(r"^\d{10}-\d{2}-\d{6}$")
