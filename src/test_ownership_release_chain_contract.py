@@ -15,6 +15,7 @@ class OwnershipReleaseChainContractTests(unittest.TestCase):
             "- name: Reconcile resale-only S-1 registrations after ownership regeneration",
             "- name: Exclude non-substantive S-1 form templates after ownership regeneration",
             "- name: Verify fixed pre-pricing Filing Prices after ownership regeneration",
+            "- name: Preserve pre-pricing Filing Price provenance after ownership regeneration",
             "- name: Clear market quotes not refreshed in this run",
             "- name: Verify exact final SEC accession identity",
             "- name: Reconcile final 424B4 lifecycle transitions",
@@ -50,6 +51,7 @@ class OwnershipReleaseChainContractTests(unittest.TestCase):
             "python resale_registration_sanitizer.py ../docs/data/s1_watch.json ../docs/data/filings.json",
             "python s1_substantive_registration_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json",
             "python s1_preliminary_price_gate.py ../docs/data/s1_watch.json ../docs/data/filings.json",
+            "python s1_price_range_history.py ../docs/data/s1_watch.json ../docs/data/filings.json",
             "python final_accession_identity_guard.py ../docs/data/filings.json",
             "python lifecycle_reconciler.py ../docs/data/filings.json",
             "python lifecycle_convergence.py ../docs/data/filings.json",
@@ -70,6 +72,11 @@ class OwnershipReleaseChainContractTests(unittest.TestCase):
         for command in required_commands:
             with self.subTest(command=command):
                 self.assertIn(command, workflow)
+
+    def test_prepricing_history_helper_changes_trigger_ownership_refresh(self):
+        workflow = WORKFLOW.read_text(encoding="utf-8")
+        self.assertIn("- 'src/s1_price_range_history.py'", workflow)
+        self.assertIn("- 'src/test_s1_price_range_history.py'", workflow)
 
 
 if __name__ == "__main__":
