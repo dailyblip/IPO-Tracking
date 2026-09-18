@@ -2,6 +2,7 @@ name: S-1 Pre-Pricing Monitor
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: research-monitor-feed-writers
@@ -44,6 +45,7 @@ on:
       - 'src/test_feed_schema_contract.py'
       - 'src/test_s1_stale_publication_guard.py'
       - 'src/test_s1_quote_release_contract.py'
+      - 'src/test_s1_ownership_commit_guard.py'
       - 'schemas/**'
       - 'requirements.txt'
       - '.github/workflows/s1-watch.yml'
@@ -86,7 +88,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run S-1 monitor tests
         working-directory: src
-        run: python -m unittest test_s1_monitor.py test_s1_preliminary_price_gate.py test_resale_registration_exclusion.py test_fullpac_real_proceeds_regression.py test_s1_registration_history_gate.py test_archived_reporting_history_gate.py test_resale_registration_sanitizer.py test_cover_price_context.py test_ticker_listing_reconciler.py test_filing_price_history.py test_s1_price_range_history.py test_public_feed_policy.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py test_feed_schema_contract.py test_s1_stale_publication_guard.py test_s1_quote_release_contract.py -v
+        run: python -m unittest test_s1_monitor.py test_s1_preliminary_price_gate.py test_resale_registration_exclusion.py test_fullpac_real_proceeds_regression.py test_s1_registration_history_gate.py test_archived_reporting_history_gate.py test_resale_registration_sanitizer.py test_cover_price_context.py test_ticker_listing_reconciler.py test_filing_price_history.py test_s1_price_range_history.py test_public_feed_policy.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py test_feed_schema_contract.py test_s1_stale_publication_guard.py test_s1_quote_release_contract.py test_s1_ownership_commit_guard.py -v
 
   update-feed:
     if: ${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') }}
@@ -221,6 +223,20 @@ jobs:
           git fetch origin main
           if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
             echo "main advanced during this run; skipping stale S-1 publication."
+            exit 0
+          fi
+
+          # Ownership-history replay has priority over every other feed writer.
+          # Shared concurrency prevents simultaneous jobs, but this S-1 run can hold
+          # the slot while ownership-refresh is already queued. Re-check the actual
+          # ownership workflow immediately before committing and defer publication
+          # whenever any ownership run has not yet completed.
+          ownership_active="$(
+            gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/ownership-refresh.yml/runs?per_page=100" \
+              --jq '[.workflow_runs[] | select(.status != "completed")] | length'
+          )"
+          if [ "$ownership_active" -gt 0 ]; then
+            echo "Ownership history refresh is queued or running; deferring S-1 Research Monitor publication."
             exit 0
           fi
 
