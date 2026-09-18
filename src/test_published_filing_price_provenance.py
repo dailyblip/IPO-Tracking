@@ -67,6 +67,16 @@ class PublishedFilingPriceProvenanceTests(unittest.TestCase):
             if _display(source.get("form")).upper() not in {"S-1", "S-1/A"}:
                 failures.append(f"{label}: Filing Price source form is not S-1/S-1/A")
 
+            # Production recovery anchors every priced preliminary price to the
+            # exact final 424B4 registration fileNumber. Keep that lineage key in
+            # the published provenance so later lifecycle/export steps cannot
+            # silently reduce a verified same-registration source to a merely
+            # same-issuer S-1/S-1A source.
+            if not _display(source.get("file_number")):
+                failures.append(
+                    f"{label}: Filing Price source lacks SEC registration file_number"
+                )
+
             source_date = _iso_date(source.get("filing_date"))
             pricing_date = _iso_date(record.get("pricing_date"))
 
