@@ -28,6 +28,21 @@ class S1OwnershipCommitGuardTests(unittest.TestCase):
         self.assertLess(workflow.index(stale_check), workflow.index(guard))
         self.assertLess(workflow.index(guard), workflow.index(commit))
 
+    def test_s1_ownership_guard_authenticates_github_cli(self):
+        workflow = self._workflow_text()
+        publish_marker = "      - name: Publish S-1 watch and researcher queue data\n"
+        self.assertIn(publish_marker, workflow)
+        publish_step = workflow.split(publish_marker, 1)[1]
+        token = "GH_TOKEN: ${{ github.token }}"
+        guard_call = 'gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/ownership-refresh.yml/runs?per_page=100"'
+        self.assertIn(token, publish_step)
+        self.assertIn(guard_call, publish_step)
+        self.assertLess(
+            publish_step.index(token),
+            publish_step.index(guard_call),
+            "S-1 publish step must authenticate GitHub CLI before checking ownership runs",
+        )
+
     def test_s1_update_feed_has_sec_processing_timeout_headroom(self):
         workflow = self._workflow_text()
         update_feed = workflow.split("\n  update-feed:\n", 1)[1]
