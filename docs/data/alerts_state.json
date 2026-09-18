@@ -1,7 +1,20 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-18T21:19:26.394263+00:00",
+  "updated_at": "2026-09-18T21:50:14.826641+00:00",
   "items": {
+    "0001193125-26-395670": {
+      "id": "0001193125-26-395670",
+      "cik": "0002088082",
+      "company": "Electra Therapeutics, Inc.",
+      "form": "424B4",
+      "filed": "2026-09-18",
+      "stage": "priced",
+      "price_range": "14-16",
+      "filing_price": "14-16",
+      "priority": "Medium",
+      "value": 350000010.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526395670/0001193125-26-395670-index.htm"
+    },
     "s1:0001880995": {
       "id": "s1:0001880995",
       "cik": "0001880995",
@@ -66,19 +79,6 @@
       "priority": "High",
       "value": 18750000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2065821/000121390026099701/0001213900-26-099701-index.htm"
-    },
-    "s1:0002088082": {
-      "id": "s1:0002088082",
-      "cik": "0002088082",
-      "company": "Electra Therapeutics, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-09-14",
-      "stage": "pre-pricing",
-      "price_range": "$14.00–$16.00",
-      "filing_price": "$14.00–$16.00",
-      "priority": "High",
-      "value": 325000005,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526389755/0001193125-26-389755-index.htm"
     },
     "s1:0002125355": {
       "id": "s1:0002125355",
@@ -1145,9 +1145,29 @@
       "priority": "High",
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
+    },
+    "s1:0002088082": {
+      "id": "s1:0002088082",
+      "cik": "0002088082",
+      "company": "Electra Therapeutics, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-14",
+      "stage": "pre-pricing",
+      "price_range": "$14.00–$16.00",
+      "filing_price": "$14.00–$16.00",
+      "priority": "High",
+      "value": 325000005,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526389755/0001193125-26-389755-index.htm"
     }
   },
   "ciks": {
+    "0002088082": {
+      "company": "Electra Therapeutics, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-395670",
+      "last_filed": "2026-09-18",
+      "missing_runs": 0
+    },
     "0001880995": {
       "company": "Alopexx, Inc.",
       "stage": "pre-pricing",
@@ -1180,13 +1200,6 @@
       "company": "Little West Holdings Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002065821",
-      "last_filed": "2026-09-14",
-      "missing_runs": 0
-    },
-    "0002088082": {
-      "company": "Electra Therapeutics, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002088082",
       "last_filed": "2026-09-14",
       "missing_runs": 0
     },

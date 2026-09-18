@@ -1,8 +1,23 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-18T21:19:26.394324+00:00",
-  "count": 114,
+  "generated_at": "2026-09-18T21:50:14.826702+00:00",
+  "count": 115,
   "alerts": [
+    {
+      "type": "ipo_priced",
+      "company": "Electra Therapeutics, Inc.",
+      "cik": "0002088082",
+      "filing_id": "0001193125-26-395670",
+      "form": "424B4",
+      "filed": "2026-09-18",
+      "stage": "priced",
+      "priority": "Medium",
+      "summary": "IPO advanced from pre-pricing monitoring to a filed 424B4.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526395670/0001193125-26-395670-index.htm",
+      "detected_at": "2026-09-18T21:50:14.826353+00:00",
+      "new_value": "$350M",
+      "key": "ipo_priced|0001193125-26-395670|0002088082|2026-09-18|$350M"
+    },
     {
       "type": "price_range_update",
       "company": "NuvOx Therapeutics, Inc.",
