@@ -33,6 +33,34 @@ class FinalAccessionIdentityGuardTests(unittest.TestCase):
         self.assertEqual(payload["filings"][0]["ticker"], "ACME")
         self.assertIn("generated_at", payload)
 
+    def test_undashed_final_accession_is_canonicalized_for_sec_urls(self):
+        final = _final(accession_no="000123456726000400")
+        payload, repaired = guard.repair_final_accession_identities({"filings": [final]})
+
+        self.assertEqual(repaired, 1)
+        self.assertEqual(
+            payload["filings"][0]["accession_no"], "0001234567-26-000400"
+        )
+        self.assertIn("generated_at", payload)
+
+    def test_blank_final_accession_recovered_from_undashed_id_is_dashed(self):
+        final = _final(id="000123456726000400", accession_no="")
+        payload, repaired = guard.repair_final_accession_identities({"filings": [final]})
+
+        self.assertEqual(repaired, 1)
+        self.assertEqual(
+            payload["filings"][0]["accession_no"], "0001234567-26-000400"
+        )
+
+    def test_whitespace_around_final_accession_is_canonicalized(self):
+        final = _final(accession_no=" 0001234567-26-000400 ")
+        payload, repaired = guard.repair_final_accession_identities({"filings": [final]})
+
+        self.assertEqual(repaired, 1)
+        self.assertEqual(
+            payload["filings"][0]["accession_no"], "0001234567-26-000400"
+        )
+
     def test_final_without_exact_accession_identity_fails_closed(self):
         final = _final(id="acme-final", accession_no="")
 
