@@ -1,38 +1,31 @@
-#!/usr/bin/env python3
-"""Release gate for exact final-prospectus accession identity.
+"""Protect exact SEC accession identity before 424B4 lifecycle reconciliation.
 
-All published 424B4/Priced rows must retain an SEC accession identity.  The
-public feed normally stores that accession in both ``id`` and
-``accession_no``; older lifecycle passes could occasionally lose the
-duplicated ``accession_no`` value while preserving the accession-shaped
-``id``.
-
-This gate repairs only deterministic duplicate loss and canonical accession
-formatting.  If a published final row has no exact accession source, or has
-conflicting accession identities, publication is blocked rather than
-inferring identity from CIK/ticker/company/date proximity.
+A published final record is an exact SEC filing identity, not merely an issuer-CIK
+state. The public feed normally stores that accession in both ``id`` and
+``accession_no``. If the duplicate ``accession_no`` field is lost during an older
+feed merge, lifecycle code must not fall back to an arbitrary 424B4 under the same
+CIK. Recover the accession only from an accession-shaped record ``id`` and fail
+closed when a final record has no exact filing identity or contains conflicting
+accession identities. Deterministically canonicalize valid accession values to the
+SEC dashed form used by filing URLs.
 """
 
 from __future__ import annotations
 
-import argparse
 import json
 import re
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+
+import dashboard_export
 
 
 _DASHED_ACCESSION = re.compile(r"^\d{10}-\d{2}-\d{6}$")
 _UNDASHED_ACCESSION = re.compile(r"^\d{18}$")
 
 
-def _is_published_final(filing: Dict[str, Any]) -> bool:
-    return str(filing.get("form_type") or "").strip().upper() == "424B4" or str(
-        filing.get("stage") or ""
-    ).strip().lower() == "priced"
-
-
-def _accession_identity(value: Any) -> str:
+def _accession_identity(value):
+    """Return the 18-digit canonical SEC accession only for accession-shaped input."""
     text = str(value or "").strip()
     if _DASHED_ACCESSION.fullmatch(text):
         return text.replace("-", "")
@@ -41,46 +34,50 @@ def _accession_identity(value: Any) -> str:
     return ""
 
 
-def _dashed_accession(identity: str) -> str:
+def _dashed_accession(identity):
+    """Render an exact 18-digit accession identity in canonical SEC dashed form."""
     if not _UNDASHED_ACCESSION.fullmatch(identity):
         return ""
     return f"{identity[:10]}-{identity[10:12]}-{identity[12:]}"
 
 
-def repair_or_reject_final_identity(
-    payload: Dict[str, Any],
-) -> Tuple[Dict[str, Any], int]:
+def repair_final_accession_identities(payload):
+    """Repair or reject ambiguous published 424B4 identities.
+
+    ``dashboard_export`` keys normal SEC final rows by accession, so an
+    accession-shaped ``id`` is authoritative duplicate provenance when the explicit
+    ``accession_no`` field is blank. A final with neither identity cannot safely be
+    reconciled against another filing under the same CIK and therefore blocks
+    release instead of being guessed from issuer/date proximity.
+    """
     filings = payload.get("filings")
     if not isinstance(filings, list):
-        raise RuntimeError("feed payload is missing a filings list")
+        raise ValueError("Public feed must contain a filings list")
 
     repaired = 0
-    normalized: List[Any] = []
-    defects: List[str] = []
-
+    normalized = []
     for filing in filings:
-        if not isinstance(filing, dict) or not _is_published_final(filing):
+        if not isinstance(filing, dict) or str(filing.get("form") or "").upper() != "424B4":
             normalized.append(filing)
             continue
 
         accession_value = str(filing.get("accession_no") or "")
         accession_raw = accession_value.strip()
-        row_id_raw = str(filing.get("id") or "").strip()
         accession = _accession_identity(accession_raw)
+        row_id_raw = str(filing.get("id") or "").strip()
         row_id = _accession_identity(row_id_raw)
 
-        label = (
-            str(filing.get("company_name") or filing.get("cik") or row_id_raw or "unknown")
-            .strip()
-        )
+        if accession_raw and not accession:
+            raise RuntimeError(
+                "Final 424B4 has a malformed SEC accession_no; refusing ambiguous "
+                f"lifecycle reconciliation for {filing.get('company') or filing.get('cik') or 'unknown issuer'}"
+            )
 
         if accession and row_id and accession != row_id:
-            defects.append(
-                f"{label}: conflicting final accession identities "
-                f"(id={row_id_raw!r}, accession_no={accession_raw!r})"
+            raise RuntimeError(
+                "Final 424B4 has conflicting SEC accession identities in id/accession_no; "
+                f"refusing lifecycle reconciliation for {filing.get('company') or filing.get('cik') or 'unknown issuer'}"
             )
-            normalized.append(filing)
-            continue
 
         if accession:
             canonical_accession = _dashed_accession(accession)
@@ -93,76 +90,47 @@ def repair_or_reject_final_identity(
                 normalized.append(filing)
             continue
 
-        if accession_raw:
-            defects.append(
-                f"{label}: invalid final accession_no {accession_raw!r}; "
-                "refusing to infer a replacement"
+        if not row_id:
+            raise RuntimeError(
+                "Final 424B4 lacks an exact SEC accession identity; refusing CIK-only "
+                f"lifecycle reconciliation for {filing.get('company') or filing.get('cik') or 'unknown issuer'}"
             )
-            normalized.append(filing)
-            continue
 
-        if row_id:
-            updated = dict(filing)
-            updated["accession_no"] = _dashed_accession(row_id)
-            normalized.append(updated)
-            repaired += 1
-            continue
+        updated = dict(filing)
+        updated["accession_no"] = _dashed_accession(row_id)
+        normalized.append(updated)
+        repaired += 1
 
-        defects.append(
-            f"{label}: published final record has no exact SEC accession identity"
-        )
-        normalized.append(filing)
-
-    if defects:
-        preview = "; ".join(defects[:5])
-        if len(defects) > 5:
-            preview += f"; ... +{len(defects) - 5} more"
-        raise RuntimeError(
-            "release blocked: published 424B4/Priced accession identity defects: "
-            + preview
-        )
-
-    updated_payload = dict(payload)
-    updated_payload["filings"] = normalized
-    return updated_payload, repaired
+    current = dict(payload)
+    current["filings"] = normalized
+    if repaired:
+        current["generated_at"] = datetime.now(timezone.utc).isoformat()
+    return current, repaired
 
 
-def load_feed(path: Path) -> Dict[str, Any]:
-    loaded = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(loaded, dict):
-        raise RuntimeError("feed root must be an object")
-    return loaded
-
-
-def main(argv: Optional[list[str]] = None) -> int:
-    parser = argparse.ArgumentParser(
-        description="Repair or reject exact accession identity on published final rows"
-    )
-    parser.add_argument(
-        "--feed",
-        type=Path,
-        default=Path("docs/data/filings.json"),
-        help="published feed JSON path",
-    )
-    args = parser.parse_args(argv)
-
-    try:
-        payload = load_feed(args.feed)
-        updated, repaired = repair_or_reject_final_identity(payload)
-    except Exception as exc:
-        print(f"Final accession identity guard failed: {exc}")
-        return 1
+def repair_feed(output_path):
+    output_path = Path(output_path)
+    payload = json.loads(output_path.read_text(encoding="utf-8"))
+    repaired_payload, repaired = repair_final_accession_identities(payload)
 
     if repaired:
-        args.feed.write_text(
-            json.dumps(updated, indent=2, ensure_ascii=True) + "\n",
+        temporary = output_path.with_suffix(output_path.suffix + ".tmp")
+        temporary.write_text(
+            json.dumps(repaired_payload, indent=2, ensure_ascii=False) + "\n",
             encoding="utf-8",
         )
-        print(f"Repaired exact accession identity for {repaired} published final row(s).")
-    else:
-        print("Final accession identity guard passed with no repairs.")
-    return 0
+        temporary.replace(output_path)
+
+    dashboard_export.write_dashboard_csv(repaired_payload.get("filings", []), output_path)
+    return repaired_payload, repaired
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    import sys
+
+    target = Path(sys.argv[1]) if len(sys.argv) > 1 else Path("../docs/data/filings.json")
+    _, repaired_count = repair_feed(target)
+    print(
+        "Final accession identity guard repaired "
+        f"{repaired_count} missing/canonicalized accession field(s); all final identities are exact."
+    )
