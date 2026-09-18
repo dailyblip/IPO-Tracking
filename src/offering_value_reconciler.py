@@ -17,6 +17,7 @@ No secondary count is inferred from arithmetic or from a missing disclosure.
 
 import csv
 import json
+import math
 import os
 import re
 import sys
@@ -42,10 +43,15 @@ class OfferingValueReconciliationError(RuntimeError):
 
 
 def _number(value):
+    if value is None or isinstance(value, bool):
+        return None
     try:
-        return float(str(value).replace(",", "").strip())
+        number = float(str(value).replace(",", "").strip())
     except (TypeError, ValueError):
         return None
+    if not math.isfinite(number):
+        return None
+    return number
 
 
 def _format_value_label(value):
@@ -68,6 +74,25 @@ def _sync_value_label(filing):
     if filing.get("value_label") == expected:
         return False
     filing["value_label"] = expected
+    return True
+
+
+def _sanitize_unknown_offering_value(filing):
+    """Clear invalid populated sizes while preserving an otherwise valid IPO row.
+
+    Unknown offering size is allowed by publication policy. A malformed, non-finite,
+    zero, or negative value must therefore degrade to a blank size rather than act
+    as an exclusion gate or leak incorrect economics into the public feed. This is
+    deliberately non-inferential: no replacement amount is guessed.
+    """
+    raw = filing.get("value")
+    if raw in (None, ""):
+        return False
+    value = _number(raw)
+    if value is not None and value > 0:
+        return False
+    filing["value"] = None
+    filing["value_label"] = "—"
     return True
 
 
@@ -410,6 +435,11 @@ def reconcile_feed(path, today=None):
     updates = {}
     json_changed = False
     for filing in payload.get("filings", []):
+        # Invalid offering values are not a publication gate. Normalize them to the
+        # supported unknown-size state before any SEC recovery attempt so malformed
+        # economics cannot leak while otherwise qualifying operating IPOs remain.
+        if _sanitize_unknown_offering_value(filing):
+            json_changed = True
         # value_label is derived presentation metadata, so it can be repaired from
         # an already-populated authoritative value without refetching old filings.
         # This keeps historical rows consistent without widening any backfill.
