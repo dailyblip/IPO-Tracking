@@ -24,6 +24,9 @@ from ownership_parser import extract_rich_stockholders
 from lockup_parser import extract_holder_lockup_info
 
 REQUEST_DELAY_SECONDS = 0.15
+SEC_FETCH_MAX_ATTEMPTS = 3
+SEC_FETCH_RETRY_BACKOFF_SECONDS = 0.5
+SEC_FETCH_RETRY_STATUS_CODES = {429, 500, 502, 503, 504}
 
 # Section headings vary by filer. List common variants, matched
 # case-insensitively, in priority order.
@@ -59,13 +62,31 @@ def _get_headers() -> dict:
     return {"User-Agent": user_agent}
 
 
+def _is_retryable_fetch_error(exc: requests.RequestException) -> bool:
+    """Return True only for transient transport/SEC availability failures."""
+    if isinstance(exc, (requests.ConnectionError, requests.Timeout)):
+        return True
+    response = getattr(exc, "response", None)
+    return bool(
+        response is not None
+        and response.status_code in SEC_FETCH_RETRY_STATUS_CODES
+    )
+
+
 def fetch_document(url: str) -> BeautifulSoup:
-    """Fetch a filing document and return it as a parsed soup object."""
+    """Fetch a filing document, retrying bounded transient SEC failures."""
     headers = _get_headers()
-    response = requests.get(url, headers=headers, timeout=20)
-    response.raise_for_status()
-    time.sleep(REQUEST_DELAY_SECONDS)
-    return BeautifulSoup(response.text, "lxml")
+    for attempt in range(1, SEC_FETCH_MAX_ATTEMPTS + 1):
+        try:
+            response = requests.get(url, headers=headers, timeout=20)
+            response.raise_for_status()
+            time.sleep(REQUEST_DELAY_SECONDS)
+            return BeautifulSoup(response.text, "lxml")
+        except requests.RequestException as exc:
+            if attempt >= SEC_FETCH_MAX_ATTEMPTS or not _is_retryable_fetch_error(exc):
+                raise
+            time.sleep(SEC_FETCH_RETRY_BACKOFF_SECONDS * (2 ** (attempt - 1)))
+    raise FilingParserError(f"Unable to fetch filing document at {url}")
 
 
 def find_primary_document_url(index_url: str, expected_form_types: list = None) -> str:
