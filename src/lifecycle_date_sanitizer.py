@@ -4,11 +4,12 @@ Never infer a replacement date. The stored ``filing_date`` is the lifecycle's
 initial S-1 date, so it cannot occur after either the SEC filing date of the
 current public row or an already-priced IPO's pricing date. Likewise, a final
 424B4 Pricing Date cannot occur after that final prospectus was filed. Nonblank
-lifecycle values that are not strict ISO dates are also cleared rather than
-allowed to bypass chronology checks. Clear only an unsupported date and keep the
-remaining authoritative lifecycle facts intact; the final-pricing release gate
-will fail closed if a priced row is left without a valid Pricing Date. CSV output
-is regenerated so the public exports remain synchronized.
+lifecycle values that are not strict ISO dates or that fall in the future are
+also cleared rather than allowed to bypass chronology checks. Clear only an
+unsupported date and keep the remaining authoritative lifecycle facts intact;
+the final-pricing release gate will fail closed if a priced row is left without
+a valid Pricing Date. CSV output is regenerated so the public exports remain
+synchronized.
 """
 
 from __future__ import annotations
@@ -31,7 +32,7 @@ def _iso_date(value):
         parsed = date.fromisoformat(raw)
     except ValueError:
         return None
-    return parsed if parsed.isoformat() == raw else None
+    return parsed if parsed.isoformat() == raw and parsed <= date.today() else None
 
 
 def _has_nonblank_value(value):
@@ -50,9 +51,10 @@ def sanitize_payload(payload: dict) -> tuple[dict, int]:
         form = str(filing.get("form") or "").strip().upper()
         stage = str(filing.get("stage") or "").strip().casefold()
 
-        # A malformed nonblank lifecycle value is not authoritative evidence.
-        # Clear it rather than silently treating it as absent while leaving the
-        # invalid public value in place. Never guess a replacement date.
+        # A malformed or future nonblank lifecycle value is not authoritative
+        # evidence. Clear it rather than silently treating it as absent while
+        # leaving the invalid public value in place. Never guess a replacement
+        # date.
         for field, parsed in (
             ("filed", filed_date),
             ("pricing_date", pricing_date),

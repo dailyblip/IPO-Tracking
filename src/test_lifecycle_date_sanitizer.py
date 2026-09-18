@@ -1,6 +1,7 @@
 import json
 import tempfile
 import unittest
+from datetime import date, timedelta
 from pathlib import Path
 
 import lifecycle_date_sanitizer as sanitizer
@@ -56,6 +57,25 @@ class LifecycleDateSanitizerTests(unittest.TestCase):
             "filed": "2026/08/19",
             "filing_date": "2026-08-10T00:00:00Z",
             "pricing_date": 20260818,
+            "offering_price": 17.5,
+        }]}
+        cleaned, changed = sanitizer.sanitize_payload(payload)
+        self.assertEqual(changed, 3)
+        row = cleaned["filings"][0]
+        self.assertIsNone(row["filed"])
+        self.assertIsNone(row["filing_date"])
+        self.assertIsNone(row["pricing_date"])
+        self.assertEqual(row["offering_price"], 17.5)
+
+    def test_clears_future_lifecycle_dates_without_guessing_replacements(self):
+        future = (date.today() + timedelta(days=1)).isoformat()
+        payload = {"filings": [{
+            "company": "Future-Dated IPO",
+            "form": "424B4",
+            "stage": "Priced",
+            "filed": future,
+            "filing_date": future,
+            "pricing_date": future,
             "offering_price": 17.5,
         }]}
         cleaned, changed = sanitizer.sanitize_payload(payload)
