@@ -211,6 +211,8 @@ jobs:
       - name: Validate V1 public feed schema
         run: python src/feed_schema_contract.py docs/data/filings.json
       - name: Publish S-1 watch and researcher queue data
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           if git diff --quiet -- docs/data/s1_watch.json docs/data/filings.json docs/data/filings.csv; then
             echo "S-1 watch and researcher queue data are unchanged."
