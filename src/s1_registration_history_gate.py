@@ -392,13 +392,14 @@ def _candidate_records(*payloads: dict) -> list[dict]:
 
 
 def apply_gate(s1_watch_path: Path, queue_path: Path) -> set[str]:
-    """Remove confirmed already-public, rights-offering, or resale-lineage rows."""
+    """Remove only the exact pre-pricing candidates proven to be non-IPOs."""
     s1_watch_path = Path(s1_watch_path)
     queue_path = Path(queue_path)
     watch_payload = _load_payload(s1_watch_path)
     queue_payload = _load_payload(queue_path)
 
     excluded_ciks = set()
+    excluded_candidates = set()
     for record in _candidate_records(watch_payload, queue_payload):
         already_reporting = already_reporting_before_registration(record)
         transaction_reason = (
@@ -412,6 +413,7 @@ def apply_gate(s1_watch_path: Path, queue_path: Path) -> set[str]:
             cik = str(record.get("cik") or "").zfill(10)
             if cik.strip("0"):
                 excluded_ciks.add(cik)
+                excluded_candidates.add(_candidate_identity(record))
                 if already_reporting:
                     reason = "SEC reporting forms predate the candidate S-1/S-1A"
                 elif transaction_reason:
@@ -423,24 +425,25 @@ def apply_gate(s1_watch_path: Path, queue_path: Path) -> set[str]:
                     f"{record.get('company') or cik}: {reason}"
                 )
 
-    if not excluded_ciks:
+    if not excluded_candidates:
         print(
             "[s1_registration_history_gate] No reporting-history, current-prospectus, "
             "or resale exclusions found"
         )
         return set()
 
+    def keep_row(row: dict) -> bool:
+        if not _is_prepricing_s1(row):
+            return True
+        return _candidate_identity(row) not in excluded_candidates
+
     watch_payload["filings"] = [
         row for row in watch_payload.get("filings", [])
-        if str(row.get("cik") or "").zfill(10) not in excluded_ciks
+        if keep_row(row)
     ]
     queue_payload["filings"] = [
         row for row in queue_payload.get("filings", [])
-        if not (
-            str(row.get("cik") or "").zfill(10) in excluded_ciks
-            and str(row.get("stage") or "").strip().casefold() == "pre-pricing"
-            and str(row.get("form") or "").strip().upper() in FORM_TYPES
-        )
+        if keep_row(row)
     ]
 
     _write_payload(s1_watch_path, watch_payload)
