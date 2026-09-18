@@ -84,6 +84,57 @@ class LifecycleOfferingSizePreservationTests(unittest.TestCase):
         self.assertIsNone(repaired["offering_size_source"])
         self.assertEqual(repaired["offering_size_confidence"], "Unresolved")
 
+    @patch("lifecycle_reconciler.edgar_client.build_filing_index_url", return_value="https://sec.example/final")
+    @patch("lifecycle_reconciler.filing_parser.extract_cover_page_data", return_value={"offering_price": 23.0, "ticker": "TEST"})
+    def test_authoritative_aggregate_survives_incomplete_share_split(self, _cover, _url):
+        record = self._record(
+            price=23.0,
+            value=1_000_000_003.0,
+            primary=13_782_609,
+        )
+        record["value_label"] = "$1.0B"
+        record["offering_size_source"] = (
+            "final 424B4 explicit issuer-only THE OFFERING row; "
+            "authoritative final 424B4 aggregate IPO price table"
+        )
+        record["offering_size_confidence"] = "High"
+
+        repaired = lifecycle_reconciler._apply_final_terms(
+            record, self._meta(), _SoupWithoutExactSize()
+        )
+
+        self.assertEqual(repaired["value"], 1_000_000_003.0)
+        self.assertEqual(repaired["value_label"], "$1.0B")
+        self.assertEqual(repaired["primary_offering_shares"], 13_782_609)
+        self.assertIsNone(repaired["secondary_offering_shares"])
+        self.assertIn(
+            "authoritative final 424B4 aggregate IPO price table",
+            repaired["offering_size_source"],
+        )
+
+    @patch("lifecycle_reconciler.edgar_client.build_filing_index_url", return_value="https://sec.example/final")
+    @patch("lifecycle_reconciler.filing_parser.extract_cover_page_data", return_value={"offering_price": 24.0, "ticker": "TEST"})
+    def test_authoritative_aggregate_is_not_carried_across_final_price_change(self, _cover, _url):
+        record = self._record(
+            price=23.0,
+            value=1_000_000_003.0,
+            primary=13_782_609,
+        )
+        record["value_label"] = "$1.0B"
+        record["offering_size_source"] = (
+            "final 424B4 explicit issuer-only THE OFFERING row; "
+            "authoritative final 424B4 aggregate IPO price table"
+        )
+        record["offering_size_confidence"] = "High"
+
+        repaired = lifecycle_reconciler._apply_final_terms(
+            record, self._meta(), _SoupWithoutExactSize()
+        )
+
+        self.assertEqual(repaired["offering_price"], 24.0)
+        self.assertEqual(repaired["value"], 13_782_609 * 24.0)
+        self.assertNotEqual(repaired["value"], 1_000_000_003.0)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -21,6 +21,9 @@ import final_pricing_release_gate
 import registration_lineage
 
 
+_AUTHORITATIVE_FINAL_AGGREGATE_MARKER = "authoritative final 424b4 aggregate ipo price table"
+
+
 def _canonical_cik(value):
     digits = re.sub(r"\D", "", str(value or ""))
     return digits.zfill(10) if digits else ""
@@ -322,9 +325,11 @@ def _resolved_offering_size_fields(record, price, terms):
 
     Lifecycle repair may successfully verify final price while a conservative parser
     cannot re-extract exact share counts from the same 424B4. That optional failure
-    must not erase an already evidence-supported offering size. When the final price
-    changes, recompute value only from preserved public share quantities; a standalone
-    old value is cleared because carrying it forward would make it stale arithmetic.
+    must not erase an already evidence-supported offering size. An authoritative SEC
+    aggregate remains stronger than an incomplete primary/secondary share split when
+    the final price is unchanged. When the final price changes, recompute value only
+    from preserved public share quantities; a standalone old value is cleared because
+    carrying it forward would make it stale arithmetic.
     """
     total_shares = _share_int(terms.get("total_shares"))
     if total_shares is not None and total_shares > 0:
@@ -350,6 +355,34 @@ def _resolved_offering_size_fields(record, price, terms):
     )
     primary = _share_int(record.get("primary_offering_shares"))
     secondary = _share_int(record.get("secondary_offering_shares"))
+    existing_value = _number(record.get("value"))
+    existing_price = _number(record.get("offering_price"))
+
+    # A release-stage SEC cover-table aggregate is stronger evidence than one known
+    # leg of an incomplete primary/secondary split. Do not temporarily degrade that
+    # authoritative total to a primary-only subtotal just because a lifecycle reparse
+    # cannot recover the missing leg. This preservation is safe only when the final
+    # per-share price is unchanged; a price change still forces fresh arithmetic or a
+    # blank rather than carrying stale economics forward.
+    has_incomplete_split = primary is None or secondary is None
+    if (
+        supported
+        and has_incomplete_split
+        and _AUTHORITATIVE_FINAL_AGGREGATE_MARKER in source.casefold()
+        and existing_value is not None
+        and existing_value > 0
+        and existing_price is not None
+        and abs(existing_price - float(price)) < 1e-9
+    ):
+        return {
+            "value": existing_value,
+            "value_label": _money(existing_value),
+            "primary_offering_shares": primary,
+            "secondary_offering_shares": secondary,
+            "offering_size_source": source,
+            "offering_size_confidence": confidence,
+            "offering_size_conflict": False,
+        }
 
     if supported and (primary is not None or secondary is not None):
         preserved_total = (primary or 0) + (secondary or 0)
@@ -365,8 +398,6 @@ def _resolved_offering_size_fields(record, price, terms):
                 "offering_size_conflict": False,
             }
 
-    existing_value = _number(record.get("value"))
-    existing_price = _number(record.get("offering_price"))
     if (
         supported
         and existing_value is not None
