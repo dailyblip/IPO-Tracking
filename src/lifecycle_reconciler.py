@@ -21,7 +21,7 @@ import final_pricing_release_gate
 import registration_lineage
 
 
-_AUTHORITATIVE_FINAL_AGGREGATE_MARKER = "authoritative final 424B4 aggregate IPO price table"
+_AUTHORITATIVE_FINAL_AGGREGATE_MARKER = "authoritative final 424b4 aggregate ipo price table"
 
 
 def _canonical_cik(value):
