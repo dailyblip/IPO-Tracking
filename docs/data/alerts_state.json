@@ -1,7 +1,20 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-18T02:15:11.682757+00:00",
+  "updated_at": "2026-09-18T02:33:14.527623+00:00",
   "items": {
+    "s1:0001880995": {
+      "id": "s1:0001880995",
+      "cik": "0001880995",
+      "company": "Alopexx, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-17",
+      "stage": "pre-pricing",
+      "price_range": "$10.00–$12.00",
+      "filing_price": "$10.00–$12.00",
+      "priority": "High",
+      "value": 33000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026101026/0001213900-26-101026-index.htm"
+    },
     "s1:0001966126": {
       "id": "s1:0001966126",
       "cik": "0001966126",
@@ -287,19 +300,6 @@
       "priority": "High",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2109801/000149315226038800/0001493152-26-038800-index.htm"
-    },
-    "s1:0001880995": {
-      "id": "s1:0001880995",
-      "cik": "0001880995",
-      "company": "Alopexx, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-08-17",
-      "stage": "pre-pricing",
-      "price_range": "$10.00–$12.00",
-      "filing_price": "$10.00–$12.00",
-      "priority": "High",
-      "value": 33000000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026090319/0001213900-26-090319-index.htm"
     },
     "0001185185-26-003448": {
       "id": "0001185185-26-003448",
@@ -1148,6 +1148,13 @@
     }
   },
   "ciks": {
+    "0001880995": {
+      "company": "Alopexx, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001880995",
+      "last_filed": "2026-09-17",
+      "missing_runs": 0
+    },
     "0001966126": {
       "company": "NuvOx Therapeutics, Inc.",
       "stage": "pre-pricing",
@@ -1299,13 +1306,6 @@
       "company": "Varsal Tech, Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002109801",
-      "last_filed": "2026-08-17",
-      "missing_runs": 0
-    },
-    "0001880995": {
-      "company": "Alopexx, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001880995",
       "last_filed": "2026-08-17",
       "missing_runs": 0
     },
