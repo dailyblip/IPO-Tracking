@@ -70,17 +70,31 @@ def _get_or_create_worksheet(spreadsheet, title, header):
     return worksheet
 
 
+def _normalize_identity_text(value) -> str:
+    return " ".join(str(value or "").split()).casefold()
+
+
 def _row_key(row: dict) -> tuple:
-    """Unique identity for a row: one ticker/holder combination."""
-    return (row.get("Ticker", "").upper(), row.get("Holder Name", "").strip().lower())
+    """Stable row identity scoped to issuer, ticker, and holder.
+
+    Ticker alone is not a safe issuer identity: it may be blank before an
+    exchange symbol is resolved and can be reused over time. Including the
+    normalized company name prevents one issuer's holder row from overwriting
+    another issuer that happens to share the same blank/reused ticker.
+    """
+    return (
+        _normalize_identity_text(row.get("Company Name")),
+        str(row.get("Ticker") or "").strip().upper(),
+        _normalize_identity_text(row.get("Holder Name")),
+    )
 
 
 def fetch_existing_rows(spreadsheet_id: str) -> dict:
     """
-    Fetch all current rows from the main tab, keyed by (ticker, holder
-    name), so callers (e.g. qc_review.py) can compare today's values
-    against the last run before writing. Returns {} if the tab is
-    empty or doesn't exist yet.
+    Fetch all current rows from the main tab, keyed by normalized
+    (company name, ticker, holder name), so callers (e.g. qc_review.py)
+    can compare today's values against the last run before writing.
+    Returns {} if the tab is empty or doesn't exist yet.
     """
     client = _get_client()
     spreadsheet = client.open_by_key(spreadsheet_id)
@@ -122,9 +136,9 @@ def upsert_rows(spreadsheet_id: str, rows: list) -> dict:
     Write or update rows in the main IPO Tracker tab.
 
     `rows` is a list of dicts keyed by the COLUMNS names above.
-    Existing rows (matched by ticker + holder name) are updated in
-    place; new combinations are appended. Rows with a QC Status other
-    than "Verified" are also mirrored to the QC Flags tab.
+    Existing rows (matched by company name + ticker + holder name) are
+    updated in place; new combinations are appended. Rows with a QC
+    Status other than "Verified" are also mirrored to the QC Flags tab.
 
     Returns a summary dict: {"new": n, "updated": n, "flagged": n}
     """
