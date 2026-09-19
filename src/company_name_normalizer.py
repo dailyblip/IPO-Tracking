@@ -9,14 +9,42 @@ from pathlib import Path
 
 KEEP_UPPER = {"AI", "US", "USA", "UK", "LLC", "LLP", "LP", "REIT"}
 BRAND_OVERRIDES = {"SPACEX": "SpaceX"}
+SEC_JURISDICTION_CODES = {
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+    "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+    "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+    "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+    "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
+    "DC", "AS", "GU", "MP", "PR", "VI",
+}
+_SEC_JURISDICTION_SUFFIX_RE = re.compile(
+    r"\s*/\s*([A-Z]{2})\s*/?\s*$",
+    flags=re.IGNORECASE,
+)
+
+
+def _strip_terminal_sec_jurisdiction(value: str) -> str:
+    """Remove only a recognized SEC-style U.S. jurisdiction suffix.
+
+    SEC issuer strings commonly end in markers such as ``/DE/`` or `` / NV``.
+    A generic two-letter matcher can also destroy legitimate mixed-case brands
+    that end in slash notation (for example ``Example/AI``). Restrict removal to
+    actual U.S. state/territory postal codes so normalization never rewrites an
+    otherwise-correct issuer identity merely because its final token is two letters.
+    """
+    match = _SEC_JURISDICTION_SUFFIX_RE.search(value)
+    if not match or match.group(1).upper() not in SEC_JURISDICTION_CODES:
+        return value
+    return value[:match.start()].rstrip()
 
 
 def normalize_company_name(value: str) -> str:
     raw = " ".join(str(value or "").split())
     # SEC company-name strings can include a terminal state-of-incorporation marker
     # such as /DE/, /DE, or / DE. It is provenance metadata, not part of the issuer
-    # display name.
-    raw = re.sub(r"\s*/\s*[A-Z]{2}\s*/?\s*$", "", raw, flags=re.IGNORECASE).rstrip()
+    # display name. Restrict stripping to recognized jurisdictions so a legitimate
+    # brand suffix such as /AI is preserved.
+    raw = _strip_terminal_sec_jurisdiction(raw)
     if not raw or raw != raw.upper() or not re.search(r"[A-Z]", raw):
         return raw
 

@@ -37,6 +37,11 @@ class CompanyNameNormalizerTests(unittest.TestCase):
             "Example/AI Labs",
         )
 
+    def test_preserves_terminal_slash_brand_tokens_that_are_not_jurisdictions(self):
+        self.assertEqual(normalize_company_name("Example/AI"), "Example/AI")
+        self.assertEqual(normalize_company_name("Example/UK"), "Example/UK")
+        self.assertEqual(normalize_company_name("Example/ZZ"), "Example/ZZ")
+
     def test_preserves_known_acronyms_brands_and_roman_numerals(self):
         self.assertEqual(normalize_company_name("FIGURE AI, INC."), "Figure AI, Inc.")
         self.assertEqual(normalize_company_name("SPACEX"), "SpaceX")
