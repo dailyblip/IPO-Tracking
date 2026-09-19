@@ -44,6 +44,12 @@ REPORTING_FORMS = {
     # from a Securities Act registration that never resulted in a completed IPO.
     "15-12B", "15-12B/A", "15-12G", "15-12G/A",
     "6-K", "6-K/A", "20-F", "20-F/A", "40-F", "40-F/A",
+    # Foreign-private-issuer Exchange Act registration statements are the direct
+    # counterparts to domestic Form 10 registration statements. A strictly prior
+    # Section 12(b) or 12(g) registration proves the issuer was already in the
+    # public reporting system before the candidate 424B4.
+    "20FR12B", "20FR12B/A", "20FR12G", "20FR12G/A",
+    "40FR12B", "40FR12B/A", "40FR12G", "40FR12G/A",
     "S-3", "S-3/A", "S-3ASR", "S-3ASR/A", "S-3D", "S-3DPOS", "S-3MEF",
     "F-3", "F-3/A", "F-3ASR", "F-3ASR/A", "F-3D", "F-3DPOS", "F-3MEF",
     "424B4",
