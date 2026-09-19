@@ -37,6 +37,18 @@ _GENERIC_NAME_TOKENS = {
     "technologies", "solutions", "systems", "international", "global",
 }
 _MARKET_VALUE_SIGNAL_MARKERS = ("currently valued", "current market value")
+_SEC_JURISDICTION_CODES = {
+    "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+    "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+    "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+    "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+    "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY",
+    "DC", "AS", "GU", "MP", "PR", "VI",
+}
+_SEC_JURISDICTION_SUFFIX_RE = re.compile(
+    r"\s*/\s*([A-Z]{2})\s*/?\s*$",
+    flags=re.IGNORECASE,
+)
 
 
 class QuoteIdentityError(RuntimeError):
@@ -50,7 +62,11 @@ class QuoteProviderError(QuoteIdentityError):
 def _identity_tokens(name):
     raw_name = str(name or "").strip()
     # SEC issuer strings can carry a terminal incorporation marker such as /DE/.
-    raw_name = re.sub(r"/[A-Z]{2}/\s*$", "", raw_name, flags=re.IGNORECASE)
+    # Strip only recognized jurisdiction codes so a legitimate brand suffix such
+    # as /AI or /UK remains part of the issuer identity used for quote matching.
+    match = _SEC_JURISDICTION_SUFFIX_RE.search(raw_name)
+    if match and match.group(1).upper() in _SEC_JURISDICTION_CODES:
+        raw_name = raw_name[:match.start()].rstrip()
     tokens = re.findall(r"[a-z0-9]+", raw_name.casefold())
     while tokens and tokens[-1] in _CORPORATE_SUFFIXES:
         tokens.pop()
