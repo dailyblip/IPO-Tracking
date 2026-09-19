@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-19T14:09:18.172354+00:00",
+  "generated_at": "2026-09-19T14:20:02.245151+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -30,7 +30,7 @@
       ],
       "people": [
         {
-          "name": "Michael Thomas 1",
+          "name": "Michael Thomas",
           "shares": null,
           "stanford_university_bio": false,
           "is_beneficial_owner": true,
@@ -43,7 +43,7 @@
           "shares_after_ipo": null
         },
         {
-          "name": "Kuoh Lee 2",
+          "name": "Kuoh Lee",
           "shares": null,
           "stanford_university_bio": false,
           "is_beneficial_owner": true,
@@ -56,7 +56,7 @@
           "shares_after_ipo": null
         },
         {
-          "name": "EWDV Fund CT, LLC 3",
+          "name": "EWDV Fund CT, LLC",
           "shares": null,
           "stanford_university_bio": false,
           "is_beneficial_owner": true,
