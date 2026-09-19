@@ -2,6 +2,7 @@ name: Research Monitor Alerts
 
 permissions:
   contents: write
+  actions: read
 
 # Alerts also commit to main. Serialize them with every workflow that writes
 # Research Monitor feed/state files so an alert commit cannot make a feed-writer
@@ -62,11 +63,28 @@ jobs:
         run: python src/research_alerts.py
 
       - name: Publish alert feed and state
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           if git diff --quiet -- docs/data/alerts.json docs/data/alerts_state.json; then
             echo "Research alert feed is unchanged."
             exit 0
           fi
+
+          # Ownership-history replay has priority over alert-state publication.
+          # Shared concurrency prevents simultaneous writers, but this alert run can
+          # already hold the writer slot while ownership-refresh is queued. Re-check
+          # the actual ownership workflow immediately before committing and defer
+          # whenever an ownership run has not yet completed.
+          ownership_active="$(
+            gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/ownership-refresh.yml/runs?per_page=100" \
+              --jq '[.workflow_runs[] | select(.status != "completed")] | length'
+          )"
+          if [ "$ownership_active" -gt 0 ]; then
+            echo "Ownership history refresh is queued or running; deferring Research Monitor alert publication."
+            exit 0
+          fi
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/data/alerts.json docs/data/alerts_state.json
