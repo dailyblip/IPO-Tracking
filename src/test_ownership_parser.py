@@ -138,6 +138,21 @@ class OwnershipParserTests(unittest.TestCase):
         self.assertEqual(rows[0]['name'], 'AA&D Holdings, LP')
         self.assertEqual(rows[0]['shares_after'], 138243518)
 
+    def test_markup_backed_sec_footnotes_do_not_pollute_holder_names(self):
+        html="""<table>
+        <tr><th>Name of beneficial owner</th><th>Shares beneficially owned</th></tr>
+        <tr><td>Michael Thomas<sup>1</sup></td><td>1,000<sup>1</sup></td></tr>
+        <tr><td>Kuoh Lee<span style='vertical-align: super'>2</span></td><td>2,000</td></tr>
+        <tr><td>EWDV Fund CT, LLC<a href='#fn3'>3</a></td><td>3,000</td></tr>
+        <tr><td>Growth Fund 3</td><td>4,000</td></tr>
+        </table>"""
+        rows=parse_ownership_table(BeautifulSoup(html,'lxml').find('table'))
+        self.assertEqual(
+            [row['name'] for row in rows],
+            ['Michael Thomas', 'Kuoh Lee', 'EWDV Fund CT, LLC', 'Growth Fund 3'],
+        )
+        self.assertEqual([row['shares_after'] for row in rows], [1000, 2000, 3000, 4000])
+
 
 class HolderIdentityQaTests(unittest.TestCase):
     def test_canonical_holder_name_strips_sec_dot_leaders(self):
