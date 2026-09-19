@@ -80,6 +80,10 @@ _SHARE_TO_PERCENT = {
 _SHARE_CLASS_RE = re.compile(
     r"\bclass\s+([a-z0-9]+)\s+(?:common\s+)?(?:stock|shares?)\b", re.I
 )
+_FOOTNOTE_MARKER_RE = re.compile(
+    r"^(?:\(?\d+[a-z]?\)?(?:\s*[,;]\s*\(?\d+[a-z]?\)?)*)$|^[†‡*]+$",
+    re.I,
+)
 # The public Research Monitor ownership schema describes common-stock economics.
 # SEC prospectuses can include separate beneficial-ownership tables for preferred
 # securities that convert at the IPO. Those rows are valid filing disclosures but
@@ -97,6 +101,31 @@ def _clean(text):
     # They are presentation artifacts, never part of a person's/entity's name.
     value = re.sub(r"\s*\.{3,}\s*$", "", value)
     return value.strip()
+
+
+def _cell_text(cell):
+    """Return SEC table-cell text without markup-backed footnote markers."""
+    parts = []
+    for text_node in cell.find_all(string=True):
+        text = _clean(text_node)
+        if not text:
+            continue
+        if _FOOTNOTE_MARKER_RE.fullmatch(text):
+            is_footnote = False
+            for ancestor in text_node.parents:
+                if ancestor is cell:
+                    break
+                style = str(ancestor.get("style", "")).replace(" ", "").lower()
+                if ancestor.name == "sup" or "vertical-align:super" in style:
+                    is_footnote = True
+                    break
+                if ancestor.name == "a" and str(ancestor.get("href", "")).startswith("#"):
+                    is_footnote = True
+                    break
+            if is_footnote:
+                continue
+        parts.append(text)
+    return _clean(" ".join(parts))
 
 
 def _clean_holder_label(value):
@@ -141,7 +170,7 @@ def looks_like_document_heading(value):
 def _expand_row(row):
     out = []
     for cell in row.find_all(["td", "th"], recursive=False):
-        text = _clean(cell.get_text(" ", strip=True))
+        text = _cell_text(cell)
         try:
             span = max(1, int(cell.get("colspan", 1)))
         except (TypeError, ValueError):
@@ -168,7 +197,7 @@ def _matrix(table):
             while column in values:
                 column += 1
 
-            text = _clean(cell.get_text(" ", strip=True))
+            text = _cell_text(cell)
             try:
                 colspan = max(1, int(cell.get("colspan", 1)))
             except (TypeError, ValueError):
