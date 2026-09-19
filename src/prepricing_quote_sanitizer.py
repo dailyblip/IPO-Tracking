@@ -1,4 +1,4 @@
-"""Remove market-price fields from IPO records that are not safely quoteable.
+"""Sanitize unsafe market-price fields and public holder currency precision.
 
 Ticker symbols can collide with already-trading securities before an IPO begins
 trading. Publishing those provider quotes on an S-1/S-1A record is therefore a
@@ -8,6 +8,11 @@ IPO price, and a positive current quote observed no earlier than the final SEC
 filing date. A malformed/incomplete lifecycle or a priced row without a
 publishable quote must fail closed and lose market-derived holder values rather
 than retaining stale quote arithmetic.
+
+Public holder currency values are also normalized to cents before release. They
+are arithmetic outputs, not additional source evidence, and binary floating-point
+tails must not leak into JSON/CSV output. Share counts and per-share market/IPO
+prices are left untouched.
 """
 
 from __future__ import annotations
@@ -25,6 +30,13 @@ _MARKET_DERIVED_PERSON_FIELDS = (
     "locked_value",
     "valuation_as_of",
 )
+_PUBLIC_PERSON_CURRENCY_FIELDS = (
+    "cash_value",
+    "ipo_value",
+    "liquid_value",
+    "locked_value",
+    "cash_realized_ipo",
+)
 
 
 def _number(value):
@@ -35,6 +47,22 @@ def _number(value):
     except (TypeError, ValueError):
         return None
     return number if math.isfinite(number) else None
+
+
+def _normalize_public_person_currency(person: dict) -> bool:
+    """Remove binary-float tails from public holder dollar amounts only."""
+    changed = False
+    for field in _PUBLIC_PERSON_CURRENCY_FIELDS:
+        if field not in person or person.get(field) in (None, ""):
+            continue
+        number = _number(person.get(field))
+        if number is None:
+            continue
+        normalized = round(number, 2)
+        if person.get(field) != normalized:
+            person[field] = normalized
+            changed = True
+    return changed
 
 
 def _canonical_nonfuture_date(value):
@@ -119,43 +147,54 @@ def has_release_safe_market_quote(filing: dict) -> bool:
 def sanitize_payload(payload: dict) -> tuple[dict, int]:
     changed = 0
     for filing in payload.get("filings", []):
-        if not isinstance(filing, dict) or has_release_safe_market_quote(filing):
+        if not isinstance(filing, dict):
             continue
-        touched = False
-        for field in ("current_price", "price_updated"):
-            if field in filing:
-                filing.pop(field, None)
-                touched = True
 
-        # Without a release-safe filing-level quote, holder-level current market
-        # values have no publishable basis. Preserve SEC-supported ownership facts,
-        # IPO-value arithmetic, and realized IPO cash; clear only quote derivatives.
-        for person in filing.get("people", []):
-            if not isinstance(person, dict):
-                continue
-            for field in _MARKET_DERIVED_PERSON_FIELDS:
-                if field in person:
-                    person.pop(field, None)
+        touched = False
+        quote_safe = has_release_safe_market_quote(filing)
+        if not quote_safe:
+            for field in ("current_price", "price_updated"):
+                if field in filing:
+                    filing.pop(field, None)
                     touched = True
 
-        # A stale public signal can imply that a current quote still exists even
-        # after the quote itself is absent. Remove every known market-value wording,
-        # not only the legacy "Largest named holding" sentence.
-        signals = filing.get("signals")
-        if isinstance(signals, list):
-            filtered_signals = [
-                signal
-                for signal in signals
-                if not (
-                    isinstance(signal, str)
-                    and any(
-                        marker in signal.casefold()
-                        for marker in _MARKET_VALUE_SIGNAL_MARKERS
+            # Without a release-safe filing-level quote, holder-level current market
+            # values have no publishable basis. Preserve SEC-supported ownership facts,
+            # IPO-value arithmetic, and realized IPO cash; clear only quote derivatives.
+            for person in filing.get("people", []):
+                if not isinstance(person, dict):
+                    continue
+                for field in _MARKET_DERIVED_PERSON_FIELDS:
+                    if field in person:
+                        person.pop(field, None)
+                        touched = True
+
+            # A stale public signal can imply that a current quote still exists even
+            # after the quote itself is absent. Remove every known market-value wording,
+            # not only the legacy "Largest named holding" sentence.
+            signals = filing.get("signals")
+            if isinstance(signals, list):
+                filtered_signals = [
+                    signal
+                    for signal in signals
+                    if not (
+                        isinstance(signal, str)
+                        and any(
+                            marker in signal.casefold()
+                            for marker in _MARKET_VALUE_SIGNAL_MARKERS
+                        )
                     )
-                )
-            ]
-            if len(filtered_signals) != len(signals):
-                filing["signals"] = filtered_signals
+                ]
+                if len(filtered_signals) != len(signals):
+                    filing["signals"] = filtered_signals
+                    touched = True
+
+        # Currency fields that survive the release-safety checks are public dollar
+        # amounts. Normalize only those derived amounts to cents; do not alter share
+        # counts or per-share current/final IPO prices, which may validly use finer
+        # precision.
+        for person in filing.get("people", []):
+            if isinstance(person, dict) and _normalize_public_person_currency(person):
                 touched = True
 
         if touched:
@@ -182,8 +221,8 @@ def sanitize_file(path: str | Path) -> int:
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Remove unsafe lifecycle or unsupported market-derived quote fields")
+    parser = argparse.ArgumentParser(description="Sanitize unsafe quote fields and public holder currency precision")
     parser.add_argument("path", nargs="?", default="../docs/data/filings.json")
     args = parser.parse_args()
     count = sanitize_file(args.path)
-    print(f"Sanitized {count} filing(s) with unsafe market-derived fields")
+    print(f"Sanitized {count} filing(s) with quote/currency cleanup")
