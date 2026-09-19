@@ -62,6 +62,50 @@ class FinalTickerReconcilerTests(unittest.TestCase):
         self.assertNotIn("current_price", filing)
         self.assertNotIn("price_updated", filing)
 
+    def test_recovery_clears_all_quote_derived_holder_values_and_signals(self):
+        payload = self._payload()
+        filing = payload["filings"][0]
+        filing["current_price"] = 41.25
+        filing["price_updated"] = "2026-09-17T15:00:00+00:00"
+        filing["people"] = [
+            {
+                "name": "Example Holder",
+                "shares": 1000,
+                "cash_value": 41250.0,
+                "liquid_value": 10000.0,
+                "locked_value": 31250.0,
+                "valuation_as_of": "2026-09-17",
+                "ipo_value": 23000.0,
+            }
+        ]
+        filing["signals"] = [
+            "Example Holder currently valued at approximately $41,250",
+            "Current market value reflects the latest verified quote",
+            "Final 424B4 confirms the offering terms",
+        ]
+
+        payload, recovered = final_ticker_reconciler.recover_payload(
+            payload,
+            soup_loader=lambda record: self._jersey_soup(),
+            attempts=1,
+            retry_delay_seconds=0,
+        )
+
+        self.assertEqual(recovered, 1)
+        filing = payload["filings"][0]
+        self.assertEqual(filing["ticker"], "JMKE")
+        self.assertNotIn("current_price", filing)
+        self.assertNotIn("price_updated", filing)
+        person = filing["people"][0]
+        self.assertEqual(person["shares"], 1000)
+        self.assertEqual(person["ipo_value"], 23000.0)
+        for field in ("cash_value", "liquid_value", "locked_value", "valuation_as_of"):
+            self.assertNotIn(field, person)
+        self.assertEqual(
+            filing["signals"],
+            ["Final 424B4 confirms the offering terms"],
+        )
+
     def test_final_cover_silent_about_ticker_remains_blank(self):
         payload = self._payload()
         silent = BeautifulSoup(
