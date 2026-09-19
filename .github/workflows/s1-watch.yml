@@ -37,6 +37,8 @@ on:
       - 'src/test_s1_price_range_history.py'
       - 'src/public_feed_policy.py'
       - 'src/test_public_feed_policy.py'
+      - 'src/offering_value_label_normalizer.py'
+      - 'src/test_offering_value_label_normalizer.py'
       - 'src/company_name_normalizer.py'
       - 'src/test_company_name_normalizer.py'
       - 'src/lifecycle_date_sanitizer.py'
@@ -88,7 +90,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run S-1 monitor tests
         working-directory: src
-        run: python -m unittest test_s1_monitor.py test_s1_preliminary_price_gate.py test_resale_registration_exclusion.py test_fullpac_real_proceeds_regression.py test_s1_registration_history_gate.py test_archived_reporting_history_gate.py test_resale_registration_sanitizer.py test_cover_price_context.py test_ticker_listing_reconciler.py test_filing_price_history.py test_s1_price_range_history.py test_public_feed_policy.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py test_feed_schema_contract.py test_s1_stale_publication_guard.py test_s1_quote_release_contract.py test_s1_ownership_commit_guard.py -v
+        run: python -m unittest test_s1_monitor.py test_s1_preliminary_price_gate.py test_resale_registration_exclusion.py test_fullpac_real_proceeds_regression.py test_s1_registration_history_gate.py test_archived_reporting_history_gate.py test_resale_registration_sanitizer.py test_cover_price_context.py test_ticker_listing_reconciler.py test_filing_price_history.py test_s1_price_range_history.py test_public_feed_policy.py test_offering_value_label_normalizer.py test_company_name_normalizer.py test_lifecycle_date_sanitizer.py test_feed_schema_contract.py test_s1_stale_publication_guard.py test_s1_quote_release_contract.py test_s1_ownership_commit_guard.py -v
 
   update-feed:
     if: ${{ github.event_name != 'pull_request' && (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success') }}
@@ -159,6 +161,9 @@ jobs:
         env:
           SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
         run: python public_feed_policy.py ../docs/data/filings.json
+      - name: Normalize offering-value display labels
+        working-directory: src
+        run: python offering_value_label_normalizer.py ../docs/data/filings.json
       - name: Recover authoritative preliminary filing-price ranges
         working-directory: src
         env:
