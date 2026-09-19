@@ -63,6 +63,42 @@ class OfferingValueLabelNormalizerTests(unittest.TestCase):
         self.assertEqual(persisted["filings"][0]["value_label"], "—")
         self.assertEqual(persisted["filings"][1]["value_label"], "—")
 
+    def test_file_normalization_also_enforces_public_currency_precision(self):
+        payload = {
+            "schema_version": 1,
+            "filings": [{
+                "id": "priced-writer-output",
+                "company": "Example Issuer",
+                "ticker": "EXM",
+                "form": "424B4",
+                "stage": "Priced",
+                "filed": "2026-08-27",
+                "pricing_date": "2026-08-26",
+                "value": 18_750_000,
+                "value_label": "$19M",
+                "offering_price": 17.5,
+                "current_price": 13.6917,
+                "price_updated": "2026-08-27T20:05:29+00:00",
+                "people": [{
+                    "name": "Example Holder",
+                    "shares": 1_260_126,
+                    "cash_value": 17_251_124.939999998,
+                    "ipo_value": 22_052_205.000000004,
+                }],
+            }],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "filings.json"
+            path.write_text(json.dumps(payload), encoding="utf-8")
+
+            changed = normalize_file(path)
+            persisted = json.loads(path.read_text(encoding="utf-8"))["filings"][0]
+
+        self.assertEqual(changed, 0)
+        self.assertEqual(persisted["current_price"], 13.6917)
+        self.assertEqual(persisted["people"][0]["cash_value"], 17_251_124.94)
+        self.assertEqual(persisted["people"][0]["ipo_value"], 22_052_205.0)
+
 
 if __name__ == "__main__":
     unittest.main()
