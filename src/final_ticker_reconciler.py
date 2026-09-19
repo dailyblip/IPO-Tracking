@@ -30,6 +30,13 @@ _LISTING_PATTERNS = (
     r"\bunder\s+(?:the\s+)?ticker\s+symbol\s*[\"“]?([A-Z]{1,6})[\"”]?",
     r"\btrading\s+symbol\s*[:\-]?\s*[\"“]?([A-Z]{1,6})[\"”]?",
 )
+_MARKET_VALUE_SIGNAL_MARKERS = ("currently valued", "current market value")
+_MARKET_DERIVED_PERSON_FIELDS = (
+    "cash_value",
+    "liquid_value",
+    "locked_value",
+    "valuation_as_of",
+)
 
 
 def _canonical_cik(value) -> str:
@@ -75,6 +82,34 @@ def _extract_explicit_listing_ticker(soup) -> str:
     if len(tickers) != 1:
         return ""
     return next(iter(tickers))
+
+
+def _clear_quote_derived_fields(filing: dict) -> None:
+    """Remove market values that cannot survive an identity-repair handoff."""
+    filing.pop("current_price", None)
+    filing.pop("price_updated", None)
+
+    people = filing.get("people")
+    if isinstance(people, list):
+        for person in people:
+            if not isinstance(person, dict):
+                continue
+            for field in _MARKET_DERIVED_PERSON_FIELDS:
+                person.pop(field, None)
+
+    signals = filing.get("signals")
+    if isinstance(signals, list):
+        filing["signals"] = [
+            signal
+            for signal in signals
+            if not (
+                isinstance(signal, str)
+                and any(
+                    marker in signal.casefold()
+                    for marker in _MARKET_VALUE_SIGNAL_MARKERS
+                )
+            )
+        ]
 
 
 def _load_exact_final_soup(record: dict):
@@ -150,10 +185,11 @@ def recover_payload(
             continue
 
         filing["ticker"] = ticker
-        # Ticker recovery is SEC identity repair only. Never resurrect a quote that
-        # lifecycle/identity gates withheld or cleared.
-        filing.pop("current_price", None)
-        filing.pop("price_updated", None)
+        # Ticker recovery is SEC identity repair only. Never resurrect or preserve
+        # market-derived economics that were calculated while ticker identity was
+        # unresolved. The normal priced-IPO quote refresh may repopulate them later
+        # from a verified final lifecycle state.
+        _clear_quote_derived_fields(filing)
         recovered += 1
         print(
             "Final ticker recovery: restored SEC-confirmed ticker "
