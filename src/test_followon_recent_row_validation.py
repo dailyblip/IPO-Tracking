@@ -62,6 +62,34 @@ class FollowOnRecentRowValidationTests(unittest.TestCase):
                 self._payload(), submissions_loader=lambda cik: submissions
             )
 
+    def test_missing_final_filed_date_does_not_substitute_pricing_date(self):
+        payload = {
+            "filings": [
+                {
+                    "id": "candidate",
+                    "company": "Candidate Co",
+                    "cik": "1",
+                    "accession_no": "0000000001-26-000001",
+                    "form": "424B4",
+                    "filed": "",
+                    "pricing_date": "2026-08-07",
+                }
+            ]
+        }
+        loader_calls = []
+
+        def loader(cik):
+            loader_calls.append(cik)
+            raise AssertionError("follow-on sanitizer must defer without an SEC filed date")
+
+        cleaned, removed = followon_sanitizer.sanitize_payload(
+            payload, submissions_loader=loader
+        )
+
+        self.assertIs(cleaned, payload)
+        self.assertEqual(removed, [])
+        self.assertEqual(loader_calls, [])
+
 
 if __name__ == "__main__":
     unittest.main()
