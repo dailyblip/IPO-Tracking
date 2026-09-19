@@ -1,4 +1,4 @@
-"""Normalize Research Monitor offering-value display labels without changing raw values.
+"""Normalize Research Monitor writer output without changing authoritative offering values.
 
 The Daily pipeline already canonicalizes ``value_label`` while reconciling final
 424B4 offering values. The S-1 writer does not run that SEC reconciliation step,
@@ -6,6 +6,11 @@ so it can otherwise publish a different label for the same unchanged raw
 ``value``. Keep writer output convergent by applying the dashboard's existing
 money formatter only to the derived display label. No offering value is inferred,
 replaced, rounded, or used as an eligibility gate here.
+
+The S-1 writer also reaches this normalizer before its final quote-identity review.
+Run the shared public sanitizer after label normalization so regenerated holder
+dollar arithmetic cannot bypass the cents-normalization and fail-closed quote
+contract already used by the other public-feed writers.
 """
 
 from __future__ import annotations
@@ -15,6 +20,7 @@ import json
 from pathlib import Path
 
 import dashboard_export
+import prepricing_quote_sanitizer
 
 
 def normalize_payload(payload: dict) -> tuple[dict, int]:
@@ -39,7 +45,7 @@ def normalize_payload(payload: dict) -> tuple[dict, int]:
 
 
 def normalize_file(path: str | Path) -> int:
-    """Normalize one feed atomically and return the number of changed records."""
+    """Normalize one feed atomically and enforce shared public-release sanitation."""
     path = Path(path)
     payload = json.loads(path.read_text(encoding="utf-8"))
     payload, changed = normalize_payload(payload)
@@ -50,6 +56,12 @@ def normalize_file(path: str | Path) -> int:
             encoding="utf-8",
         )
         temporary.replace(path)
+
+    # Preserve the label normalizer's return contract while ensuring the S-1 writer
+    # cannot reintroduce floating-point tails or unsafe quote-derived holder values.
+    # The shared sanitizer also keeps the flattened CSV synchronized when it changes
+    # the public JSON feed.
+    prepricing_quote_sanitizer.sanitize_file(path)
     return changed
 
 
