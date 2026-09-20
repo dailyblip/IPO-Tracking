@@ -50,11 +50,17 @@ REPORTING_FORMS = {
     # public reporting system before the candidate 424B4.
     "20FR12B", "20FR12B/A", "20FR12G", "20FR12G/A",
     "40FR12B", "40FR12B/A", "40FR12G", "40FR12G/A",
-    # Schedule 14A proxy statements and Schedule 14C information statements are
-    # Exchange Act Section 14 filings for securities already registered under
-    # Section 12. A strictly prior issuer filing is therefore affirmative evidence
-    # that a later 424B4 is not the issuer's first public offering.
+    # Registrant/management Schedule 14A proxy statements and Schedule 14C
+    # information statements are Exchange Act filings for securities already
+    # registered under Section 12. Include additional, merger, and revised
+    # management variants as affirmative prior-public evidence. Deliberately do
+    # not treat non-management/third-party proxy variants as issuer evidence.
     "PRE 14A", "DEF 14A", "PRE 14C", "DEF 14C",
+    "DEFA14A", "DEFA14C",
+    "DEFM14A", "DEFM14C",
+    "DEFR14A", "DEFR14C",
+    "PREM14A", "PREM14C",
+    "PRER14A", "PRER14C",
     "S-3", "S-3/A", "S-3ASR", "S-3ASR/A", "S-3D", "S-3DPOS", "S-3MEF",
     "F-3", "F-3/A", "F-3ASR", "F-3ASR/A", "F-3D", "F-3DPOS", "F-3MEF",
     "424B4",
