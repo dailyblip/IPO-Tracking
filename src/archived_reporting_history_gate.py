@@ -9,11 +9,10 @@ a first-time operating-company IPO.
 A prior Exchange Act reporting form or registration statement, or a prior S-3/F-3
 short-form registration that itself requires Exchange Act reporting eligibility,
 must be filed strictly before the candidate. Prior S-8 employee-plan registration
-history is also affirmative reporting evidence when it predates the current S-1
-registration sequence because Form S-8 requires the registrant to be subject to
-Exchange Act reporting immediately before filing. An S-8 filed after the current
-S-1 sequence has begun can be IPO-contemporaneous and is not standalone evidence
-that the issuer was already public before that IPO. A prior 424B4 is separately
+or Form 8-A Exchange Act registration history is affirmative prior-public evidence
+only when it predates the current S-1 registration sequence. Either form can be
+IPO-contemporaneous after the S-1 sequence begins, so a later S-8 or 8-A must not
+by itself reclassify a genuine IPO as a follow-on. A prior 424B4 is separately
 conclusive that the issuer already completed an earlier public offering prospectus.
 Same-day evidence does not establish event order. Archive lookup failures block
 publication in release mode for both final 424B4 and pre-pricing S-1/S-1A candidates;
@@ -33,11 +32,15 @@ import edgar_client
 
 FORM_TYPES = {"S-1", "S-1/A"}
 S8_FORMS = {"S-8", "S-8 POS"}
+IPO_SEQUENCE_BOUND_FORMS = S8_FORMS | {
+    "8-A12B", "8-A12B/A", "8-A12G", "8-A12G/A",
+}
 REPORTING_FORMS = {
     "8-K", "8-K/A",
     "8-K12B", "8-K12B/A",
     "8-K12G3", "8-K12G3/A",
     "8-K15D5", "8-K15D5/A",
+    "8-A12B", "8-A12B/A", "8-A12G", "8-A12G/A",
     "10-12B", "10-12B/A", "10-12G", "10-12G/A",
     "10-Q", "10-Q/A", "10-QT", "10-QT/A",
     "10-K", "10-K/A", "10-KT", "10-KT/A",
@@ -202,7 +205,7 @@ def _s8_reporting_cutoff(
     candidate_file_number=None,
     archived_histories=(),
 ):
-    """Bound S-8 evidence to before the current S-1 registration sequence.
+    """Bound IPO-contemporaneous S-8/Form 8-A evidence to before the S-1 sequence.
 
     When the candidate's SEC registration file number is available, use it to find
     the exact base S-1 for that registration across both current and SEC-listed
@@ -237,7 +240,9 @@ def _block_has_prior_reporting(payload, cutoff, s8_cutoff=None):
     for form, report_date in _validated_history_columns(payload):
         if form not in REPORTING_FORMS:
             continue
-        form_cutoff = effective_s8_cutoff if form in S8_FORMS else cutoff
+        form_cutoff = (
+            effective_s8_cutoff if form in IPO_SEQUENCE_BOUND_FORMS else cutoff
+        )
         if report_date < form_cutoff:
             return True
     return False
@@ -326,8 +331,8 @@ def has_prior_reporting_history(
 
     # Usually the base S-1 is still in filings.recent and no extra archive work is
     # needed. When exact lineage is known but that base S-1 has aged out, preload
-    # the eligible SEC archive blocks so the S-8 chronology can still anchor to
-    # the correct registration rather than an unrelated concurrent S-1.
+    # the eligible SEC archive blocks so IPO-sequence-bound chronology can still
+    # anchor to the correct registration rather than an unrelated concurrent S-1.
     archived_histories = None
     if (
         exact_file_number
