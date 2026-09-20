@@ -30,6 +30,7 @@ class FinalAccessionIdentityGuardTests(unittest.TestCase):
 
         self.assertEqual(repaired, 1)
         self.assertEqual(payload["filings"][0]["accession_no"], final["id"])
+        self.assertEqual(payload["filings"][0]["id"], final["id"])
         self.assertEqual(payload["filings"][0]["ticker"], "ACME")
         self.assertIn("generated_at", payload)
 
@@ -41,6 +42,7 @@ class FinalAccessionIdentityGuardTests(unittest.TestCase):
         self.assertEqual(
             payload["filings"][0]["accession_no"], "0001234567-26-000400"
         )
+        self.assertEqual(payload["filings"][0]["id"], "0001234567-26-000400")
         self.assertIn("generated_at", payload)
 
     def test_blank_final_accession_recovered_from_undashed_id_is_dashed(self):
@@ -51,6 +53,27 @@ class FinalAccessionIdentityGuardTests(unittest.TestCase):
         self.assertEqual(
             payload["filings"][0]["accession_no"], "0001234567-26-000400"
         )
+        self.assertEqual(payload["filings"][0]["id"], "0001234567-26-000400")
+
+    def test_stale_non_accession_row_id_is_replaced_by_authoritative_accession(self):
+        final = _final(id="legacy-row-key")
+        payload, repaired = guard.repair_final_accession_identities({"filings": [final]})
+
+        self.assertEqual(repaired, 1)
+        self.assertEqual(
+            payload["filings"][0]["accession_no"], "0001234567-26-000400"
+        )
+        self.assertEqual(payload["filings"][0]["id"], "0001234567-26-000400")
+
+    def test_matching_undashed_row_id_is_canonicalized(self):
+        final = _final(id="000123456726000400")
+        payload, repaired = guard.repair_final_accession_identities({"filings": [final]})
+
+        self.assertEqual(repaired, 1)
+        self.assertEqual(
+            payload["filings"][0]["accession_no"], "0001234567-26-000400"
+        )
+        self.assertEqual(payload["filings"][0]["id"], "0001234567-26-000400")
 
     def test_whitespace_around_final_accession_is_canonicalized(self):
         final = _final(accession_no=" 0001234567-26-000400 ")
@@ -60,6 +83,7 @@ class FinalAccessionIdentityGuardTests(unittest.TestCase):
         self.assertEqual(
             payload["filings"][0]["accession_no"], "0001234567-26-000400"
         )
+        self.assertEqual(payload["filings"][0]["id"], "0001234567-26-000400")
 
     def test_final_without_exact_accession_identity_fails_closed(self):
         final = _final(id="acme-final", accession_no="")
@@ -78,6 +102,12 @@ class FinalAccessionIdentityGuardTests(unittest.TestCase):
         with self.assertRaisesRegex(
             RuntimeError, "conflicting SEC accession identities"
         ):
+            guard.repair_final_accession_identities({"filings": [final]})
+
+    def test_malformed_explicit_final_accession_fails_closed(self):
+        final = _final(accession_no="not-an-accession")
+
+        with self.assertRaisesRegex(RuntimeError, "malformed SEC accession_no"):
             guard.repair_final_accession_identities({"filings": [final]})
 
     def test_non_final_records_are_not_rewritten(self):
