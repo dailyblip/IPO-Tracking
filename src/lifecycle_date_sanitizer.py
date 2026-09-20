@@ -3,9 +3,11 @@
 Never infer a replacement date. The stored ``filing_date`` is the lifecycle's
 initial S-1 date, so it cannot occur after either the SEC filing date of the
 current public row or an already-priced IPO's pricing date. Likewise, a final
-424B4 Pricing Date cannot occur after that final prospectus was filed. Nonblank
-lifecycle values that are not strict ISO dates or that fall in the future are
-also cleared rather than allowed to bypass chronology checks. Clear only an
+424B4 Pricing Date cannot occur after that final prospectus was filed. A genuine
+pre-pricing S-1/S-1A cannot carry an actual Pricing Date; clear that stale lifecycle
+artifact while preserving authoritative preliminary Filing Price metadata.
+Nonblank lifecycle values that are not strict ISO dates or that fall in the future
+are also cleared rather than allowed to bypass chronology checks. Clear only an
 unsupported date and keep the remaining authoritative lifecycle facts intact;
 the final-pricing release gate will fail closed if a priced row is left without
 a valid Pricing Date. CSV output is regenerated so the public exports remain
@@ -63,6 +65,20 @@ def sanitize_payload(payload: dict) -> tuple[dict, int]:
             if _has_nonblank_value(filing.get(field)) and parsed is None:
                 filing[field] = None
                 changed += 1
+
+        # Pricing Date is an actual completed-IPO lifecycle event, not an expected
+        # pricing date. If an S-1/S-1A remains genuinely pre-pricing after lifecycle
+        # reconciliation, a populated Pricing Date is stale/impossible metadata.
+        # Clear only that date; do not disturb an authoritative preliminary Filing
+        # Price/range carried by the registration history.
+        if (
+            form in {"S-1", "S-1/A"}
+            and stage == "pre-pricing"
+            and pricing_date is not None
+        ):
+            filing["pricing_date"] = None
+            pricing_date = None
+            changed += 1
 
         # A company cannot price after the final 424B4 that reports that pricing.
         # Do not move the date to a plausible value: clear the conflict so the
