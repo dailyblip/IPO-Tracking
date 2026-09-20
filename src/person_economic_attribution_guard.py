@@ -96,6 +96,14 @@ from ownership_parser import canonical_holder_name
 # full aggregate position's derived personal value/liquidity.
 # https://www.sec.gov/Archives/edgar/data/1859836/000110465926047051/xslF345X03/tm2612184-10_3seq1.xml
 # https://www.sec.gov/Archives/edgar/data/1859836/000110465926050375/xslF345X03/tm2612184-12_4seq1.xml
+#
+# Electra Therapeutics' final 2026-09-17 424B4 reports 5,551,837 shares under Carl
+# L. Gordon and 6,347,539 shares under Beth Seidenberg. The related footnotes continue
+# to attribute those positions to OrbiMed-affiliated and Westlake/Bio Partners fund
+# entities rather than establishing the entire positions as the directors' personal
+# economics. These final counts differ from the preceding S-1/A counts, so keep this
+# release-blocking suppression accession-specific and exact-count constrained.
+# https://www.sec.gov/Archives/edgar/data/2088082/000119312526395670/d23848d424b4.htm
 _UNSUPPORTED_PERSON_ECONOMICS = {
     (
         "0001181412",
@@ -147,6 +155,16 @@ _UNSUPPORTED_PERSON_ECONOMICS = {
         "0001104659-26-047210",
         canonical_holder_name("Thomas N. Trkla"),
     ): 46_225_020,
+    (
+        "0002088082",
+        "0001193125-26-395670",
+        canonical_holder_name("Carl L. Gordon, Ph.D., C.F.A."),
+    ): 5_551_837,
+    (
+        "0002088082",
+        "0001193125-26-395670",
+        canonical_holder_name("Beth Seidenberg, M.D."),
+    ): 6_347_539,
 }
 
 # Electra Therapeutics' 2026-09-14 S-1/A (File No. 333-298617) reports identical
