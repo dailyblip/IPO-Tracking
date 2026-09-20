@@ -41,6 +41,11 @@ REPORTING_FORMS = {
     "10-12B", "10-12B/A", "10-12G", "10-12G/A",
     "10-Q", "10-Q/A", "10-QT", "10-QT/A",
     "10-K", "10-K/A", "10-KT", "10-KT/A",
+    # Schedule 14A proxy statements and Schedule 14C information statements are
+    # Exchange Act Section 14 filings for securities already registered under
+    # Section 12. Keep archived classification aligned with the live follow-on
+    # sanitizer so aged-out proxy history cannot make an established issuer look new.
+    "PRE 14A", "DEF 14A", "PRE 14C", "DEF 14C",
     # Form 15 termination of a Section 12(b) or 12(g) registration proves the
     # issuer previously had an Exchange Act registered class. Do not treat a
     # 15-15D suspension as equivalent evidence: Section 15(d) reporting can arise
