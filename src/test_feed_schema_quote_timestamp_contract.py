@@ -48,6 +48,24 @@ class FeedSchemaQuoteTimestampContractTests(unittest.TestCase):
     def test_valid_priced_quote_timestamp_is_allowed(self):
         self.assertEqual([], validate_payload(self._payload(self._filing())))
 
+    def test_current_price_requires_nonblank_ticker_provenance(self):
+        for ticker in ("", "   "):
+            with self.subTest(ticker=ticker):
+                failures = validate_payload(self._payload(self._filing(ticker=ticker)))
+                self.assertTrue(
+                    any(
+                        "$.filings[0].ticker" in failure and "does not match" in failure
+                        for failure in failures
+                    ),
+                    failures,
+                )
+
+    def test_blank_ticker_remains_allowed_without_current_price(self):
+        payload = self._payload(
+            self._filing(ticker="", current_price=None, price_updated=None)
+        )
+        self.assertEqual([], validate_payload(payload))
+
     def test_current_price_requires_provider_timestamp(self):
         failures = validate_payload(self._payload(self._filing(price_updated=None)))
         self.assertTrue(

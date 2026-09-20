@@ -131,6 +131,17 @@
               "price_updated": {"type": "null"}
             }
           }
+        },
+        {
+          "if": {
+            "properties": {"current_price": {"type": "number"}},
+            "required": ["current_price"]
+          },
+          "then": {
+            "properties": {
+              "ticker": {"type": "string", "pattern": "\\S"}
+            }
+          }
         }
       ],
       "properties": {
