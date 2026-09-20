@@ -44,6 +44,13 @@ REPORTING_FORMS = {
     "10-12B", "10-12B/A", "10-12G", "10-12G/A",
     "10-Q", "10-Q/A", "10-QT", "10-QT/A",
     "10-K", "10-K/A", "10-KT", "10-KT/A",
+    # Legacy small-business Exchange Act registration and periodic-report forms
+    # are the historical counterparts to Form 10 / 10-Q / 10-K reporting. Keep
+    # them visible even when an old reporting issuer's filings have aged out of
+    # filings.recent, so a dormant/reactivated issuer cannot be mistaken for an IPO.
+    "10SB12B", "10SB12B/A", "10SB12G", "10SB12G/A",
+    "10QSB", "10QSB/A",
+    "10KSB", "10KSB/A", "10KSB40", "10KSB40/A",
     # Registrant/management Schedule 14A proxy statements and Schedule 14C
     # information statements are Exchange Act filings for securities already
     # registered under Section 12. Keep archived classification aligned with the
