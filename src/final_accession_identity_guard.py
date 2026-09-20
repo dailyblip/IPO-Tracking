@@ -7,7 +7,7 @@ feed merge, lifecycle code must not fall back to an arbitrary 424B4 under the sa
 CIK. Recover the accession only from an accession-shaped record ``id`` and fail
 closed when a final record has no exact filing identity or contains conflicting
 accession identities. Deterministically canonicalize valid accession values to the
-SEC dashed form used by filing URLs.
+SEC dashed form used by filing URLs, and keep both public identity fields aligned.
 """
 
 from __future__ import annotations
@@ -48,7 +48,9 @@ def repair_final_accession_identities(payload):
     accession-shaped ``id`` is authoritative duplicate provenance when the explicit
     ``accession_no`` field is blank. A final with neither identity cannot safely be
     reconciled against another filing under the same CIK and therefore blocks
-    release instead of being guessed from issuer/date proximity.
+    release instead of being guessed from issuer/date proximity. Once an exact SEC
+    accession is known, both public identity fields are canonicalized to it so stale
+    row keys cannot survive lifecycle promotion.
     """
     filings = payload.get("filings")
     if not isinstance(filings, list):
@@ -81,9 +83,10 @@ def repair_final_accession_identities(payload):
 
         if accession:
             canonical_accession = _dashed_accession(accession)
-            if accession_value != canonical_accession:
+            if accession_value != canonical_accession or row_id_raw != canonical_accession:
                 updated = dict(filing)
                 updated["accession_no"] = canonical_accession
+                updated["id"] = canonical_accession
                 normalized.append(updated)
                 repaired += 1
             else:
@@ -96,8 +99,10 @@ def repair_final_accession_identities(payload):
                 f"lifecycle reconciliation for {filing.get('company') or filing.get('cik') or 'unknown issuer'}"
             )
 
+        canonical_accession = _dashed_accession(row_id)
         updated = dict(filing)
-        updated["accession_no"] = _dashed_accession(row_id)
+        updated["accession_no"] = canonical_accession
+        updated["id"] = canonical_accession
         normalized.append(updated)
         repaired += 1
 
@@ -132,5 +137,5 @@ if __name__ == "__main__":
     _, repaired_count = repair_feed(target)
     print(
         "Final accession identity guard repaired "
-        f"{repaired_count} missing/canonicalized accession field(s); all final identities are exact."
+        f"{repaired_count} final SEC identity record(s); all final identities are exact."
     )
