@@ -5,7 +5,9 @@ trading. Publishing those provider quotes on an S-1/S-1A record is therefore a
 data-integrity defect. Current Price is allowed only when a final 424B4 row also
 has a priced lifecycle state, an authoritative pricing date, a positive final
 IPO price, and a positive current quote observed no earlier than the final SEC
-filing date. A malformed/incomplete lifecycle or a priced row without a
+filing date. Public feed rows with an explicitly blank ticker also fail closed:
+a market quote without the ticker identity used to retrieve it has no release-safe
+provider provenance. A malformed/incomplete lifecycle or a priced row without a
 publishable quote must fail closed and lose market-derived holder values rather
 than retaining stale quote arithmetic.
 
@@ -131,6 +133,16 @@ def has_release_safe_market_quote(filing: dict) -> bool:
     """Require a safely priced lifecycle plus a chronologically valid live quote."""
     if not is_priced_ipo(filing):
         return False
+
+    # The V1 public schema always carries a ticker key, even when the symbol is not
+    # yet known. An explicitly blank ticker cannot support provider identity or a
+    # ticker-keyed quote lookup, so fail closed on public rows instead of preserving
+    # an unverifiable Current Price. Lightweight internal/unit fixtures that omit the
+    # field entirely retain their existing behavior; schema validation separately
+    # requires the key on published rows.
+    if "ticker" in filing and not str(filing.get("ticker") or "").strip():
+        return False
+
     current_price = _number(filing.get("current_price"))
     if current_price is None or current_price <= 0:
         return False
