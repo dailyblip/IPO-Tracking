@@ -1,4 +1,4 @@
-"""Sanitize unsafe market-price fields and public holder currency precision.
+"""Sanitize unsafe market/final-price fields and public holder currency precision.
 
 Ticker symbols can collide with already-trading securities before an IPO begins
 trading. Publishing those provider quotes on an S-1/S-1A record is therefore a
@@ -10,6 +10,13 @@ a market quote without the ticker identity used to retrieve it has no release-sa
 provider provenance. A malformed/incomplete lifecycle or a priced row without a
 publishable quote must fail closed and lose market-derived holder values rather
 than retaining stale quote arithmetic.
+
+A genuine pre-pricing S-1/S-1A also cannot retain stale final-pricing metadata from
+an earlier or mismatched lifecycle state. Clear Final IPO Price, holder IPO-value /
+realized-cash derivatives, and final-pricing signals while preserving authoritative
+preliminary Filing Price/range and SEC-supported ownership facts. This repairs the
+impossible fields instead of forcing an otherwise qualifying registration out of the
+public feed.
 
 Public holder currency values are also normalized to cents before release. They
 are arithmetic outputs, not additional source evidence, and binary floating-point
@@ -26,11 +33,19 @@ from pathlib import Path
 
 
 _MARKET_VALUE_SIGNAL_MARKERS = ("currently valued", "current market value")
+_FINAL_PRICING_SIGNAL_MARKERS = (
+    "offering priced at",
+    "offering raised approximately",
+)
 _MARKET_DERIVED_PERSON_FIELDS = (
     "cash_value",
     "liquid_value",
     "locked_value",
     "valuation_as_of",
+)
+_FINAL_PRICE_DERIVED_PERSON_FIELDS = (
+    "ipo_value",
+    "cash_realized_ipo",
 )
 _PUBLIC_PERSON_CURRENCY_FIELDS = (
     "cash_value",
@@ -105,6 +120,13 @@ def _canonical_quote_date(value):
     return quote_time.date()
 
 
+def _is_prepricing_registration(filing: dict) -> bool:
+    return (
+        str(filing.get("form") or "").strip().upper() in {"S-1", "S-1/A"}
+        and str(filing.get("stage") or "").strip().casefold() == "pre-pricing"
+    )
+
+
 def is_priced_ipo(filing: dict) -> bool:
     """Return True only for a release-safe final priced lifecycle state."""
     if str(filing.get("form") or "").strip().upper() != "424B4":
@@ -163,6 +185,41 @@ def sanitize_payload(payload: dict) -> tuple[dict, int]:
             continue
 
         touched = False
+        prepricing_registration = _is_prepricing_registration(filing)
+
+        # A genuine pre-pricing registration cannot carry completed-offering facts.
+        # Preserve preliminary Filing Price/range, size evidence, and ownership; clear
+        # only fields whose meaning depends on the IPO already having priced.
+        if prepricing_registration:
+            if filing.get("offering_price") not in (None, ""):
+                filing.pop("offering_price", None)
+                touched = True
+
+            for person in filing.get("people", []):
+                if not isinstance(person, dict):
+                    continue
+                for field in _FINAL_PRICE_DERIVED_PERSON_FIELDS:
+                    if field in person:
+                        person.pop(field, None)
+                        touched = True
+
+            signals = filing.get("signals")
+            if isinstance(signals, list):
+                filtered_signals = [
+                    signal
+                    for signal in signals
+                    if not (
+                        isinstance(signal, str)
+                        and any(
+                            marker in signal.casefold()
+                            for marker in _FINAL_PRICING_SIGNAL_MARKERS
+                        )
+                    )
+                ]
+                if len(filtered_signals) != len(signals):
+                    filing["signals"] = filtered_signals
+                    touched = True
+
         quote_safe = has_release_safe_market_quote(filing)
         if not quote_safe:
             for field in ("current_price", "price_updated"):
@@ -172,7 +229,8 @@ def sanitize_payload(payload: dict) -> tuple[dict, int]:
 
             # Without a release-safe filing-level quote, holder-level current market
             # values have no publishable basis. Preserve SEC-supported ownership facts,
-            # IPO-value arithmetic, and realized IPO cash; clear only quote derivatives.
+            # IPO-value arithmetic, and realized IPO cash on valid priced records; for
+            # genuine pre-pricing rows those final-price derivatives were cleared above.
             for person in filing.get("people", []):
                 if not isinstance(person, dict):
                     continue
@@ -233,8 +291,8 @@ def sanitize_file(path: str | Path) -> int:
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="Sanitize unsafe quote fields and public holder currency precision")
+    parser = argparse.ArgumentParser(description="Sanitize unsafe market/final-pricing fields and public holder currency precision")
     parser.add_argument("path", nargs="?", default="../docs/data/filings.json")
     args = parser.parse_args()
     count = sanitize_file(args.path)
-    print(f"Sanitized {count} filing(s) with quote/currency cleanup")
+    print(f"Sanitized {count} filing(s) with market/final-pricing/currency cleanup")
