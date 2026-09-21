@@ -223,7 +223,8 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertLess(refresh_step, identity_step)
         self.assertLess(identity_step, release_step)
         self.assertLess(release_step, publish_step)
-        self.assertIn("python -m unittest discover -s src -p 'test_*.py' -v", release_block)
+        self.assertIn("python -m pytest src -q", release_block)
+        self.assertNotIn("python -m unittest discover", release_block)
         self.assertIn("SKIP_LIVE_GOLDEN: '1'", release_block)
 
     def test_repo_steward_reports_agent_failure_without_failing_again(self):
