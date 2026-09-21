@@ -6,17 +6,44 @@ WORKFLOW = Path(__file__).resolve().parents[1] / ".github" / "workflows" / "s1-w
 
 
 class S1QuoteReleaseContractTests(unittest.TestCase):
-    def test_market_quote_release_gate_changes_trigger_s1_monitor(self):
+    def test_quote_release_dependencies_trigger_s1_monitor(self):
         workflow = WORKFLOW.read_text(encoding="utf-8")
 
         pull_request_start = workflow.index("  pull_request:")
         push_start = workflow.index("\n  # Source changes", pull_request_start)
         pull_request_block = workflow[pull_request_start:push_start]
 
-        self.assertIn(
-            "      - 'src/market_quote_release_gate.py'",
-            pull_request_block,
+        required_paths = (
+            "src/final_ticker_reconciler.py",
+            "src/test_final_ticker_reconciler.py",
+            "src/market_price_freshness_gate.py",
+            "src/test_market_price_freshness_gate.py",
+            "src/market_quote_identity.py",
+            "src/test_market_quote_identity.py",
+            "src/market_quote_release_gate.py",
+            "src/test_market_quote_release_gate.py",
+            "src/test_market_quote_sec_crosscheck.py",
         )
+        for path in required_paths:
+            with self.subTest(path=path):
+                self.assertIn(f"      - '{path}'", pull_request_block)
+
+    def test_quote_release_dependencies_run_in_focused_s1_tests(self):
+        workflow = WORKFLOW.read_text(encoding="utf-8")
+
+        test_step = workflow.index("- name: Run S-1 monitor tests")
+        next_step = workflow.index("\n\n  update-feed:", test_step)
+        test_block = workflow[test_step:next_step]
+
+        for module in (
+            "test_final_ticker_reconciler.py",
+            "test_market_price_freshness_gate.py",
+            "test_market_quote_identity.py",
+            "test_market_quote_release_gate.py",
+            "test_market_quote_sec_crosscheck.py",
+        ):
+            with self.subTest(module=module):
+                self.assertIn(module, test_block)
 
     def test_s1_writer_revalidates_quote_identity_before_release(self):
         workflow = WORKFLOW.read_text(encoding="utf-8")
