@@ -272,7 +272,7 @@ jobs:
       - name: Run release-blocking regression suite on regenerated feed
         env:
           SKIP_LIVE_GOLDEN: '1'
-        run: python -m unittest discover -s src -p 'test_*.py' -v
+        run: python -m pytest src -q
       - name: Validate regenerated golden records
         run: python -m unittest discover -s src -p 'test_golden_records.py' -v
       - name: Validate public feed

@@ -259,7 +259,7 @@ jobs:
           SKIP_LIVE_GOLDEN: '1'
         run: |
           set -o pipefail
-          python -m unittest discover -s src -p 'test_*.py' -v 2>&1 | tee generated-feed-regression.log
+          python -m pytest src -q 2>&1 | tee generated-feed-regression.log
 
       # Preserve the exact failing assertion and unpublished candidate whenever the
       # release gate blocks publication. This is diagnostic-only and never changes
