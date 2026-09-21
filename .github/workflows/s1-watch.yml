@@ -44,6 +44,7 @@ on:
       - 'src/lifecycle_date_sanitizer.py'
       - 'src/test_lifecycle_date_sanitizer.py'
       - 'src/prepricing_quote_sanitizer.py'
+      - 'src/market_quote_release_gate.py'
       - 'src/test_prepricing_final_metadata_sanitizer.py'
       - 'src/feed_schema_contract.py'
       - 'src/test_feed_schema_contract.py'
