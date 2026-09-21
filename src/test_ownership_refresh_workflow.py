@@ -66,10 +66,8 @@ class OwnershipRefreshGoldenOrderingTests(unittest.TestCase):
             else workflow[regression_pos:next_step]
         )
         self.assertIn("SKIP_LIVE_GOLDEN: '1'", regression_block)
-        self.assertIn(
-            "python -m unittest discover -s src -p 'test_*.py' -v",
-            regression_block,
-        )
+        self.assertIn("python -m pytest src -q", regression_block)
+        self.assertNotIn("python -m unittest discover", regression_block)
 
 
 if __name__ == "__main__":
