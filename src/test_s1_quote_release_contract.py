@@ -6,6 +6,18 @@ WORKFLOW = Path(__file__).resolve().parents[1] / ".github" / "workflows" / "s1-w
 
 
 class S1QuoteReleaseContractTests(unittest.TestCase):
+    def test_market_quote_release_gate_changes_trigger_s1_monitor(self):
+        workflow = WORKFLOW.read_text(encoding="utf-8")
+
+        pull_request_start = workflow.index("  pull_request:")
+        push_start = workflow.index("\n  # Source changes", pull_request_start)
+        pull_request_block = workflow[pull_request_start:push_start]
+
+        self.assertIn(
+            "      - 'src/market_quote_release_gate.py'",
+            pull_request_block,
+        )
+
     def test_s1_writer_revalidates_quote_identity_before_release(self):
         workflow = WORKFLOW.read_text(encoding="utf-8")
 
