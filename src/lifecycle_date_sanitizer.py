@@ -7,12 +7,12 @@ current public row or an already-priced IPO's pricing date. Likewise, a final
 pre-pricing S-1/S-1A cannot carry an actual Pricing Date; clear that stale lifecycle
 artifact while preserving authoritative preliminary Filing Price metadata.
 
-SEC form identity also deterministically establishes the Research Monitor lifecycle
-stage for the supported IPO forms: S-1/S-1A is Pre-pricing and 424B4 is Priced.
-Repair blank or contradictory stage values from that authoritative form identity
-before chronology checks so a valid final IPO is not dropped merely because stale
-stage metadata survived reconciliation. This does not repair unsupported forms and
-does not make final pricing facts out of registration-statement data.
+A 424B4 is itself a final prospectus. If that authoritative form survives with a
+blank or contradictory stage, repair the stage to Priced before chronology/release
+checks so a valid final IPO is not dropped because stale stage metadata survived
+reconciliation. Do not similarly normalize S-1/S-1A stage drift here: a registration
+row marked Priced can indicate an unresolved lifecycle handoff and must remain
+fail-closed rather than being relabeled back to Pre-pricing without SEC reconciliation.
 
 Nonblank lifecycle dates that are not strict ISO dates or that fall in the future
 are cleared rather than allowed to bypass chronology checks. Clear only unsupported
@@ -60,19 +60,13 @@ def sanitize_payload(payload: dict) -> tuple[dict, int]:
         form = str(filing.get("form") or "").strip().upper()
         stage = str(filing.get("stage") or "").strip().casefold()
 
-        # Supported SEC form identity is authoritative for the lifecycle stage in
-        # this IPO feed. Repair stage drift before date checks; this is normalization
-        # from public filing identity, not an inferred pricing event. Other final
-        # release requirements (Pricing Date, Final IPO Price, SEC provenance) still
-        # fail closed independently when unsupported.
-        expected_stage = {
-            "S-1": "Pre-pricing",
-            "S-1/A": "Pre-pricing",
-            "424B4": "Priced",
-        }.get(form)
-        if expected_stage is not None and stage != expected_stage.casefold():
-            filing["stage"] = expected_stage
-            stage = expected_stage.casefold()
+        # Form 424B4 is authoritative final-prospectus identity. Repair only this
+        # deterministic stage drift before chronology checks. An S-1/S-1A marked
+        # Priced is intentionally not relabeled here because that contradiction may
+        # represent an unresolved S-1 -> 424B4 handoff that should fail closed.
+        if form == "424B4" and stage != "priced":
+            filing["stage"] = "Priced"
+            stage = "priced"
             changed += 1
 
         # A malformed or future nonblank lifecycle value is not authoritative

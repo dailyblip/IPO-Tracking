@@ -29,8 +29,7 @@ class LifecycleDateSanitizerTests(unittest.TestCase):
             "filing_date": "2026-08-20",
         }]}
         cleaned, changed = sanitizer.sanitize_payload(payload)
-        self.assertEqual(changed, 2)
-        self.assertEqual(cleaned["filings"][0]["stage"], "Pre-pricing")
+        self.assertEqual(changed, 1)
         self.assertIsNone(cleaned["filings"][0]["filing_date"])
         self.assertEqual(cleaned["filings"][0]["filed"], "2026-08-15")
 
@@ -71,9 +70,22 @@ class LifecycleDateSanitizerTests(unittest.TestCase):
         self.assertEqual(row["offering_price"], 17.5)
         self.assertEqual(row["filing_price"], "$16.00–$18.00")
 
-    def test_repairs_s1_stage_drift_and_clears_stale_final_pricing_date(self):
+    def test_repairs_blank_424b4_stage_from_authoritative_final_form(self):
         payload = {"filings": [{
-            "company": "Stale Stage Registration",
+            "company": "Blank Stage Final IPO",
+            "form": "424B4",
+            "stage": "",
+            "filed": "2026-08-19",
+            "pricing_date": "2026-08-18",
+            "offering_price": 17.5,
+        }]}
+        cleaned, changed = sanitizer.sanitize_payload(payload)
+        self.assertEqual(changed, 1)
+        self.assertEqual(cleaned["filings"][0]["stage"], "Priced")
+
+    def test_does_not_mask_priced_s1_stage_drift_as_prepricing(self):
+        payload = {"filings": [{
+            "company": "Unresolved Registration Handoff",
             "form": "S-1/A",
             "stage": "Priced",
             "filed": "2026-08-19",
@@ -82,10 +94,10 @@ class LifecycleDateSanitizerTests(unittest.TestCase):
             "filing_price": "$16.00–$18.00",
         }]}
         cleaned, changed = sanitizer.sanitize_payload(payload)
-        self.assertEqual(changed, 2)
+        self.assertEqual(changed, 0)
         row = cleaned["filings"][0]
-        self.assertEqual(row["stage"], "Pre-pricing")
-        self.assertIsNone(row["pricing_date"])
+        self.assertEqual(row["stage"], "Priced")
+        self.assertEqual(row["pricing_date"], "2026-08-18")
         self.assertEqual(row["filing_price"], "$16.00–$18.00")
 
     def test_clears_malformed_nonblank_lifecycle_dates(self):
@@ -158,8 +170,7 @@ class LifecycleDateSanitizerTests(unittest.TestCase):
             "filing_date": "2026-08-10",
         }]}
         cleaned, changed = sanitizer.sanitize_payload(payload)
-        self.assertEqual(changed, 1)
-        self.assertEqual(cleaned["filings"][0]["stage"], "Pre-pricing")
+        self.assertEqual(changed, 0)
         self.assertEqual(cleaned["filings"][0]["filing_date"], "2026-08-10")
 
     def test_does_not_guess_when_dates_are_missing(self):
