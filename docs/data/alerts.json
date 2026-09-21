@@ -1,8 +1,23 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-21T09:27:40.910322+00:00",
-  "count": 118,
+  "generated_at": "2026-09-21T10:57:55.062406+00:00",
+  "count": 119,
   "alerts": [
+    {
+      "type": "ipo_priced",
+      "company": "Orion180 Insurance Group Inc.",
+      "cik": "0002124472",
+      "filing_id": "0001628280-26-062794",
+      "form": "424B4",
+      "filed": "2026-09-21",
+      "stage": "priced",
+      "priority": "High",
+      "summary": "IPO advanced from pre-pricing monitoring to a filed 424B4.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026062794/0001628280-26-062794-index.htm",
+      "detected_at": "2026-09-21T10:57:55.062018+00:00",
+      "new_value": "$240M",
+      "key": "ipo_priced|0001628280-26-062794|0002124472|2026-09-21|$240M"
+    },
     {
       "type": "new_prepricing",
       "company": "VME Companies, Inc.",
