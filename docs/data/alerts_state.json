@@ -1,7 +1,20 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-21T09:27:40.910240+00:00",
+  "updated_at": "2026-09-21T10:57:55.062340+00:00",
   "items": {
+    "0001628280-26-062794": {
+      "id": "0001628280-26-062794",
+      "cik": "0002124472",
+      "company": "Orion180 Insurance Group Inc.",
+      "form": "424B4",
+      "filed": "2026-09-21",
+      "stage": "priced",
+      "price_range": "15-17",
+      "filing_price": "15-17",
+      "priority": "High",
+      "value": 240000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026062794/0001628280-26-062794-index.htm"
+    },
     "s1:0002113640": {
       "id": "s1:0002113640",
       "cik": "0002113640",
@@ -170,19 +183,6 @@
       "priority": "High",
       "value": 600000000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm"
-    },
-    "s1:0002124472": {
-      "id": "s1:0002124472",
-      "cik": "0002124472",
-      "company": "Orion180 Insurance Group Inc.",
-      "form": "S-1/A",
-      "filed": "2026-09-09",
-      "stage": "pre-pricing",
-      "price_range": "$15.00–$17.00",
-      "filing_price": "$15.00–$17.00",
-      "priority": "High",
-      "value": 320000000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026061012/0001628280-26-061012-index.htm"
     },
     "s1:0002104277": {
       "id": "s1:0002104277",
@@ -1185,6 +1185,19 @@
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
     },
+    "s1:0002124472": {
+      "id": "s1:0002124472",
+      "cik": "0002124472",
+      "company": "Orion180 Insurance Group Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-09",
+      "stage": "pre-pricing",
+      "price_range": "$15.00–$17.00",
+      "filing_price": "$15.00–$17.00",
+      "priority": "High",
+      "value": 320000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026061012/0001628280-26-061012-index.htm"
+    },
     "s1:0002088082": {
       "id": "s1:0002088082",
       "cik": "0002088082",
@@ -1200,6 +1213,13 @@
     }
   },
   "ciks": {
+    "0002124472": {
+      "company": "Orion180 Insurance Group Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-062794",
+      "last_filed": "2026-09-21",
+      "missing_runs": 0
+    },
     "0002113640": {
       "company": "VME Companies, Inc.",
       "stage": "pre-pricing",
@@ -1289,13 +1309,6 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002152644",
       "last_filed": "2026-09-10",
-      "missing_runs": 0
-    },
-    "0002124472": {
-      "company": "Orion180 Insurance Group Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002124472",
-      "last_filed": "2026-09-09",
       "missing_runs": 0
     },
     "0002104277": {
