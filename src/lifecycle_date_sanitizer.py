@@ -1,4 +1,4 @@
-"""Remove impossible or malformed lifecycle dates from the public Research Monitor feed.
+"""Remove impossible or malformed lifecycle metadata from the public Research Monitor feed.
 
 Never infer a replacement date. The stored ``filing_date`` is the lifecycle's
 initial S-1 date, so it cannot occur after either the SEC filing date of the
@@ -6,12 +6,19 @@ current public row or an already-priced IPO's pricing date. Likewise, a final
 424B4 Pricing Date cannot occur after that final prospectus was filed. A genuine
 pre-pricing S-1/S-1A cannot carry an actual Pricing Date; clear that stale lifecycle
 artifact while preserving authoritative preliminary Filing Price metadata.
-Nonblank lifecycle values that are not strict ISO dates or that fall in the future
-are also cleared rather than allowed to bypass chronology checks. Clear only an
-unsupported date and keep the remaining authoritative lifecycle facts intact;
-the final-pricing release gate will fail closed if a priced row is left without
-a valid Pricing Date. CSV output is regenerated so the public exports remain
-synchronized.
+
+SEC form identity also deterministically establishes the Research Monitor lifecycle
+stage for the supported IPO forms: S-1/S-1A is Pre-pricing and 424B4 is Priced.
+Repair blank or contradictory stage values from that authoritative form identity
+before chronology checks so a valid final IPO is not dropped merely because stale
+stage metadata survived reconciliation. This does not repair unsupported forms and
+does not make final pricing facts out of registration-statement data.
+
+Nonblank lifecycle dates that are not strict ISO dates or that fall in the future
+are cleared rather than allowed to bypass chronology checks. Clear only unsupported
+metadata and keep the remaining authoritative lifecycle facts intact; the final-
+pricing release gate will fail closed if a priced row is left without a valid
+Pricing Date. CSV output is regenerated so the public exports remain synchronized.
 """
 
 from __future__ import annotations
@@ -52,6 +59,21 @@ def sanitize_payload(payload: dict) -> tuple[dict, int]:
         filing_date = _iso_date(filing.get("filing_date"))
         form = str(filing.get("form") or "").strip().upper()
         stage = str(filing.get("stage") or "").strip().casefold()
+
+        # Supported SEC form identity is authoritative for the lifecycle stage in
+        # this IPO feed. Repair stage drift before date checks; this is normalization
+        # from public filing identity, not an inferred pricing event. Other final
+        # release requirements (Pricing Date, Final IPO Price, SEC provenance) still
+        # fail closed independently when unsupported.
+        expected_stage = {
+            "S-1": "Pre-pricing",
+            "S-1/A": "Pre-pricing",
+            "424B4": "Priced",
+        }.get(form)
+        if expected_stage is not None and stage != expected_stage.casefold():
+            filing["stage"] = expected_stage
+            stage = expected_stage.casefold()
+            changed += 1
 
         # A malformed or future nonblank lifecycle value is not authoritative
         # evidence. Clear it rather than silently treating it as absent while
@@ -120,11 +142,11 @@ def sanitize_file(path: Path = DEFAULT_PATH) -> int:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Sanitize impossible IPO lifecycle dates")
+    parser = argparse.ArgumentParser(description="Sanitize impossible IPO lifecycle metadata")
     parser.add_argument("path", nargs="?", type=Path, default=DEFAULT_PATH)
     args = parser.parse_args()
     changed = sanitize_file(args.path)
-    print(f"Sanitized {changed} impossible lifecycle date(s).")
+    print(f"Sanitized {changed} impossible lifecycle field(s).")
 
 
 if __name__ == "__main__":
