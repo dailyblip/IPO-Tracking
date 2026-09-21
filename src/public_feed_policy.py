@@ -10,6 +10,7 @@ from pathlib import Path
 from dashboard_export import write_dashboard_csv
 from edgar_client import INVESTMENT_PRODUCT_NAME_PATTERN, SPAC_NAME_PATTERN
 from followon_sanitizer import sanitize_payload as sanitize_followon_offerings
+from lifecycle_date_sanitizer import sanitize_payload as sanitize_lifecycle_dates
 from ownership_parser import looks_like_document_heading
 from person_economic_attribution_guard import suppress_unsupported_person_economics
 from prepricing_quote_sanitizer import sanitize_payload as sanitize_prepricing_quotes
@@ -553,11 +554,17 @@ def enforce_public_feed_policy(output_path, followon_submissions_loader=None):
     output_path = Path(output_path)
     payload = json.loads(output_path.read_text(encoding="utf-8"))
 
+    # Make lifecycle chronology cleanup part of the canonical release gate. This
+    # protects every publisher even if it skipped the standalone sanitizer. The
+    # lifecycle sanitizer only clears unsupported/impossible dates; it never guesses
+    # replacements and preserves authoritative preliminary Filing Price/range data.
+    payload, lifecycle_changes = sanitize_lifecycle_dates(payload)
+
     # Make the pre-pricing quote guard part of the canonical release gate. This
     # protects every publisher that invokes public-feed policy even if a workflow
     # forgets to run the standalone sanitizer first. The sanitizer only removes
     # market-derived fields from non-424B4 rows; it never invents replacement data.
-    payload, _ = sanitize_prepricing_quotes(payload)
+    payload, quote_changes = sanitize_prepricing_quotes(payload)
 
     # Make post-reporting follow-on/resale exclusion part of the canonical release
     # gate too. This prevents a publisher from leaking a later 424B4 merely because
@@ -594,7 +601,7 @@ def enforce_public_feed_policy(output_path, followon_submissions_loader=None):
         qualifying.append(normalized)
 
     removed = len(removed_followons) + len(filings) - len(qualifying)
-    changed = bool(removed_followons) or qualifying != filings
+    changed = bool(lifecycle_changes or quote_changes or removed_followons) or qualifying != filings
     if changed:
         payload["filings"] = qualifying
         temporary = output_path.with_suffix(output_path.suffix + ".tmp")
