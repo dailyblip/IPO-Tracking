@@ -41,7 +41,7 @@ class PublicCurrencyPrecisionTests(unittest.TestCase):
         self.assertEqual(person["locked_value"], 4_906_386.48)
         self.assertEqual(person["cash_realized_ipo"], 123_456.79)
 
-    def test_unsafe_quote_still_preserves_and_normalizes_ipo_currency(self):
+    def test_prepricing_row_clears_final_price_currency_derivatives(self):
         payload = {
             "filings": [{
                 "id": "prepricing-currency-precision",
@@ -66,8 +66,8 @@ class PublicCurrencyPrecisionTests(unittest.TestCase):
         self.assertNotIn("current_price", filing)
         self.assertNotIn("price_updated", filing)
         self.assertNotIn("cash_value", person)
-        self.assertEqual(person["ipo_value"], 22_052_205.0)
-        self.assertEqual(person["cash_realized_ipo"], 123_456.79)
+        self.assertNotIn("ipo_value", person)
+        self.assertNotIn("cash_realized_ipo", person)
 
 
 if __name__ == "__main__":
