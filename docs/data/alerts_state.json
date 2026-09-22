@@ -1,7 +1,46 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-22T02:02:49.611250+00:00",
+  "updated_at": "2026-09-22T02:47:36.157589+00:00",
   "items": {
+    "s1:0002133037": {
+      "id": "s1:0002133037",
+      "cik": "0002133037",
+      "company": "SB Energy, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-21",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026062846/0001628280-26-062846-index.htm"
+    },
+    "s1:0002108671": {
+      "id": "s1:0002108671",
+      "cik": "0002108671",
+      "company": "Rothe Development, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-21",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226043509/0001493152-26-043509-index.htm"
+    },
+    "s1:0002133022": {
+      "id": "s1:0002133022",
+      "cik": "0002133022",
+      "company": "Oura Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-21",
+      "stage": "pre-pricing",
+      "price_range": "$40.00–$44.00",
+      "filing_price": "$40.00–$44.00",
+      "priority": "High",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133022/000119312526396051/0001193125-26-396051-index.htm"
+    },
     "0001628280-26-062794": {
       "id": "0001628280-26-062794",
       "cik": "0002124472",
@@ -14,6 +53,32 @@
       "priority": "High",
       "value": 240000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026062794/0001628280-26-062794-index.htm"
+    },
+    "s1:0001997038": {
+      "id": "s1:0001997038",
+      "cik": "0001997038",
+      "company": "Iambic Therapeutics, Inc.",
+      "form": "S-1",
+      "filed": "2026-09-21",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1997038/000119312526396704/0001193125-26-396704-index.htm"
+    },
+    "s1:0001802369": {
+      "id": "s1:0001802369",
+      "cik": "0001802369",
+      "company": "ADARx Pharmaceuticals, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-21",
+      "stage": "pre-pricing",
+      "price_range": "$15.00–$17.00",
+      "filing_price": "$15.00–$17.00",
+      "priority": "High",
+      "value": 350000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526396007/0001193125-26-396007-index.htm"
     },
     "s1:0002113640": {
       "id": "s1:0002113640",
@@ -145,19 +210,6 @@
       "value": 665000000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2125355/000162828026061664/0001628280-26-061664-index.htm"
     },
-    "s1:0001802369": {
-      "id": "s1:0001802369",
-      "cik": "0001802369",
-      "company": "ADARx Pharmaceuticals, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-09-14",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526390724/0001193125-26-390724-index.htm"
-    },
     "s1:0002141406": {
       "id": "s1:0002141406",
       "cik": "0002141406",
@@ -196,45 +248,6 @@
       "priority": "High",
       "value": 825000000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2104277/000119312526384287/0001193125-26-384287-index.htm"
-    },
-    "s1:0002133037": {
-      "id": "s1:0002133037",
-      "cik": "0002133037",
-      "company": "SB Energy, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-09-04",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026060761/0001628280-26-060761-index.htm"
-    },
-    "s1:0002108671": {
-      "id": "s1:0002108671",
-      "cik": "0002108671",
-      "company": "Rothe Development, Inc.",
-      "form": "S-1",
-      "filed": "2026-09-04",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226041590/0001493152-26-041590-index.htm"
-    },
-    "s1:0002133022": {
-      "id": "s1:0002133022",
-      "cik": "0002133022",
-      "company": "Oura Inc.",
-      "form": "S-1",
-      "filed": "2026-09-03",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133022/000119312526381855/0001193125-26-381855-index.htm"
     },
     "s1:0002028464": {
       "id": "s1:0002028464",
@@ -352,19 +365,6 @@
       "priority": "Medium",
       "value": 81250000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1903784/000118518526003448/0001185185-26-003448-index.htm"
-    },
-    "s1:0002109616": {
-      "id": "s1:0002109616",
-      "cik": "0002109616",
-      "company": "Fast Finance Pay Corp.",
-      "form": "S-1",
-      "filed": "2026-08-12",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2109616/000149315226037415/0001493152-26-037415-index.htm"
     },
     "s1:0001838003": {
       "id": "s1:0001838003",
@@ -1185,6 +1185,19 @@
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
     },
+    "s1:0002109616": {
+      "id": "s1:0002109616",
+      "cik": "0002109616",
+      "company": "Fast Finance Pay Corp.",
+      "form": "S-1",
+      "filed": "2026-08-12",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2109616/000149315226037415/0001493152-26-037415-index.htm"
+    },
     "s1:0002124472": {
       "id": "s1:0002124472",
       "cik": "0002124472",
@@ -1213,10 +1226,45 @@
     }
   },
   "ciks": {
+    "0002133037": {
+      "company": "SB Energy, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002133037",
+      "last_filed": "2026-09-21",
+      "missing_runs": 0
+    },
+    "0002108671": {
+      "company": "Rothe Development, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002108671",
+      "last_filed": "2026-09-21",
+      "missing_runs": 0
+    },
+    "0002133022": {
+      "company": "Oura Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002133022",
+      "last_filed": "2026-09-21",
+      "missing_runs": 0
+    },
     "0002124472": {
       "company": "Orion180 Insurance Group Inc.",
       "stage": "priced",
       "last_filing_id": "0001628280-26-062794",
+      "last_filed": "2026-09-21",
+      "missing_runs": 0
+    },
+    "0001997038": {
+      "company": "Iambic Therapeutics, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001997038",
+      "last_filed": "2026-09-21",
+      "missing_runs": 0
+    },
+    "0001802369": {
+      "company": "ADARx Pharmaceuticals, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001802369",
       "last_filed": "2026-09-21",
       "missing_runs": 0
     },
@@ -1290,13 +1338,6 @@
       "last_filed": "2026-09-14",
       "missing_runs": 0
     },
-    "0001802369": {
-      "company": "ADARx Pharmaceuticals, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001802369",
-      "last_filed": "2026-09-14",
-      "missing_runs": 0
-    },
     "0002141406": {
       "company": "Accelevation Holdings Corp.",
       "stage": "pre-pricing",
@@ -1316,27 +1357,6 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002104277",
       "last_filed": "2026-09-08",
-      "missing_runs": 0
-    },
-    "0002133037": {
-      "company": "SB Energy, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002133037",
-      "last_filed": "2026-09-04",
-      "missing_runs": 0
-    },
-    "0002108671": {
-      "company": "Rothe Development, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002108671",
-      "last_filed": "2026-09-04",
-      "missing_runs": 0
-    },
-    "0002133022": {
-      "company": "Oura Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002133022",
-      "last_filed": "2026-09-03",
       "missing_runs": 0
     },
     "0002028464": {
@@ -1399,13 +1419,6 @@
       "company": "Vogenx, Inc.",
       "stage": "priced",
       "last_filing_id": "0001185185-26-003448",
-      "last_filed": "2026-08-12",
-      "missing_runs": 0
-    },
-    "0002109616": {
-      "company": "Fast Finance Pay Corp.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002109616",
       "last_filed": "2026-08-12",
       "missing_runs": 0
     },
@@ -1849,6 +1862,13 @@
       "last_filing_id": "0001213900-25-120076",
       "last_filed": "2025-12-10",
       "missing_runs": 0
+    },
+    "0002109616": {
+      "company": "Fast Finance Pay Corp.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002109616",
+      "last_filed": "2026-08-12",
+      "missing_runs": 1
     }
   }
 }
