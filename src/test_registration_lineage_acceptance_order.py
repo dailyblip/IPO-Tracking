@@ -77,6 +77,27 @@ def test_same_day_lineage_fails_closed_without_acceptance_order():
     assert resolver(_prepricing(), _final()) is False
 
 
+def test_same_day_lineage_normalizes_compact_eastern_against_utc_iso():
+    resolver = _resolver(
+        "20260910163000",
+        "2026-09-10T20:00:00Z",
+    )
+
+    # 16:30 Eastern is 20:30 UTC, so the S-1/A was actually accepted after
+    # the 20:00 UTC final prospectus and cannot prove a valid lifecycle handoff.
+    assert resolver(_prepricing(), _final()) is False
+
+
+def test_same_day_lineage_accepts_mixed_formats_when_true_order_is_proven():
+    resolver = _resolver(
+        "20260910153000",
+        "2026-09-10T20:00:00Z",
+    )
+
+    # 15:30 Eastern is 19:30 UTC and therefore precedes the 20:00 UTC final.
+    assert resolver(_prepricing(), _final()) is True
+
+
 def test_different_day_lineage_does_not_require_acceptance_timestamp():
     resolver = _resolver(None, None, final_date="2026-09-11")
 
