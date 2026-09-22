@@ -20,6 +20,7 @@ import requests
 from dashboard_export import write_dashboard_csv
 import edgar_client
 import filing_parser
+import s1_latest_candidate
 from ownership_parser import looks_like_document_heading
 from prospect_research import (
     GENERIC_HOLDER_LABELS,
@@ -809,29 +810,26 @@ def run(days_back: int = 4) -> dict:
         evaluations.append((meta, record, evaluated))
 
     # Only the newest filing in an issuer's current S-1 lineage may decide whether
-    # that issuer is published. Otherwise an older qualifying S-1 can be re-added
-    # after a newer amendment is deterministically excluded, or can replace current
-    # state when evaluation of the newest amendment fails transiently. Filing date
-    # is authoritative; on the same date an S-1/A supersedes an S-1, then discovery
-    # order breaks ties between filings of the same form.
-    latest_by_cik = {}
-    for position, (meta, _record, _evaluated) in enumerate(evaluations):
-        cik = str(meta.get("cik") or "").zfill(10) if meta.get("cik") else ""
-        if not cik:
-            continue
-        filed = _normalize_filing_date(meta.get("filing_date") or "")
-        form_rank = 1 if str(meta.get("form_type") or "").strip().upper() == "S-1/A" else 0
-        key = (filed, form_rank, position)
-        current = latest_by_cik.get(cik)
-        if current is None or key > current[0]:
-            latest_by_cik[cik] = (key, position)
+    # that issuer is published. Different filing dates are authoritative directly;
+    # multiple filings on the same date require exact SEC acceptance-time ordering.
+    # If SEC history cannot prove a unique latest same-day filing, fail closed and
+    # preserve the issuer's prior published state rather than guessing by form or
+    # discovery order.
+    latest_by_cik, unresolved_ciks = s1_latest_candidate.resolve_latest_positions(
+        evaluations
+    )
+    for cik in sorted(unresolved_ciks):
+        print(
+            "[s1_monitor] Unable to prove latest same-day S-1 state for "
+            f"CIK {cik}; preserving prior published state."
+        )
 
     processed_ciks = set()
     history_records = []
     queue_records = []
     latest_outcomes = {
         cik: evaluations[position]
-        for cik, (_key, position) in latest_by_cik.items()
+        for cik, position in latest_by_cik.items()
     }
 
     for meta, record, _evaluated in evaluations:
@@ -841,8 +839,13 @@ def run(days_back: int = 4) -> dict:
                 history_records.append(record)
                 queue_records.append(record)
             continue
+        if cik in unresolved_ciks:
+            continue
 
-        latest_meta, latest_record, latest_evaluated = latest_outcomes[cik]
+        latest = latest_outcomes.get(cik)
+        if latest is None:
+            continue
+        latest_meta, latest_record, latest_evaluated = latest
         if meta is latest_meta and latest_evaluated:
             processed_ciks.add(cik)
             if latest_record:

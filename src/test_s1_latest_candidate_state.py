@@ -78,23 +78,38 @@ class S1LatestCandidateStateTests(unittest.TestCase):
         self.assertEqual(export_feed.call_args.kwargs["processed_ciks"], set())
         self.assertEqual(sync_queue.call_args.kwargs["processed_ciks"], set())
 
+    @patch("s1_monitor.s1_latest_candidate.registration_lineage.load_registration_rows")
     @patch("s1_monitor.sync_research_queue")
     @patch("s1_monitor.export_feed")
     @patch("s1_monitor.evaluate_record")
     @patch("s1_monitor.discover_recent_s1")
-    def test_latest_qualifying_amendment_drives_queue_while_history_keeps_lineage(
-        self, discover, evaluate, export_feed, sync_queue
+    def test_same_day_latest_candidate_uses_sec_acceptance_not_form_precedence(
+        self, discover, evaluate, export_feed, sync_queue, load_rows
     ):
-        amendment = self._meta("amendment", "2026-09-04", "S-1/A")
-        initial = self._meta("initial", "2026-09-04", "S-1")
+        amendment = self._meta("0001234567-26-000001", "2026-09-04", "S-1/A")
+        initial = self._meta("0001234567-26-000002", "2026-09-04", "S-1")
         amendment_record = self._record(amendment)
         initial_record = self._record(initial)
-        # Put the S-1 after the amendment to prove same-day form precedence is not
-        # accidental list-order precedence.
+        # The S-1/A appears first, but the later SEC acceptance belongs to the S-1.
+        # Compact EDGAR acceptance times are Eastern wall-clock values.
         discover.return_value = [amendment, initial]
         evaluate.side_effect = [
             (amendment_record, True),
             (initial_record, True),
+        ]
+        load_rows.return_value = [
+            {
+                "accession_no": amendment["accession_no"],
+                "form": "S-1/A",
+                "filing_date": "2026-09-04",
+                "acceptance_datetime": "20260904110000",
+            },
+            {
+                "accession_no": initial["accession_no"],
+                "form": "S-1",
+                "filing_date": "2026-09-04",
+                "acceptance_datetime": "20260904120000",
+            },
         ]
         export_feed.return_value = {"filings": []}
         sync_queue.return_value = {"filings": []}
@@ -104,10 +119,50 @@ class S1LatestCandidateStateTests(unittest.TestCase):
         self.assertEqual(
             export_feed.call_args.args[0], [amendment_record, initial_record]
         )
-        self.assertEqual(sync_queue.call_args.args[0], [amendment_record])
+        self.assertEqual(sync_queue.call_args.args[0], [initial_record])
         self.assertEqual(
             sync_queue.call_args.kwargs["processed_ciks"], {"0001234567"}
         )
+        load_rows.assert_called_once()
+
+    @patch("s1_monitor.s1_latest_candidate.registration_lineage.load_registration_rows")
+    @patch("s1_monitor.sync_research_queue")
+    @patch("s1_monitor.export_feed")
+    @patch("s1_monitor.evaluate_record")
+    @patch("s1_monitor.discover_recent_s1")
+    def test_same_day_ambiguous_acceptance_preserves_existing_state(
+        self, discover, evaluate, export_feed, sync_queue, load_rows
+    ):
+        first = self._meta("0001234567-26-000003", "2026-09-04", "S-1")
+        second = self._meta("0001234567-26-000004", "2026-09-04", "S-1/A")
+        discover.return_value = [first, second]
+        evaluate.side_effect = [
+            (self._record(first), True),
+            (self._record(second), True),
+        ]
+        load_rows.return_value = [
+            {
+                "accession_no": first["accession_no"],
+                "form": "S-1",
+                "filing_date": "2026-09-04",
+                "acceptance_datetime": "20260904110000",
+            },
+            {
+                "accession_no": second["accession_no"],
+                "form": "S-1/A",
+                "filing_date": "2026-09-04",
+                "acceptance_datetime": "",
+            },
+        ]
+        export_feed.return_value = {"filings": []}
+        sync_queue.return_value = {"filings": []}
+
+        s1_monitor.run()
+
+        self.assertEqual(export_feed.call_args.args[0], [])
+        self.assertEqual(sync_queue.call_args.args[0], [])
+        self.assertEqual(export_feed.call_args.kwargs["processed_ciks"], set())
+        self.assertEqual(sync_queue.call_args.kwargs["processed_ciks"], set())
 
 
 if __name__ == "__main__":
