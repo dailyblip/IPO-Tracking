@@ -105,9 +105,9 @@ def _sec_acceptance_timestamp(value):
     """Parse SEC acceptance metadata as an aware instant.
 
     EDGAR header-style 14-digit acceptance times are Eastern Time. Submissions JSON
-    can also expose ISO timestamps; explicit offsets are retained, while an offsetless
-    ISO value is interpreted on the same SEC Eastern calendar used by the release
-    freshness gate.
+    can also expose ISO timestamps; explicit offsets are retained. Offsetless ISO
+    values have no authoritative timezone and therefore fail closed rather than being
+    assigned an inferred Eastern offset for release chronology.
     """
     raw = str(value or "").strip()
     if not raw:
@@ -126,7 +126,7 @@ def _sec_acceptance_timestamp(value):
     except ValueError:
         return None
     if parsed.tzinfo is None or parsed.utcoffset() is None:
-        parsed = parsed.replace(tzinfo=_SEC_FILING_TIMEZONE)
+        return None
     return parsed
 
 
