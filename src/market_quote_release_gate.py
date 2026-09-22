@@ -19,6 +19,11 @@ CIK/ticker check against the authoritative SEC issuer profile. Provider identity
 necessary but not sufficient: if SEC identity verification is unavailable or
 misconfigured, publish no unverified market quote rather than risk attaching a stale
 or reused ticker to the wrong historical issuer.
+
+For quotes stamped on the same Eastern calendar day as the final 424B4, calendar-date
+freshness alone cannot prove that public trading data followed SEC acceptance of the
+final prospectus. Those same-day quotes therefore require exact accession-level SEC
+acceptance chronology and must be strictly later than the 424B4 acceptance timestamp.
 """
 
 from __future__ import annotations
@@ -27,7 +32,9 @@ import argparse
 import json
 import os
 import signal
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import dashboard_export
 import final_ticker_reconciler as final_ticker
@@ -35,6 +42,7 @@ import market_price_freshness_gate as freshness
 import market_quote_identity as identity
 
 IDENTITY_AUDIT_TIME_BUDGET_SECONDS = 180
+_SEC_FILING_TIMEZONE = ZoneInfo("America/New_York")
 
 
 def _write_payload(path: Path, payload: dict) -> None:
@@ -88,14 +96,111 @@ def _normalize_sec_tickers(value):
     return tickers
 
 
+def _canonical_accession(value) -> str:
+    """Normalize an SEC accession for exact identity comparison only."""
+    return "".join(character for character in str(value or "") if character.isdigit())
+
+
+def _sec_acceptance_timestamp(value):
+    """Parse SEC acceptance metadata as an aware instant.
+
+    EDGAR header-style 14-digit acceptance times are Eastern Time. Submissions JSON
+    can also expose ISO timestamps; explicit offsets are retained, while an offsetless
+    ISO value is interpreted on the same SEC Eastern calendar used by the release
+    freshness gate.
+    """
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+
+    if len(raw) == 14 and raw.isdigit():
+        try:
+            return datetime.strptime(raw, "%Y%m%d%H%M%S").replace(
+                tzinfo=_SEC_FILING_TIMEZONE
+            )
+        except ValueError:
+            return None
+
+    try:
+        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        parsed = parsed.replace(tzinfo=_SEC_FILING_TIMEZONE)
+    return parsed
+
+
+def _same_day_quote_chronology_reason(filing: dict, sec_profile: dict) -> str | None:
+    """Return a fail-closed reason when same-day quote order is not authoritative.
+
+    The ordinary freshness gate already proves that a quote is not on an Eastern
+    calendar date before the final 424B4. On a strictly later date, no intraday SEC
+    ordering check is necessary. When both occur on the same date, however, the exact
+    final accession must be present in SEC submissions metadata and the provider quote
+    must be strictly later than that filing's acceptance time.
+    """
+    quote_timestamp = freshness._timestamp(filing.get("price_updated"))
+    final_filing_date = freshness._date(filing.get("filed"))
+    if quote_timestamp is None or final_filing_date is None:
+        return "quote chronology lacks a canonical timestamp or final filing date"
+
+    quote_date_eastern = quote_timestamp.astimezone(_SEC_FILING_TIMEZONE).date()
+    if quote_date_eastern > final_filing_date:
+        return None
+    if quote_date_eastern < final_filing_date:
+        return "quote timestamp predates the final 424B4 filing date"
+
+    final_accession = _canonical_accession(
+        filing.get("accession_no") or filing.get("id")
+    )
+    if not final_accession:
+        return "same-day quote lacks exact final accession provenance"
+
+    filings = (sec_profile or {}).get("filings")
+    recent = filings.get("recent") if isinstance(filings, dict) else None
+    if not isinstance(recent, dict):
+        return "SEC submissions lacks recent filing chronology for same-day quote"
+
+    fields = ("accessionNumber", "form", "filingDate", "acceptanceDateTime")
+    columns = [recent.get(field) for field in fields]
+    if any(not isinstance(column, list) for column in columns):
+        return "SEC submissions same-day filing chronology is malformed"
+    lengths = {len(column) for column in columns}
+    if len(lengths) != 1:
+        return "SEC submissions same-day filing chronology is misaligned"
+
+    matches = []
+    for accession, form, filing_date, acceptance in zip(*columns):
+        if (
+            _canonical_accession(accession) == final_accession
+            and str(form or "").strip().upper() == "424B4"
+            and str(filing_date or "").strip() == final_filing_date.isoformat()
+        ):
+            matches.append(acceptance)
+
+    if len(matches) != 1:
+        return "SEC submissions cannot uniquely confirm the same-day final 424B4"
+
+    acceptance_timestamp = _sec_acceptance_timestamp(matches[0])
+    if acceptance_timestamp is None:
+        return "SEC submissions lacks a valid final 424B4 acceptance time"
+    if acceptance_timestamp.astimezone(_SEC_FILING_TIMEZONE).date() != final_filing_date:
+        return "SEC final 424B4 acceptance time conflicts with the filing date"
+    if quote_timestamp <= acceptance_timestamp:
+        return "same-day quote does not postdate final 424B4 SEC acceptance"
+    return None
+
+
 def _sec_quote_identity_crosscheck(path: Path) -> tuple[int, int]:
-    """Cross-check surviving quote tickers against the exact filing CIK at SEC.
+    """Cross-check surviving quote tickers and chronology against the filing CIK.
 
     Finnhub already establishes provider ticker/name identity. This second factor is
     intentionally narrower: SEC submissions must agree that the filing CIK currently
     carries the same ticker. We do not require the SEC display name to equal the
     historical prospectus name because legitimate post-IPO issuer renames are
-    expected.
+    expected. Same-day quotes additionally require exact final-accession acceptance
+    chronology so a pre-424B4 quote cannot survive merely because it shares the same
+    Eastern calendar date.
     """
     user_agent = str(os.environ.get("SEC_EDGAR_USER_AGENT") or "").strip()
     if not user_agent:
@@ -138,6 +243,8 @@ def _sec_quote_identity_crosscheck(path: Path) -> tuple[int, int]:
             reason = "SEC submissions ticker metadata is malformed"
         elif ticker not in sec_tickers:
             reason = "SEC submissions profile does not confirm the filing ticker"
+        else:
+            reason = _same_day_quote_chronology_reason(filing, sec_profile)
 
         if reason:
             identity._strip_quote_derived_fields(filing)
