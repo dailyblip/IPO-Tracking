@@ -25,6 +25,7 @@ import json
 import math
 from datetime import date, datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import dashboard_export
 from price_lookup import MAX_FUTURE_SKEW_SECONDS, MAX_QUOTE_AGE_SECONDS
@@ -36,6 +37,7 @@ _QUOTE_DERIVED_PERSON_FIELDS = (
     "locked_value",
     "valuation_as_of",
 )
+_SEC_FILING_TIMEZONE = ZoneInfo("America/New_York")
 
 
 def _number(value):
@@ -160,8 +162,11 @@ def sanitize_payload(payload: dict) -> tuple[dict, list[dict]]:
         pricing_date = _date(pricing_date_raw)
         final_filed_raw = str(filing.get("filed") or "").strip()
         final_filed_date = _date(final_filed_raw)
+        # EDGAR filing dates are assigned on an Eastern U.S. calendar. Compare the
+        # provider timestamp on that same calendar so a quote just after midnight
+        # UTC cannot masquerade as post-filing while it is still the prior SEC day.
         quote_date = (
-            quote_time.astimezone(timezone.utc).date()
+            quote_time.astimezone(_SEC_FILING_TIMEZONE).date()
             if quote_time is not None
             else None
         )
