@@ -155,9 +155,9 @@ def build_registration_lineage_resolver(rows_loader=load_registration_rows):
     agree with the SEC date for that exact S-1/S-1A accession, just as the candidate
     424B4 date is verified. When both SEC filings share a filing date, their EDGAR
     acceptance timestamps must prove that the registration statement was accepted
-    before the final prospectus; date-only equality is otherwise ambiguous and fails
-    closed. This prevents stale or corrupted chronology from being carried into a
-    priced record under otherwise-valid registration lineage.
+    strictly before the final prospectus; date-only equality is otherwise ambiguous
+    and fails closed. This prevents stale or corrupted chronology from being carried
+    into a priced record under otherwise-valid registration lineage.
 
     Only SEC registration evidence is cached. Published-row dates are validated on
     every call so one valid row cannot cause a stale duplicate with the same accession
@@ -225,7 +225,7 @@ def build_registration_lineage_resolver(rows_loader=load_registration_rows):
                                 final_date == s1_date
                                 and s1_acceptance is not None
                                 and final_acceptance is not None
-                                and final_acceptance >= s1_acceptance
+                                and final_acceptance > s1_acceptance
                             )
                         )
                     )
