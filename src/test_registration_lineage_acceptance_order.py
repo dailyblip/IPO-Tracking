@@ -36,10 +36,10 @@ def _prepricing():
     }
 
 
-def _final(filing_date="2026-09-10"):
+def _final(filing_date="2026-09-10", accession="0001234567-26-000020"):
     return {
         "cik": "0001234567",
-        "accession_no": "0001234567-26-000020",
+        "accession_no": accession,
         "filing_date": filing_date,
     }
 
@@ -81,6 +81,105 @@ def test_different_day_lineage_does_not_require_acceptance_timestamp():
     resolver = _resolver(None, None, final_date="2026-09-11")
 
     assert resolver(_prepricing(), _final("2026-09-11")) is True
+
+
+def test_multiple_same_day_finals_use_earliest_sec_acceptance_not_row_order():
+    rows = [
+        {
+            "accession_no": "0001234567-26-000010",
+            "form": "S-1/A",
+            "file_number": "333-300001",
+            "filing_date": "2026-09-10",
+            "acceptance_datetime": "20260910110000",
+        },
+        {
+            "accession_no": "0001234567-26-000020",
+            "form": "424B4",
+            "file_number": "333-300001",
+            "filing_date": "2026-09-11",
+            "acceptance_datetime": "20260911120000",
+        },
+        {
+            "accession_no": "0001234567-26-000030",
+            "form": "424B4",
+            "file_number": "333-300001",
+            "filing_date": "2026-09-11",
+            "acceptance_datetime": "20260911110000",
+        },
+    ]
+
+    resolver = registration_lineage.build_registration_lineage_resolver(
+        lambda _cik, _required: rows
+    )
+
+    assert resolver(_prepricing(), _final("2026-09-11", "0001234567-26-000020")) is False
+    assert resolver(_prepricing(), _final("2026-09-11", "0001234567-26-000030")) is True
+
+
+def test_multiple_same_day_finals_fail_closed_when_acceptance_order_is_incomplete():
+    rows = [
+        {
+            "accession_no": "0001234567-26-000010",
+            "form": "S-1/A",
+            "file_number": "333-300001",
+            "filing_date": "2026-09-10",
+            "acceptance_datetime": "20260910110000",
+        },
+        {
+            "accession_no": "0001234567-26-000020",
+            "form": "424B4",
+            "file_number": "333-300001",
+            "filing_date": "2026-09-11",
+            "acceptance_datetime": "20260911110000",
+        },
+        {
+            "accession_no": "0001234567-26-000030",
+            "form": "424B4",
+            "file_number": "333-300001",
+            "filing_date": "2026-09-11",
+            "acceptance_datetime": "",
+        },
+    ]
+
+    resolver = registration_lineage.build_registration_lineage_resolver(
+        lambda _cik, _required: rows
+    )
+
+    assert resolver(_prepricing(), _final("2026-09-11", "0001234567-26-000020")) is False
+    assert resolver(_prepricing(), _final("2026-09-11", "0001234567-26-000030")) is False
+
+
+def test_multiple_final_dates_keep_earliest_post_registration_final_without_time_requirement():
+    rows = [
+        {
+            "accession_no": "0001234567-26-000010",
+            "form": "S-1/A",
+            "file_number": "333-300001",
+            "filing_date": "2026-09-10",
+            "acceptance_datetime": "",
+        },
+        {
+            "accession_no": "0001234567-26-000020",
+            "form": "424B4",
+            "file_number": "333-300001",
+            "filing_date": "2026-09-11",
+            "acceptance_datetime": "",
+        },
+        {
+            "accession_no": "0001234567-26-000030",
+            "form": "424B4",
+            "file_number": "333-300001",
+            "filing_date": "2026-09-12",
+            "acceptance_datetime": "",
+        },
+    ]
+
+    resolver = registration_lineage.build_registration_lineage_resolver(
+        lambda _cik, _required: rows
+    )
+
+    assert resolver(_prepricing(), _final("2026-09-11", "0001234567-26-000020")) is True
+    assert resolver(_prepricing(), _final("2026-09-12", "0001234567-26-000030")) is False
 
 
 def test_rows_from_block_preserves_aligned_acceptance_timestamp():
