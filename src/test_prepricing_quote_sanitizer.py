@@ -80,6 +80,36 @@ class PrepricingQuoteSanitizerTests(unittest.TestCase):
         self.assertNotIn("valuation_as_of", filing["people"][0])
         self.assertEqual(filing["signals"], [])
 
+    def test_removes_quote_on_prior_eastern_day_despite_next_utc_date(self):
+        payload = {
+            "filings": [{
+                "id": "utc-rollover-before-final",
+                "form": "424B4",
+                "stage": "Priced",
+                "filed": "2026-08-27",
+                "pricing_date": "2026-08-26",
+                "offering_price": 18.0,
+                "current_price": 24.13,
+                # 00:30 UTC on Aug 27 is still Aug 26 in New York.
+                "price_updated": "2026-08-27T00:30:00+00:00",
+                "signals": ["Current market value is approximately $24M"],
+                "people": [{
+                    "cash_value": 100,
+                    "valuation_as_of": "2026-08-27",
+                }],
+            }]
+        }
+
+        sanitized, changed = sanitize_payload(payload)
+        filing = sanitized["filings"][0]
+
+        self.assertEqual(changed, 1)
+        self.assertNotIn("current_price", filing)
+        self.assertNotIn("price_updated", filing)
+        self.assertNotIn("cash_value", filing["people"][0])
+        self.assertNotIn("valuation_as_of", filing["people"][0])
+        self.assertEqual(filing["signals"], [])
+
     def test_removes_quote_when_pricing_date_is_after_final_424b4_filing(self):
         payload = {
             "filings": [{
