@@ -62,6 +62,15 @@ def test_same_day_lineage_accepts_proven_registration_before_final_prospectus():
     assert resolver(_prepricing(), _final()) is True
 
 
+def test_same_day_lineage_rejects_equal_acceptance_timestamps_as_ambiguous():
+    resolver = _resolver(
+        "2026-09-10T20:30:00.000Z",
+        "2026-09-10T20:30:00.000Z",
+    )
+
+    assert resolver(_prepricing(), _final()) is False
+
+
 def test_same_day_lineage_fails_closed_without_acceptance_order():
     resolver = _resolver(None, None)
 
