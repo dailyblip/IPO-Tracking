@@ -30,6 +30,7 @@ import json
 import math
 from datetime import date, datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 
 _MARKET_VALUE_SIGNAL_MARKERS = ("currently valued", "current market value")
@@ -54,6 +55,7 @@ _PUBLIC_PERSON_CURRENCY_FIELDS = (
     "locked_value",
     "cash_realized_ipo",
 )
+_SEC_FILING_TIMEZONE = ZoneInfo("America/New_York")
 
 
 def _number(value):
@@ -96,14 +98,14 @@ def _canonical_nonfuture_date(value):
 
 
 def _canonical_quote_date(value):
-    """Return the UTC date for an explicit, non-future quote timestamp.
+    """Return the SEC Eastern date for an explicit, non-future quote timestamp.
 
     ``price_updated`` is the provenance marker for Current Price. A quote without a
     parseable timezone-aware timestamp cannot establish when the market value was
     observed, so it must fail closed. The normalized UTC timestamp itself must not
-    be in the future, including later on the same UTC date. Returning its UTC date
-    then lets the release gate compare it with the authoritative final filing state
-    and reject stale pre-pricing ticker quotes.
+    be in the future, including later on the same UTC date. The final comparison uses
+    the SEC/market Eastern calendar so a just-after-midnight UTC quote cannot masquerade
+    as occurring on the following SEC filing date.
     """
     raw = str(value or "").strip()
     if not raw:
@@ -117,7 +119,7 @@ def _canonical_quote_date(value):
     quote_time = parsed.astimezone(timezone.utc)
     if quote_time > datetime.now(timezone.utc):
         return None
-    return quote_time.date()
+    return quote_time.astimezone(_SEC_FILING_TIMEZONE).date()
 
 
 def _is_prepricing_registration(filing: dict) -> bool:
@@ -174,7 +176,8 @@ def has_release_safe_market_quote(filing: dict) -> bool:
     # A quote dated before the final 424B4 can belong to an already-trading security
     # that reused the pending IPO's ticker. The SEC filing date is the earliest
     # unambiguous day this public row is in a verified final state, so older provider
-    # quotes fail closed. Same-day final-filing quotes remain eligible.
+    # quotes fail closed. Same-day final-filing quotes remain eligible for the later
+    # exact SEC acceptance-time gate.
     return bool(filed_date and quote_date and quote_date >= filed_date)
 
 
