@@ -23,8 +23,9 @@ The gate also excludes an S-1/S-1A when SEC filing history proves the issuer was
 already a reporting company before the candidate registration. This catches
 post-SPAC/de-SPAC and other already-public issuers that can file a new S-1 before
 they have a 10-K, including issuers whose prior Exchange Act reporting used
-transition, foreign-private-issuer, or S-3/F-3 short-form registrations. Only
-reporting forms filed strictly before the candidate S-1/S-1A are used.
+transition, foreign-private-issuer, or S-3/F-3 short-form registrations. Reporting
+history must be provably earlier than the candidate S-1/S-1A: filing date orders
+different days, while same-day rows require strict SEC acceptance-time ordering.
 
 Candidate coverage is the union of the S-1 watch payload and the public queue.
 That prevents a regenerated or otherwise queue-only pre-pricing row from bypassing
@@ -39,8 +40,9 @@ from __future__ import annotations
 import argparse
 import json
 import re
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from dashboard_export import write_dashboard_csv
 import edgar_client
@@ -58,6 +60,7 @@ REPORTING_FORMS = {
     "S-3", "S-3/A", "S-3ASR", "S-3ASR/A", "S-3D", "S-3DPOS", "S-3MEF",
     "F-3", "F-3/A", "F-3ASR", "F-3ASR/A", "F-3D", "F-3DPOS", "F-3MEF",
 }
+_SEC_FILING_TIMEZONE = ZoneInfo("America/New_York")
 RIGHTS_OFFERING_PATTERNS = (
     re.compile(
         r"\bright(?:s)? offering\b.{0,6000}\bnon[- ]?transferable\b.{0,500}\bsubscription rights\b",
@@ -106,6 +109,53 @@ def _iso_date(value):
     return parsed if parsed.isoformat() == raw else None
 
 
+def _canonical_acceptance_datetime(value):
+    """Return a comparable UTC SEC acceptance timestamp or None when ambiguous."""
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+
+    if len(raw) == 14 and raw.isdigit():
+        try:
+            parsed = datetime.strptime(raw, "%Y%m%d%H%M%S").replace(
+                tzinfo=_SEC_FILING_TIMEZONE
+            )
+        except ValueError:
+            return None
+        return parsed.astimezone(timezone.utc).replace(tzinfo=None)
+
+    normalized = raw[:-1] + "+00:00" if raw.endswith("Z") else raw
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed.astimezone(timezone.utc).replace(tzinfo=None)
+
+
+def _strictly_precedes(candidate: dict, current: dict) -> bool:
+    """Return True only when SEC chronology proves candidate preceded current."""
+    candidate_date = _iso_date(candidate.get("filing_date"))
+    current_date = _iso_date(current.get("filing_date"))
+    if candidate_date is None or current_date is None:
+        return False
+    if candidate_date < current_date:
+        return True
+    if candidate_date > current_date:
+        return False
+
+    candidate_acceptance = _canonical_acceptance_datetime(
+        candidate.get("acceptance_datetime")
+    )
+    current_acceptance = _canonical_acceptance_datetime(
+        current.get("acceptance_datetime")
+    )
+    if candidate_acceptance is None or current_acceptance is None:
+        return False
+    return candidate_acceptance < current_acceptance
+
+
 def _has_authoritative_primary_evidence(record: dict) -> bool:
     try:
         shares = int(record.get("primary_offering_shares") or 0)
@@ -131,6 +181,7 @@ def _recent_submission_rows(cik: str) -> list[dict]:
     file_numbers = recent.get("fileNumber", []) or []
     filing_dates = recent.get("filingDate", []) or []
     primary_documents = recent.get("primaryDocument", []) or []
+    acceptance_times = recent.get("acceptanceDateTime", []) or []
     count = min(
         len(accessions), len(forms), len(file_numbers),
         len(filing_dates), len(primary_documents)
@@ -143,6 +194,11 @@ def _recent_submission_rows(cik: str) -> list[dict]:
             "file_number": str(file_numbers[i] or "").strip(),
             "filing_date": str(filing_dates[i] or "").strip(),
             "primary_document": str(primary_documents[i] or "").strip(),
+            "acceptance_datetime": (
+                str(acceptance_times[i] or "").strip()
+                if i < len(acceptance_times)
+                else ""
+            ),
         }
         for i in range(count)
     ]
@@ -152,10 +208,10 @@ def already_reporting_before_registration(record: dict) -> bool:
     """Return True when SEC history proves the issuer reported before this S-1.
 
     A prior Exchange Act report or an S-3/F-3-family short-form registration is
-affirmative evidence that the issuer was already subject to Exchange Act reporting.
+    affirmative evidence that the issuer was already subject to Exchange Act reporting.
     The chronology cutoff comes from the exact candidate accession in SEC submissions
-    metadata, not the mutable public-feed date. Requiring a strictly earlier SEC
-    filing date avoids inferring event order from same-day accessions.
+    metadata, not the mutable public-feed date. Same-day history is accepted only when
+    exact SEC acceptance timestamps prove that the reporting filing was earlier.
     """
     if str(record.get("form") or "").strip().upper() not in FORM_TYPES:
         return False
@@ -185,25 +241,23 @@ affirmative evidence that the issuer was already subject to Exchange Act reporti
         ),
         None,
     )
-    current_date = _iso_date((current or {}).get("filing_date"))
-    if current_date is None:
+    if current is None or _iso_date(current.get("filing_date")) is None:
         return False
 
     for row in rows:
         if row.get("form") not in REPORTING_FORMS:
             continue
-        reporting_date = _iso_date(row.get("filing_date"))
-        if reporting_date is not None and reporting_date < current_date:
+        if _strictly_precedes(row, current):
             return True
     return False
 
 
 def _same_registration_predecessors(cik: str, accession_no: str) -> list[dict]:
-    """Return strictly earlier S-1/S-1A filings sharing the SEC file number.
+    """Return provably earlier S-1/S-1A filings sharing the SEC file number.
 
-    SEC filing dates do not establish ordering among multiple accessions filed on
-    the same day. Same-day, undated, and malformed-date rows therefore cannot seed
-    an inherited resale/direct-listing exclusion.
+    Different-day SEC filing dates establish ordering. Same-day rows qualify only
+    when authoritative SEC acceptance timestamps prove strict prior order. Missing,
+    equal, malformed, or timezone-ambiguous same-day timing fails closed.
     """
     rows = _recent_submission_rows(cik)
     if not rows or not accession_no:
@@ -218,8 +272,7 @@ def _same_registration_predecessors(cik: str, accession_no: str) -> list[dict]:
         return []
 
     current_file_number = str(current.get("file_number") or "").strip()
-    current_date = _iso_date(current.get("filing_date"))
-    if not current_file_number or current_date is None:
+    if not current_file_number or _iso_date(current.get("filing_date")) is None:
         return []
 
     predecessors = []
@@ -228,13 +281,12 @@ def _same_registration_predecessors(cik: str, accession_no: str) -> list[dict]:
         form = str(row.get("form") or "").strip().upper()
         file_number = str(row.get("file_number") or "").strip()
         filing_date = str(row.get("filing_date") or "").strip()
-        parsed_filing_date = _iso_date(filing_date)
         primary_document = str(row.get("primary_document") or "").strip()
         if not accession or _normalized_accession(accession) == current_key:
             continue
         if form not in FORM_TYPES or file_number != current_file_number:
             continue
-        if parsed_filing_date is None or parsed_filing_date >= current_date:
+        if not _strictly_precedes(row, current):
             continue
         if not primary_document:
             continue
@@ -244,13 +296,17 @@ def _same_registration_predecessors(cik: str, accession_no: str) -> list[dict]:
             "file_number": file_number,
             "filing_date": filing_date,
             "primary_document": primary_document,
+            "acceptance_datetime": str(row.get("acceptance_datetime") or "").strip(),
         })
 
-    return sorted(
-        predecessors,
-        key=lambda row: (row.get("filing_date", ""), row.get("accession_no", "")),
-        reverse=True,
-    )
+    def predecessor_sort_key(row):
+        return (
+            _iso_date(row.get("filing_date")) or date.min,
+            _canonical_acceptance_datetime(row.get("acceptance_datetime")) or datetime.min,
+            row.get("accession_no", ""),
+        )
+
+    return sorted(predecessors, key=predecessor_sort_key, reverse=True)
 
 
 def _primary_document_url(cik: str, filing: dict) -> str:
