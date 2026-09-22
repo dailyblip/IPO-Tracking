@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-22T09:24:38.231488+00:00",
+  "generated_at": "2026-09-22T10:32:18.424300+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -391,8 +391,6 @@
       "offering_size_confidence": "High",
       "filing_price": "15-17",
       "offering_price": 12.0,
-      "current_price": 11.38,
-      "price_updated": "2026-09-21T20:00:00+00:00",
       "location": "MELBOURNE, FL",
       "location_source": "SEC submissions metadata",
       "lockup_end_date": "2027-03-16",
@@ -443,14 +441,12 @@
         "Offering priced at $12.00 per share",
         "Offering raised approximately $240M",
         "4 named beneficial owners disclosed",
-        "Largest named holding currently valued at approximately $682M",
         "Lock-up terms captured for liquidity-event follow-up"
       ],
       "people": [
         {
           "name": "Kenneth Gregg",
           "shares": 59935260.0,
-          "cash_value": 682063258.8,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-03-16",
           "lockup_scope": "holder-mapped",
@@ -458,7 +454,6 @@
           "lockup_duration_value": 180,
           "lockup_duration_unit": "days",
           "lockup_text": "In connection with this offering, our directors, executive officers, and holders of substantially all of our outstanding capital stock have each agreed to enter into “lock-up” agreements with the underwriters and thereby be subject to a lock-up period, meaning that they and their permitted transferees will not be permitted to sell any shares of our Class A common stock for 180 days after the date of this prospectus, subject to certain exceptions without the prior consent of RBC Capital Markets, LLC and UBS Securities LLC",
-          "valuation_as_of": "2026-09-21",
           "holder_type": "Individual",
           "is_beneficial_owner": true,
           "role": null,
@@ -471,9 +466,7 @@
           "stanford_source": null,
           "ipo_value": 719223120.0,
           "liquid_shares": null,
-          "liquid_value": null,
           "locked_shares": null,
-          "locked_value": null,
           "liquidity_status": "Lock-up applies — covered quantity unresolved",
           "liquidity_confidence": "Holder class is supported, but the filing does not establish that the entire disclosed position is covered",
           "lockup_schedule": [
@@ -494,7 +487,6 @@
         {
           "name": "DARLING STRATEGIC INVESTMENTS LLC",
           "shares": null,
-          "cash_value": null,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-03-16",
           "lockup_scope": "holder-mapped",
@@ -502,7 +494,6 @@
           "lockup_duration_value": 180,
           "lockup_duration_unit": "days",
           "lockup_text": "In connection with this offering, our directors, executive officers, and holders of substantially all of our outstanding capital stock have each agreed to enter into “lock-up” agreements with the underwriters and thereby be subject to a lock-up period, meaning that they and their permitted transferees will not be permitted to sell any shares of our Class A common stock for 180 days after the date of this prospectus, subject to certain exceptions without the prior consent of RBC Capital Markets, LLC and UBS Securities LLC",
-          "valuation_as_of": null,
           "holder_type": "Entity",
           "is_beneficial_owner": true,
           "role": null,
@@ -514,9 +505,7 @@
           "shares_after_ipo": null,
           "stanford_source": "",
           "liquid_shares": null,
-          "liquid_value": null,
           "locked_shares": null,
-          "locked_value": null,
           "liquidity_status": "Lock-up applies — share quantity unavailable",
           "liquidity_confidence": "Filing supports holder lock-up coverage, but the share count is unavailable; locked and liquid quantities are not shown",
           "lockup_schedule": [
@@ -537,7 +526,6 @@
         {
           "name": "Christoph Birchler",
           "shares": null,
-          "cash_value": null,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-03-16",
           "lockup_scope": "holder-mapped",
@@ -545,7 +533,6 @@
           "lockup_duration_value": 180,
           "lockup_duration_unit": "days",
           "lockup_text": "In connection with this offering, our directors, executive officers, and holders of substantially all of our outstanding capital stock have each agreed to enter into “lock-up” agreements with the underwriters and thereby be subject to a lock-up period, meaning that they and their permitted transferees will not be permitted to sell any shares of our Class A common stock for 180 days after the date of this prospectus, subject to certain exceptions without the prior consent of RBC Capital Markets, LLC and UBS Securities LLC",
-          "valuation_as_of": null,
           "holder_type": "Individual",
           "is_beneficial_owner": true,
           "role": null,
@@ -557,9 +544,7 @@
           "shares_after_ipo": null,
           "stanford_source": null,
           "liquid_shares": null,
-          "liquid_value": null,
           "locked_shares": null,
-          "locked_value": null,
           "liquidity_status": "Lock-up applies — share quantity unavailable",
           "liquidity_confidence": "Filing supports holder lock-up coverage, but the share count is unavailable; locked and liquid quantities are not shown",
           "lockup_schedule": [
@@ -580,7 +565,6 @@
         {
           "name": "Ryan Jesenik",
           "shares": null,
-          "cash_value": null,
           "stanford_university_bio": false,
           "lockup_end_date": "2027-03-16",
           "lockup_scope": "holder-mapped",
@@ -588,7 +572,6 @@
           "lockup_duration_value": 180,
           "lockup_duration_unit": "days",
           "lockup_text": "In connection with this offering, our directors, executive officers, and holders of substantially all of our outstanding capital stock have each agreed to enter into “lock-up” agreements with the underwriters and thereby be subject to a lock-up period, meaning that they and their permitted transferees will not be permitted to sell any shares of our Class A common stock for 180 days after the date of this prospectus, subject to certain exceptions without the prior consent of RBC Capital Markets, LLC and UBS Securities LLC",
-          "valuation_as_of": null,
           "holder_type": "Individual",
           "is_beneficial_owner": true,
           "role": null,
@@ -600,9 +583,7 @@
           "shares_after_ipo": null,
           "stanford_source": null,
           "liquid_shares": null,
-          "liquid_value": null,
           "locked_shares": null,
-          "locked_value": null,
           "liquidity_status": "Lock-up applies — share quantity unavailable",
           "liquidity_confidence": "Filing supports holder lock-up coverage, but the share count is unavailable; locked and liquid quantities are not shown",
           "lockup_schedule": [
