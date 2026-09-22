@@ -61,7 +61,7 @@ def resolve_latest_positions(evaluations, rows_loader=None):
         filed = _canonical_date(meta.get("filing_date"))
         form = str(meta.get("form_type") or "").strip().upper()
         accession = _canonical_accession(meta.get("accession_no"))
-        if not filed or form not in FORM_TYPES or not accession:
+        if not filed or form not in FORM_TYPES:
             unresolved.add(cik)
             continue
         grouped.setdefault(cik, []).append(
@@ -85,7 +85,7 @@ def resolve_latest_positions(evaluations, rows_loader=None):
             continue
 
         accessions = [entry["accession"] for entry in same_day]
-        if len(set(accessions)) != len(accessions):
+        if any(not accession for accession in accessions) or len(set(accessions)) != len(accessions):
             unresolved.add(cik)
             continue
 
