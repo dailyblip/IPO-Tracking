@@ -26,6 +26,22 @@ class FilingPriceHistoryError(RuntimeError):
     """Raised when required S-1/S-1A history cannot be inspected reliably."""
 
 
+class _FinalRegistrationFileNumber(str):
+    """String-compatible final registration identity with SEC chronology metadata."""
+
+    def __new__(
+        cls,
+        value,
+        *,
+        filing_date=None,
+        acceptance_datetime=None,
+    ):
+        instance = str.__new__(cls, value)
+        instance.filing_date = filing_date
+        instance.acceptance_datetime = acceptance_datetime
+        return instance
+
+
 def _canonical_cik(value):
     digits = re.sub(r"\D", "", str(value or ""))
     return digits.zfill(10) if digits else ""
@@ -177,6 +193,11 @@ def _final_registration_file_number(
     lineage anchor for preliminary Filing Price recovery; newest-S-1-by-CIK alone
     is not sufficient. Missing, duplicate, malformed, or date-conflicting final
     SEC metadata fails closed instead of allowing a range from another registration.
+
+    The returned value remains string-compatible for existing callers, while also
+    carrying the exact final SEC filing day and acceptance time. Filing Price history
+    uses those fields only when it must prove order between same-day S-1/S-1A and
+    424B4 filings.
     """
     cik = _canonical_cik((filing or {}).get("cik"))
     final_accession = _normalized_accession((filing or {}).get("accession_no"))
@@ -221,7 +242,21 @@ def _final_registration_file_number(
         raise FilingPriceHistoryError(
             f"Priced row {(filing or {}).get('company') or (filing or {}).get('id')} final 424B4 filing date does not match exact SEC accession metadata"
         )
-    return file_number
+
+    final_acceptance = str(final_row.get("acceptance_datetime") or "").strip()
+    if (
+        final_acceptance
+        and registration_lineage._canonical_acceptance_datetime(final_acceptance) is None
+    ):
+        raise FilingPriceHistoryError(
+            f"Priced row {(filing or {}).get('company') or (filing or {}).get('id')} final 424B4 has malformed SEC acceptance time"
+        )
+
+    return _FinalRegistrationFileNumber(
+        file_number,
+        filing_date=sec_final_day.isoformat(),
+        acceptance_datetime=final_acceptance,
+    )
 
 
 def sec_s1_history(cik, pricing_date):
@@ -231,7 +266,8 @@ def sec_s1_history(cik, pricing_date):
     and can move older submissions into SEC-listed archive JSON files. Inspect both
     sources before accepting a blank Filing Price so an aged-out amendment cannot
     be missed. Results are deduplicated and returned newest first for registration
-    lineage selection.
+    lineage selection. SEC acceptance times are retained so same-day S-1/S-1A and
+    424B4 chronology can be proven rather than inferred from dates or accession IDs.
     """
     cik = _canonical_cik(cik)
     if not cik:
@@ -332,6 +368,15 @@ def sec_s1_history(cik, pricing_date):
             raise FilingPriceHistoryError(
                 f"SEC submissions history for CIK {cik} has mismatched file-number metadata"
             )
+
+        acceptance_values = block.get("acceptanceDateTime")
+        if acceptance_values is None:
+            acceptance_values = [""] * count
+        elif not isinstance(acceptance_values, list) or len(acceptance_values) != count:
+            raise FilingPriceHistoryError(
+                f"SEC submissions history for CIK {cik} has mismatched acceptance-time metadata"
+            )
+
         for index in range(count):
             raw_form = forms[index]
             if not isinstance(raw_form, str) or not raw_form.strip():
@@ -345,6 +390,7 @@ def sec_s1_history(cik, pricing_date):
             raw_accession = accessions[index]
             raw_filed = dates[index]
             raw_file_number = file_numbers[index] if file_numbers else ""
+            raw_acceptance = acceptance_values[index]
             if not isinstance(raw_accession, str) or not raw_accession.strip():
                 raise FilingPriceHistoryError(
                     f"SEC S-1 history for CIK {cik} contains malformed accession metadata"
@@ -357,6 +403,10 @@ def sec_s1_history(cik, pricing_date):
                 raise FilingPriceHistoryError(
                     f"SEC S-1 history for CIK {cik} contains malformed file-number metadata"
                 )
+            if raw_acceptance not in (None, "") and not isinstance(raw_acceptance, str):
+                raise FilingPriceHistoryError(
+                    f"SEC S-1 history for CIK {cik} contains malformed acceptance-time metadata"
+                )
 
             accession = raw_accession.strip()
             filed = raw_filed.strip()
@@ -368,12 +418,22 @@ def sec_s1_history(cik, pricing_date):
             if pricing_day is not None and filed_day > pricing_day:
                 continue
             file_number = raw_file_number.strip() if isinstance(raw_file_number, str) else ""
+            acceptance_datetime = raw_acceptance.strip() if isinstance(raw_acceptance, str) else ""
+            if (
+                acceptance_datetime
+                and registration_lineage._canonical_acceptance_datetime(acceptance_datetime) is None
+            ):
+                raise FilingPriceHistoryError(
+                    f"SEC S-1 history for CIK {cik} contains malformed acceptance time {acceptance_datetime!r}"
+                )
+
             key = _normalized_accession(accession) or accession
             candidate = {
                 "form_type": form,
                 "accession_no": accession,
                 "filing_date": filed,
                 "file_number": file_number,
+                "acceptance_datetime": acceptance_datetime,
             }
             existing = history_by_accession.get(key)
             if existing is None:
@@ -392,6 +452,14 @@ def sec_s1_history(cik, pricing_date):
                 and existing_file_number != candidate_file_number
             ):
                 conflicts.append("file_number")
+            existing_acceptance = str(existing.get("acceptance_datetime") or "").strip()
+            candidate_acceptance = str(candidate.get("acceptance_datetime") or "").strip()
+            if (
+                existing_acceptance
+                and candidate_acceptance
+                and existing_acceptance != candidate_acceptance
+            ):
+                conflicts.append("acceptance_datetime")
             if conflicts:
                 raise FilingPriceHistoryError(
                     f"SEC S-1 history for CIK {cik} has conflicting duplicate accession metadata "
@@ -399,12 +467,23 @@ def sec_s1_history(cik, pricing_date):
                 )
             if not existing_file_number and candidate_file_number:
                 existing["file_number"] = candidate_file_number
+            if not existing_acceptance and candidate_acceptance:
+                existing["acceptance_datetime"] = candidate_acceptance
 
     history = list(history_by_accession.values())
-    history.sort(
-        key=lambda item: (item["filing_date"], _normalized_accession(item["accession_no"])),
-        reverse=True,
-    )
+
+    def history_sort_key(item):
+        acceptance = registration_lineage._canonical_acceptance_datetime(
+            item.get("acceptance_datetime")
+        )
+        acceptance_key = acceptance.isoformat() if acceptance is not None else ""
+        return (
+            item["filing_date"],
+            acceptance_key,
+            _normalized_accession(item["accession_no"]),
+        )
+
+    history.sort(key=history_sort_key, reverse=True)
     return history
 
 
@@ -414,6 +493,8 @@ def _current_registration_history(
     pricing_day,
     initial_day=None,
     required_file_number=None,
+    final_filing_day=None,
+    final_acceptance_datetime=None,
 ):
     """Limit S-1 history to the priced IPO's SEC registration statement.
 
@@ -428,7 +509,22 @@ def _current_registration_history(
     ambiguous evidence, not permission to discard the unnumbered filing. Fail
     closed in that case so an amendment cannot be silently skipped when deciding
     whether a priced row may keep a blank or older Filing Price.
+
+    When an S-1/S-1A shares the final 424B4 filing date, dates alone cannot prove
+    that it is preceding registration history. SEC acceptance timestamps must show
+    the amendment was accepted strictly before the final prospectus. A later
+    same-day amendment is excluded; missing, malformed, or equal timestamps fail
+    closed rather than allowing ambiguous post-final evidence to set Filing Price.
     """
+    final_filing_day = (
+        final_filing_day
+        if isinstance(final_filing_day, date)
+        else _canonical_date(final_filing_day)
+    )
+    final_acceptance = registration_lineage._canonical_acceptance_datetime(
+        final_acceptance_datetime
+    )
+
     chronological = []
     for metadata in history or []:
         if not isinstance(metadata, dict):
@@ -436,6 +532,23 @@ def _current_registration_history(
         source_day = _canonical_date(metadata.get("filing_date"))
         if source_day is None or source_day > pricing_day:
             continue
+        if final_filing_day is not None and source_day > final_filing_day:
+            continue
+        if final_filing_day is not None and source_day == final_filing_day:
+            source_acceptance = registration_lineage._canonical_acceptance_datetime(
+                metadata.get("acceptance_datetime")
+            )
+            accession = metadata.get("accession_no") or "unknown accession"
+            if source_acceptance is None or final_acceptance is None:
+                raise FilingPriceHistoryError(
+                    f"SEC same-day S-1/424B4 order cannot be proven for {accession}; acceptance time is missing or malformed"
+                )
+            if source_acceptance == final_acceptance:
+                raise FilingPriceHistoryError(
+                    f"SEC same-day S-1/424B4 order is ambiguous for {accession}; acceptance timestamps are equal"
+                )
+            if source_acceptance > final_acceptance:
+                continue
         chronological.append(metadata)
 
     required_file_number = str(required_file_number or "").strip()
@@ -596,9 +709,18 @@ def recover_payload_filing_prices(
             )
 
         final_file_number = None
+        final_filing_day = None
+        final_acceptance_datetime = None
         if final_registration_loader is not None:
             try:
-                final_file_number = str(final_registration_loader(filing) or "").strip()
+                final_registration = final_registration_loader(filing)
+                final_file_number = str(final_registration or "").strip()
+                final_filing_day = _canonical_date(
+                    getattr(final_registration, "filing_date", None)
+                )
+                final_acceptance_datetime = getattr(
+                    final_registration, "acceptance_datetime", None
+                )
             except FilingPriceHistoryError:
                 raise
             except Exception as error:
@@ -615,6 +737,8 @@ def recover_payload_filing_prices(
             pricing_day=pricing_day,
             initial_day=initial_day,
             required_file_number=final_file_number,
+            final_filing_day=final_filing_day,
+            final_acceptance_datetime=final_acceptance_datetime,
         )
         if not history:
             raise FilingPriceHistoryError(
