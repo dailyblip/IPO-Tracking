@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-22T02:47:36.157625+00:00",
-  "count": 124,
+  "generated_at": "2026-09-22T02:48:01.426520+00:00",
+  "count": 123,
   "alerts": [
     {
       "type": "price_range_update",
@@ -271,20 +271,6 @@
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2109801/000149315226038800/0001493152-26-038800-index.htm",
       "detected_at": "2026-09-15T21:43:25.195147+00:00",
       "key": "new_prepricing|s1:0002109801|0002109801|2026-08-17|"
-    },
-    {
-      "type": "new_prepricing",
-      "company": "Fast Finance Pay Corp.",
-      "cik": "0002109616",
-      "filing_id": "s1:0002109616",
-      "form": "S-1",
-      "filed": "2026-08-12",
-      "stage": "pre-pricing",
-      "priority": "Medium",
-      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2109616/000149315226037415/0001493152-26-037415-index.htm",
-      "detected_at": "2026-09-15T21:43:25.195172+00:00",
-      "key": "new_prepricing|s1:0002109616|0002109616|2026-08-12|"
     },
     {
       "type": "new_prepricing",
