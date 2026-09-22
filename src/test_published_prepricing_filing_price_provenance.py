@@ -36,22 +36,19 @@ class PublishedPrepricingFilingPriceProvenanceTests(unittest.TestCase):
         cls.feed = json.loads(FEED_PATH.read_text(encoding="utf-8"))
         cls.records = cls.feed["filings"] if isinstance(cls.feed, dict) else cls.feed
 
-    def test_published_prepricing_provenance_is_authoritative_when_present(self):
-        """Fail closed if a preliminary row publishes malformed price provenance.
+    def test_published_prepricing_filing_price_requires_authoritative_provenance(self):
+        """Every published preliminary price must retain authoritative SEC provenance.
 
-        Pre-pricing rows are not required to carry filing_price_source yet. When a
-        source is published, however, it must already meet the same issuer,
-        chronology, and SEC-document identity standard used when that preliminary
-        price is carried forward into a priced 424B4 record.
+        The pre-pricing repair pass now guarantees that a populated Filing Price or
+        range is tied to an exact S-1/S-1A source before publication. Keep that
+        guarantee release-blocking so lifecycle/export changes cannot silently drop
+        provenance while leaving the preliminary value visible.
         """
         failures = []
+        checked = 0
 
         for record in self.records:
             if _display(record.get("stage")) != "Pre-pricing":
-                continue
-
-            source = record.get("filing_price_source")
-            if source is None:
                 continue
 
             label = _display(
@@ -60,16 +57,23 @@ class PublishedPrepricingFilingPriceProvenanceTests(unittest.TestCase):
                 or record.get("name")
                 or record.get("cik")
             ) or "unknown issuer"
-
             preliminary = _display(record.get("filing_price")) or _display(
                 record.get("price_range")
             ) or _display(record.get("proposed_price_range"))
+            source = record.get("filing_price_source")
+
             if not preliminary:
-                failures.append(f"{label}: Filing Price provenance exists without a preliminary value")
+                if source is not None:
+                    failures.append(
+                        f"{label}: Filing Price provenance exists without a preliminary value"
+                    )
                 continue
 
+            checked += 1
             if not isinstance(source, dict):
-                failures.append(f"{label}: filing_price_source is not an object")
+                failures.append(
+                    f"{label}: populated pre-pricing Filing Price lacks filing_price_source"
+                )
                 continue
 
             if _display(source.get("source")) != "SEC EDGAR":
@@ -111,6 +115,11 @@ class PublishedPrepricingFilingPriceProvenanceTests(unittest.TestCase):
             elif accession_digits not in _digits(parsed.path):
                 failures.append(f"{label}: Filing Price source URL does not match source accession")
 
+        self.assertGreater(
+            checked,
+            0,
+            "expected at least one pre-pricing row with a preliminary Filing Price",
+        )
         self.assertFalse(failures, "\n".join(failures))
 
 
