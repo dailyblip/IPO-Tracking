@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 import re
+from zoneinfo import ZoneInfo
 
 import edgar_client
 
@@ -18,6 +19,7 @@ import edgar_client
 _ARCHIVE_BASE = "https://data.sec.gov/submissions"
 _REQUIRED_FIELDS = ("accessionNumber", "form", "fileNumber", "filingDate")
 _ACCEPTANCE_FIELD = "acceptanceDateTime"
+_SEC_FILING_TIMEZONE = ZoneInfo("America/New_York")
 
 
 def _canonical_cik(value):
@@ -39,30 +41,35 @@ def _canonical_date(value):
 
 
 def _canonical_acceptance_datetime(value):
-    """Return a comparable SEC acceptance timestamp or None when unavailable.
+    """Return a comparable UTC SEC acceptance timestamp or None when unavailable.
 
-    The submissions API normally exposes ISO-8601 ``acceptanceDateTime`` values.
-    Some fixtures/older consumers use the compact EDGAR YYYYMMDDHHMMSS form, so
-    accept that representation too. Comparison is only used to order filings that
-    share the same SEC filing date; timezone-aware values are normalized to UTC and
-    naive compact values remain directly comparable within that same-day source.
+    The submissions API normally exposes timezone-aware ISO-8601
+    ``acceptanceDateTime`` values. Some SEC/EDGAR surfaces and fixtures use the
+    compact ``YYYYMMDDHHMMSS`` form; that compact value is an Eastern Time wall
+    clock and must be localized before UTC comparison. Naive ISO timestamps have
+    no authoritative timezone and therefore fail closed rather than being ordered.
     """
     raw = str(value or "").strip()
     if not raw:
         return None
 
+    if len(raw) == 14 and raw.isdigit():
+        try:
+            parsed = datetime.strptime(raw, "%Y%m%d%H%M%S").replace(
+                tzinfo=_SEC_FILING_TIMEZONE
+            )
+        except ValueError:
+            return None
+        return parsed.astimezone(timezone.utc).replace(tzinfo=None)
+
     normalized = raw[:-1] + "+00:00" if raw.endswith("Z") else raw
     try:
         parsed = datetime.fromisoformat(normalized)
     except ValueError:
-        try:
-            parsed = datetime.strptime(raw, "%Y%m%d%H%M%S")
-        except ValueError:
-            return None
-
-    if parsed.tzinfo is not None and parsed.utcoffset() is not None:
-        parsed = parsed.astimezone(timezone.utc).replace(tzinfo=None)
-    return parsed
+        return None
+    if parsed.tzinfo is None or parsed.utcoffset() is None:
+        return None
+    return parsed.astimezone(timezone.utc).replace(tzinfo=None)
 
 
 def _rows_from_block(block):
