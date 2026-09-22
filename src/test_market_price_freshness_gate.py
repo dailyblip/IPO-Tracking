@@ -92,7 +92,7 @@ class MarketPriceFreshnessGateTests(unittest.TestCase):
         )
 
     def test_same_run_positive_quote_is_preserved(self):
-        marker = "2026-09-01T00:06:53.558358+00:00"
+        marker = "2026-09-01T14:06:53.558358+00:00"
         payload = {
             "generated_at": marker,
             "filings": [
