@@ -45,6 +45,21 @@ class MarketPricePostFinalFilingTests(unittest.TestCase):
         self.assertNotIn("valuation_as_of", person)
         self.assertEqual(person["ipo_value"], 900_000)
 
+    def test_utc_rollover_before_sec_eastern_filing_day_is_cleared(self):
+        sanitized, stale = sanitize_payload(
+            self._payload("2026-09-09T00:30:00+00:00")
+        )
+
+        self.assertEqual(len(stale), 1)
+        filing = sanitized["filings"][0]
+        self.assertNotIn("current_price", filing)
+        self.assertNotIn("price_updated", filing)
+        self.assertEqual(filing["signals"], [])
+        person = filing["people"][0]
+        self.assertNotIn("cash_value", person)
+        self.assertNotIn("valuation_as_of", person)
+        self.assertEqual(person["ipo_value"], 900_000)
+
     def test_quote_without_canonical_final_424b4_filing_date_is_cleared(self):
         for filed_value in (None, "", "09/09/2026", "2026-9-9"):
             with self.subTest(filed=filed_value):
