@@ -9,7 +9,7 @@ allowed.
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 import re
 
 import edgar_client
@@ -17,6 +17,7 @@ import edgar_client
 
 _ARCHIVE_BASE = "https://data.sec.gov/submissions"
 _REQUIRED_FIELDS = ("accessionNumber", "form", "fileNumber", "filingDate")
+_ACCEPTANCE_FIELD = "acceptanceDateTime"
 
 
 def _canonical_cik(value):
@@ -37,6 +38,33 @@ def _canonical_date(value):
     return parsed if parsed.isoformat() == raw else None
 
 
+def _canonical_acceptance_datetime(value):
+    """Return a comparable SEC acceptance timestamp or None when unavailable.
+
+    The submissions API normally exposes ISO-8601 ``acceptanceDateTime`` values.
+    Some fixtures/older consumers use the compact EDGAR YYYYMMDDHHMMSS form, so
+    accept that representation too. Comparison is only used to order filings that
+    share the same SEC filing date; timezone-aware values are normalized to UTC and
+    naive compact values remain directly comparable within that same-day source.
+    """
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+
+    normalized = raw[:-1] + "+00:00" if raw.endswith("Z") else raw
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        try:
+            parsed = datetime.strptime(raw, "%Y%m%d%H%M%S")
+        except ValueError:
+            return None
+
+    if parsed.tzinfo is not None and parsed.utcoffset() is not None:
+        parsed = parsed.astimezone(timezone.utc).replace(tzinfo=None)
+    return parsed
+
+
 def _rows_from_block(block):
     """Return aligned SEC filing rows, rejecting malformed array structures."""
     if not isinstance(block, dict):
@@ -50,14 +78,21 @@ def _rows_from_block(block):
     if len(lengths) != 1:
         raise ValueError("SEC submissions filing arrays are not aligned")
 
-    rows = []
     row_count = next(iter(lengths), 0)
+    acceptance_values = block.get(_ACCEPTANCE_FIELD)
+    if acceptance_values is None:
+        acceptance_values = [""] * row_count
+    elif not isinstance(acceptance_values, list) or len(acceptance_values) != row_count:
+        raise ValueError("SEC submissions acceptance-time array is not aligned")
+
+    rows = []
     for index in range(row_count):
         rows.append({
             "accession_no": str(arrays["accessionNumber"][index] or "").strip(),
             "form": str(arrays["form"][index] or "").strip().upper(),
             "file_number": str(arrays["fileNumber"][index] or "").strip(),
             "filing_date": str(arrays["filingDate"][index] or "").strip(),
+            "acceptance_datetime": str(acceptance_values[index] or "").strip(),
         })
     return rows
 
@@ -118,8 +153,11 @@ def build_registration_lineage_resolver(rows_loader=load_registration_rows):
     Exact accession and file-number identity are necessary but not sufficient for a
     release-grade lifecycle handoff. The published pre-pricing filing date must also
     agree with the SEC date for that exact S-1/S-1A accession, just as the candidate
-    424B4 date is verified. This prevents stale or corrupted row chronology from
-    being carried into a priced record under otherwise-valid registration lineage.
+    424B4 date is verified. When both SEC filings share a filing date, their EDGAR
+    acceptance timestamps must prove that the registration statement was accepted
+    before the final prospectus; date-only equality is otherwise ambiguous and fails
+    closed. This prevents stale or corrupted chronology from being carried into a
+    priced record under otherwise-valid registration lineage.
 
     Only SEC registration evidence is cached. Published-row dates are validated on
     every call so one valid row cannot cause a stale duplicate with the same accession
@@ -172,15 +210,32 @@ def build_registration_lineage_resolver(rows_loader=load_registration_rows):
                     final_file_number = str(final_row.get("file_number") or "").strip()
                     s1_date = _canonical_date(s1_row.get("filing_date"))
                     final_date = _canonical_date(final_row.get("filing_date"))
+                    s1_acceptance = _canonical_acceptance_datetime(
+                        s1_row.get("acceptance_datetime")
+                    )
+                    final_acceptance = _canonical_acceptance_datetime(
+                        final_row.get("acceptance_datetime")
+                    )
+                    sec_chronology_valid = bool(
+                        s1_date is not None
+                        and final_date is not None
+                        and (
+                            final_date > s1_date
+                            or (
+                                final_date == s1_date
+                                and s1_acceptance is not None
+                                and final_acceptance is not None
+                                and final_acceptance >= s1_acceptance
+                            )
+                        )
+                    )
                     sec_lineage_valid = bool(
                         s1_form in {"S-1", "S-1/A"}
                         and final_form == "424B4"
                         and s1_file_number
                         and final_file_number
                         and s1_file_number == final_file_number
-                        and s1_date is not None
-                        and final_date is not None
-                        and final_date >= s1_date
+                        and sec_chronology_valid
                     )
                     cache[cache_key] = (sec_lineage_valid, s1_date, final_date)
 
