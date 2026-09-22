@@ -25,11 +25,13 @@ import json
 import re
 from datetime import date, datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import dashboard_export
 import edgar_client
 
 DEFAULT_PATH = Path(__file__).resolve().parents[1] / "docs" / "data" / "filings.json"
+_SEC_FILING_TIMEZONE = ZoneInfo("America/New_York")
 REPORTING_FORMS = {
     "8-K", "8-K/A",
     "8-K12B", "8-K12B/A",
@@ -89,6 +91,14 @@ def _iso_datetime(value):
     raw = str(value or "").strip()
     if not raw:
         return None
+    if len(raw) == 14 and raw.isdigit():
+        try:
+            parsed = datetime.strptime(raw, "%Y%m%d%H%M%S").replace(
+                tzinfo=_SEC_FILING_TIMEZONE
+            )
+        except ValueError:
+            return None
+        return parsed.astimezone(timezone.utc)
     normalized = raw[:-1] + "+00:00" if raw.endswith("Z") else raw
     try:
         parsed = datetime.fromisoformat(normalized)
