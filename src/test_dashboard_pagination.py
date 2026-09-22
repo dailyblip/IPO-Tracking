@@ -15,6 +15,11 @@ class DashboardPaginationTests(unittest.TestCase):
         self.assertIn('const DEFAULT_PAGE_SIZE=25', HTML)
         self.assertIn('expandedOwner=null,currentPage=1', HTML)
 
+    def test_pagination_activates_at_feed_growth_milestone(self):
+        self.assertIn('PAGINATION_MIN_ROWS=50', HTML)
+        self.assertIn('function paginationEnabled(){return filings.length>=PAGINATION_MIN_ROWS}', HTML)
+        self.assertIn('$("pagination").classList.toggle("hidden",!paginationEnabled())', HTML)
+
     def test_pagination_is_applied_after_existing_filters_and_sort(self):
         self.assertIn('const visible=visibleFilings()', HTML)
         self.assertIn('visible.slice(start,start+size)', HTML)
@@ -29,6 +34,11 @@ class DashboardPaginationTests(unittest.TestCase):
         self.assertIn('function resetPageAndRender(){currentPage=1;render()}', HTML)
         self.assertIn('["formFilter","statusFilter","dateFilter","sizeFilter","sortBy"]', HTML)
         self.assertIn('$("search").addEventListener("input",resetPageAndRender)', HTML)
+
+    def test_pagination_clamps_page_when_filtered_results_shrink(self):
+        self.assertIn('currentPage=Math.min(Math.max(1,currentPage),pages)', HTML)
+        self.assertIn('$("prevPage").disabled=currentPage<=1', HTML)
+        self.assertIn('$("nextPage").disabled=currentPage>=page.pages', HTML)
 
     def test_year_filter_remains_deferred_until_larger_feed_milestone(self):
         self.assertNotIn('id="yearFilter"', HTML)
