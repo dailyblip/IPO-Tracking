@@ -154,6 +154,72 @@ def load_registration_rows(cik, required_accessions=()):
     return rows
 
 
+def _first_post_registration_final_accession(rows, s1_row):
+    """Return the unique earliest 424B4 in the exact registration lineage.
+
+    Different SEC filing dates establish order directly. When multiple 424B4 rows
+    share the earliest eligible filing date, exact EDGAR acceptance timestamps must
+    prove which was accepted first. Missing, malformed, duplicate, or tied same-day
+    evidence fails closed so lifecycle reconciliation never falls back to API order.
+    """
+    s1_file_number = str((s1_row or {}).get("file_number") or "").strip()
+    s1_date = _canonical_date((s1_row or {}).get("filing_date"))
+    if not s1_file_number or s1_date is None:
+        return None
+
+    s1_acceptance = _canonical_acceptance_datetime(
+        (s1_row or {}).get("acceptance_datetime")
+    )
+    eligible = []
+    for row in rows or []:
+        if not isinstance(row, dict):
+            continue
+        if str(row.get("form") or "").strip().upper() != "424B4":
+            continue
+        if str(row.get("file_number") or "").strip() != s1_file_number:
+            continue
+
+        final_date = _canonical_date(row.get("filing_date"))
+        if final_date is None:
+            return None
+        final_acceptance = _canonical_acceptance_datetime(
+            row.get("acceptance_datetime")
+        )
+        if final_date < s1_date:
+            continue
+        if final_date == s1_date:
+            if s1_acceptance is None or final_acceptance is None:
+                return None
+            if final_acceptance <= s1_acceptance:
+                continue
+
+        accession = _canonical_accession(row.get("accession_no"))
+        if not accession:
+            return None
+        eligible.append((final_date, final_acceptance, accession))
+
+    if not eligible:
+        return None
+
+    earliest_date = min(final_date for final_date, _accepted, _accession in eligible)
+    earliest = [item for item in eligible if item[0] == earliest_date]
+    accessions = [accession for _date, _accepted, accession in earliest]
+    if len(set(accessions)) != len(accessions):
+        return None
+    if len(earliest) == 1:
+        return earliest[0][2]
+    if any(accepted is None for _date, accepted, _accession in earliest):
+        return None
+
+    earliest_acceptance = min(accepted for _date, accepted, _accession in earliest)
+    winners = [
+        accession
+        for _date, accepted, accession in earliest
+        if accepted == earliest_acceptance
+    ]
+    return winners[0] if len(winners) == 1 else None
+
+
 def build_registration_lineage_resolver(rows_loader=load_registration_rows):
     """Return a cached exact-accession resolver for S-1/S-1A -> 424B4 lineage.
 
@@ -163,8 +229,10 @@ def build_registration_lineage_resolver(rows_loader=load_registration_rows):
     424B4 date is verified. When both SEC filings share a filing date, their EDGAR
     acceptance timestamps must prove that the registration statement was accepted
     strictly before the final prospectus; date-only equality is otherwise ambiguous
-    and fails closed. This prevents stale or corrupted chronology from being carried
-    into a priced record under otherwise-valid registration lineage.
+    and fails closed. When more than one eligible final prospectus exists in the same
+    registration lineage, only the unique earliest final may promote the pre-pricing
+    record; same-day ties require exact acceptance-time ordering. This prevents stale,
+    corrupted, or discovery-order chronology from being carried into a priced record.
 
     Only SEC registration evidence is cached. Published-row dates are validated on
     every call so one valid row cannot cause a stale duplicate with the same accession
@@ -236,6 +304,9 @@ def build_registration_lineage_resolver(rows_loader=load_registration_rows):
                             )
                         )
                     )
+                    first_final_accession = _first_post_registration_final_accession(
+                        rows, s1_row
+                    )
                     sec_lineage_valid = bool(
                         s1_form in {"S-1", "S-1/A"}
                         and final_form == "424B4"
@@ -243,6 +314,7 @@ def build_registration_lineage_resolver(rows_loader=load_registration_rows):
                         and final_file_number
                         and s1_file_number == final_file_number
                         and sec_chronology_valid
+                        and first_final_accession == final_accession
                     )
                     cache[cache_key] = (sec_lineage_valid, s1_date, final_date)
 
