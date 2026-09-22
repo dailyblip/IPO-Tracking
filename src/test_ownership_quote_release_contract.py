@@ -48,9 +48,11 @@ class OwnershipQuoteReleaseContractTests(unittest.TestCase):
     def test_ownership_refresh_reacts_to_quote_safety_changes(self):
         workflow = WORKFLOW.read_text(encoding="utf-8")
         required_paths = [
+            "src/final_ticker_reconciler.py",
             "src/market_quote_identity.py",
             "src/market_quote_release_gate.py",
             "src/market_price_freshness_gate.py",
+            "src/test_final_ticker_reconciler.py",
             "src/test_market_quote_identity.py",
             "src/test_market_quote_release_gate.py",
             "src/test_market_price_freshness_gate.py",
