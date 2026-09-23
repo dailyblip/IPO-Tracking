@@ -24,6 +24,7 @@ from pathlib import Path
 
 import dashboard_export
 import filing_price_history
+import registration_lineage
 
 
 FORMS = {"S-1", "S-1/A"}
@@ -285,7 +286,6 @@ def _recover_one(
     existing_range = str(filing.get("price_range") or "").strip()
     existing_price = str(filing.get("filing_price") or "").strip()
     if existing_price and not existing_range:
-        # Fixed/point prices are intentionally left to the stricter cover gate.
         return filing, False
     if existing_range and _has_authoritative_prepricing_source(filing):
         return filing, False
@@ -293,23 +293,22 @@ def _recover_one(
     cik = _canonical_cik(filing.get("cik"))
     filed_day = _canonical_date(filing.get("filed"))
     if not cik or filed_day is None:
-        # _current_history_row gives a more specific release-blocking message.
-        history = []
+        history_rows = []
     else:
         try:
-            history = history_loader(cik, filed_day.isoformat())
+            history_rows = history_loader(cik, filed_day.isoformat())
         except Exception as error:
             raise S1PriceRangeHistoryError(
                 f"Could not load SEC S-1/S-1A history for "
                 f"{filing.get('company') or filing.get('id')}: {error}"
             ) from error
 
-    current = _current_history_row(filing, history)
+    current = _current_history_row(filing, history_rows)
     file_number = str(current.get("file_number") or "").strip()
 
     lineage = [
         metadata
-        for metadata in history or []
+        for metadata in history_rows or []
         if isinstance(metadata, dict)
         and str(metadata.get("file_number") or "").strip() == file_number
         and _canonical_date(metadata.get("filing_date")) is not None
@@ -320,32 +319,58 @@ def _recover_one(
             f"{filing.get('company') or filing.get('id')}: no same-registration S-1/S-1A history was available"
         )
 
-    # The exact current amendment is authoritative and does not require any
-    # chronology inference.
     current_range, current_url = _parse_history_range(cik, current, registration_loader)
     if current_range is not None:
         repaired = _apply_range(filing, current_range, current, current_url)
         return repaired, repaired != filing
 
     current_accession = _canonical_accession(current.get("accession_no"))
-
-    # Another same-registration filing on the exact same day cannot safely be
-    # ordered relative to the current amendment from date-only SEC metadata. If
-    # it discloses a range, fail closed rather than guessing that it preceded the
-    # current blank amendment.
+    current_acceptance = registration_lineage._canonical_acceptance_datetime(
+        current.get("acceptance_datetime")
+    )
     same_day_others = [
         metadata
         for metadata in lineage
         if _canonical_date(metadata.get("filing_date")) == filed_day
         and _canonical_accession(metadata.get("accession_no")) != current_accession
     ]
+    same_day_predecessors = []
     for metadata in same_day_others:
-        candidate_range, _ = _parse_history_range(cik, metadata, registration_loader)
-        if candidate_range is not None:
+        candidate_range, index_url = _parse_history_range(
+            cik, metadata, registration_loader
+        )
+        if candidate_range is None:
+            continue
+        candidate_acceptance = registration_lineage._canonical_acceptance_datetime(
+            metadata.get("acceptance_datetime")
+        )
+        if (
+            current_acceptance is None
+            or candidate_acceptance is None
+            or candidate_acceptance == current_acceptance
+        ):
             raise S1PriceRangeHistoryError(
                 f"{filing.get('company') or filing.get('id')}: same-day SEC S-1/S-1/A range "
-                "cannot be ordered relative to the current amendment"
+                "cannot be authoritatively ordered relative to the current amendment"
             )
+        if candidate_acceptance < current_acceptance:
+            same_day_predecessors.append(
+                (candidate_acceptance, candidate_range, metadata, index_url)
+            )
+
+    if same_day_predecessors:
+        same_day_predecessors.sort(key=lambda item: item[0], reverse=True)
+        if (
+            len(same_day_predecessors) > 1
+            and same_day_predecessors[0][0] == same_day_predecessors[1][0]
+        ):
+            raise S1PriceRangeHistoryError(
+                f"{filing.get('company') or filing.get('id')}: same-day SEC S-1/S-1/A "
+                "predecessors have duplicate acceptance times"
+            )
+        _, candidate_range, metadata, index_url = same_day_predecessors[0]
+        repaired = _apply_range(filing, candidate_range, metadata, index_url)
+        return repaired, repaired != filing
 
     by_day = {}
     for metadata in lineage:
@@ -373,9 +398,6 @@ def _recover_one(
                 f"were disclosed in same-day SEC registration history on {source_day.isoformat()}"
             )
 
-        # Every supporting filing on this day states the same range, so any exact
-        # source accession is valid provenance. Pick a deterministic one without
-        # inferring intra-day chronology.
         parsed_ranges.sort(
             key=lambda item: _canonical_accession(item[1].get("accession_no"))
         )
