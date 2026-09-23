@@ -35,6 +35,10 @@ class InstitutionalHolderTypeTests(unittest.TestCase):
         self.assertEqual(holder_type("OCM Power VI AIV Holdings (Delaware), L.P"), "Fund")
         self.assertEqual(holder_type("Example Investment L.P"), "Fund")
 
+    def test_special_limited_partnership_legal_forms_are_funds(self):
+        self.assertEqual(holder_type("Sofinnova Crossover II SLP"), "Fund")
+        self.assertEqual(holder_type("Example Investment S.L.P."), "Fund")
+
     def test_plural_fund_labels_are_not_people(self):
         self.assertEqual(holder_type("MDP Funds"), "Fund")
         self.assertEqual(holder_type("Example Healthcare Funds"), "Fund")
