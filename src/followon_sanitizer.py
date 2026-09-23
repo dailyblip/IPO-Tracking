@@ -40,6 +40,12 @@ REPORTING_FORMS = {
     "10-12B", "10-12B/A", "10-12G", "10-12G/A",
     "10-Q", "10-Q/A", "10-QT", "10-QT/A",
     "10-K", "10-K/A", "10-KT", "10-KT/A",
+    # Rule 12b-25 late-filing notices for core periodic reports are affirmative
+    # evidence that the issuer already had the corresponding Exchange Act
+    # reporting obligation before a later 424B4 candidate.
+    "NT 10-Q", "NT 10-Q/A",
+    "NT 10-K", "NT 10-K/A",
+    "NT 20-F", "NT 20-F/A",
     # Legacy small-business Exchange Act registration and periodic-report forms
     # are the historical counterparts to Form 10 / 10-Q / 10-K reporting. They
     # remain authoritative prior-public evidence for dormant or reactivated issuers.
@@ -357,7 +363,6 @@ def sanitize_payload(payload: dict, submissions_loader=_load_submissions):
         updated["generated_at"] = datetime.now(timezone.utc).isoformat()
         return updated, removed
     return payload, []
-
 
 def sanitize_file(path: Path = DEFAULT_PATH) -> list:
     path = Path(path)
