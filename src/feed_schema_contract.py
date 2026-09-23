@@ -7,6 +7,7 @@ import math
 import re
 from datetime import date, datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 from jsonschema import Draft202012Validator
 from price_lookup import MAX_FUTURE_SKEW_SECONDS, MAX_QUOTE_AGE_SECONDS
@@ -19,6 +20,7 @@ SEC_ARCHIVES_FILING_PATTERN = re.compile(
     r"^https://www\.sec\.gov/Archives/edgar/data/(\d+)/(\d{18})/[^/?#]+$",
     re.IGNORECASE,
 )
+_SEC_FILING_TIMEZONE = ZoneInfo("America/New_York")
 
 
 def schema_path_for_version(version: int) -> Path:
@@ -197,7 +199,7 @@ def _lifecycle_semantic_errors(
                 )
             else:
                 quote_utc = quote_time.astimezone(timezone.utc)
-                quote_date = quote_utc.date()
+                quote_date = quote_time.astimezone(_SEC_FILING_TIMEZONE).date()
                 if quote_utc > datetime.now(timezone.utc):
                     failures.append(
                         f"{prefix}.price_updated: Current Price provider timestamp cannot be in the future"
