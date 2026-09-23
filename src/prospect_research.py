@@ -20,7 +20,10 @@ INSTITUTION_MARKERS = (
     "authority", "university", "college", "institute", "association", "pension",
     "retirement system", "endowment", "government", "ministry",
 )
-FUND_MARKERS = ("fund", "funds", "capital", "ventures", "partners", "partnership", "lp", "l.p", "l.p.")
+FUND_MARKERS = (
+    "fund", "funds", "capital", "ventures", "partners", "partnership",
+    "lp", "l.p", "l.p.", "slp", "s.l.p", "s.l.p.",
+)
 TRUST_MARKERS = ("trust", "trustee")
 PERSON_ROLE_MARKERS = (
     "chief", "officer", "director", "president", "chair", "chairman", "chairwoman",
