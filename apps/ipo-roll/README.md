@@ -20,7 +20,7 @@ Copy `.env.example` to `.env`, set the project's publishable key, and keep IPO_R
 
 Authentication uses Supabase Auth. The Node API verifies the bearer token with `getUser` and checks a server-managed entitlement on every research request. An administrator must provision an account and grant an entitlement before it can use the workspace. This build does not automatically invite users, enable self-signup or send email.
 
-No real research records have been imported. Once connected, the workspace intentionally displays an empty approved corpus. It does not silently substitute sample data on a database or authentication error.
+A real legacy snapshot has been imported into private review tables. No canonical research records have been published. Once connected, the workspace intentionally displays an empty approved corpus. It does not silently substitute sample data on a database or authentication error.
 
 For production: `npm run build`, then `npm start`, with server-side environment variables and HTTPS at the hosting boundary. A hosting deployment has not been made. Before launch, complete source import, biography capture/review, field provenance, source-content publication filtering, licensing, production auth configuration and operational recovery checks.
 
@@ -40,7 +40,7 @@ For production: `npm run build`, then `npm start`, with server-side environment 
 
 Migration `20260923042120_ipo_roll_foundation.sql` is applied to project `mpinbkaifvilxmixkzzv`. The file version matches the version recorded by the remote migration tool. The first attempted application failed transactionally on a SQL alias and created no partial schema; the corrected migration succeeded.
 
-Canonical records live in private schemas. RPC functions in `public` are SECURITY INVOKER, with EXECUTE revoked from PUBLIC/anon and granted to authenticated. Entitlements and RLS restrict what they can read. Customer writes are limited to their own profile/watchlist/saves. Every one of the 22 application tables has RLS enabled. Ingestion/release/quality tables and market prices intentionally have no customer policies or grants: they default to denial. The security advisor reported only four informational notices about these deliberately inaccessible tables: https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy.
+Canonical records live in private schemas. RPC functions in `public` are SECURITY INVOKER, with EXECUTE revoked from PUBLIC/anon and granted to authenticated. Entitlements and RLS restrict what they can read. Customer writes are limited to their own profile/watchlist/saves. Every application table has RLS enabled (26 tables after the staging-intake milestone). Ingestion/release/quality tables and market prices intentionally have no customer policies or grants: they default to denial. The security advisor reports eight informational notices after the intake milestone, all for deliberately inaccessible tables: https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy.
 
 No service-role credential is used in customer requests. `app.entitlements` has SELECT-only grants for the current user; customers cannot grant themselves access. Research is read-only. Source functions respect approved rights/evidence and person identity. Quotes are not published in this first build; the UI preserves the column but leaves it blank.
 
@@ -62,7 +62,7 @@ The inspected snapshot had 91 offerings and 804 person/holder entries. Sixteen r
 
 Do not write the public feed directly to the database as if it were fully sourced biographies. Next milestones:
 
-1. Build an idempotent staging importer that resolves exact root registration lineage, maps field-specific provenance and quarantines conflicts.
+1. Complete source verification on top of the private intake importer: resolve exact root registration lineage and capture field-specific SEC passages before promoting any candidate. The implemented intake records feed-reported observations; it does not claim to have independently verified them.
 2. Collect and validate person-specific biographies for all eligible individuals. Preserve exact document versions and spans; never reuse whole-section text as an individual's biography.
 3. Add immutable field observations and a complete atomic release manifest; this first schema's publication flag/release association is a foundation, not the complete release-version system proposed in the architecture review.
 4. Implement the commercial source/content publication allowlist and rights gate before importing any legacy enrichment.
@@ -90,3 +90,43 @@ No changes have been merged to main or deployed to the legacy Pages application.
 ## Standalone visual preview
 
 After `npm run build`, run `node --import tsx scripts/build-preview.ts /absolute/path/IPO_Roll_Interactive_Preview.html`. This creates a self-contained, downloadable sample preview with bundled assets and a fictional-data adapter. It contains no credentials, real research records or database connection. It is not the production architecture and is not deployed by this change.
+
+## Milestone 2: reproducible private staging intake
+
+Migration `20260923044523_staging_intake.sql` is applied to staging. Four append-only tables in `ops` hold batches, IPO candidates, field observations and holder candidates. RLS is enabled and customer/anonymous grants are revoked. `ops.import_legacy_intake` is an administrative SECURITY INVOKER function; it is not exposed through the customer API and has no research/publication writes.
+
+The importer reads the feed directly from an exact Git commit, so an uncommitted local feed cannot silently be assigned another commit's provenance. A strict field allowlist removes legacy affiliation enrichment, free-form signals, biographies, quote-provider values and unrelated fields. It preserves source JSON pointers, exact input hash, canonical row hashes, reported SEC index URLs and preliminary-price source metadata. An index link is only a reported source reference: it is **not** a retrieved document, source passage, rights approval or proof of registration lineage. `filed` (current document date) and `filing_date` (reported registration date) remain separate observations.
+
+Holder entries remain candidates, including organizational/group holders; importing a name does not create a verified person or biography. Percentage operators and before/after positions remain separate. No person identities are merged by name. The broader verified biography collection is still required for People Search.
+
+Generate a reviewable batch without contacting the network or database:
+
+```sh
+python3 scripts/import_legacy.py \
+  --source-commit d453172852c7951dd6cf3e8f0c8a3c1e3a9ec252 \
+  --output-dir import-output
+npm run test:import
+```
+
+Outputs are `intake.json`, `intake.sql`, and `summary.json` in the ignored output directory. Use `intake.sql` only with an administrative connection to **ipo-roll-staging**. There is no automatic writer, scheduled workflow, production redirection or publish switch. Keep these private intake artifacts out of the static frontend and public repository.
+
+The same batch is a transactional no-op on replay. A changed payload under an existing batch ID raises an immutable conflict. A changed source snapshot produces new identities. A future importer contract must use a new version and matching database migration. Updates/deletes of intake history are rejected; corrections append new snapshots. A failing record rolls back the entire function call. This protects administrative intake history; it is not the future immutable customer release manifest.
+
+Verified staging baseline:
+
+| Item | Result |
+| --- | --- |
+| Source commit | `d453172852c7951dd6cf3e8f0c8a3c1e3a9ec252` |
+| Input SHA-256 | `ab3c76814faf293de1d41797a40f869420590bfb48956d239df20d140da99fe8` |
+| Batch | `54521902-5f4b-55e7-b605-b07dd2f7fc4a` |
+| IPO candidates | 91 |
+| Field observations | 1,064 |
+| Holder candidates | 804 |
+| Missing reported registration number | 16 |
+| Canonical offerings / biographies / quotes published | 0 / 0 / 0 |
+
+All 91 candidates await root-lineage verification, operating-company review, exact source-document capture and commercial rights review. This is a commercial migration gate, **not** a finding that all legacy records are incorrect. Sixteen lack even a reported registration file number in the feed; the other 75 still need the exact root filing and current filing linked independently. No historical backfill has been run.
+
+`tests/database-intake.sql` rolls back its fixtures and verifies replay, immutable conflicts, mutation denial, full rollback after a malformed observation, and anonymous/customer denial. Run it administratively against staging. The actual 91-record batch was also replayed: no duplicate batch, observations, holders or findings were added.
+
+Next implementation work: retrieve versioned SEC documents through the existing source-access conventions, resolve the root registration for each candidate, extract exact field passages and person-specific biographies, then review a small complete corpus before adding an atomic publication path. The customer UI and approved design remain available in sample mode while this source work proceeds.
