@@ -44,6 +44,13 @@ REPORTING_FORMS = {
     "10-12B", "10-12B/A", "10-12G", "10-12G/A",
     "10-Q", "10-Q/A", "10-QT", "10-QT/A",
     "10-K", "10-K/A", "10-KT", "10-KT/A",
+    # Rule 12b-25 late-filing notices for core periodic reports are affirmative
+    # evidence that the issuer already had the corresponding Exchange Act
+    # reporting obligation. Keep archived classification aligned with both the
+    # inline follow-on sanitizer and the pre-pricing reporting-history gate.
+    "NT 10-Q", "NT 10-Q/A",
+    "NT 10-K", "NT 10-K/A",
+    "NT 20-F", "NT 20-F/A",
     # Legacy small-business Exchange Act registration and periodic-report forms
     # are the historical counterparts to Form 10 / 10-Q / 10-K reporting. Keep
     # them visible even when an old reporting issuer's filings have aged out of
