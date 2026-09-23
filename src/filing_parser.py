@@ -419,23 +419,34 @@ def extract_principal_office_location(soup: BeautifulSoup):
 
 
 def extract_price_range(soup: BeautifulSoup) -> dict:
-    """
-    Extract the estimated price range from an S-1/S-1A cover page,
-    e.g. "$14.00 and $16.00 per share".
+    """Extract an authoritative preliminary per-share IPO price range.
+
+    SEC covers use both ``$14 and $16 per share`` and the equally common
+    ``initial public offering price per share ... between $14 and $16`` order.
+    Preserve the legacy range form and add only explicit IPO/public-offering
+    context for the reversed word order so unrelated conversion or option-price
+    ranges cannot populate Filing Price.
     """
     full_text = soup.get_text(" ", strip=True)
     cover_text = full_text[:30000]
 
-    range_match = re.search(
-        r"\$\s?(\d{1,4}(?:\.\d{1,2})?)\s+and\s+\$\s?(\d{1,4}(?:\.\d{1,2})?)\s+per\s+share",
-        cover_text,
-        re.IGNORECASE,
-    )
-    if range_match:
-        return {
-            "range_low": float(range_match.group(1)),
-            "range_high": float(range_match.group(2)),
-        }
+    range_patterns = [
+        r"\$\s*(\d{1,4}(?:\.\d{1,2})?)\s+and\s+\$\s*(\d{1,4}(?:\.\d{1,2})?)\s+per\s+share\b",
+        (
+            r"\b(?:initial\s+public\s+offering\s+price|public\s+offering\s+price)"
+            r"\s+per\s+share\b.{0,120}?\bbetween\s+\$\s*(\d{1,4}(?:\.\d{1,2})?)"
+            r"\s+and\s+\$\s*(\d{1,4}(?:\.\d{1,2})?)\b"
+        ),
+    ]
+    for pattern in range_patterns:
+        range_match = re.search(pattern, cover_text, re.IGNORECASE)
+        if not range_match:
+            continue
+        low = float(range_match.group(1))
+        high = float(range_match.group(2))
+        if low <= 0 or high < low:
+            continue
+        return {"range_low": low, "range_high": high}
     return {"range_low": None, "range_high": None}
 
 
