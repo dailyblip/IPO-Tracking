@@ -1,8 +1,104 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-23T02:26:38.077659+00:00",
+  "generated_at": "2026-09-23T02:35:39.943489+00:00",
   "source": "SEC EDGAR",
   "filings": [
+    {
+      "id": "s1:0002141406",
+      "company": "Accelevation Holdings Corp.",
+      "ticker": "ACCV",
+      "cik": "0002141406",
+      "accession_no": "0001628280-26-062945",
+      "form": "S-1/A",
+      "filed": "2026-09-22",
+      "stage": "Pre-pricing",
+      "price_range": "$20.00–$24.00",
+      "filing_price": "$20.00–$24.00",
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": 21364835,
+      "priority": "High",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 4,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "4 named beneficial owners disclosed",
+        "Preliminary offering range disclosed at $20.00–$24.00"
+      ],
+      "people": [
+        {
+          "name": "Olympus Funds",
+          "shares": 190939658,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Fund",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 215000000,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 190939658
+        },
+        {
+          "name": "Michael Rubiera",
+          "shares": 1375666,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 1375666
+        },
+        {
+          "name": "Charles Hillman",
+          "shares": 226178,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 226178
+        },
+        {
+          "name": "Ericka Harrison",
+          "shares": 65695,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 65695
+        }
+      ],
+      "ownership_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-22",
+        "accession_no": "0001628280-26-062945",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026062945/0001628280-26-062945-index.htm"
+      },
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026062945/0001628280-26-062945-index.htm",
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-22",
+        "accession_no": "0001628280-26-062945",
+        "file_number": "333-298715",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026062945/0001628280-26-062945-index.htm"
+      }
+    },
     {
       "id": "s1:0002133037",
       "company": "SB Energy, Inc.",
@@ -2978,33 +3074,6 @@
         "file_number": "333-298639",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2125355/000162828026061664/0001628280-26-061664-index.htm"
       }
-    },
-    {
-      "id": "s1:0002141406",
-      "company": "Accelevation Holdings Corp.",
-      "ticker": "ACCV",
-      "cik": "0002141406",
-      "accession_no": "0001628280-26-061542",
-      "form": "S-1/A",
-      "filed": "2026-09-11",
-      "stage": "Pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": null,
-      "secondary_offering_shares": null,
-      "priority": "Medium",
-      "status": "New",
-      "value": null,
-      "value_label": "—",
-      "people_count": 0,
-      "signals": [
-        "Registration statement amended — IPO remains pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "people": [],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026061542/0001628280-26-061542-index.htm"
     },
     {
       "id": "s1:0002152644",

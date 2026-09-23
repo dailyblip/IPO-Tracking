@@ -1,8 +1,102 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-22T23:21:17.728397+00:00",
+  "generated_at": "2026-09-23T02:35:39.927219+00:00",
   "source": "SEC EDGAR",
   "filings": [
+    {
+      "id": "0001628280-26-062945",
+      "company": "Accelevation Holdings Corp.",
+      "ticker": "ACCV",
+      "cik": "0002141406",
+      "accession_no": "0001628280-26-062945",
+      "form": "S-1/A",
+      "filed": "2026-09-22",
+      "stage": "Pre-pricing",
+      "priority": "High",
+      "price_range": "$20.00–$24.00",
+      "filing_price": "$20.00–$24.00",
+      "ipo_size": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": 21364835,
+      "people_count": 4,
+      "people": [
+        {
+          "name": "Olympus Funds",
+          "shares": 190939658,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Fund",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 215000000,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 190939658
+        },
+        {
+          "name": "Michael Rubiera",
+          "shares": 1375666,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 1375666
+        },
+        {
+          "name": "Charles Hillman",
+          "shares": 226178,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 226178
+        },
+        {
+          "name": "Ericka Harrison",
+          "shares": 65695,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 65695
+        }
+      ],
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "4 named beneficial owners disclosed",
+        "Preliminary offering range disclosed at $20.00–$24.00"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026062945/0001628280-26-062945-index.htm",
+      "ownership_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-22",
+        "accession_no": "0001628280-26-062945",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026062945/0001628280-26-062945-index.htm"
+      },
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-22",
+        "accession_no": "0001628280-26-062945",
+        "file_number": "333-298715",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026062945/0001628280-26-062945-index.htm"
+      }
+    },
     {
       "id": "0001628280-26-062846",
       "company": "SB Energy, Inc.",
@@ -2622,92 +2716,6 @@
       }
     },
     {
-      "id": "0001493152-26-041590",
-      "company": "Rothe Development, Inc.",
-      "ticker": "",
-      "cik": "0002108671",
-      "accession_no": "0001493152-26-041590",
-      "form": "S-1",
-      "filed": "2026-09-04",
-      "stage": "Pre-pricing",
-      "priority": "Medium",
-      "price_range": null,
-      "filing_price": null,
-      "ipo_size": null,
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": null,
-      "secondary_offering_shares": null,
-      "people_count": 4,
-      "people": [
-        {
-          "name": "Karen Wheeler-Hall",
-          "shares": 30000000,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": null,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 30000000,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 30000000
-        },
-        {
-          "name": "Rowland W. Day II",
-          "shares": null,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": null,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 300000,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": null
-        },
-        {
-          "name": "Ronnie Martin",
-          "shares": null,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": null,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 250000,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": null
-        },
-        {
-          "name": "Patricia Stoll",
-          "shares": null,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": null,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 200000,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": null
-        }
-      ],
-      "signals": [
-        "Initial registration statement filed — IPO is pre-pricing",
-        "No preliminary price range or fixed offering price detected yet",
-        "4 named beneficial owners disclosed"
-      ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226041590/0001493152-26-041590-index.htm",
-      "ownership_source": {
-        "source": "SEC EDGAR",
-        "form": "S-1",
-        "filing_date": "2026-09-04",
-        "accession_no": "0001493152-26-041590",
-        "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226041590/0001493152-26-041590-index.htm"
-      }
-    },
-    {
       "id": "0001628280-26-059692",
       "company": "Entrata, Inc.",
       "ticker": "ENT",
@@ -5207,32 +5215,6 @@
         "file_number": "333-297512",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1839970/000119312526329416/0001193125-26-329416-index.htm"
       }
-    },
-    {
-      "id": "0001493152-26-035799",
-      "company": "AEI CapForce II Investment Corp",
-      "ticker": "AEIBU",
-      "cik": "0001875655",
-      "accession_no": "0001493152-26-035799",
-      "form": "S-1/A",
-      "filed": "2026-08-03",
-      "stage": "Pre-pricing",
-      "priority": "Medium",
-      "price_range": null,
-      "filing_price": null,
-      "ipo_size": null,
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": null,
-      "secondary_offering_shares": null,
-      "people_count": 0,
-      "people": [],
-      "signals": [
-        "Registration statement amended — IPO remains pre-pricing",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1875655/000149315226035799/0001493152-26-035799-index.htm",
-      "ownership_source": null
     }
   ]
 }
