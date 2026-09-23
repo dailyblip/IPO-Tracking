@@ -4,10 +4,10 @@ SEC submissions metadata can retain a stale historical ticker for a returning
 issuer. For the pre-pricing watch, prefer the issuer's current S-1/S-1A
 statement that it has applied, intends, or expects to list the offered shares
 under a specific symbol. When a later amendment omits that statement, preserve
-an earlier symbol only when exact-CIK, strictly earlier S-1/S-1A filing evidence
-in the same SEC registration file-number lineage was successfully inspected and
-is unambiguous. Absent or conflicting registration-lineage evidence fails closed
-for a nonblank symbol.
+an earlier symbol only when exact-CIK, strictly earlier SEC-ordered S-1/S-1A
+filing evidence in the same registration file-number lineage was successfully
+inspected and is unambiguous. Absent or conflicting registration-lineage
+evidence fails closed for a nonblank symbol.
 
 When the CLI is invoked on ``s1_watch.json``, reconcile the sibling public
 ``filings.json`` queue as well. The queue may contain only the latest S-1 row,
@@ -47,6 +47,7 @@ _CURRENT_LISTING_PATTERNS = [
 ]
 
 _REGISTRATION_FILE_NUMBER_KEY = "_registration_file_number"
+_REGISTRATION_ACCEPTANCE_DATETIME_KEY = "_registration_acceptance_datetime"
 
 
 def extract_current_listing_tickers(text: str) -> set[str]:
@@ -97,6 +98,13 @@ def _normalized_accession(value: str) -> str:
 def _filed(record: dict) -> str:
     value = str(record.get("filed") or record.get("filing_date") or "").strip()
     return value if re.fullmatch(r"\d{4}-\d{2}-\d{2}", value) else ""
+
+
+def _acceptance(record: dict):
+    """Return canonical SEC acceptance chronology or None when it is ambiguous."""
+    return registration_lineage._canonical_acceptance_datetime(
+        record.get(_REGISTRATION_ACCEPTANCE_DATETIME_KEY)
+    )
 
 
 def _record_key(record: dict) -> tuple[str, str]:
@@ -252,6 +260,9 @@ def _missing_registration_lineage_records(
                     "filed": filed,
                     "sec_url": sec_url,
                     _REGISTRATION_FILE_NUMBER_KEY: file_number,
+                    _REGISTRATION_ACCEPTANCE_DATETIME_KEY: str(
+                        row.get("acceptance_datetime") or ""
+                    ).strip(),
                 }
             )
     return recovered
@@ -271,7 +282,8 @@ def reconcile_payload(
     filing in that lineage failed inspection. Production file reconciliation
     additionally annotates exact SEC ``fileNumber`` lineage; when present, only
     filings in that exact registration statement may seed carry-forward. Same-day
-    filings inside the same registration statement are never ordered by inference.
+    filings are ordered only by authoritative SEC acceptance time; missing,
+    malformed, or tied same-day chronology fails closed rather than being inferred.
     ``verified_lineage`` is reserved for the exact same CIK+accession already
     reconciled in ``s1_watch.json`` before the public queue is processed.
     ``lineage_records`` contains transient SEC rows omitted from the compact public
@@ -412,18 +424,31 @@ def reconcile_payload(
                 == current_file_number
             )
         ]
+        same_day_prior_ids: set[int] = set()
         if same_day:
-            # SEC filing dates do not establish ordering among same-day S-1/S-1A
-            # accessions in the same registration statement. If this filing omits
-            # the symbol, do not carry a symbol through that unordered event.
-            if current:
-                record["ticker"] = ""
-                updated += 1
-            print(
-                f"[ticker_listing_reconciler] {label}: same-day S-1 registration "
-                f"lineage cannot be ordered; refusing earlier ticker carry-forward"
-            )
-            continue
+            current_acceptance = _acceptance(record)
+            ordered_same_day = [(other, _acceptance(other)) for other in same_day]
+            if current_acceptance is None or any(
+                acceptance is None or acceptance == current_acceptance
+                for _other, acceptance in ordered_same_day
+            ):
+                # Filing dates alone cannot establish same-day order. Only exact SEC
+                # acceptance chronology may establish a prior amendment. If any row
+                # is missing/malformed or tied, fail closed through that evidence gap.
+                if current:
+                    record["ticker"] = ""
+                    updated += 1
+                print(
+                    f"[ticker_listing_reconciler] {label}: same-day S-1 registration "
+                    f"lineage lacks strict SEC acceptance-time order; refusing earlier "
+                    f"ticker carry-forward"
+                )
+                continue
+            same_day_prior_ids = {
+                id(other)
+                for other, acceptance in ordered_same_day
+                if acceptance < current_acceptance
+            }
 
         prior = [
             other
@@ -433,7 +458,10 @@ def reconcile_payload(
             and _normalized_cik(other) == cik
             and filed
             and _filed(other)
-            and _filed(other) < filed
+            and (
+                _filed(other) < filed
+                or id(other) in same_day_prior_ids
+            )
             and (
                 not strict_registration_lineage
                 or str(other.get(_REGISTRATION_FILE_NUMBER_KEY) or "").strip()
@@ -441,9 +469,9 @@ def reconcile_payload(
             )
         ]
 
-        # If any strictly earlier filing in the proven registration lineage could
-        # not be inspected, do not infer through that gap. A missing amendment
-        # could have changed the proposed symbol.
+        # If any filing proven earlier by date or same-day SEC acceptance order in
+        # the registration lineage could not be inspected, do not infer through that
+        # gap. A missing amendment could have changed the proposed symbol.
         prior_failed = any(id(other) in failed for other in prior)
         prior_conflict = any(len(evidence.get(id(other), set())) > 1 for other in prior)
         prior_tickers = {
@@ -497,9 +525,33 @@ def reconcile_file(
         and str(record.get("form") or "").strip().upper() in {"S-1", "S-1/A"}
     ]
     registration_lineage_map, submission_rows_by_cik = _registration_context(records)
+
+    acceptance_by_key: dict[tuple[str, str], str] = {}
+    ambiguous_acceptance_keys: set[tuple[str, str]] = set()
+    for cik, rows in submission_rows_by_cik.items():
+        for row in rows:
+            accession = _normalized_accession(row.get("accession_no"))
+            if not accession:
+                continue
+            key = (str(cik or "").strip().zfill(10), accession)
+            acceptance = str(row.get("acceptance_datetime") or "").strip()
+            if key in acceptance_by_key and acceptance_by_key[key] != acceptance:
+                ambiguous_acceptance_keys.add(key)
+            else:
+                acceptance_by_key.setdefault(key, acceptance)
+    for key in ambiguous_acceptance_keys:
+        acceptance_by_key[key] = ""
+
     for record in records:
         record[_REGISTRATION_FILE_NUMBER_KEY] = registration_lineage_map.get(
             _record_key(record), ""
+        )
+        acceptance_key = (
+            _normalized_cik(record),
+            _normalized_accession(_accession(record)),
+        )
+        record[_REGISTRATION_ACCEPTANCE_DATETIME_KEY] = acceptance_by_key.get(
+            acceptance_key, ""
         )
     lineage_records = _missing_registration_lineage_records(
         records,
@@ -513,10 +565,11 @@ def reconcile_file(
             reconcile_kwargs["lineage_records"] = lineage_records
         updated, conflicts = reconcile_payload(payload, **reconcile_kwargs)
     finally:
-        # File-number lineage is a release-gate implementation detail, not part
+        # SEC lineage metadata is a release-gate implementation detail, not part
         # of the public feed schema. Never persist it to JSON or CSV.
         for record in records:
             record.pop(_REGISTRATION_FILE_NUMBER_KEY, None)
+            record.pop(_REGISTRATION_ACCEPTANCE_DATETIME_KEY, None)
 
     if updated:
         path.write_text(
