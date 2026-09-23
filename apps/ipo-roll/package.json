@@ -11,7 +11,8 @@
     "test:browser": "playwright test",
     "db:new": "supabase migration new",
     "demo": "IPO_ROLL_DEMO=1 node --import tsx server/index.ts",
-    "format": "prettier --write src server shared tests vite.config.ts playwright.config.ts"
+    "format": "prettier --write src server shared tests vite.config.ts playwright.config.ts",
+    "test:import": "python3 -m unittest discover -s tests -p \"test_*.py\" -v"
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "5.3.0",

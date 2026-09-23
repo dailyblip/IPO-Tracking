@@ -6,3 +6,6 @@ dist/
 playwright-report/
 test-results/
 supabase/.temp/
+
+import-output/
+__pycache__/
