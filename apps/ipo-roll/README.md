@@ -40,7 +40,7 @@ For production: `npm run build`, then `npm start`, with server-side environment 
 
 Migration `20260923042120_ipo_roll_foundation.sql` is applied to project `mpinbkaifvilxmixkzzv`. The file version matches the version recorded by the remote migration tool. The first attempted application failed transactionally on a SQL alias and created no partial schema; the corrected migration succeeded.
 
-Canonical records live in private schemas. RPC functions in `public` are SECURITY INVOKER, with EXECUTE revoked from PUBLIC/anon and granted to authenticated. Entitlements and RLS restrict what they can read. Customer writes are limited to their own profile/watchlist/saves. Every application table has RLS enabled (26 tables after the staging-intake milestone). Ingestion/release/quality tables and market prices intentionally have no customer policies or grants: they default to denial. The security advisor reports eight informational notices after the intake milestone, all for deliberately inaccessible tables: https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy.
+Canonical records live in private schemas. RPC functions in `public` are SECURITY INVOKER, with EXECUTE revoked from PUBLIC/anon and granted to authenticated. Entitlements and RLS restrict what they can read. Customer writes are limited to their own profile/watchlist/saves. Every application table has RLS enabled (29 tables after SEC review storage). Ingestion/release/quality tables and market prices intentionally have no customer policies or grants: they default to denial. The security advisor reports eleven informational notices after SEC review storage, all for deliberately inaccessible tables: https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy.
 
 No service-role credential is used in customer requests. `app.entitlements` has SELECT-only grants for the current user; customers cannot grant themselves access. Research is read-only. Source functions respect approved rights/evidence and person identity. Quotes are not published in this first build; the UI preserves the column but leaves it blank.
 
@@ -151,6 +151,33 @@ python3 scripts/capture_sec_evidence.py \
 
 Add `--person 'Exact Full Name'` to locate another supported individual. Omit `--fetch` to replay previously captured artifacts offline; cached bytes are rehashed and missing/corrupt artifacts fail. URL lookup metadata can advance on a fresh fetch; content-addressed document objects are retained. Review packets pin the specific versions used. Keep captures in the ignored private output directory, never the frontend/public feed.
 
-This milestone was validated with eight synthetic capture tests plus the nine intake tests. **No live SEC artifacts or real biographies have been captured by this new tool yet:** this workspace has no configured SEC contact identity. Existing GitHub Actions secrets were not retrieved, changed or reused. Once a real contact is supplied, run a small live capture and inspect its source spans before importing any evidence into the canonical database.
+This milestone was validated with eight synthetic capture tests plus the nine intake tests. **This initial tooling-only milestone has now been followed by live capture; see milestone 4 below.** Existing GitHub Actions secrets were not retrieved, changed or reused.
 
 Remaining limitations: UTF-8 HTML only; conservative paragraph discovery can miss biographies split across paragraphs or using abbreviated names. Explicit passage review and a verified person/company relationship remain required. A successful capture never publishes records, approves rights, or grants customer access. SEC API reference: https://www.sec.gov/search-filings/edgar-application-programming-interfaces.
+
+
+## Milestone 4: live source evidence and account boundary
+
+Live SEC capture succeeded using the business contact supplied by the owner. The source company is Accelevation Holdings Corp. (CIK 0002141406). Its exact registration number is 333-298715, root accession 0001628280-26-060083 (S-1, 2026-09-02) and current accession 0001628280-26-062945 (S-1/A, 2026-09-22). This was source capture for an already staged offering, not a historical backfill.
+
+`prepare_sec_review.py` supports explicitly selected multi-block biographies and relationship passages. It requires exact full names, literal titles and literal search terms; school names split over visual lines remain exact source text with newlines. It never infers education/employment predicates or automatically approves identity, source rights, eligibility or publication. The automatic holder filter also now recognizes the legacy `Individual` capitalization.
+
+Migration `20260923214234_sec_review_packets.sql` creates three private append-only tables. One review packet (`28f6e32e-1374-58df-ac0f-313342d599c8`) and five content-addressed objects are retained in staging: SEC submissions metadata, two raw filings, and two normalized text snapshots. Original bytes are gzip-compressed internally and retain their raw hashes/lengths. Stored compressed hashes were compared with the locally validated objects. This is a small pilot archive; move larger-scale objects to private object storage while preserving these hashes and packet references before expanding broadly.
+
+Four source-selected executive biographies are retained: Michael Rubiera, Charles Hillman, Brent Jewell and Ericka Harrison. A private PostgreSQL phrase-search check for `University of Michigan` returns Brent Jewell, whose source biography explicitly supports the term and his Chief Operating Officer role. These are private review results; the customer People Search corpus remains unpublished. No beneficial-ownership claim is inferred from an executive biography.
+
+Example preparation after reviewing exact block numbers in a captured document:
+
+```sh
+python3 scripts/prepare_sec_review.py \
+  --packet import-output/sec-artifacts/review-RECORD_ID.json \
+  --selections import-output/sec-artifacts/selections.json \
+  --archive-dir import-output/sec-artifacts \
+  --output-dir import-output/sec-review
+```
+
+Each selection specifies `name`, literal `title`, `relationship`, `first_block`, `last_block`, `relationship_first_block`, `relationship_last_block`, and `search_terms`. Output JSON and SQL are private review artifacts; apply the SQL only administratively to staging. Do not put captured documents or biography payloads in this public repository. `tests/database-sec-review.sql` checks the loaded pilot's immutability and customer denial, and rolls back its attempted writes.
+
+GET /api/account now separates verified identity from research entitlement. Signed-in accounts without access receive a clear account state rather than a generic workspace failure. Research APIs/RLS remain gated. Monthly billing is explicitly `not_configured`; no subscription service, pricing or charges were activated. See [the subscription access contract](docs/subscription-access.md).
+
+Validation: 21 Python import/capture/passage tests, seven API tests, four browser tests, the production build, the private SEC storage/access checks and the real internal phrase-search check passed. Browser/API identity tests use simulated Auth responses; production Auth and payment integration remain unconfigured. No merge, domain deployment or production ingestion change occurred.

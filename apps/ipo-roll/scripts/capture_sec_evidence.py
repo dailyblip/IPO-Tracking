@@ -309,7 +309,7 @@ def main():
         parser.error('Record index out of bounds')
     archive = Archive(args.archive_dir, args.fetch)
     record = batch['records'][args.record_index]
-    names = args.person + [h['values']['name'] for h in record['holders'] if h['values'].get('holder_type') in ('individual', 'person')]
+    names = args.person + [h['values']['name'] for h in record['holders'] if str(h['values'].get('holder_type', '')).lower() in ('individual', 'person')]
     packet = capture(record, archive, names)
     packet['intake_batch_id'] = batch['id']
     target = args.archive_dir / ('review-' + record['id'] + '.json')
