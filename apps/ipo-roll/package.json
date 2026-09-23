@@ -1,0 +1,39 @@
+{
+  "name": "ipo-roll",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file-if-exists=.env --import tsx server/index.ts",
+    "build": "tsc --noEmit && vite build",
+    "start": "NODE_ENV=production node --env-file-if-exists=.env --import tsx server/index.ts",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "test:browser": "playwright test",
+    "db:new": "supabase migration new",
+    "demo": "IPO_ROLL_DEMO=1 node --import tsx server/index.ts",
+    "format": "prettier --write src server shared tests vite.config.ts playwright.config.ts"
+  },
+  "dependencies": {
+    "@fontsource-variable/dm-sans": "5.3.0",
+    "@fontsource-variable/manrope": "5.3.0",
+    "@supabase/supabase-js": "2.117.0",
+    "express": "5.2.1",
+    "express-rate-limit": "8.2.1",
+    "helmet": "8.1.0",
+    "lucide-react": "1.47.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "tsx": "4.23.15"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.58.2",
+    "@types/express": "5.0.6",
+    "@types/node": "24.10.1",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "prettier": "3.8.1",
+    "supabase": "2.101.0",
+    "typescript": "5.9.3",
+    "vite": "8.3.0"
+  }
+}
