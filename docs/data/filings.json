@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-23T10:25:20.723209+00:00",
+  "generated_at": "2026-09-23T11:39:37.271945+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -22119,7 +22119,7 @@
           "lockup_duration_value": 180,
           "lockup_duration_unit": "days",
           "lockup_text": "We and our officers, directors and holders of substantially all of our equity securities have agreed with the underwriters, subject to certain exceptions, not to dispose of or hedge any of their ordinary shares or preference shares of Hemab ApS, any shares of common stock, or any options or warrant to purchase any share of common stock, or any securities convertible into, exchangeable for or that represent the right to receive shares of common stock (the “Lock-Up Securities”) during the period from the date of such lock-up agreement continuing through the date 180 days after the date of this prospectus, except with the prior written consent of Goldman Sachs & Co",
-          "holder_type": "Individual",
+          "holder_type": "Fund",
           "is_beneficial_owner": true,
           "role": null,
           "ownership_percent": null,
