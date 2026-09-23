@@ -56,6 +56,12 @@ REPORTING_FORMS = {
     "8-K15D5", "8-K15D5/A",
     "10-Q", "10-Q/A", "10-QT", "10-QT/A",
     "10-K", "10-K/A", "10-KT", "10-KT/A",
+    # Rule 12b-25 late-filing notices for core periodic reports are affirmative
+    # evidence that the issuer already had the corresponding Exchange Act
+    # reporting obligation before a later S-1/S-1A candidate.
+    "NT 10-Q", "NT 10-Q/A",
+    "NT 10-K", "NT 10-K/A",
+    "NT 20-F", "NT 20-F/A",
     "6-K", "6-K/A", "20-F", "20-F/A", "40-F", "40-F/A",
     "S-3", "S-3/A", "S-3ASR", "S-3ASR/A", "S-3D", "S-3DPOS", "S-3MEF",
     "F-3", "F-3/A", "F-3ASR", "F-3ASR/A", "F-3D", "F-3DPOS", "F-3MEF",
