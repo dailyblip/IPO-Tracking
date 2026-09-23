@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-23T18:13:20.869804+00:00",
+  "generated_at": "2026-09-23T20:09:08.547321+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -18,7 +18,7 @@
       "ipo_size": null,
       "offering_size_source": null,
       "offering_size_confidence": null,
-      "primary_offering_shares": null,
+      "primary_offering_shares": 8635165,
       "secondary_offering_shares": 21364835,
       "people_count": 4,
       "people": [
@@ -623,7 +623,7 @@
       "price_range": "$15.00–$17.00",
       "filing_price": "$15.00–$17.00",
       "ipo_size": 350000000,
-      "offering_size_source": "primary offering; prospectus cover title; explicit issuer-only cover statement matches total",
+      "offering_size_source": "primary offering; prospectus cover title",
       "offering_size_confidence": "High",
       "primary_offering_shares": 21875000,
       "secondary_offering_shares": null,
@@ -1307,7 +1307,7 @@
       "ipo_size": null,
       "offering_size_source": null,
       "offering_size_confidence": null,
-      "primary_offering_shares": null,
+      "primary_offering_shares": 2860000,
       "secondary_offering_shares": null,
       "people_count": 18,
       "people": [
@@ -1634,144 +1634,6 @@
         "filing_date": "2026-09-15",
         "accession_no": "0001185185-26-004027",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526004027/0001185185-26-004027-index.htm"
-      }
-    },
-    {
-      "id": "0001193125-26-391284",
-      "company": "Amaero Inc.",
-      "ticker": "AMRO",
-      "cik": "0002141616",
-      "accession_no": "0001193125-26-391284",
-      "form": "S-1/A",
-      "filed": "2026-09-15",
-      "stage": "Pre-pricing",
-      "priority": "Medium",
-      "price_range": null,
-      "filing_price": null,
-      "ipo_size": null,
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": 7456500,
-      "secondary_offering_shares": null,
-      "people_count": 8,
-      "people": [
-        {
-          "name": "Pegasus Growth Capital Fund I LP",
-          "shares": 7459149,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Fund",
-          "ownership_percent": 23.84,
-          "ownership_percent_before": 31.3,
-          "ownership_percent_after": 23.84,
-          "shares_before_ipo": 7459149,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 7459149
-        },
-        {
-          "name": "Affiliates of FIL Limited",
-          "shares": 1534410,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Entity",
-          "ownership_percent": 4.9,
-          "ownership_percent_before": 6.44,
-          "ownership_percent_after": 4.9,
-          "shares_before_ipo": 1534410,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 1534410
-        },
-        {
-          "name": "Hank J. Holland",
-          "shares": 7499199,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": 23.94,
-          "ownership_percent_before": 31.41,
-          "ownership_percent_after": 23.94,
-          "shares_before_ipo": 7499199,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 7499199
-        },
-        {
-          "name": "Eric Bono",
-          "shares": 239663,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": 1.0,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 239663,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 239663
-        },
-        {
-          "name": "Brett Paduch",
-          "shares": 82001,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": null,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 82001,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 82001
-        },
-        {
-          "name": "Omer Granit",
-          "shares": 686259,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": 2.19,
-          "ownership_percent_before": 2.87,
-          "ownership_percent_after": 2.19,
-          "shares_before_ipo": 686259,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 686259
-        },
-        {
-          "name": "Robert Latta",
-          "shares": 52500,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": null,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 52500,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 52500
-        },
-        {
-          "name": "Erik Levy",
-          "shares": 44722,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": null,
-          "ownership_percent_before": null,
-          "ownership_percent_after": null,
-          "shares_before_ipo": 44722,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 44722
-        }
-      ],
-      "signals": [
-        "Registration statement amended — IPO remains pre-pricing",
-        "No preliminary price range or fixed offering price detected yet",
-        "8 named beneficial owners disclosed"
-      ],
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526391284/0001193125-26-391284-index.htm",
-      "ownership_source": {
-        "source": "SEC EDGAR",
-        "form": "S-1/A",
-        "filing_date": "2026-09-15",
-        "accession_no": "0001193125-26-391284",
-        "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526391284/0001193125-26-391284-index.htm"
       }
     },
     {
@@ -2206,7 +2068,7 @@
       "price_range": "$18.00–$20.00",
       "filing_price": "$18.00–$20.00",
       "ipo_size": 665000000,
-      "offering_size_source": "explicit selling-holder cover statement; prospectus cover title",
+      "offering_size_source": "prospectus cover title",
       "offering_size_confidence": "High",
       "primary_offering_shares": null,
       "secondary_offering_shares": 35000000,

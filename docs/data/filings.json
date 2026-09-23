@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-23T19:57:12.452701+00:00",
+  "generated_at": "2026-09-23T20:09:08.564621+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -16,7 +16,7 @@
       "filing_price": "$20.00–$24.00",
       "offering_size_source": null,
       "offering_size_confidence": null,
-      "primary_offering_shares": null,
+      "primary_offering_shares": 8635165,
       "secondary_offering_shares": 21364835,
       "priority": "High",
       "status": "New",
@@ -892,7 +892,7 @@
       "stage": "Pre-pricing",
       "price_range": "$15.00–$17.00",
       "filing_price": "$15.00–$17.00",
-      "offering_size_source": "primary offering; prospectus cover title; explicit issuer-only cover statement matches total",
+      "offering_size_source": "primary offering; prospectus cover title",
       "offering_size_confidence": "High",
       "primary_offering_shares": 21875000,
       "secondary_offering_shares": null,
@@ -2476,7 +2476,7 @@
       "filing_price": "$6.00–$8.00",
       "offering_size_source": null,
       "offering_size_confidence": null,
-      "primary_offering_shares": null,
+      "primary_offering_shares": 2860000,
       "secondary_offering_shares": null,
       "priority": "High",
       "status": "New",
@@ -2950,7 +2950,7 @@
       "stage": "Pre-pricing",
       "price_range": "$18.00–$20.00",
       "filing_price": "$18.00–$20.00",
-      "offering_size_source": "explicit selling-holder cover statement; prospectus cover title",
+      "offering_size_source": "prospectus cover title",
       "offering_size_confidence": "High",
       "primary_offering_shares": null,
       "secondary_offering_shares": 35000000,
