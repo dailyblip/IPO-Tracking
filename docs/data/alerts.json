@@ -1,8 +1,39 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-23T00:02:51.489269+00:00",
-  "count": 123,
+  "generated_at": "2026-09-23T02:53:59.236682+00:00",
+  "count": 125,
   "alerts": [
+    {
+      "type": "price_range_update",
+      "company": "Accelevation Holdings Corp.",
+      "cik": "0002141406",
+      "filing_id": "s1:0002141406",
+      "form": "S-1/A",
+      "filed": "2026-09-22",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "Preliminary IPO price range changed to $20.00–$24.00.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026062945/0001628280-26-062945-index.htm",
+      "detected_at": "2026-09-23T02:53:59.236296+00:00",
+      "new_value": "$20.00–$24.00",
+      "key": "price_range_update|s1:0002141406|0002141406|2026-09-22|$20.00–$24.00"
+    },
+    {
+      "type": "priority_escalation",
+      "company": "Accelevation Holdings Corp.",
+      "cik": "0002141406",
+      "filing_id": "s1:0002141406",
+      "form": "S-1/A",
+      "filed": "2026-09-22",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "Research priority increased from Medium to High.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026062945/0001628280-26-062945-index.htm",
+      "detected_at": "2026-09-23T02:53:59.236325+00:00",
+      "old_value": "Medium",
+      "new_value": "High",
+      "key": "priority_escalation|s1:0002141406|0002141406|2026-09-22|High"
+    },
     {
       "type": "price_range_update",
       "company": "Oura Inc.",
