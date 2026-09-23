@@ -54,6 +54,9 @@ REPORTING_FORMS = {
     "8-K12B", "8-K12B/A",
     "8-K12G3", "8-K12G3/A",
     "8-K15D5", "8-K15D5/A",
+    # Exchange Act registration statements are affirmative evidence that the
+    # issuer entered the public reporting system before a later S-1/S-1A.
+    "10-12B", "10-12B/A", "10-12G", "10-12G/A",
     "10-Q", "10-Q/A", "10-QT", "10-QT/A",
     "10-K", "10-K/A", "10-KT", "10-KT/A",
     # Rule 12b-25 late-filing notices for core periodic reports are affirmative
@@ -62,9 +65,34 @@ REPORTING_FORMS = {
     "NT 10-Q", "NT 10-Q/A",
     "NT 10-K", "NT 10-K/A",
     "NT 20-F", "NT 20-F/A",
+    # Legacy small-business Exchange Act registration and periodic-report forms
+    # must not disappear as prior-public evidence for dormant/reactivated issuers.
+    "10SB12B", "10SB12B/A", "10SB12G", "10SB12G/A",
+    "10QSB", "10QSB/A",
+    "10KSB", "10KSB/A", "10KSB40", "10KSB40/A",
+    # Form 15 termination of a Section 12(b) or 12(g) registration proves a class
+    # was previously Exchange Act registered. Deliberately omit 15-15D because a
+    # Section 15(d) duty can arise from a Securities Act registration alone.
+    "15-12B", "15-12B/A", "15-12G", "15-12G/A",
     "6-K", "6-K/A", "20-F", "20-F/A", "40-F", "40-F/A",
+    # Foreign-private-issuer Exchange Act registration statements are the direct
+    # counterparts to domestic Form 10 registration statements.
+    "20FR12B", "20FR12B/A", "20FR12G", "20FR12G/A",
+    "40FR12B", "40FR12B/A", "40FR12G", "40FR12G/A",
+    # Registrant/management proxy and information statements are Exchange Act
+    # filings for securities already registered under Section 12. Non-management
+    # third-party proxy variants remain deliberately excluded.
+    "PRE 14A", "DEF 14A", "PRE 14C", "DEF 14C",
+    "DEFA14A", "DEFA14C",
+    "DEFM14A", "DEFM14C",
+    "DEFR14A", "DEFR14C",
+    "PREM14A", "PREM14C",
+    "PRER14A", "PRER14C",
     "S-3", "S-3/A", "S-3ASR", "S-3ASR/A", "S-3D", "S-3DPOS", "S-3MEF",
     "F-3", "F-3/A", "F-3ASR", "F-3ASR/A", "F-3D", "F-3DPOS", "F-3MEF",
+    # A strictly prior final prospectus proves an earlier public offering already
+    # completed and therefore the later S-1/S-1A is not a first IPO registration.
+    "424B4",
 }
 _SEC_FILING_TIMEZONE = ZoneInfo("America/New_York")
 RIGHTS_OFFERING_PATTERNS = (
