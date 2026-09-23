@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-23T23:10:29.175272+00:00",
+  "generated_at": "2026-09-23T23:20:58.795832+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -14,17 +14,18 @@
       "stage": "Pre-pricing",
       "price_range": "$20.00–$24.00",
       "filing_price": "$20.00–$24.00",
-      "offering_size_source": null,
-      "offering_size_confidence": null,
+      "offering_size_source": "primary offering; THE OFFERING primary + secondary rows; cover title preceding IPO statement",
+      "offering_size_confidence": "High",
       "primary_offering_shares": 8635165,
       "secondary_offering_shares": 21364835,
       "priority": "High",
       "status": "New",
-      "value": null,
-      "value_label": "—",
+      "value": 660000000,
+      "value_label": "$660M",
       "people_count": 4,
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
+        "IPO size disclosed or derived at approximately $660,000,000",
         "4 named beneficial owners disclosed",
         "Preliminary offering range disclosed at $20.00–$24.00"
       ],
