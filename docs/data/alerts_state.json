@@ -1,7 +1,20 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-23T00:02:51.489188+00:00",
+  "updated_at": "2026-09-23T02:53:59.236616+00:00",
   "items": {
+    "s1:0002141406": {
+      "id": "s1:0002141406",
+      "cik": "0002141406",
+      "company": "Accelevation Holdings Corp.",
+      "form": "S-1/A",
+      "filed": "2026-09-22",
+      "stage": "pre-pricing",
+      "price_range": "$20.00–$24.00",
+      "filing_price": "$20.00–$24.00",
+      "priority": "High",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026062945/0001628280-26-062945-index.htm"
+    },
     "s1:0002133037": {
       "id": "s1:0002133037",
       "cik": "0002133037",
@@ -209,19 +222,6 @@
       "priority": "High",
       "value": 665000000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2125355/000162828026061664/0001628280-26-061664-index.htm"
-    },
-    "s1:0002141406": {
-      "id": "s1:0002141406",
-      "cik": "0002141406",
-      "company": "Accelevation Holdings Corp.",
-      "form": "S-1/A",
-      "filed": "2026-09-11",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026061542/0001628280-26-061542-index.htm"
     },
     "s1:0002152644": {
       "id": "s1:0002152644",
@@ -1213,6 +1213,13 @@
     }
   },
   "ciks": {
+    "0002141406": {
+      "company": "Accelevation Holdings Corp.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002141406",
+      "last_filed": "2026-09-22",
+      "missing_runs": 0
+    },
     "0002133037": {
       "company": "SB Energy, Inc.",
       "stage": "pre-pricing",
@@ -1323,13 +1330,6 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002125355",
       "last_filed": "2026-09-14",
-      "missing_runs": 0
-    },
-    "0002141406": {
-      "company": "Accelevation Holdings Corp.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002141406",
-      "last_filed": "2026-09-11",
       "missing_runs": 0
     },
     "0002152644": {
