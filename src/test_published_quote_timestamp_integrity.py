@@ -2,9 +2,11 @@ import json
 import unittest
 from datetime import date, datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 
 DATA_PATH = Path(__file__).resolve().parents[1] / "docs" / "data" / "filings.json"
+EASTERN = ZoneInfo("America/New_York")
 
 
 def _number(value):
@@ -40,11 +42,22 @@ def _aware_datetime(value):
     return parsed
 
 
+def _eastern_date(value):
+    parsed = _aware_datetime(value)
+    return parsed.astimezone(EASTERN).date() if parsed is not None else None
+
+
 class PublishedQuoteTimestampIntegrityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         payload = json.loads(DATA_PATH.read_text(encoding="utf-8"))
         cls.filings = payload.get("filings", []) if isinstance(payload, dict) else payload
+
+    def test_quote_calendar_day_is_eastern_not_utc(self):
+        self.assertEqual(
+            _eastern_date("2026-09-18T00:30:00Z"),
+            date(2026, 9, 17),
+        )
 
     def test_published_quotes_have_canonical_post_pricing_nonfuture_timestamps(self):
         """A published Current Price must be a real quote after IPO pricing and final filing.
@@ -52,6 +65,8 @@ class PublishedQuoteTimestampIntegrityTests(unittest.TestCase):
         This validates the exact generated feed, not only the quote sanitizer unit
         behavior. Secondary quote data may legitimately be absent when identity or
         freshness cannot be verified, so rows without Current Price are ignored.
+        SEC filing/pricing chronology uses the Eastern calendar because a quote just
+        after midnight UTC can still belong to the prior U.S. market day.
         """
         failures = []
         now = datetime.now(timezone.utc)
@@ -80,18 +95,19 @@ class PublishedQuoteTimestampIntegrityTests(unittest.TestCase):
                 continue
 
             quote_utc = quote_time.astimezone(timezone.utc)
+            quote_eastern_date = quote_time.astimezone(EASTERN).date()
             if quote_utc > now:
                 failures.append(
                     f"{label}: price_updated {quote_utc.isoformat()} is in the future"
                 )
-            if quote_utc.date() < pricing_date:
+            if quote_eastern_date < pricing_date:
                 failures.append(
-                    f"{label}: price_updated {quote_utc.date().isoformat()} predates Pricing Date "
+                    f"{label}: Eastern quote date {quote_eastern_date.isoformat()} predates Pricing Date "
                     f"{pricing_date.isoformat()}"
                 )
-            if quote_utc.date() < final_filing_date:
+            if quote_eastern_date < final_filing_date:
                 failures.append(
-                    f"{label}: price_updated {quote_utc.date().isoformat()} predates final 424B4 Filed "
+                    f"{label}: Eastern quote date {quote_eastern_date.isoformat()} predates final 424B4 Filed "
                     f"{final_filing_date.isoformat()}"
                 )
 
