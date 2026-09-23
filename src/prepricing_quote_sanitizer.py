@@ -11,7 +11,7 @@ provider provenance. A malformed/incomplete lifecycle or a priced row without a
 publishable quote must fail closed and lose market-derived holder values rather
 than retaining stale quote arithmetic.
 
-A genuine pre-pricing S-1/S-1A also cannot retain stale final-pricing metadata from
+A genuine pre-pricing S-1/S-1/A also cannot retain stale final-pricing metadata from
 an earlier or mismatched lifecycle state. Clear Final IPO Price, holder IPO-value /
 realized-cash derivatives, and final-pricing signals while preserving authoritative
 preliminary Filing Price/range and SEC-supported ownership facts. This repairs the
@@ -123,10 +123,15 @@ def _canonical_quote_date(value):
 
 
 def _is_prepricing_registration(filing: dict) -> bool:
-    return (
-        str(filing.get("form") or "").strip().upper() in {"S-1", "S-1/A"}
-        and str(filing.get("stage") or "").strip().casefold() == "pre-pricing"
-    )
+    """Treat every S-1/S-1/A as pre-pricing regardless of stale stage metadata.
+
+    The SEC form is the authoritative lifecycle signal here. A stale merge can label
+    an S-1/S-1/A row ``Priced`` after a later 424B4 was seen, but the registration
+    statement itself still cannot support final IPO price, realized-cash, or live
+    market-price fields. Fail closed on the form instead of trusting a mismatched
+    stage label.
+    """
+    return str(filing.get("form") or "").strip().upper() in {"S-1", "S-1/A"}
 
 
 def is_priced_ipo(filing: dict) -> bool:
@@ -190,9 +195,10 @@ def sanitize_payload(payload: dict) -> tuple[dict, int]:
         touched = False
         prepricing_registration = _is_prepricing_registration(filing)
 
-        # A genuine pre-pricing registration cannot carry completed-offering facts.
-        # Preserve preliminary Filing Price/range, size evidence, and ownership; clear
-        # only fields whose meaning depends on the IPO already having priced.
+        # An S-1/S-1/A registration cannot carry completed-offering facts even when
+        # a stale merge mislabeled its stage as Priced. Preserve preliminary Filing
+        # Price/range, size evidence, and ownership; clear only fields whose meaning
+        # depends on the IPO already having priced.
         if prepricing_registration:
             if filing.get("offering_price") not in (None, ""):
                 filing.pop("offering_price", None)
@@ -233,7 +239,7 @@ def sanitize_payload(payload: dict) -> tuple[dict, int]:
             # Without a release-safe filing-level quote, holder-level current market
             # values have no publishable basis. Preserve SEC-supported ownership facts,
             # IPO-value arithmetic, and realized IPO cash on valid priced records; for
-            # genuine pre-pricing rows those final-price derivatives were cleared above.
+            # S-1/S-1/A rows those final-price derivatives were cleared above.
             for person in filing.get("people", []):
                 if not isinstance(person, dict):
                     continue
