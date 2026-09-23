@@ -15,7 +15,11 @@ class PersonLiquidityUiContractTests(unittest.TestCase):
         """Do not render repetitive Unknown liquidity status/confidence text."""
         self.assertIn("function buildPersonAccordion(person,filing)", self.html)
         self.assertIn(
-            'function supportedLiquidityStatus(value){const status=String(value||"").trim();return status&&!(["unknown","unclassified"].includes(status.toLowerCase()))?status:null}',
+            'function supportedLiquidityStatus(value){const status=String(value||"").trim(),normalized=status.toLowerCase();return status&&!normalized.startsWith("unknown")&&!normalized.startsWith("unclassified")?status:null}',
+            self.html,
+        )
+        self.assertNotIn(
+            '["unknown","unclassified"].includes(status.toLowerCase())',
             self.html,
         )
         self.assertIn(
