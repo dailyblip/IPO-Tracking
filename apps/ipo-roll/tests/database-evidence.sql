@@ -1,0 +1,44 @@
+begin;
+insert into auth.users(id,email) values('20000000-0000-4000-8000-000000000001','evidence-test@example.invalid');
+insert into app.entitlements(user_id,active) values('20000000-0000-4000-8000-000000000001',true);
+do $$ declare company uuid; filing uuid; src uuid; doc uuid; bio_span uuid; role_span uuid; run uuid; rel uuid; offering uuid; person uuid; bio uuid; begin
+ insert into research.companies(cik,name,classification,eligible) values('0000000001','Transactional test issuer','operating_company',true) returning id into company;
+ insert into research.filings(company_id,accession,form,filed_on,index_url) values(company,'0000000001-26-000001','S-1','2026-09-01','https://www.sec.gov/example-test') returning id into filing;
+ insert into evidence.sources(filing_id,title,url,published_on,rights_status) values(filing,'Transactional fixture','https://www.sec.gov/example-test','2026-09-01','approved') returning id into src;
+ insert into evidence.documents(source_id,content_sha256,parser_version) values(src,'test','test') returning id into doc;
+ insert into evidence.spans(document_id,excerpt,locator,approved) values(doc,'Test Person received an MBA from the University of Michigan.','Management paragraph',true) returning id into bio_span;
+ insert into evidence.spans(document_id,excerpt,locator,approved) values(doc,'Test Person is our independent director.','Management role',true) returning id into role_span;
+ insert into ops.ingestion_runs(source_commit,input_sha256,engine_version,status) values('test','test','test','published') returning id into run;
+ insert into ops.releases(run_id,published_at) values(run,now()) returning id into rel;
+ insert into research.offerings(company_id,root_filing_id,current_filing_id,stage,filed_on,source_id,published,release_id) values(company,filing,filing,'Pre-pricing','2026-09-01',src,true,rel) returning id into offering;
+ insert into research.parties(name,kind) values('Test Person','person') returning id into person;
+ insert into research.people(id,identity_verified) values(person,true);
+ insert into research.roles(person_id,offering_id,title,relationship,evidence_id,verified) values(person,offering,'Independent director','Director',role_span,true);
+ insert into research.biographies(person_id,span_id,approved) values(person,bio_span,true) returning id into bio;
+ insert into research.claims(biography_id,predicate,object_text,evidence_id,verified) values(bio,'education','University of Michigan',bio_span,true);
+ perform set_config('ipo_test.offering',offering::text,true);
+ perform set_config('ipo_test.bio',bio::text,true);
+ begin update research.offerings set stage='Priced',pricing_date='2026-09-02',final_price=null where id=offering; raise exception 'Null final price accepted'; exception when check_violation then null; end;
+end $$;
+set local role authenticated;
+select set_config('request.jwt.claims','{"sub":"20000000-0000-4000-8000-000000000001","role":"authenticated"}',true);
+do $$ declare r jsonb; begin
+ r:=public.ipo_roll_people_search('University of Michigan');
+ if (r->>'total')::int<>1 then raise exception 'Expected one sourced match: %',r; end if;
+ if r#>>'{items,0,evidence,excerpt}' not like '%University of Michigan%' then raise exception 'Missing evidence'; end if;
+ if (public.ipo_roll_people_search('University of Michigan','Beneficial owner')->>'total')::int<>0 then raise exception 'Relationship leakage'; end if;
+ if public.ipo_roll_detail(current_setting('ipo_test.offering')::uuid)->'people'->0->>'name'<>'Test Person' then raise exception 'Detail identity mismatch'; end if;
+ perform public.ipo_roll_set_saved(current_setting('ipo_test.offering')::uuid,true);
+ if (public.ipo_roll_offerings(p_saved=>true)->>'total')::int<>1 then raise exception 'Watchlist filter failed'; end if;
+ perform public.ipo_roll_set_saved(current_setting('ipo_test.offering')::uuid,false);
+ if (public.ipo_roll_offerings(p_saved=>true)->>'total')::int<>0 then raise exception 'Unsave failed'; end if;
+end $$;
+reset role;
+update research.claims set verified=false where biography_id=current_setting('ipo_test.bio')::uuid;
+set local role authenticated;
+do $$ begin
+ if (public.ipo_roll_people_search('University of Michigan')->>'total')::int<>0 then raise exception 'Unverified affiliation surfaced'; end if;
+end $$;
+reset role;
+select 'PASS: evidence, relationship filter, detail, saves, unsupported claims, final-price constraint' as result;
+rollback;
