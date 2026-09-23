@@ -82,3 +82,70 @@ test("overview is derived from the same fixture corpus", () => {
     o.priced,
   );
 });
+
+test("verified accounts can inspect access without unlocking research", async () => {
+  const { createServer } = await import("node:http");
+  const upstream = createServer((req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    const token = req.headers.authorization;
+    if (req.url === "/auth/v1/user") {
+      if (token === "Bearer invalid") {
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: "invalid token" }));
+      } else {
+        res.end(
+          JSON.stringify({
+            id: "10000000-0000-4000-8000-000000000001",
+            email: "member@example.invalid",
+            is_anonymous: false,
+          }),
+        );
+      }
+    } else if (req.url === "/rest/v1/rpc/ipo_roll_has_access") {
+      res.end(token === "Bearer entitled" ? "true" : "false");
+    } else {
+      res.statusCode = 500;
+      res.end(JSON.stringify({ message: "unexpected upstream call" }));
+    }
+  }).listen(0, "127.0.0.1");
+  await new Promise<void>((r) => upstream.once("listening", r));
+  try {
+    const { port } = upstream.address() as { port: number };
+    await withServer(
+      { demo: false, url: `http://127.0.0.1:${port}`, key: "publishable" },
+      async (url) => {
+        assert.equal((await fetch(url + "/api/account")).status, 401);
+        assert.equal(
+          (
+            await fetch(url + "/api/account", {
+              headers: { Authorization: "Bearer invalid" },
+            })
+          ).status,
+          401,
+        );
+        const headers = { Authorization: "Bearer unpaid" };
+        const response = await fetch(url + "/api/account", { headers });
+        assert.equal(response.status, 200);
+        assert.match(response.headers.get("cache-control") || "", /no-store/);
+        const account = await response.json();
+        assert.equal(account.researchAccess, false);
+        assert.equal(account.billing.status, "not_configured");
+        assert.equal(account.billing.interval, "month");
+        for (const path of [
+          "/api/offerings",
+          "/api/people/search?q=Michigan",
+          "/api/saved",
+        ])
+          assert.equal((await fetch(url + path, { headers })).status, 403);
+        const active = await (
+          await fetch(url + "/api/account", {
+            headers: { Authorization: "Bearer entitled" },
+          })
+        ).json();
+        assert.equal(active.researchAccess, true);
+      },
+    );
+  } finally {
+    await new Promise<void>((r) => upstream.close(() => r()));
+  }
+});

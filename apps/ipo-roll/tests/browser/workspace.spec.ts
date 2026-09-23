@@ -101,3 +101,60 @@ test("capture approved visual direction", async ({ page }) => {
     animations: "disabled",
   });
 });
+
+test("signed-in member without research access sees account state", async ({
+  page,
+}) => {
+  await page.route("**/api/config", (route) =>
+    route.fulfill({
+      json: {
+        demo: false,
+        configured: true,
+        url: "https://auth.example.test",
+        key: "publishable",
+      },
+    }),
+  );
+  await page.route("https://auth.example.test/**", (route) => {
+    if (route.request().url().includes("/token"))
+      return route.fulfill({
+        json: {
+          access_token: "test-session",
+          refresh_token: "test-refresh",
+          expires_in: 3600,
+          token_type: "bearer",
+          user: {
+            id: "10000000-0000-4000-8000-000000000001",
+            email: "member@example.invalid",
+            aud: "authenticated",
+          },
+        },
+      });
+    return route.fulfill({ status: 204 });
+  });
+  await page.route("**/api/account", (route) =>
+    route.fulfill({
+      json: {
+        email: "member@example.invalid",
+        researchAccess: false,
+        billing: { status: "not_configured", interval: "month" },
+      },
+    }),
+  );
+  let researchRequests = 0;
+  page.on("request", (req) => {
+    if (/\/api\/(overview|offerings|people|saved)/.test(req.url()))
+      researchRequests++;
+  });
+  await page.goto("/");
+  await page.getByLabel("Email address").fill("member@example.invalid");
+  await page.getByLabel("Password", { exact: true }).fill("synthetic-password");
+  await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Your account is ready" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Checkout is not open. You have not been charged."),
+  ).toBeVisible();
+  expect(researchRequests).toBe(0);
+});

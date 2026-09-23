@@ -95,13 +95,21 @@ export function createApp(config: Config) {
         res.status(503).json({ error: "Unable to verify workspace access." });
         return;
       }
+      // Account access requires a verified identity, but not a paid entitlement.
+      // A future billing portal belongs here, outside the research-access gate.
+      if (req.method === "GET" && req.path === "/account") {
+        res.json({
+          userId: data.user.id,
+          email: data.user.email || null,
+          researchAccess: access.data === true,
+          billing: { status: "not_configured", interval: "month" },
+        });
+        return;
+      }
       if (!access.data) {
-        res
-          .status(403)
-          .json({
-            error:
-              "Your account has not been granted access to the staging workspace.",
-          });
+        res.status(403).json({
+          error: "Research access is not active for this account.",
+        });
         return;
       }
       res.locals.client = client;

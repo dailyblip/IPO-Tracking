@@ -164,6 +164,10 @@ function App() {
     configured: boolean;
   } | null>(null);
   const [session, setSession] = useState(false);
+  const [account, setAccount] = useState<{
+    email: string | null;
+    researchAccess: boolean;
+  } | null>(null);
   const [fatal, setFatal] = useState("");
   const [mobile, setMobile] = useState(false);
   const [global, setGlobal] = useState("");
@@ -199,10 +203,25 @@ function App() {
       );
   }, []);
   useEffect(() => {
-    if (session && !demo)
-      api<{ ids: string[] }>("/saved")
-        .then((d) => setSaved(d.ids))
-        .catch((e) => setFatal(e.message));
+    let active = true;
+    setAccount(null);
+    if (session && !demo) {
+      api<{ email: string | null; researchAccess: boolean }>("/account")
+        .then(async (a) => {
+          if (!active) return;
+          setAccount(a);
+          if (a.researchAccess) {
+            const d = await api<{ ids: string[] }>("/saved");
+            if (active) setSaved(d.ids);
+          }
+        })
+        .catch((e) => {
+          if (active) setFatal(e.message);
+        });
+    }
+    return () => {
+      active = false;
+    };
   }, [session]);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -287,6 +306,36 @@ function App() {
       </div>
     );
   if (!session) return <Login configured={config.configured} />;
+  if (!demo && !account)
+    return (
+      <div className="full-state">
+        <Logo />
+        <Loader2 className="spin" />
+        <p>Checking your account…</p>
+      </div>
+    );
+  if (!demo && !account?.researchAccess)
+    return (
+      <div className="full-state">
+        <Logo />
+        <ShieldCheck className="teal-text" />
+        <h2>Your account is ready</h2>
+        <p>Signed in as {account?.email || "a verified member"}.</p>
+        <p>
+          Research access is not active yet. Monthly subscriptions will be
+          available when IPO Roll launches.
+        </p>
+        <p className="small muted">
+          Checkout is not open. You have not been charged.
+        </p>
+        <button className="button primary" onClick={() => location.reload()}>
+          Check access
+        </button>
+        <button className="button" onClick={() => client?.auth.signOut()}>
+          Sign out
+        </button>
+      </div>
+    );
   return (
     <div className="shell">
       <aside className={"sidebar " + (mobile ? "open" : "")}>
