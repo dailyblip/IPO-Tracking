@@ -485,19 +485,20 @@ def extract_offering_terms(soup: BeautifulSoup) -> dict:
                 confidence = "High"
                 break
 
-    # Common THE OFFERING table construction. Use only explicit 'offered by' labels.
-    # Share-class prefixes are common in IPOs (for example, "Class A common stock").
+    # Common THE OFFERING table construction. These labels are specific enough
+    # to search the full prospectus: in long S-1/A filings the authoritative
+    # table can sit well beyond the first 50k of flattened cover/TOC text.
     if primary is None:
         m = re.search(
             r"(?:(?:(?:class|series)\s+[A-Za-z0-9-]+\s+)?common\s+stock|shares?)\s+offered\s+by\s+(?:us|the\s+company)\s*[:|]?\s*([\d,]{4,})\s+shares",
-            cover, re.I,
+            text, re.I,
         )
         if m:
             primary = _share_int(m.group(1))
     if secondary is None:
         m = re.search(
             r"(?:(?:(?:class|series)\s+[A-Za-z0-9-]+\s+)?common\s+stock|shares?)\s+offered\s+by\s+(?:the\s+)?selling\s+(?:stockholders|shareholders)\s*[:|]?\s*([\d,]{4,})\s+shares",
-            cover, re.I,
+            text, re.I,
         )
         if m:
             secondary = _share_int(m.group(1))
