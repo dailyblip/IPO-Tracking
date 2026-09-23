@@ -130,3 +130,27 @@ All 91 candidates await root-lineage verification, operating-company review, exa
 `tests/database-intake.sql` rolls back its fixtures and verifies replay, immutable conflicts, mutation denial, full rollback after a malformed observation, and anonymous/customer denial. Run it administratively against staging. The actual 91-record batch was also replayed: no duplicate batch, observations, holders or findings were added.
 
 Next implementation work: retrieve versioned SEC documents through the existing source-access conventions, resolve the root registration for each candidate, extract exact field passages and person-specific biographies, then review a small complete corpus before adding an atomic publication path. The customer UI and approved design remain available in sample mode while this source work proceeds.
+
+## Milestone 3: SEC artifact capture and biography review packets
+
+`scripts/capture_sec_evidence.py` adds a separate, standard-library-only capture path. It follows the existing engine's `SEC_EDGAR_USER_AGENT` contact convention, keeps requests below four per second, bounds retries/response sizes, and rejects redirects and non-SEC artifact paths. It does not alter the existing ingestion engine or independently reimplement lifecycle/pricing eligibility rules.
+
+For each selected intake record it reads SEC submissions metadata, including all listed archive files, verifies the issuer CIK and current accession/form/date, and resolves one unamended S-1/F-1 root under the exact registration file number. Parallel registrations are kept separate. Missing history, conflicting metadata, ambiguous roots or mismatched preliminary sources stop packet generation. This resolves metadata lineage only; it does not approve the offering's eligibility or pricing facts.
+
+The root, current and reported preliminary primary documents are captured as exact bytes with SHA-256 hashes, retrieval times and URLs. Normalized document text is separately hashed. The packet binds every biography candidate to the current document and precise block/character positions in that normalized snapshot. Only full-name-led paragraphs with biographical language are proposed; surname guesses, whole-section fallbacks, hidden content and mixed named subjects are held back. Names can be supplied explicitly for supported directors/executives absent from the legacy holder list. No affiliation, identity or company relationship is automatically verified.
+
+Run after configuring `SEC_EDGAR_USER_AGENT` with a descriptive application name and a real contact email:
+
+```sh
+python3 scripts/capture_sec_evidence.py \
+  --intake import-output/intake.json \
+  --record-index 0 \
+  --archive-dir import-output/sec-artifacts \
+  --fetch
+```
+
+Add `--person 'Exact Full Name'` to locate another supported individual. Omit `--fetch` to replay previously captured artifacts offline; cached bytes are rehashed and missing/corrupt artifacts fail. URL lookup metadata can advance on a fresh fetch; content-addressed document objects are retained. Review packets pin the specific versions used. Keep captures in the ignored private output directory, never the frontend/public feed.
+
+This milestone was validated with eight synthetic capture tests plus the nine intake tests. **No live SEC artifacts or real biographies have been captured by this new tool yet:** this workspace has no configured SEC contact identity. Existing GitHub Actions secrets were not retrieved, changed or reused. Once a real contact is supplied, run a small live capture and inspect its source spans before importing any evidence into the canonical database.
+
+Remaining limitations: UTF-8 HTML only; conservative paragraph discovery can miss biographies split across paragraphs or using abbreviated names. Explicit passage review and a verified person/company relationship remain required. A successful capture never publishes records, approves rights, or grants customer access. SEC API reference: https://www.sec.gov/search-filings/edgar-application-programming-interfaces.
