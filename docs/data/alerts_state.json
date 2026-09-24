@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-24T13:05:36.743135+00:00",
+  "updated_at": "2026-09-24T14:11:59.472395+00:00",
   "items": {
     "s1:0002125056": {
       "id": "s1:0002125056",
@@ -362,7 +362,7 @@
       "stage": "priced",
       "price_range": "11-13",
       "filing_price": "11-13",
-      "priority": "Medium",
+      "priority": "Low",
       "value": 81250000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1903784/000118518526003448/0001185185-26-003448-index.htm"
     },
