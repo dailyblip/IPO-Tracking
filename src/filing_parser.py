@@ -427,11 +427,12 @@ def extract_price_range(soup: BeautifulSoup) -> dict:
     context for the reversed word order so unrelated conversion or option-price
     ranges cannot populate Filing Price. The unanchored legacy form remains
     confined to the first 30k of cover text; only the explicit IPO-anchored form
-    may use the broader 100k cover horizon used by other cover extraction.
+    may search the full filing text because its wording is explicitly tied to the
+    IPO price.
     """
     full_text = soup.get_text(" ", strip=True)
     legacy_cover_text = full_text[:30000]
-    explicit_cover_text = full_text[:100000]
+    explicit_cover_text = full_text
 
     range_patterns = [
         (
