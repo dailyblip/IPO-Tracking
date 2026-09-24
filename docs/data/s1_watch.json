@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-24T03:19:09.202592+00:00",
+  "generated_at": "2026-09-24T05:26:41.231830+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -4972,6 +4972,7 @@
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
         "10 named beneficial owners disclosed",
+        "Filing Price carried from SEC registration history dated 2026-07-29",
         "Preliminary offering range disclosed at $15.00–$17.00",
         "Filing Price carried from SEC registration history dated 2026-07-29"
       ],
