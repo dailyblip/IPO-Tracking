@@ -15,6 +15,9 @@ export type Person = {
   percent: number | null;
   source: Source;
   biography: string | null;
+  holdings?: import("./holdings.js").Holding[];
+  holdingQuotes?: import("./holdings.js").HoldingQuote[];
+  holdingsReview?: string;
 };
 export type Offering = {
   id: string;

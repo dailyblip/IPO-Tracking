@@ -1,3 +1,4 @@
+import { valueHolding } from "../shared/holdings.js";
 import React, { useState, useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
@@ -143,6 +144,9 @@ function SourceLink({ source }: { source: Source }) {
   );
 }
 function Highlight({ text, query }: { text: string; query: string }) {
+  // Display whitespace consistently with HTML while retaining original source text in the API.
+  text = text.replace(/\s+/g, " ");
+  query = query.replace(/\s+/g, " ").trim();
   if (!query) return <>{text}</>;
   const at = text.toLowerCase().indexOf(query.toLowerCase());
   return at < 0 ? (
@@ -1361,8 +1365,9 @@ function PeopleScreen({ open }: { open: (id: string) => void }) {
           <section>
             <div className="result-heading">
               <strong>
-                {new Set(matches.map((m) => m.offeringId)).size} companies on
-                this page <span>· {total} matching people</span>
+                {new Set(matches.map((m) => m.offeringId)).size}{" "}
+                {new Set(matches.map((m) => m.offeringId)).size === 1 ? "company" : "companies"} on
+                this page <span>· {total} matching {total === 1 ? "person" : "people"}</span>
               </strong>
               <small>
                 {demo ? "Illustrative results" : "Sourced biography results"}
@@ -1485,7 +1490,7 @@ function PeopleScreen({ open }: { open: (id: string) => void }) {
                   <div>
                     <FileText size={18} />
                     <strong>{selected.evidence.title}</strong>
-                    <p>{selected.evidence.locator}</p>
+                    <p>{selected.evidence.locator.startsWith("{") ? "Exact passage in captured filing" : selected.evidence.locator}</p>
                     <SourceLink source={selected.evidence} />
                   </div>
                 </li>
@@ -1545,6 +1550,49 @@ function PeopleScreen({ open }: { open: (id: string) => void }) {
       )}
     </>
   );
+}
+function StockValueButton({ person }: { person: Person }) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const [results, setResults] = useState<null | { holding: NonNullable<Person["holdings"]>[number]; value: ReturnType<typeof valueHolding> }[]>(null);
+  useEffect(() => {
+    if (results !== null && !dialog.current?.open) dialog.current?.showModal();
+  }, [results]);
+  function calculate() {
+    // Intentionally run only on request, never when a person/card renders.
+    setResults((person.holdings || []).map(holding => {
+      const quotes = (person.holdingQuotes || []).filter(q => q.verified && q.issuerId === holding.issuerId && q.securityId === holding.securityId)
+        .sort((a,b) => Date.parse(b.asOf) - Date.parse(a.asOf));
+      return { holding, value: valueHolding(holding, quotes[0]) };
+    }));
+  }
+  function dismiss() {
+    dialog.current?.close();
+    setResults(null);
+    trigger.current?.focus();
+  }
+  return <>
+    <button className="value-trigger" ref={trigger} onClick={calculate} aria-haspopup="dialog">Calculate estimated value <ArrowUpRight size={16}/></button>
+    <dialog className="value-dialog" ref={dialog} aria-label={`Estimated stock value for ${person.name}`}
+      onKeyDown={e => e.stopPropagation()}
+      onCancel={e => { e.preventDefault(); dismiss(); }}
+      onClick={e => { e.stopPropagation(); if (e.target === e.currentTarget) {
+        const r = e.currentTarget.getBoundingClientRect();
+        if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) dismiss();
+      } }}>
+      <div className="value-dialog-heading"><div><span className="eyebrow">ON-DEMAND VALUATION</span><h2>Estimated stock value</h2></div><button className="icon-button" aria-label="Close stock valuation" onClick={dismiss}><X size={22}/></button></div>
+      <p className="value-person">{person.name}</p>
+      {!results?.length && <p>No reviewed individual holdings are available. This does not establish zero ownership.</p>}
+      {results?.map(({holding:h,value:v}) => <section className="value-result" key={h.id}>
+        <h3>{h.shareClass}</h3><p>{h.shares.toLocaleString()} shares · {h.ownership} ownership · Disclosed as of {h.asOf}</p>
+        <div className="value-amount">{v.amount === null ? "Estimate unavailable" : new Intl.NumberFormat("en-US", {style:"currency",currency:v.quote!.currency}).format(v.amount)}</div>
+        <p>{v.reason}</p>
+        {v.quote && <p>{h.shares.toLocaleString()} × {v.quote.price} {v.quote.currency} · {v.quote.kind === "live" ? "Live" : "Last-known"} quote as of {v.quote.asOf}<br/><SourceLink source={v.quote.source}/></p>}
+        <p>{h.restrictions}</p><SourceLink source={h.source}/>
+      </section>)}
+      <p className="value-note">Values are calculated separately for each reviewed position. They are not confirmed cash proceeds or a combined personal-wealth estimate. This preview does not fetch live prices.</p>
+    </dialog>
+  </>;
 }
 function DetailDrawer({
   id,
@@ -1702,6 +1750,21 @@ function DetailDrawer({
                 {person === p.id && (
                   <div className="person-body">
                     {p.biography && <p>{p.biography}</p>}
+                    <section aria-label="Stock holdings and valuation">
+                      <h4>Stock holdings &amp; estimated market value</h4>
+                      <p>{p.holdingsReview || "No reviewed individual holdings available. This does not establish zero ownership."}</p>
+                      <StockValueButton person={p} />
+                      {(p.holdings || []).map((h) => {
+                        return <div className="source-box" key={h.id}><div>
+                          <strong>{h.shares.toLocaleString()} · {h.shareClass}</strong>
+                          <p>{h.basis === "current" ? "Disclosed position" : "Projected post-offering position"} · Filing as of {h.asOf} · {h.ownership} ownership</p>
+                          <p>{h.restrictions}</p>
+                          {h.restrictionSource && <SourceLink source={h.restrictionSource}/>}
+                          <p>{h.source.excerpt}</p><SourceLink source={h.source}/>
+                          {h.footnotes.map((f,i) => <div key={i}><strong>Ownership footnote</strong><p>{f.excerpt}</p><SourceLink source={f}/></div>)}
+                        </div></div>;
+                      })}
+                    </section>
                     <div className="ownership-facts">
                       {p.shares !== null && (
                         <div>

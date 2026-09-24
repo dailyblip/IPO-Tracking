@@ -125,7 +125,7 @@ Verified staging baseline:
 | Missing reported registration number | 16 |
 | Canonical offerings / biographies / quotes published | 0 / 0 / 0 |
 
-All 91 candidates await root-lineage verification, operating-company review, exact source-document capture and commercial rights review. This is a commercial migration gate, **not** a finding that all legacy records are incorrect. Sixteen lack even a reported registration file number in the feed; the other 75 still need the exact root filing and current filing linked independently. No historical backfill has been run.
+At this intake milestone all 91 candidates awaited root-lineage verification, operating-company review, exact source-document capture and commercial rights review. One internal pilot has since advanced through source review (milestone 5); commercial publication remains blocked. This is a commercial migration gate, **not** a finding that all legacy records are incorrect. Sixteen lack even a reported registration file number in the feed; the other 75 still need the exact root filing and current filing linked independently. No historical backfill has been run.
 
 `tests/database-intake.sql` rolls back its fixtures and verifies replay, immutable conflicts, mutation denial, full rollback after a malformed observation, and anonymous/customer denial. Run it administratively against staging. The actual 91-record batch was also replayed: no duplicate batch, observations, holders or findings were added.
 
@@ -181,3 +181,27 @@ Each selection specifies `name`, literal `title`, `relationship`, `first_block`,
 GET /api/account now separates verified identity from research entitlement. Signed-in accounts without access receive a clear account state rather than a generic workspace failure. Research APIs/RLS remain gated. Monthly billing is explicitly `not_configured`; no subscription service, pricing or charges were activated. See [the subscription access contract](docs/subscription-access.md).
 
 Validation: 21 Python import/capture/passage tests, seven API tests, four browser tests, the production build, the private SEC storage/access checks and the real internal phrase-search check passed. Browser/API identity tests use simulated Auth responses; production Auth and payment integration remain unconfigured. No merge, domain deployment or production ingestion change occurred.
+
+## Milestone 5: canonical internal pilot and real-data rendering
+
+The staging canonical schema now holds one unpublished internal-review offering, four executive biographies and six literal education claims. Source rights remain `internal_review`, not commercially approved. No beneficial ownership positions or market quotes were inferred. The preliminary range is $20–$24; final price, pricing date and offering value remain unknown. The offering card separates the current amendment date (2026-09-22) from the original registration date (2026-09-02).
+
+`build_internal_pilot.py` validates explicitly selected field passages and biography packet hashes against the captured normalized source. It generates a single atomic SQL transaction and an immutable private pilot manifest. Reapplying that transaction fails on duplicate identities and rolls back. It neither grants access nor runs SQL automatically. All real source inputs and generated payloads remain in ignored `import-output`; none are committed or bundled into the frontend.
+
+Migrations `20260923221859_internal_pilot_access.sql` and `20260923222128_offering_filing_dates.sql` were applied to staging. Internal access requires both an active entitlement and a server-assigned reviewer record. Ordinary entitled customers cannot read the pilot, its people or its search claims, or assign themselves reviewer status. No permanent reviewer account was created.
+
+`tests/database-internal-pilot.sql` verifies the real reviewer search, four-person detail, save/unsave, date and price safeguards, ordinary-customer denial and no fabricated affiliation matches; temporary users and saves roll back. A University of Michigan phrase query returns Brent Jewell with the source biography and Chief Operating Officer relationship. Filtering for beneficial owners returns no match for that executive-only relationship. Existing evidence and security SQL tests also pass.
+
+Validation: 23 Python tests, five browser tests (including the optional private pilot fixture), production build and the database checks pass. The private browser fixture contains actual reviewer RPC results, but browser login/network responses are simulated; this is rendering verification, not a live hosted Auth session. Run that browser case with `IPO_ROLL_PILOT_FIXTURE` pointing to the private captured RPC JSON. Search highlighting normalizes display whitespace while preserving original source text/offsets in storage.
+
+Supabase advisors report no warning/error findings; private/default-denied tables produce informational no-policy notices. Public offerings remain zero. Hosting, permanent reviewer login, commercial source approval and monthly payment activation are still pending. The existing Research Monitor and production ingestion remain operational and unchanged.
+
+## Holdings review preview
+
+The person accordion accepts reviewed, separately identified share-class positions, source footnotes, restriction evidence and verified quote provenance. `shared/holdings.ts` refuses valuation for projected positions, unreviewed evidence, unconfirmed personal economic interest, options, mismatched securities, incompatible timestamps or unreconciled corporate actions. A successful result is a gross market estimate, never cash proceeds or confirmation of saleability. No aggregated wealth total is inferred from overlapping holdings.
+
+The private downloadable preview now includes source-reviewed projected post-offering Class A positions for three pilot executives and their trust footnotes. The fourth person has no individually stated position in that table, which is not treated as zero ownership. All pilot valuations remain blank. This is preview data only: canonical ownership ingestion, quote-provider integration and population through the authenticated database API remain to be implemented. No live market feed, historical backfill or production deployment was enabled. Ten unit/API tests and the production build pass; the standalone preview was checked for holdings, footnotes and blank unsupported valuations.
+
+### On-demand valuation popup
+
+Each person's holdings section now has a Calculate estimated value button. The pure valuation function runs only on click for that person's positions; opening a company/person does not calculate values. The native modal shows position-specific results, evidence links, quote currency/timestamp when present, and explicit unavailable reasons. Positions are not summed into personal wealth. Escape and the close button restore focus without dismissing company research. The private preview has no live quote provider; server-side quote fetching and caching remain pending. Verified production build and real-preview browser interaction, including unavailable-state rendering and keyboard dismissal.
