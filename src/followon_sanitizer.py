@@ -40,6 +40,9 @@ REPORTING_FORMS = {
     "10-12B", "10-12B/A", "10-12G", "10-12G/A",
     "10-Q", "10-Q/A", "10-QT", "10-QT/A",
     "10-K", "10-K/A", "10-KT", "10-KT/A",
+    # Legacy annual/transition reports carrying the former Item 405 disclosure
+    # marker are still Exchange Act reporting history.
+    "10-K405", "10-K405/A", "10KT405", "10KT405/A",
     # Rule 12b-25 late-filing notices for core periodic reports are affirmative
     # evidence that the issuer already had the corresponding Exchange Act
     # reporting obligation before a later 424B4 candidate.
