@@ -381,7 +381,9 @@ class S1PriceRangeHistoryTests(unittest.TestCase):
         )
 
         repaired = payload["filings"][0]
-        self.assertEqual(count, 0)
+        # The row still counts as repaired because its SEC range/provenance is
+        # normalized; weak share evidence must nevertheless leave size blank.
+        self.assertEqual(count, 1)
         self.assertIsNone(repaired["value"])
         self.assertIsNone(repaired.get("offering_size_source"))
 
