@@ -21,8 +21,13 @@ def flat(value):
 
 def build(packet, review, directory):
     current = packet['lineage']['current']
-    if packet['lineage']['status'] != 'metadata_resolved' or current['form'] not in ('S-1/A', 'S-1', 'F-1', 'F-1/A'):
-        raise ValueError('Only reviewed preliminary projected positions are supported')
+    profile = review.get('profile', 'projected-class-a-trust')
+    dated = profile == 'dated-pre-common'
+    if profile not in ('projected-class-a-trust', 'dated-pre-common'):
+        raise ValueError('Unsupported review profile')
+    forms = ('424B4',) if dated else ('S-1/A', 'S-1', 'F-1', 'F-1/A')
+    if packet['lineage']['status'] != 'metadata_resolved' or current['form'] not in forms:
+        raise ValueError('Filing does not match the explicit review profile')
     docs = [d for d in packet['documents'] if d['filing'] == current]
     if len(docs) != 1:
         raise ValueError('Exactly one current captured document required')
@@ -37,14 +42,26 @@ def build(packet, review, directory):
     def select(spec):
         return passage(blocks, spec['first'], spec['last'], text)
     headers, basis, restriction = [select(review[k]) for k in ('headers','basis','restriction')]
-    if 'Shares of Common Stock Beneficially Owned After this Offering' not in flat(headers['excerpt']) or 'Shares of Class A Common Stock' not in flat(headers['excerpt']):
-        raise ValueError('Projected Class A column evidence required')
-    if 'after the offering' not in flat(basis['excerpt']).lower():
-        raise ValueError('Projected position assumptions required')
+    if dated:
+        if not all(s in flat(headers['excerpt']) for s in ('before this offering', 'after this offering', 'Class A', 'Class B')):
+            raise ValueError('Pre/post Class A/B header evidence required')
+        as_of = date.fromisoformat(review['holdings_as_of'])
+        if as_of > date.fromisoformat(current['filingDate']):
+            raise ValueError('Holdings date cannot follow source filing')
+        date_literal = as_of.strftime('%B') + f' {as_of.day}, {as_of.year}'
+        if f'beneficial ownership of our common stock as of {date_literal},' not in flat(basis['excerpt']):
+            raise ValueError('Explicit holdings as-of evidence required')
+        terms = ('180 days after the date of this prospectus', 'Our directors and executive officers', 'have entered into lock-up agreements', 'limited exceptions', 'prior written consent', 'may release')
+    else:
+        if 'Shares of Common Stock Beneficially Owned After this Offering' not in flat(headers['excerpt']) or 'Shares of Class A Common Stock' not in flat(headers['excerpt']):
+            raise ValueError('Projected Class A column evidence required')
+        if 'after the offering' not in flat(basis['excerpt']).lower():
+            raise ValueError('Projected position assumptions required')
+        terms = ('will sign lock-up agreements', 'not less than 180 days', 'prior written consent', 'subject to certain exceptions')
     if not review['restriction_literal'] or review['restriction_literal'] not in flat(restriction['excerpt']):
         raise ValueError('Restriction passage mismatch')
-    if not all(term in flat(restriction['excerpt']) for term in ('will sign lock-up agreements', 'not less than 180 days', 'prior written consent', 'subject to certain exceptions')):
-        raise ValueError('This preliminary review requires the supported conditional lock-up wording')
+    if not all(term in flat(restriction['excerpt']) for term in terms):
+        raise ValueError('Review requires the supported conditional lock-up wording')
     cik = packet['cik']
     offering = uid('offering', cik, packet['lineage']['root']['accessionNumber'])
     document = uid('document', doc['source']['content_sha256'])
@@ -66,7 +83,7 @@ def build(packet, review, directory):
         marker = str(item['footnote_number'])
         if not flat(row['excerpt']).startswith(name + '(' + marker + ')') or not flat(note['excerpt']).startswith('(' + marker + ')'):
             raise ValueError('Row identity or footnote association mismatch')
-        if 'trust' not in flat(note['excerpt']).lower():
+        if not dated and 'trust' not in flat(note['excerpt']).lower():
             raise ValueError('This review path requires explicit trust-component evidence')
         n = item['shares']
         if type(n) is not int or not 0 < n <= 9007199254740991:
@@ -74,11 +91,23 @@ def build(packet, review, directory):
         index = item['share_block']
         if type(index) is not int or not item['row']['first'] <= index <= item['row']['last']:
             raise ValueError('Share cell outside selected row')
-        if text[blocks[index]['start']:blocks[index]['end']] != f'{n:,}':
+        cell = text[blocks[index]['start']:blocks[index]['end']]
+        if dated:
+            share_class = item['share_class']
+            if share_class not in ('Class A common stock', 'Class B common stock') or flat(note['excerpt']) != f'({marker})Represents {n:,} shares of {share_class}.':
+                raise ValueError('Only an explicit simple common-share footnote is supported; mixed instruments and attribution require separate review')
+            counts = re.findall(r'(?<![\d,])\d[\d,]*(?![\d,])', cell)
+            if not counts or counts[0] != f'{n:,}':
+                raise ValueError('Pre-offering share count does not match row')
+        elif cell != f'{n:,}':
             raise ValueError('Selected share cell does not match count')
         person = uid('person-in-issuer', cik, name)
-        oid = uid('holding-review', document, person, 'projected-A')
-        positions.append(dict(id=oid,person_id=person,name=name,shares=n,row=span(row),evidence=common+[span(note)],source_row_key='reviewed-projected-A:'+person))
+        key = 'dated-pre-'+share_class if dated else 'projected-A'
+        oid = uid('holding-review', document, person, key)
+        position = dict(id=oid,person_id=person,name=name,shares=n,row=span(row),evidence=common+[span(note)],source_row_key=('reviewed-'+key+':' if dated else 'reviewed-projected-A:')+person)
+        if dated:
+            position.update(share_class=share_class,position_basis='pre',holdings_as_of=as_of.isoformat())
+        positions.append(position)
     if not positions:
         raise ValueError('No explicitly reviewed positions')
     manifest = dict(version='holdings-review/1',offering_id=offering,document_id=document,source_sha256=doc['source']['content_sha256'],normalized_sha256=doc['normalized_text_sha256'],review=review,positions=positions,spans=spans,published=False,audience='internal_review')
@@ -93,11 +122,14 @@ def build(packet, review, directory):
                   f"if not exists(select 1 from evidence.spans where id='{sid}' and document_id='{document}' and excerpt={q(data['excerpt'])} and locator={q(canonical(data['locator']))} and approved) then raise exception 'Evidence conflict'; end if;"]
     for p in positions:
         pid,oid=p['person_id'],p['id']
+        explanation = ('Disclosed pre-offering common-share position as of '+p['holdings_as_of']+'. This historical disclosure does not confirm current ownership, personal economic interest or present saleability.') if dated else 'Projected post-offering position, not confirmed current holdings. The total includes a trust component described in the footnote; personal economic ownership of the entire position is unconfirmed.'
+        conditions = ('The filing describes director/executive lock-ups for a restricted period of 180 days after the prospectus date, with consent, exceptions and discretionary release. No current release, resale eligibility or security-matched quote has been verified. Dates remain unclassified pending a separate trigger/date review; Class B shares are not a Class A trading position.') if dated else 'The preliminary filing describes planned lock-ups of not less than 180 days from the prospectus date, subject to underwriter consent and exceptions. No executed lock-up start, release date or present saleability is confirmed. Offering assumptions and ownership footnotes are retained below.'
+        extra_column = ',holdings_as_of' if dated else ''
+        extra_value = ','+q(p['holdings_as_of']) if dated else ''
         stmts += [f"if not exists(select 1 from research.parties p join research.people pp on pp.id=p.id join research.roles r on r.person_id=p.id where p.id='{pid}' and p.name={q(p['name'])} and pp.identity_verified and r.offering_id='{offering}' and r.verified) then raise exception 'Person identity mismatch'; end if;",
-            f"insert into research.ownerships(id,offering_id,party_id,filing_id,share_class,position_basis,shares,source_row_key,evidence_id,approved) values('{oid}','{offering}','{pid}','{filing}','Class A common stock','post',{p['shares']},{q(p['source_row_key'])},'{p['row']}',true);",
+            f"insert into research.ownerships(id,offering_id,party_id,filing_id,share_class,position_basis,shares,source_row_key,evidence_id,approved{extra_column}) values('{oid}','{offering}','{pid}','{filing}',{q(p.get('share_class','Class A common stock'))},{q(p.get('position_basis','post'))},{p['shares']},{q(p['source_row_key'])},'{p['row']}',true{extra_value});",
             f"insert into research.liquidity_assessments(ownership_id,reviewed,assessed_on,valid_through,classification,explanation,conditions,evidence_ids) values('{oid}',true,'{reviewed_on}','{reviewed_on}','unknown',",
-            q('Projected post-offering position, not confirmed current holdings. The total includes a trust component described in the footnote; personal economic ownership of the entire position is unconfirmed.')+','+
-            q('The preliminary filing describes planned lock-ups of not less than 180 days from the prospectus date, subject to underwriter consent and exceptions. No executed lock-up start, release date or present saleability is confirmed. Offering assumptions and ownership footnotes are retained below.')+
+            q(explanation)+','+q(conditions)+
             ",array["+','.join(q(e)+'::uuid' for e in p['evidence'])+"]);"]
     stmts += [f"insert into ops.releases(id,run_id) values('{release}',parent_run);",
               f"insert into ops.pilot_manifests(release_id,review_packet_id,manifest) values('{release}',packet_id,{q(canonical(manifest))}::jsonb);",
