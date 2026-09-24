@@ -12,7 +12,9 @@ The data transaction was rehearsed and rolled back, then applied and replayed su
 
 Next: expand source review to the other recent-month issuers (particularly the already captured Oura/Orion footnotes), preserving instrument and trust/fund distinctions. The first three positions now produce substantive evidence in a newly requested or explicitly refreshed report; existing private snapshots are not rewritten. No owner action is needed for further evidence backfilling. Quote licensing, optional AI provider and launch/Auth decisions remain in the nightly list below.
 
-Additional QA passed: existing liquidity isolation/security SQL suites, production build, and desktop/mobile browser checks with the captured source-rich report (simulated login). The report's source passages are expandable and machine-readable block locators render as readable block references. The accordion no longer incorrectly claims that no reviewed positions exist before the report is opened. Staging data is applied; the accompanying UI/importer changes are release-ready, with live deployment verification required after the commit.
+Additional QA passed: existing liquidity isolation/security SQL suites, production build, and desktop/mobile browser checks with the captured source-rich report (simulated login). The report's source passages are expandable and machine-readable block locators render as readable block references. The accordion no longer incorrectly claims that no reviewed positions exist before the report is opened.
+
+Publication verified at 2026-09-24 19:19 UTC: commercial commit `3f27108167ca37f4cf972b89707484ef68fb4d35` is deployed to Render staging. Its served `/assets/index-Chuugp4P.js` SHA-256 matches the local build: `73c9051b977bc189bbb0775a35b13ccebf5929d98d12f4ebf967c33090d3c109`. Health returns `ok` / `staging`; unauthenticated access to the real holder liquidity endpoint returns 401. Staging has 22 offerings, 44 biographies, three positions and three assessments, with zero private reports and zero leftover test accounts. The ownership workflow was absent from all active/queued/waiting/pending/requested lists immediately before committing. Authenticated live-user interaction remains unverified; database authorization and simulated browser tests are distinct evidence. PR #581 remains draft, with no production changes. Next run can proceed to the next recent-month source review rather than repeating this deployment check.
 
 ## 2026-09-24: private Liquidity Analysis foundation
 
@@ -31,7 +33,7 @@ Publication: prepared for the existing commercial branch and Render staging. Ver
 1. Verify this staging release and test actual authenticated UI when an authorized browser session is available.
 2. Review and backfill exact ownership-table rows and holder-specific footnotes for the existing cohort. Separate issuer securities, share classes, trust/fund attribution, projected vs current holdings and overlapping positions. Reuse the original engine where appropriate.
 3. Populate reviewed liquidity assessments only with explicit source passages, conditions, dates and review validity. Add release-date calculation tests for exact contractual wording before automating lock-up calculations. No default 180-day assumptions.
-4. Add report history selection and source-version details in the UI; old snapshots are retained already.
+4. Add report history selection in the UI; old snapshots are retained already and source-version details are now displayed.
 5. Integrate security-matched licensed quotes and reconciled positions before exposing market estimates. Do not infer future prices, cash proceeds or saleability.
 6. Evaluate a source-grounded AI extraction/explanation adapter after the deterministic evidence path is established. No paid calls or new external provider transmission yet.
 
