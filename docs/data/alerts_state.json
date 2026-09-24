@@ -1,7 +1,20 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-24T03:15:19.003676+00:00",
+  "updated_at": "2026-09-24T03:38:01.953071+00:00",
   "items": {
+    "s1:0002125056": {
+      "id": "s1:0002125056",
+      "cik": "0002125056",
+      "company": "Wella Co",
+      "form": "S-1/A",
+      "filed": "2026-09-23",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2125056/000162828026063205/0001628280-26-063205-index.htm"
+    },
     "s1:0002141406": {
       "id": "s1:0002141406",
       "cik": "0002141406",
@@ -261,19 +274,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2028464/000162828026059692/0001628280-26-059692-index.htm"
-    },
-    "s1:0002125056": {
-      "id": "s1:0002125056",
-      "cik": "0002125056",
-      "company": "Wella Co",
-      "form": "S-1",
-      "filed": "2026-08-31",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2125056/000162828026059572/0001628280-26-059572-index.htm"
     },
     "s1:0002045151": {
       "id": "s1:0002045151",
@@ -1213,6 +1213,13 @@
     }
   },
   "ciks": {
+    "0002125056": {
+      "company": "Wella Co",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002125056",
+      "last_filed": "2026-09-23",
+      "missing_runs": 0
+    },
     "0002141406": {
       "company": "Accelevation Holdings Corp.",
       "stage": "pre-pricing",
@@ -1351,13 +1358,6 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002028464",
       "last_filed": "2026-09-01",
-      "missing_runs": 0
-    },
-    "0002125056": {
-      "company": "Wella Co",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002125056",
-      "last_filed": "2026-08-31",
       "missing_runs": 0
     },
     "0002045151": {
