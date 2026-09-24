@@ -222,6 +222,26 @@ export function createApp(config: Config) {
       p_page: page,
     });
   });
+  const uuid = (value: unknown) => typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+  app.all("/api/offerings/:id/people/:personId/liquidity", async (req, res) => {
+    if (!["GET", "POST"].includes(req.method)) { res.status(405).json({ error: "Method not allowed." }); return; }
+    if (config.demo) { res.status(400).json({ error: "Private saved analyses require a signed-in account." }); return; }
+    if (!uuid(req.params.id) || !uuid(req.params.personId) || (req.method === "POST" &&
+      (!uuid(req.body?.requestId) || (req.body.previousId != null && !uuid(req.body.previousId)) ||
+       Object.keys(req.body).some(k => !["requestId", "previousId"].includes(k))))) {
+      res.status(400).json({ error: "Invalid analysis request." }); return;
+    }
+    const c = res.locals.client as SupabaseClient;
+    const args = { p_offering: req.params.id, p_person: req.params.personId };
+    const result = req.method === "GET"
+      ? await c.rpc("ipo_roll_liquidity_report", args)
+      : await c.rpc("ipo_roll_request_liquidity", { ...args, p_request: req.body.requestId, p_previous: req.body.previousId || null });
+    if (result.error) {
+      const status = result.error.code === "P0002" ? 404 : result.error.code === "22023" ? 400 : result.error.code === "42501" ? 403 : 503;
+      res.status(status).json({ error: status === 404 ? "Analysis subject not available." : "Unable to load your private analysis. Please retry." }); return;
+    }
+    res.json(result.data);
+  });
   // Sample saves are browser-local, never shared between visitors or stored in Supabase.
   app.get("/api/saved", async (_req, res) =>
     config.demo ? res.json({ ids: [] }) : rpc(res, "ipo_roll_saved"),

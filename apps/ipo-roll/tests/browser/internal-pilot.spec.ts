@@ -11,8 +11,17 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
   const d = JSON.parse(readFileSync(fixturePath!, "utf8"));
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
+  let report: any = null;
+  let generations = 0;
   await page.route("**/api/**", (route) => {
     const path = new URL(route.request().url()).pathname;
+    if (path.endsWith("/liquidity")) {
+      if (route.request().method() === "POST") {
+        generations++;
+        report = { id: `report-${generations}`, version: "liquidity/1", asOf: "2026-09-24T17:00:00Z", method: "Evidence review; no AI inference", company: d.detail.company, person: d.detail.people[0].name, relationship: d.detail.people[0].relationship, relationshipSource: d.detail.people[0].source, positions: [], notice: "Static private snapshot. Unknown is not zero." };
+      }
+      return route.fulfill({ json: report });
+    }
     const data =
       path === "/api/config"
         ? {
@@ -57,6 +66,7 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
   await page
     .getByRole("button", { name: "People Search", exact: true })
     .click();
+  await page.getByLabel("Search biographies").fill("University of Michigan");
   await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect(page.locator(".match-card")).toHaveCount(1);
   await expect(
@@ -73,5 +83,30 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
     .click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(page.getByText("Michael Rubiera").first()).toBeVisible();
+  await page.getByRole("button", { name: "Liquidity Analysis", exact: true }).click();
+  const analysis = page.getByRole("dialog", { name: "Liquidity Analysis for Michael Rubiera" });
+  await expect(analysis).toBeVisible();
+  await expect(analysis.getByText("PRIVATE TO YOUR ACCOUNT")).toBeVisible();
+  await expect(analysis.getByText(/No reviewed individual stock positions/)).toBeVisible();
+  expect(generations).toBe(1);
+  await page.keyboard.press("Escape");
+  await expect(analysis).not.toBeVisible();
+  await expect(page.getByRole("dialog", { name: "Company research" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Liquidity Analysis", exact: true })).toBeFocused();
+  await page.getByRole("button", { name: "Liquidity Analysis", exact: true }).click();
+  await expect(analysis).toBeVisible();
+  await expect(analysis.getByRole("button", { name: "Refresh analysis" })).toBeEnabled();
+  expect(generations).toBe(1);
+  await analysis.getByRole("button", { name: "Refresh analysis" }).click();
+  await expect(analysis.getByRole("button", { name: "Refresh analysis" })).toBeEnabled();
+  expect(generations).toBe(2);
+  await page.screenshot({path: "test-results/liquidity-report.png", fullPage: true});
+  await analysis.getByRole("button", { name: "Close liquidity analysis" }).click();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole("button", { name: "Liquidity Analysis", exact: true }).click();
+  await expect(analysis).toBeVisible();
+  const box = await analysis.boundingBox();
+  expect(box!.width).toBeLessThanOrEqual(390);
+  await analysis.getByRole("button", { name: "Close liquidity analysis" }).click();
   expect(errors).toEqual([]);
 });
