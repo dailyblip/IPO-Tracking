@@ -3,7 +3,7 @@ begin;
 insert into auth.users(id,email) values('60000000-0000-4000-8000-000000000001','liquidity-a@example.invalid'),('60000000-0000-4000-8000-000000000002','liquidity-b@example.invalid'),('60000000-0000-4000-8000-000000000003','liquidity-c@example.invalid');
 insert into app.entitlements(user_id,active) select id,true from auth.users where id in ('60000000-0000-4000-8000-000000000001','60000000-0000-4000-8000-000000000002','60000000-0000-4000-8000-000000000003');
 insert into app.reviewers(user_id) values('60000000-0000-4000-8000-000000000001'),('60000000-0000-4000-8000-000000000002');
-create temporary table liquidity_test_subject as select r.offering_id,r.person_id,r.evidence_id,o.current_filing_id from research.roles r join research.offerings o on o.id=r.offering_id where o.stage='Priced' limit 1;
+create temporary table liquidity_test_subject as select r.offering_id,r.person_id,r.evidence_id,o.current_filing_id from research.roles r join research.offerings o on o.id=r.offering_id where o.stage='Priced' and not exists(select 1 from research.ownerships h where h.offering_id=r.offering_id and h.party_id=r.person_id) limit 1;
 grant select on liquidity_test_subject to authenticated;
 insert into research.ownerships(id,offering_id,party_id,filing_id,share_class,position_basis,shares,source_row_key,evidence_id,approved)
  select ('61000000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid,offering_id,person_id,current_filing_id,'Test class '||n,'post',100,'liquidity-test-'||n,evidence_id,true from liquidity_test_subject cross join generate_series(1,5) n;
@@ -23,6 +23,7 @@ do $$ declare s record; r jsonb; r2 jsonb; begin
  if (select count(*) from jsonb_array_elements(r->'positions')x where x->>'category'='unknown')<>2 then raise exception 'Stale/unconfirmed holdings not held'; end if;
  if (select count(*) from jsonb_array_elements(r->'positions')x where x->>'category'='liquid')<>1 then raise exception 'Liquid classification wrong'; end if;
  if exists(select 1 from jsonb_array_elements(r->'positions')x where x->>'marketValue' is not null) then raise exception 'Invented value'; end if;
+ if r->>'version'<>'liquidity/1.1' or exists(select 1 from jsonb_array_elements(r->'positions')x where x->>'holdingsAsOf' is not null or x->>'filingDate' is null) then raise exception 'Filing date used as holdings date'; end if;
  r2:=public.ipo_roll_request_liquidity(s.offering_id,s.person_id,'62000000-0000-4000-8000-000000000002');
  if r<>r2 then raise exception 'Reopen regenerated report'; end if;
  perform set_config('liquidity.test.first',r->>'id',true);
@@ -53,6 +54,7 @@ do $$ declare s record; begin
 end $$;
 reset role;
 update research.liquidity_assessments set explanation='Changed after snapshot' where ownership_id::text like '61000000-%';
+update research.ownerships set holdings_as_of=current_date-7 where id::text like '61000000-%';
 update app.entitlements set active=false where user_id='60000000-0000-4000-8000-000000000001';
 set local role authenticated;
 select set_config('request.jwt.claims','{"sub":"60000000-0000-4000-8000-000000000001","role":"authenticated"}',true);
@@ -63,6 +65,7 @@ set local role authenticated;
 do $$ declare r jsonb; begin
  select report into r from app.liquidity_reports where id=current_setting('liquidity.test.first')::uuid;
  if r is null or r::text like '%Changed after snapshot%' then raise exception 'Snapshot changed or disappeared'; end if;
+ if exists(select 1 from jsonb_array_elements(r->'positions')x where x->>'holdingsAsOf' is not null) then raise exception 'Holdings date silently updated in static report'; end if;
 end $$;
 set local role anon;
 do $$ begin

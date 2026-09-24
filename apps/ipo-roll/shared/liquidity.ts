@@ -17,6 +17,8 @@ export type LiquidityReport = {
     shares: number | null;
     positionBasis: string;
     holdingsDate: string;
+    filingDate?: string;
+    holdingsAsOf?: string | null;
     filingAccession?: string;
     documentHash?: string;
     source: Source;

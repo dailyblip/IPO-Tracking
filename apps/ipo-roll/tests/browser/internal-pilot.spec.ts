@@ -9,6 +9,9 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
     "Requires private captured RPC output; never commit real source fixtures",
   );
   const d = JSON.parse(readFileSync(fixturePath!, "utf8"));
+  const query = d.qa?.query || "University of Michigan";
+  const matchedPerson = d.qa?.matchedPerson || "Brent Jewell";
+  const holderName = d.detail.people[0].name;
   const liquidityFixture = process.env.IPO_ROLL_LIQUIDITY_FIXTURE
     ? JSON.parse(readFileSync(process.env.IPO_ROLL_LIQUIDITY_FIXTURE, "utf8")) : null;
   const errors: string[] = [];
@@ -69,37 +72,40 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
   await page
     .getByRole("button", { name: "People Search", exact: true })
     .click();
-  await page.getByLabel("Search biographies").fill("University of Michigan");
+  await page.getByLabel("Search biographies").fill(query);
   await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect(page.locator(".match-card")).toHaveCount(1);
   await expect(
-    page.locator("mark").filter({ hasText: "University of Michigan" }).first(),
+    page.locator("mark").filter({ hasText: query }).first(),
   ).toBeVisible();
-  await expect(page.getByText("Brent Jewell").first()).toBeVisible();
+  await expect(page.getByText(matchedPerson).first()).toBeVisible();
   await page.screenshot({
     path: process.env.IPO_ROLL_PILOT_SCREENSHOT || "test-results/pilot.png",
     fullPage: true,
     animations: "disabled",
   });
   await page
-    .getByRole("button", { name: "Open Accelevation Holdings Corp." })
+    .getByRole("button", { name: `Open ${d.detail.company}` })
     .click();
   await expect(page.getByRole("dialog")).toBeVisible();
-  await expect(page.getByText("Michael Rubiera").first()).toBeVisible();
+  await expect(page.getByText(holderName).first()).toBeVisible();
   await page.getByRole("button", { name: "Liquidity Analysis", exact: true }).click();
-  const analysis = page.getByRole("dialog", { name: "Liquidity Analysis for Michael Rubiera" });
+  const analysis = page.getByRole("dialog", { name: `Liquidity Analysis for ${holderName}` });
   await expect(analysis).toBeVisible();
   await expect(analysis.getByText("PRIVATE TO YOUR ACCOUNT")).toBeVisible();
   if (liquidityFixture) {
-    await expect(analysis.getByText("Projected post-offering position", { exact: true })).toBeVisible();
-    await expect(analysis.getByText(/1,375,666 disclosed shares/)).toBeVisible();
-    await analysis.getByText("Source passages and footnotes (5)", { exact: true }).click();
-    await expect(analysis.getByText(/Includes 73,419 shares held by/)).toBeVisible();
-    await expect(analysis.getByText("2026-09-22 · Source block 9408")).toBeVisible();
-    await analysis.getByText("Source passages and footnotes (5)", { exact: true }).click();
+    const p = liquidityFixture.positions[0];
+    await expect(analysis.getByText(p.positionBasis === 'post' ? "Projected post-offering position" : "Pre-offering position", { exact: true })).toBeVisible();
+    await expect(analysis.getByText(`${p.shares.toLocaleString()} disclosed shares · Filing date ${p.filingDate || p.holdingsDate}`, { exact: true })).toBeVisible();
+    await expect(analysis.getByText(`Holdings as of: ${p.holdingsAsOf || 'Not established in this snapshot'}. This is not confirmation of current holdings.`, { exact: true })).toBeVisible();
+    const passages = `Source passages and footnotes (${p.evidence.length + 1})`;
+    await analysis.getByText(passages, { exact: true }).click();
+    await expect(analysis.getByText(p.evidence.at(-1).excerpt, { exact: true })).toBeVisible();
+    await expect(analysis.getByText(/Source blocks? \d+/).first()).toBeVisible();
+    await analysis.getByText(passages, { exact: true }).click();
     await expect(analysis.getByText(/Lock-up start: Not confirmed/)).toBeVisible();
     await analysis.getByText("Source document version", { exact: true }).click();
-    await expect(analysis.getByText("SEC accession: 0001628280-26-062945")).toBeVisible();
+    await expect(analysis.getByText(`SEC accession: ${p.filingAccession}`)).toBeVisible();
   } else {
     await expect(analysis.getByText(/No reviewed individual stock positions/)).toBeVisible();
   }
@@ -122,6 +128,7 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
   await expect(analysis).toBeVisible();
   const box = await analysis.boundingBox();
   expect(box!.width).toBeLessThanOrEqual(390);
+  await page.screenshot({path: "test-results/liquidity-report-mobile.png", fullPage: true});
   await analysis.getByRole("button", { name: "Close liquidity analysis" }).click();
   expect(errors).toEqual([]);
 });

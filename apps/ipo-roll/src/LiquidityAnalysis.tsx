@@ -58,7 +58,8 @@ export function LiquidityAnalysis({ offeringId, personId, name, demo, request }:
         {report.positions.map(p => <section className="value-result" key={p.id}>
           <h3>{p.shareClass || 'Share class unspecified'}</h3><strong>{categories[p.category]}</strong>
           <p><strong>{p.positionBasis === 'post' ? 'Projected post-offering position' : p.positionBasis === 'pre' ? 'Pre-offering position' : 'Position basis unconfirmed'}</strong></p>
-          <p>{p.shares === null ? 'Share count unknown' : `${p.shares.toLocaleString()} disclosed shares`} · Filing date {p.holdingsDate}</p>
+          <p>{p.shares === null ? 'Share count unknown' : `${p.shares.toLocaleString()} disclosed shares`} · Filing date {p.filingDate || p.holdingsDate}</p>
+          <p>Holdings as of: {p.holdingsAsOf || 'Not established in this snapshot'}. This is not confirmation of current holdings.</p>
           <p>{p.explanation}</p><p>{p.conditions}</p>
           <p>Lock-up start: {p.lockupStart || 'Not confirmed'} · End: {p.lockupEnd || 'Not confirmed'}</p>
           {p.assessmentDate && <p>Evidence reviewed {p.assessmentDate} · Valid through {p.validThrough}. Expired assessments are classified as insufficient evidence.</p>}
