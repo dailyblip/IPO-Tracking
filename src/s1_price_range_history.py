@@ -11,6 +11,12 @@ history when source metadata is absent. Point prices remain subject to the stric
 cover-page validation in ``s1_preliminary_price_gate.py``; after that gate succeeds,
 this module attaches the exact current S-1/S-1A identity as provenance rather than
 reinterpreting the point price with a weaker parser.
+
+When that same authoritative S-1/S-1A exposes a high-confidence base-offering share
+count, this pass also repairs a missing preliminary offering value from those exact
+shares and the verified range midpoint. This closes the lifecycle gap where share
+terms and Filing Price survived history reconciliation but the derived value and
+its provenance did not. No offering value is inferred from unverified row fields.
 """
 
 from __future__ import annotations
@@ -62,6 +68,13 @@ def _number(value):
     return number if math.isfinite(number) and number > 0 else None
 
 
+def _whole_share_count(value):
+    number = _number(value)
+    if number is None or not number.is_integer():
+        return None
+    return int(number)
+
+
 def _nondegenerate_range(parsed):
     price_range = (parsed or {}).get("price_range") or {}
     low = _number(price_range.get("range_low"))
@@ -89,6 +102,30 @@ def _is_blank_prepricing_row(filing) -> bool:
     return not str(
         filing.get("filing_price") or filing.get("price_range") or ""
     ).strip()
+
+
+def _offering_value_field(filing) -> str:
+    """Return the raw offering-value field used by this payload shape."""
+    if "ipo_size" in (filing or {}) and "value" not in (filing or {}):
+        return "ipo_size"
+    return "value"
+
+
+def _needs_authoritative_offering_recovery(filing) -> bool:
+    """Re-open SEC history only when persisted offering economics are incomplete."""
+    if not _is_prepricing_row(filing):
+        return False
+
+    value_field = _offering_value_field(filing)
+    value = _number((filing or {}).get(value_field))
+    source = str((filing or {}).get("offering_size_source") or "").strip()
+    confidence = str((filing or {}).get("offering_size_confidence") or "").strip()
+    primary = _whole_share_count((filing or {}).get("primary_offering_shares"))
+    secondary = _whole_share_count((filing or {}).get("secondary_offering_shares"))
+
+    if value is not None:
+        return not source or confidence.casefold() != "high"
+    return primary is not None or secondary is not None
 
 
 def _has_authoritative_prepricing_source(filing) -> bool:
@@ -232,7 +269,7 @@ def _parse_history_range(cik, metadata, registration_loader):
             f"Could not inspect SEC {metadata.get('form_type') or 'S-1'} "
             f"{metadata.get('accession_no') or '<unknown accession>'} for preliminary price history: {error}"
         ) from error
-    return _nondegenerate_range(parsed), index_url
+    return _nondegenerate_range(parsed), index_url, parsed
 
 
 def _source(metadata, index_url):
@@ -246,7 +283,69 @@ def _source(metadata, index_url):
     }
 
 
-def _apply_range(filing, price_range, metadata, index_url):
+def _apply_authoritative_offering_terms(filing, price_range, parsed):
+    """Repair pre-pricing size only from the same SEC filing that proves the range."""
+    cover = (parsed or {}).get("cover_page") or {}
+    if not isinstance(cover, dict):
+        return filing
+    if cover.get("offering_size_conflict"):
+        return filing
+    if str(cover.get("offering_size_confidence") or "").strip().casefold() != "high":
+        return filing
+
+    source = str(cover.get("offering_size_source") or "").strip()
+    total_shares = _whole_share_count(cover.get("offering_size_shares"))
+    primary = _whole_share_count(cover.get("primary_offering_shares"))
+    secondary = _whole_share_count(cover.get("secondary_offering_shares"))
+    if not source or total_shares is None or primary is None:
+        return filing
+    if secondary is not None and primary + secondary != total_shares:
+        raise S1PriceRangeHistoryError(
+            f"{filing.get('company') or filing.get('id')}: authoritative SEC offering-share components "
+            "do not reconcile to the base offering share count"
+        )
+
+    for field, authoritative in (
+        ("primary_offering_shares", primary),
+        ("secondary_offering_shares", secondary),
+    ):
+        published = _whole_share_count(filing.get(field))
+        if published is not None and authoritative is not None and published != authoritative:
+            raise S1PriceRangeHistoryError(
+                f"{filing.get('company') or filing.get('id')}: published {field} conflicts with "
+                "the authoritative SEC S-1/S-1A range filing"
+            )
+
+    low, high = price_range
+    derived_value = int(round(total_shares * ((float(low) + float(high)) / 2.0)))
+    value_field = _offering_value_field(filing)
+    published_value = _number(filing.get(value_field))
+    if published_value is not None:
+        tolerance = max(1.0, derived_value * 0.001)
+        if abs(published_value - derived_value) > tolerance:
+            raise S1PriceRangeHistoryError(
+                f"{filing.get('company') or filing.get('id')}: published pre-pricing offering value "
+                "conflicts with authoritative SEC base shares × Filing Price midpoint"
+            )
+
+    updated = dict(filing)
+    if published_value is None:
+        updated[value_field] = derived_value
+        if value_field == "value":
+            updated["value_label"] = dashboard_export._money(derived_value)
+    if _whole_share_count(updated.get("primary_offering_shares")) is None:
+        updated["primary_offering_shares"] = primary
+    if secondary is not None and _whole_share_count(updated.get("secondary_offering_shares")) is None:
+        updated["secondary_offering_shares"] = secondary
+
+    if primary > 0 and "primary offering" not in source.casefold():
+        source = f"primary offering; {source}"
+    updated["offering_size_source"] = source
+    updated["offering_size_confidence"] = "High"
+    return updated
+
+
+def _apply_range(filing, price_range, metadata, index_url, parsed=None):
     low, high = price_range
     label = _format_range(low, high)
     updated = dict(filing)
@@ -271,6 +370,8 @@ def _apply_range(filing, price_range, metadata, index_url):
             f"{metadata.get('filing_date')}"
         )
     updated["signals"] = signals
+    if parsed is not None:
+        updated = _apply_authoritative_offering_terms(updated, price_range, parsed)
     return updated
 
 
@@ -287,7 +388,11 @@ def _recover_one(
     existing_price = str(filing.get("filing_price") or "").strip()
     if existing_price and not existing_range:
         return filing, False
-    if existing_range and _has_authoritative_prepricing_source(filing):
+    if (
+        existing_range
+        and _has_authoritative_prepricing_source(filing)
+        and not _needs_authoritative_offering_recovery(filing)
+    ):
         return filing, False
 
     cik = _canonical_cik(filing.get("cik"))
@@ -319,9 +424,17 @@ def _recover_one(
             f"{filing.get('company') or filing.get('id')}: no same-registration S-1/S-1A history was available"
         )
 
-    current_range, current_url = _parse_history_range(cik, current, registration_loader)
+    current_range, current_url, current_parsed = _parse_history_range(
+        cik, current, registration_loader
+    )
     if current_range is not None:
-        repaired = _apply_range(filing, current_range, current, current_url)
+        repaired = _apply_range(
+            filing,
+            current_range,
+            current,
+            current_url,
+            parsed=current_parsed,
+        )
         return repaired, repaired != filing
 
     current_accession = _canonical_accession(current.get("accession_no"))
@@ -336,7 +449,7 @@ def _recover_one(
     ]
     same_day_predecessors = []
     for metadata in same_day_others:
-        candidate_range, index_url = _parse_history_range(
+        candidate_range, index_url, parsed = _parse_history_range(
             cik, metadata, registration_loader
         )
         if candidate_range is None:
@@ -355,7 +468,7 @@ def _recover_one(
             )
         if candidate_acceptance < current_acceptance:
             same_day_predecessors.append(
-                (candidate_acceptance, candidate_range, metadata, index_url)
+                (candidate_acceptance, candidate_range, metadata, index_url, parsed)
             )
 
     if same_day_predecessors:
@@ -368,8 +481,14 @@ def _recover_one(
                 f"{filing.get('company') or filing.get('id')}: same-day SEC S-1/S-1/A "
                 "predecessors have duplicate acceptance times"
             )
-        _, candidate_range, metadata, index_url = same_day_predecessors[0]
-        repaired = _apply_range(filing, candidate_range, metadata, index_url)
+        _, candidate_range, metadata, index_url, parsed = same_day_predecessors[0]
+        repaired = _apply_range(
+            filing,
+            candidate_range,
+            metadata,
+            index_url,
+            parsed=parsed,
+        )
         return repaired, repaired != filing
 
     by_day = {}
@@ -382,11 +501,11 @@ def _recover_one(
     for source_day in sorted(by_day, reverse=True):
         parsed_ranges = []
         for metadata in by_day[source_day]:
-            candidate_range, index_url = _parse_history_range(
+            candidate_range, index_url, parsed = _parse_history_range(
                 cik, metadata, registration_loader
             )
             if candidate_range is not None:
-                parsed_ranges.append((candidate_range, metadata, index_url))
+                parsed_ranges.append((candidate_range, metadata, index_url, parsed))
 
         if not parsed_ranges:
             continue
@@ -401,8 +520,14 @@ def _recover_one(
         parsed_ranges.sort(
             key=lambda item: _canonical_accession(item[1].get("accession_no"))
         )
-        candidate_range, metadata, index_url = parsed_ranges[0]
-        repaired = _apply_range(filing, candidate_range, metadata, index_url)
+        candidate_range, metadata, index_url, parsed = parsed_ranges[0]
+        repaired = _apply_range(
+            filing,
+            candidate_range,
+            metadata,
+            index_url,
+            parsed=parsed,
+        )
         return repaired, repaired != filing
 
     if existing_range:
