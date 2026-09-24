@@ -29,6 +29,8 @@ from datetime import date
 from pathlib import Path
 
 import dashboard_export
+import edgar_client
+import filing_parser
 import filing_price_history
 import registration_lineage
 
@@ -272,6 +274,34 @@ def _parse_history_range(cik, metadata, registration_loader):
     return _nondegenerate_range(parsed), index_url, parsed
 
 
+def _parse_s1_history_entry_with_offering_terms(cik, metadata):
+    """Parse one SEC range filing while retaining authoritative base-share evidence."""
+    index_url = edgar_client.build_filing_index_url(cik, metadata["accession_no"])
+    document_url = filing_parser.find_primary_document_url(
+        index_url,
+        expected_form_types=["S-1", "S-1/A"],
+    )
+    soup = filing_parser.fetch_document(document_url)
+    price_range = filing_parser.extract_price_range(soup)
+    low = _number((price_range or {}).get("range_low"))
+    high = _number((price_range or {}).get("range_high"))
+    if low is None or high is None or low > high:
+        price_range = filing_price_history._extract_explicit_price_range_from_text(
+            soup.get_text(" ", strip=True)
+        )
+
+    offering_terms = filing_parser.extract_offering_terms(soup)
+    cover_page = {
+        "offering_size_shares": offering_terms.get("total_shares"),
+        "primary_offering_shares": offering_terms.get("primary_shares"),
+        "secondary_offering_shares": offering_terms.get("secondary_shares"),
+        "offering_size_source": offering_terms.get("source"),
+        "offering_size_confidence": offering_terms.get("confidence"),
+        "offering_size_conflict": offering_terms.get("conflict", False),
+    }
+    return {"price_range": price_range, "cover_page": cover_page}, index_url
+
+
 def _source(metadata, index_url):
     return {
         "source": "SEC EDGAR",
@@ -379,7 +409,7 @@ def _recover_one(
     filing,
     *,
     history_loader=filing_price_history.sec_s1_history,
-    registration_loader=filing_price_history.parse_s1_history_entry,
+    registration_loader=_parse_s1_history_entry_with_offering_terms,
 ):
     if not _is_prepricing_row(filing):
         return filing, False
@@ -542,7 +572,7 @@ def recover_payload_prepricing_ranges(
     payload,
     *,
     history_loader=filing_price_history.sec_s1_history,
-    registration_loader=filing_price_history.parse_s1_history_entry,
+    registration_loader=_parse_s1_history_entry_with_offering_terms,
 ):
     filings = payload.get("filings")
     if not isinstance(filings, list):
