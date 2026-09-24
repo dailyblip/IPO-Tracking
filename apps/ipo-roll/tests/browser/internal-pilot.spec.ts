@@ -9,6 +9,8 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
     "Requires private captured RPC output; never commit real source fixtures",
   );
   const d = JSON.parse(readFileSync(fixturePath!, "utf8"));
+  const liquidityFixture = process.env.IPO_ROLL_LIQUIDITY_FIXTURE
+    ? JSON.parse(readFileSync(process.env.IPO_ROLL_LIQUIDITY_FIXTURE, "utf8")) : null;
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   let report: any = null;
@@ -19,6 +21,7 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
       if (route.request().method() === "POST") {
         generations++;
         report = { id: `report-${generations}`, version: "liquidity/1", asOf: "2026-09-24T17:00:00Z", method: "Evidence review; no AI inference", company: d.detail.company, person: d.detail.people[0].name, relationship: d.detail.people[0].relationship, relationshipSource: d.detail.people[0].source, positions: [], notice: "Static private snapshot. Unknown is not zero." };
+        if (liquidityFixture) report = { ...liquidityFixture, id: `report-${generations}` };
       }
       return route.fulfill({ json: report });
     }
@@ -87,7 +90,19 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
   const analysis = page.getByRole("dialog", { name: "Liquidity Analysis for Michael Rubiera" });
   await expect(analysis).toBeVisible();
   await expect(analysis.getByText("PRIVATE TO YOUR ACCOUNT")).toBeVisible();
-  await expect(analysis.getByText(/No reviewed individual stock positions/)).toBeVisible();
+  if (liquidityFixture) {
+    await expect(analysis.getByText("Projected post-offering position", { exact: true })).toBeVisible();
+    await expect(analysis.getByText(/1,375,666 disclosed shares/)).toBeVisible();
+    await analysis.getByText("Source passages and footnotes (5)", { exact: true }).click();
+    await expect(analysis.getByText(/Includes 73,419 shares held by/)).toBeVisible();
+    await expect(analysis.getByText("2026-09-22 · Source block 9408")).toBeVisible();
+    await analysis.getByText("Source passages and footnotes (5)", { exact: true }).click();
+    await expect(analysis.getByText(/Lock-up start: Not confirmed/)).toBeVisible();
+    await analysis.getByText("Source document version", { exact: true }).click();
+    await expect(analysis.getByText("SEC accession: 0001628280-26-062945")).toBeVisible();
+  } else {
+    await expect(analysis.getByText(/No reviewed individual stock positions/)).toBeVisible();
+  }
   expect(generations).toBe(1);
   await page.keyboard.press("Escape");
   await expect(analysis).not.toBeVisible();
