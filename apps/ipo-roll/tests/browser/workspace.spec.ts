@@ -17,6 +17,7 @@ test("overview, evidence search, company accordion and watchlist work", async ({
   await page
     .getByRole("button", { name: "People Search", exact: true })
     .click();
+  await page.getByLabel("Search biographies").fill("University of Michigan");
   await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect(page.getByText("Morgan Vale").first()).toBeVisible();
   await expect(
@@ -82,6 +83,7 @@ test("capture approved visual direction", async ({ page }) => {
   await page
     .getByRole("button", { name: "People Search", exact: true })
     .click();
+  await page.getByLabel("Search biographies").fill("University of Michigan");
   await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Evidence trail" }),

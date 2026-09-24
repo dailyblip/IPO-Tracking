@@ -1,0 +1,32 @@
+import type { Source } from './types.js';
+export type LiquidityReport = {
+  id: string;
+  version: string;
+  asOf: string;
+  method: string;
+  offeringId: string;
+  personId: string;
+  company: string;
+  person: string;
+  relationship: string;
+  relationshipSource: Source;
+  notice: string;
+  positions: {
+    id: string;
+    shareClass: string | null;
+    shares: number | null;
+    positionBasis: string;
+    holdingsDate: string;
+    source: Source;
+    category: 'liquid' | 'future' | 'illiquid' | 'unknown';
+    assessmentDate: string | null;
+    validThrough: string | null;
+    lockupStart: string | null;
+    lockupEnd: string | null;
+    explanation: string;
+    conditions: string;
+    evidence: Source[];
+    marketValue: number | null;
+    valuationReason: string;
+  }[];
+};

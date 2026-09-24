@@ -14,15 +14,15 @@ do $$ begin
 end $$;
 select set_config('request.jwt.claims','{"sub":"40000000-0000-4000-8000-000000000001","role":"authenticated"}',true);
 do $$ declare d jsonb; oid uuid; begin
- d:=public.ipo_roll_offerings();
+ d:=public.ipo_roll_offerings(p_query=>'Accelevation');
  if (d->>'total')::int<>1 then raise exception 'Reviewer pilot missing'; end if;
  oid:=(d#>>'{items,0,id}')::uuid;
  if d#>>'{items,0,filed}' <> '2026-09-22' or d#>>'{items,0,initialFiled}' <> '2026-09-02' then raise exception 'Filing dates conflated'; end if;
  if d#>>'{items,0,filingPrice}' <> '$20.00–$24.00' then raise exception 'Preliminary range wrong'; end if;
  if d#>>'{items,0,finalPrice}' is not null or d#>>'{items,0,currentPrice}' is not null then raise exception 'Unsupported price leaked'; end if;
- d:=public.ipo_roll_people_search('University of Michigan');
- if (d->>'total')::int<>1 or d#>>'{items,0,person,name}' <> 'Brent Jewell' then raise exception 'Source search mismatch'; end if;
- if d#>>'{items,0,person,relationship}' <> 'Executive' then raise exception 'Relationship misrepresented'; end if;
+ select x into d from jsonb_array_elements(public.ipo_roll_people_search('University of Michigan')->'items') x where x#>>'{person,name}'='Brent Jewell';
+ if d is null then raise exception 'Source search mismatch'; end if;
+ if d#>>'{person,relationship}' <> 'Executive' then raise exception 'Relationship misrepresented'; end if;
  if (public.ipo_roll_people_search('University of Michigan','Beneficial owner')->>'total')::int<>0 then raise exception 'Executive inferred to own shares'; end if;
  if (public.ipo_roll_people_search('Invented University')->>'total')::int<>0 then raise exception 'Unsupported match'; end if;
  d:=public.ipo_roll_detail(oid);

@@ -26,6 +26,7 @@ test("unconfigured staging fails closed", () =>
       "/api/offerings",
       "/api/people/search?q=test",
       "/api/saved",
+        "/api/offerings/10000000-0000-4000-8000-000000000001/people/10000000-0000-4000-8000-000000000002/liquidity",
     ])
       assert.equal((await fetch(url + path)).status, 503);
   }));
@@ -38,6 +39,7 @@ test("configured staging denies anonymous data access before contacting upstream
         "/api/offerings",
         "/api/people/search?q=test",
         "/api/saved",
+        "/api/offerings/10000000-0000-4000-8000-000000000001/people/10000000-0000-4000-8000-000000000002/liquidity",
       ])
         assert.equal((await fetch(url + path)).status, 401);
     },
@@ -135,6 +137,7 @@ test("verified accounts can inspect access without unlocking research", async ()
           "/api/offerings",
           "/api/people/search?q=Michigan",
           "/api/saved",
+        "/api/offerings/10000000-0000-4000-8000-000000000001/people/10000000-0000-4000-8000-000000000002/liquidity",
         ])
           assert.equal((await fetch(url + path, { headers })).status, 403);
         const active = await (

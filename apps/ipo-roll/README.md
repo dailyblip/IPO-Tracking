@@ -20,9 +20,9 @@ Copy `.env.example` to `.env`, set the project's publishable key, and keep IPO_R
 
 Authentication uses Supabase Auth. The Node API verifies the bearer token with `getUser` and checks a server-managed entitlement on every research request. An administrator must provision an account and grant an entitlement before it can use the workspace. This build does not automatically invite users, enable self-signup or send email.
 
-A real legacy snapshot has been imported into private review tables. No canonical research records have been published. Once connected, the workspace intentionally displays an empty approved corpus. It does not silently substitute sample data on a database or authentication error.
+A real legacy snapshot has been imported into private review tables. The current internal review corpus has 22 companies/offerings and 44 sourced biographies; it is available only to entitled reviewers. Ordinary customers still have no commercially published corpus. The application does not silently substitute sample data on a database or authentication error.
 
-For production: `npm run build`, then `npm start`, with server-side environment variables and HTTPS at the hosting boundary. A hosting deployment has not been made. Before launch, complete source import, biography capture/review, field provenance, source-content publication filtering, licensing, production auth configuration and operational recovery checks.
+For production: `npm run build`, then `npm start`, with server-side environment variables and HTTPS at the hosting boundary. Internal staging is hosted at https://ipo-roll-staging.onrender.com/ with a confirmed reviewer login. Before commercial launch, complete source-content publication filtering, licensing, production auth configuration and operational recovery checks. Earlier milestone sections below describe their state at the time; see the latest milestone for current status.
 
 ## Included
 
@@ -205,3 +205,25 @@ The private downloadable preview now includes source-reviewed projected post-off
 ### On-demand valuation popup
 
 Each person's holdings section now has a Calculate estimated value button. The pure valuation function runs only on click for that person's positions; opening a company/person does not calculate values. The native modal shows position-specific results, evidence links, quote currency/timestamp when present, and explicit unavailable reasons. Positions are not summed into personal wealth. Escape and the close button restore focus without dismissing company research. The private preview has no live quote provider; server-side quote fetching and caching remain pending. Verified production build and real-preview browser interaction, including unavailable-state rendering and keyboard dismissal.
+
+## Milestone 6: reviewed month cohort in authenticated staging
+
+A manually reviewed cohort from the requested August 23–September 23, 2026 window has been imported into staging: 21 additional companies/offerings and 40 additional executive/director biographies, for totals of 22 and 44. This is a selected cohort, not a completeness claim for every IPO in the period. Two bank-conversion candidates remain held for eligibility review. The legacy engine, public feed and schedules are unchanged; no automatic Supabase synchronization is enabled.
+
+`scripts/build_review_batch.py` consumes private intake, captured SEC packets and explicit review selections offline. It verifies content hashes, registration lineage, company identity, literal role/title passages and separately selected pricing evidence, then emits archive transactions, one atomic canonical import transaction and immutable manifests. Source artifacts must be archived before applying the canonical transaction. Exact replay is a no-op; a changed review cannot silently overwrite existing canonical identities. No account grants, publication flags, ownership positions or market quotes are inferred by this importer.
+
+The applied batch archived 97 additional content-addressed objects; stored compressed hashes and original lengths matched the captured originals. All new records remain unpublished and internal-review-only, including source rights. Migration `20260924030228_reviewed_biography_text.sql` adds an explicitly literal `biography_text` claim predicate for reviewed full biographies. It supports text search without converting keywords into inferred education/employment assertions. Relationship evidence remains required and separate.
+
+The entitled reviewer can retrieve 22 offerings and 44 biographies. Verified searches return two University of Michigan matches and eight Harvard matches. Beneficial-owner filtering does not return the executive-only Michigan relationships. Orion's preliminary $15–$17 range is retained alongside its authoritative $12 final price; Electra's preliminary $14–$16 range is retained alongside its $15 final price. Both have sourced September 17 pricing dates. Current market prices remain unknown.
+
+Validation includes four importer tests, a successful rolled-back import rehearsal, successful atomic import and exact replay, archived-byte verification, and passing month-cohort, original-pilot, evidence and security SQL checks. Database checks exercise reviewer detail/search/size filters, saves/unsaves and ordinary-customer denial and roll back their fixtures. The new search input starts empty; targeted browser cases explicitly enter their queries. Browser fixture tests simulate authentication; the owner separately confirmed a successful hosted login.
+
+Canonical holdings ingestion, licensed quote retrieval and monthly billing remain unfinished. Holdings in the downloadable preview are not yet supplied by the database-backed API. The latest security advisor also flags disabled leaked-password protection; resolve the production Auth configuration before commercial launch. Default-denied private tables intentionally have no customer RLS policies.
+
+## Private Liquidity Analysis foundation
+
+The stock holder accordion now offers **Liquidity Analysis**. Each signed-in account requests its own static, timestamped snapshot; reopening returns that saved snapshot and explicit refresh creates another version. Reports and request identifiers are isolated per account by database policies. The API accepts only subject identifiers and a request key; report contents are generated from authorized evidence in the database, never supplied by the client. No secret/service-role key is required.
+
+Migration `20260924164646_private_liquidity_reports.sql` adds reviewed source-linked liquidity assessments and private report storage/RPCs. Categories distinguish current liquidity, conditional future liquidity, illiquid holdings and insufficient evidence. Stale or unsupported assessments cannot establish current liquidity. All live canonical holdings remain unpopulated at this milestone, so real reports correctly show insufficient evidence, not zero holdings or fabricated values. Quote integration, contractual date extraction and optional AI-assisted interpretation remain follow-up work. The prior valuation demonstration remains available in sample mode only.
+
+Run `tests/database-liquidity.sql` administratively against staging; its fixtures roll back. The test verifies private-account isolation, unknown/stale classification safeguards, immutable customer snapshots, reopen/retry behavior, versioned refresh and revoked access. See `docs/development-log.md` for the next tasks and owner decisions.

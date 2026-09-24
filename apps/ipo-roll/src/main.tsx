@@ -1,3 +1,4 @@
+import { LiquidityAnalysis } from "./LiquidityAnalysis.js";
 import { valueHolding } from "../shared/holdings.js";
 import React, { useState, useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
@@ -1221,7 +1222,7 @@ function ActivityScreen({
   );
 }
 function PeopleScreen({ open }: { open: (id: string) => void }) {
-  const [q, setQ] = useState("University of Michigan"),
+  const [q, setQ] = useState(""),
     [submitted, setSubmitted] = useState(""),
     [relationship, setRelationship] = useState(""),
     [matches, setMatches] = useState<Match[]>([]),
@@ -1753,7 +1754,8 @@ function DetailDrawer({
                     <section aria-label="Stock holdings and valuation">
                       <h4>Stock holdings &amp; estimated market value</h4>
                       <p>{p.holdingsReview || "No reviewed individual holdings available. This does not establish zero ownership."}</p>
-                      <StockValueButton person={p} />
+                      <LiquidityAnalysis offeringId={id} personId={p.id} name={p.name} demo={demo} request={api} />
+                      {demo && <StockValueButton person={p} />}
                       {(p.holdings || []).map((h) => {
                         return <div className="source-box" key={h.id}><div>
                           <strong>{h.shares.toLocaleString()} · {h.shareClass}</strong>
