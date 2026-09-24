@@ -313,6 +313,16 @@ def _source(metadata, index_url):
     }
 
 
+def _range_source_predates_row(filing) -> bool:
+    """Return true when the preserved range came from an earlier amendment."""
+    source = (filing or {}).get("filing_price_source")
+    if not isinstance(source, dict):
+        return False
+    source_day = _canonical_date(source.get("filing_date"))
+    row_day = _canonical_date((filing or {}).get("filed"))
+    return source_day is not None and row_day is not None and source_day < row_day
+
+
 def _apply_authoritative_offering_terms(filing, price_range, parsed):
     """Repair pre-pricing size only from the same SEC filing that proves the range."""
     cover = (parsed or {}).get("cover_page") or {}
@@ -341,6 +351,12 @@ def _apply_authoritative_offering_terms(filing, price_range, parsed):
     ):
         published = _whole_share_count(filing.get(field))
         if published is not None and authoritative is not None and published != authoritative:
+            if _range_source_predates_row(filing):
+                # A later S-1/A can legitimately resize the offering while retaining
+                # the earlier marketed Filing Price range. Preserve the current
+                # amendment's share evidence, but do not multiply it by stale range-
+                # amendment shares to manufacture an offering value.
+                return filing
             raise S1PriceRangeHistoryError(
                 f"{filing.get('company') or filing.get('id')}: published {field} conflicts with "
                 "the authoritative SEC S-1/S-1A range filing"
