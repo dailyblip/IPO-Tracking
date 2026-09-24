@@ -288,6 +288,105 @@ class S1PriceRangeHistoryTests(unittest.TestCase):
             payload["filings"][0]["filing_price"], "$18.00–$20.00"
         )
 
+    def test_existing_verified_range_repairs_missing_oura_style_offering_value(self):
+        filing = _filing()
+        filing.update(
+            {
+                "company": "Oura Health Oy",
+                "price_range": "$40.00–$44.00",
+                "filing_price": "$40.00–$44.00",
+                "filing_price_source": {
+                    "source": "SEC EDGAR",
+                    "form": "S-1/A",
+                    "filing_date": filing["filed"],
+                    "accession_no": filing["accession_no"],
+                    "sec_url": _sec_index(filing["accession_no"]),
+                },
+                "value": None,
+                "value_label": "—",
+                "primary_offering_shares": 13_500_000,
+                "secondary_offering_shares": 36_500_000,
+                "offering_size_source": None,
+                "offering_size_confidence": None,
+            }
+        )
+        current = _row()
+
+        def registration_loader(cik, metadata):
+            return (
+                {
+                    "price_range": {"range_low": 40, "range_high": 44},
+                    "cover_page": {
+                        "offering_size_shares": 50_000_000,
+                        "primary_offering_shares": 13_500_000,
+                        "secondary_offering_shares": 36_500_000,
+                        "offering_size_source": "THE OFFERING primary + secondary rows",
+                        "offering_size_confidence": "High",
+                        "offering_size_conflict": False,
+                    },
+                },
+                _sec_index(metadata["accession_no"]),
+            )
+
+        payload, count = history.recover_payload_prepricing_ranges(
+            {"filings": [filing]},
+            history_loader=lambda cik, filed: [current],
+            registration_loader=registration_loader,
+        )
+
+        repaired = payload["filings"][0]
+        self.assertEqual(count, 1)
+        self.assertEqual(repaired["value"], 2_100_000_000)
+        self.assertEqual(repaired["value_label"], "$2.1B")
+        self.assertEqual(repaired["primary_offering_shares"], 13_500_000)
+        self.assertEqual(repaired["secondary_offering_shares"], 36_500_000)
+        self.assertIn("primary offering", repaired["offering_size_source"].lower())
+        self.assertEqual(repaired["offering_size_confidence"], "High")
+
+    def test_existing_range_with_weak_share_evidence_keeps_size_blank(self):
+        filing = _filing()
+        filing.update(
+            {
+                "price_range": "$40.00–$44.00",
+                "filing_price": "$40.00–$44.00",
+                "filing_price_source": {
+                    "source": "SEC EDGAR",
+                    "form": "S-1/A",
+                    "filing_date": filing["filed"],
+                    "accession_no": filing["accession_no"],
+                    "sec_url": _sec_index(filing["accession_no"]),
+                },
+                "value": None,
+                "primary_offering_shares": 13_500_000,
+            }
+        )
+        current = _row()
+
+        payload, count = history.recover_payload_prepricing_ranges(
+            {"filings": [filing]},
+            history_loader=lambda cik, filed: [current],
+            registration_loader=lambda cik, metadata: (
+                {
+                    "price_range": {"range_low": 40, "range_high": 44},
+                    "cover_page": {
+                        "offering_size_shares": 50_000_000,
+                        "primary_offering_shares": 13_500_000,
+                        "offering_size_source": "generic share statement",
+                        "offering_size_confidence": "Medium",
+                        "offering_size_conflict": False,
+                    },
+                },
+                _sec_index(metadata["accession_no"]),
+            ),
+        )
+
+        repaired = payload["filings"][0]
+        # The row still counts as repaired because its SEC range/provenance is
+        # normalized; weak share evidence must nevertheless leave size blank.
+        self.assertEqual(count, 1)
+        self.assertIsNone(repaired["value"])
+        self.assertIsNone(repaired.get("offering_size_source"))
+
     def test_existing_range_without_sec_support_fails_closed(self):
         filing = _filing()
         filing["price_range"] = "$18.00–$20.00"
