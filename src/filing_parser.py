@@ -425,21 +425,30 @@ def extract_price_range(soup: BeautifulSoup) -> dict:
     ``initial public offering price per share ... between $14 and $16`` order.
     Preserve the legacy range form and add only explicit IPO/public-offering
     context for the reversed word order so unrelated conversion or option-price
-    ranges cannot populate Filing Price.
+    ranges cannot populate Filing Price. The unanchored legacy form remains
+    confined to the first 30k of cover text; only the explicit IPO-anchored form
+    may use the broader 100k cover horizon used by other cover extraction.
     """
     full_text = soup.get_text(" ", strip=True)
-    cover_text = full_text[:30000]
+    legacy_cover_text = full_text[:30000]
+    explicit_cover_text = full_text[:100000]
 
     range_patterns = [
-        r"\$\s*(\d{1,4}(?:\.\d{1,2})?)\s+and\s+\$\s*(\d{1,4}(?:\.\d{1,2})?)\s+per\s+share\b",
         (
-            r"\b(?:initial\s+public\s+offering\s+price|public\s+offering\s+price)"
-            r"\s+per\s+share\b.{0,120}?\bbetween\s+\$\s*(\d{1,4}(?:\.\d{1,2})?)"
-            r"\s+and\s+\$\s*(\d{1,4}(?:\.\d{1,2})?)\b"
+            legacy_cover_text,
+            r"\$\s*(\d{1,4}(?:\.\d{1,2})?)\s+and\s+\$\s*(\d{1,4}(?:\.\d{1,2})?)\s+per\s+share\b",
+        ),
+        (
+            explicit_cover_text,
+            (
+                r"\b(?:initial\s+public\s+offering\s+price|public\s+offering\s+price)"
+                r"\s+per\s+share\b.{0,120}?\bbetween\s+\$\s*(\d{1,4}(?:\.\d{1,2})?)"
+                r"\s+and\s+\$\s*(\d{1,4}(?:\.\d{1,2})?)\b"
+            ),
         ),
     ]
-    for pattern in range_patterns:
-        range_match = re.search(pattern, cover_text, re.IGNORECASE)
+    for search_text, pattern in range_patterns:
+        range_match = re.search(pattern, search_text, re.IGNORECASE)
         if not range_match:
             continue
         low = float(range_match.group(1))
