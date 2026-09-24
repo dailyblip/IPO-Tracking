@@ -5,7 +5,13 @@ import type { Source } from '../shared/types.js';
 const categories = { liquid: 'Currently liquid', future: 'Potential future liquidity', illiquid: 'Illiquid holdings', unknown: 'Insufficient evidence' } as const;
 function Evidence({ source }: { source: Source }) {
   const safeUrl = source.url?.startsWith('https://') ? source.url : null;
-  return <div className="source-box"><div><strong>{source.title}</strong><p>{source.excerpt}</p><small>{source.date} · {source.locator}</small>{safeUrl && <p><a href={safeUrl} target="_blank" rel="noreferrer">View source ↗</a></p>}</div></div>;
+  let location = source.locator;
+  try {
+    const loc = JSON.parse(source.locator);
+    if (Number.isInteger(loc.first_block) && Number.isInteger(loc.last_block))
+      location = loc.first_block === loc.last_block ? `Source block ${loc.first_block}` : `Source blocks ${loc.first_block}–${loc.last_block}`;
+  } catch { /* Human-readable legacy locators are preserved. */ }
+  return <div className="source-box"><div><strong>{source.title}</strong><p>{source.excerpt}</p><small>{source.date} · {location}</small>{safeUrl && <p><a href={safeUrl} target="_blank" rel="noreferrer">View source ↗</a></p>}</div></div>;
 }
 export function LiquidityAnalysis({ offeringId, personId, name, demo, request }: {
   offeringId: string; personId: string; name: string; demo: boolean;
@@ -51,12 +57,14 @@ export function LiquidityAnalysis({ offeringId, personId, name, demo, request }:
         {!report.positions.length && <div className="source-box"><div><strong>Insufficient evidence</strong><p>No reviewed individual stock positions are available for this person. Lock-ups, footnotes and liquidity cannot yet be assessed. This does not establish zero ownership.</p></div></div>}
         {report.positions.map(p => <section className="value-result" key={p.id}>
           <h3>{p.shareClass || 'Share class unspecified'}</h3><strong>{categories[p.category]}</strong>
-          <p>{p.shares === null ? 'Share count unknown' : `${p.shares.toLocaleString()} disclosed shares`} · {p.positionBasis} offering basis · Filing date {p.holdingsDate}</p>
+          <p><strong>{p.positionBasis === 'post' ? 'Projected post-offering position' : p.positionBasis === 'pre' ? 'Pre-offering position' : 'Position basis unconfirmed'}</strong></p>
+          <p>{p.shares === null ? 'Share count unknown' : `${p.shares.toLocaleString()} disclosed shares`} · Filing date {p.holdingsDate}</p>
           <p>{p.explanation}</p><p>{p.conditions}</p>
           <p>Lock-up start: {p.lockupStart || 'Not confirmed'} · End: {p.lockupEnd || 'Not confirmed'}</p>
           {p.assessmentDate && <p>Evidence reviewed {p.assessmentDate} · Valid through {p.validThrough}. Expired assessments are classified as insufficient evidence.</p>}
           <p>Market-value estimate unavailable. {p.valuationReason}</p>
-          <Evidence source={p.source}/>{p.evidence.map((s,i) => <Evidence source={s} key={i}/>)}
+          <details><summary>Source passages and footnotes ({p.evidence.length + 1})</summary><Evidence source={p.source}/>{p.evidence.map((s,i) => <Evidence source={s} key={i}/>)}</details>
+          {p.filingAccession && <details><summary>Source document version</summary><p>SEC accession: {p.filingAccession}</p><p style={{overflowWrap:'anywhere'}}>SHA-256: {p.documentHash || 'Not recorded in this snapshot'}</p></details>}
         </section>)}
         <details><summary>Company relationship evidence</summary><Evidence source={report.relationshipSource}/></details>
         <p className="value-note">{report.notice}</p>

@@ -1753,7 +1753,7 @@ function DetailDrawer({
                     {p.biography && <p>{p.biography}</p>}
                     <section aria-label="Stock holdings and valuation">
                       <h4>Stock holdings &amp; estimated market value</h4>
-                      <p>{p.holdingsReview || "No reviewed individual holdings available. This does not establish zero ownership."}</p>
+                      <p>{p.holdingsReview || (demo ? "No reviewed individual holdings available. This does not establish zero ownership." : "Open Liquidity Analysis to review available positions, ownership footnotes and restrictions in a private saved report.")}</p>
                       <LiquidityAnalysis offeringId={id} personId={p.id} name={p.name} demo={demo} request={api} />
                       {demo && <StockValueButton person={p} />}
                       {(p.holdings || []).map((h) => {
