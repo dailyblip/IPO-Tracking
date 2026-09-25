@@ -1,7 +1,33 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-24T16:57:22.913763+00:00",
+  "updated_at": "2026-09-25T17:01:45.494293+00:00",
   "items": {
+    "s1:0002136571": {
+      "id": "s1:0002136571",
+      "cik": "0002136571",
+      "company": "Evmand Corp",
+      "form": "S-1/A",
+      "filed": "2026-09-24",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": "$0.06",
+      "priority": "High",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2136571/000213657126000005/0002136571-26-000005-index.htm"
+    },
+    "s1:0002143850": {
+      "id": "s1:0002143850",
+      "cik": "0002143850",
+      "company": "City Therapeutics, Inc.",
+      "form": "S-1",
+      "filed": "2026-09-24",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2143850/000110465926110430/0001104659-26-110430-index.htm"
+    },
     "s1:0002125056": {
       "id": "s1:0002125056",
       "cik": "0002125056",
@@ -1213,6 +1239,20 @@
     }
   },
   "ciks": {
+    "0002136571": {
+      "company": "Evmand Corp",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002136571",
+      "last_filed": "2026-09-24",
+      "missing_runs": 0
+    },
+    "0002143850": {
+      "company": "City Therapeutics, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002143850",
+      "last_filed": "2026-09-24",
+      "missing_runs": 0
+    },
     "0002125056": {
       "company": "Wella Co",
       "stage": "pre-pricing",

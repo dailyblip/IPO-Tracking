@@ -1,8 +1,37 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-24T16:57:22.913846+00:00",
-  "count": 125,
+  "generated_at": "2026-09-25T17:01:45.494360+00:00",
+  "count": 127,
   "alerts": [
+    {
+      "type": "new_prepricing",
+      "company": "Evmand Corp",
+      "cik": "0002136571",
+      "filing_id": "s1:0002136571",
+      "form": "S-1/A",
+      "filed": "2026-09-24",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "New pre-pricing S-1/A candidate entered the researcher queue. Preliminary filing price: $0.06.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2136571/000213657126000005/0002136571-26-000005-index.htm",
+      "detected_at": "2026-09-25T17:01:45.493955+00:00",
+      "new_value": "$0.06",
+      "key": "new_prepricing|s1:0002136571|0002136571|2026-09-24|$0.06"
+    },
+    {
+      "type": "new_prepricing",
+      "company": "City Therapeutics, Inc.",
+      "cik": "0002143850",
+      "filing_id": "s1:0002143850",
+      "form": "S-1",
+      "filed": "2026-09-24",
+      "stage": "pre-pricing",
+      "priority": "Medium",
+      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2143850/000110465926110430/0001104659-26-110430-index.htm",
+      "detected_at": "2026-09-25T17:01:45.493992+00:00",
+      "key": "new_prepricing|s1:0002143850|0002143850|2026-09-24|"
+    },
     {
       "type": "price_range_update",
       "company": "Accelevation Holdings Corp.",
