@@ -33,6 +33,11 @@ export type LiquidityReport = {
     validThrough: string | null;
     lockupStart: string | null;
     lockupEnd: string | null;
+    restrictionTimeline?: {
+      id: string; trigger: string; triggerDate: string; dayCount: number;
+      boundaryDate: string; method: string; reviewedOn: string;
+      conditions: string; evidence: Source[];
+    }[];
     explanation: string;
     conditions: string;
     evidence: Source[];
