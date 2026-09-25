@@ -123,7 +123,20 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
     await expect(sourceDetails.getByText(p.evidence.at(-1).excerpt, { exact: true })).toBeVisible();
     await expect(sourceDetails.getByText(/Source blocks? \d+/).first()).toBeVisible();
     await analysis.getByText(passages, { exact: true }).click();
-    await expect(analysis.getByText(/Lock-up start: Not confirmed/)).toBeVisible();
+    if (p.restrictionTimeline?.length) {
+      const t = p.restrictionTimeline[0];
+      const timeline = analysis.locator('.restriction-timeline');
+      await expect(timeline.getByRole('heading', { name: 'Conditional restriction timeline' })).toBeVisible();
+      await expect(timeline.getByText(`Scheduled boundary: ${t.boundaryDate}`, { exact: true })).toBeVisible();
+      await expect(timeline.getByText(`${t.trigger}: ${t.triggerDate} + ${t.dayCount} calendar days.`, { exact: true })).toBeVisible();
+      await expect(timeline.getByText(/not a confirmed release or first tradable date/)).toBeVisible();
+      await timeline.locator('summary').click();
+      for (const source of t.evidence) await expect(timeline.getByText(source.excerpt, { exact: true })).toBeVisible();
+      await timeline.locator('summary').click();
+      await expect(analysis.getByText('Insufficient evidence', { exact: true }).last()).toBeVisible();
+    } else {
+      await expect(analysis.getByText(/Lock-up start: Not confirmed/)).toBeVisible();
+    }
     await analysis.getByText("Source document version", { exact: true }).click();
     await expect(analysis.getByText(`SEC accession: ${p.filingAccession}`)).toBeVisible();
   } else {
@@ -150,6 +163,11 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
   const box = await analysis.boundingBox();
   expect(box!.width).toBeLessThanOrEqual(390);
   await page.screenshot({path: "test-results/liquidity-report-mobile.png", fullPage: true});
+  if (liquidityFixture?.positions[0]?.restrictionTimeline?.length) {
+    await analysis.getByRole('heading', { name: 'Conditional restriction timeline' }).scrollIntoViewIfNeeded();
+    expect(await analysis.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+    await page.screenshot({path: 'test-results/liquidity-timeline-mobile.png'});
+  }
   if (liquidityFixture?.positions[0]?.quantityKind === 'beneficial_total') {
     await analysis.getByRole('heading', { name: 'What the reported total includes' }).scrollIntoViewIfNeeded();
     expect(await analysis.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);

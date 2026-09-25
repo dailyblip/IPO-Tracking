@@ -62,7 +62,12 @@ export function LiquidityAnalysis({ offeringId, personId, name, demo, request }:
           <p><strong>{p.positionBasis === 'post' ? 'Projected post-offering position' : p.positionBasis === 'pre' ? 'Pre-offering position' : 'Position basis unconfirmed'}</strong></p>
           <p>{p.quantityKind === 'beneficial_total' ? `${p.reportedTotal?.toLocaleString() ?? 'Unknown'} reported beneficial interests (includes awards)` : p.shares === null ? 'Share count unknown' : `${p.shares.toLocaleString()} disclosed shares`} · Filing date {p.filingDate || p.holdingsDate}</p>
           <p>Holdings as of: {p.holdingsAsOf || 'Not established in this snapshot'}. This is not confirmation of current holdings.</p>
-          <p>{p.explanation}</p><p>{p.conditions}</p>
+          <p>{p.explanation}</p>
+          {p.restrictionTimeline?.length ? <details>
+            <summary>Holdings assessment notes · {p.assessmentDate || 'Date not recorded'}</summary>
+            <p>{p.conditions}</p>
+            <p>The conditional restriction terms below were reviewed separately. These assessment notes are retained for context, not as confirmation of current saleability.</p>
+          </details> : <p>{p.conditions}</p>}
           {p.quantityKind === 'beneficial_total' && <div className="holding-components">
             <h4>What the reported total includes</h4>
             <p>These components are parts of the total, not additional positions. Award-underlying shares are not confirmed issued shares. None of these amounts establishes current liquidity or personal cash value.</p>
@@ -72,7 +77,17 @@ export function LiquidityAnalysis({ offeringId, personId, name, demo, request }:
               <details><summary>Component evidence</summary><Evidence source={c.source}/></details>
             </div></div>) : <p>Complete component evidence is unavailable in this snapshot. Do not treat the total as ordinary shares.</p>}
           </div>}
-          <p>Lock-up start: {p.lockupStart || 'Not confirmed'} · End: {p.lockupEnd || 'Not confirmed'}</p>
+          {p.restrictionTimeline?.length ? <div className="restriction-timeline">
+            <h4>Conditional restriction timeline</h4>
+            {p.restrictionTimeline.map(t => <div className="source-box" key={t.id}><div>
+              <strong>Scheduled boundary: {t.boundaryDate}</strong>
+              <p>{t.trigger}: {t.triggerDate} + {t.dayCount} calendar days.</p>
+              <p>Calendar calculation only—not a confirmed release or first tradable date. The trigger date is day zero; no business-day, holiday or time-zone adjustment is inferred.</p>
+              <p>{t.conditions}</p>
+              <small>Terms reviewed {t.reviewedOn} · Method {t.method}</small>
+              <details><summary>Restriction evidence ({t.evidence.length})</summary>{t.evidence.map((s,i) => <Evidence source={s} key={i}/>)}</details>
+            </div></div>)}
+          </div> : <p>Lock-up start: {p.lockupStart || 'Not confirmed'} · End: {p.lockupEnd || 'Not confirmed'}</p>}
           {p.assessmentDate && <p>Evidence reviewed {p.assessmentDate} · Valid through {p.validThrough}. Expired assessments are classified as insufficient evidence.</p>}
           <p>Market-value estimate unavailable. {p.valuationReason}</p>
           <details><summary>Source passages and footnotes ({p.evidence.length + 1})</summary><Evidence source={p.source}/>{p.evidence.map((s,i) => <Evidence source={s} key={i}/>)}</details>
