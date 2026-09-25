@@ -12,7 +12,9 @@ QA passed: production build, 10 Node/API tests, 38 Python tests, staging rollbac
 
 Staging totals: **22 offerings, 44 biographies, eight positions, eight components, eight unknown assessments, zero quotes**; one pre-existing private report preserved and zero leftover test accounts. No biography/search backfill was performed this run. Security advisor remains unchanged: the known leaked-password protection warning and twelve intentional default-deny informational notices. No new warning from the component schema.
 
-Publication: database migration/backfill applied; application, importer and tests prepared locally pending guarded commercial commit and deployment verification. Update this paragraph after publication. Next source task: exact Orion prospectus-trigger/date review and deterministic conditional lock-up calculations, without treating expiry as saleability; then extend remaining recent-month holdings only after identity/instrument/overlap review. Keep Oura's other director/entity totals held rather than inferring fund economics. Live authenticated QA and licensed quote integration remain unverified/unavailable. No new owner decision blocks continued staging work; existing launch gates below remain.
+Publication verified at **2026-09-25 15:25 UTC**: commercial commit `e8418ff66151f9fb8931fa4bbf943e9ebe87227c` is deployed. Render serves `index-Bsq_ijp8.js`, SHA-256 `ec1ac19fa4f66a0e584de61f5f8c147f403db7c1b1dc0819ff6a2e509db53249`, matching the local build. Health returns `ok` / `staging`; the real Oura holder liquidity endpoint returns 401 without authentication. An initial request timed out during deployment/startup; subsequent checks succeeded. GitHub **Test Research Monitor** run `36153789217` passed; PR #581 remains draft/open. All five active/queued/waiting/pending/requested lists were empty immediately before committing. Orion's retained plain-share browser fixture also passed, confirming backward compatibility. The private report fingerprint is still unchanged after all tests.
+
+Next source task: exact Orion prospectus-trigger/date review and deterministic conditional lock-up calculations, without treating expiry as saleability; then extend remaining recent-month holdings only after identity/instrument/overlap review. Keep Oura's other director/entity totals held rather than inferring fund economics. Live authenticated QA and licensed quote integration remain unverified/unavailable. No new owner decision blocks continued staging work; existing launch gates below remain.
 
 ## 2026-09-24 afternoon: dated common-share backfill
 
@@ -60,7 +62,7 @@ Publication: prepared for the existing commercial branch and Render staging. Ver
 
 ## Next executable work
 
-1. Verify this staging release and test actual authenticated UI when an authorized browser session is available.
+1. Current release is verified; test actual authenticated UI when an authorized browser session is available. Do not repeat unchanged simulated journeys as a substitute for live login QA.
 2. Review and backfill exact ownership-table rows and holder-specific footnotes for the existing cohort. Separate issuer securities, share classes, trust/fund attribution, projected vs current holdings and overlapping positions. Reuse the original engine where appropriate.
 3. Populate reviewed liquidity assessments only with explicit source passages, conditions, dates and review validity. Add release-date calculation tests for exact contractual wording before automating lock-up calculations. No default 180-day assumptions.
 4. Add report history selection in the UI; old snapshots are retained already and source-version details are now displayed.
