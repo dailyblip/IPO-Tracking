@@ -15,6 +15,12 @@ export type LiquidityReport = {
     id: string;
     shareClass: string | null;
     shares: number | null;
+    quantityKind?: 'reported_shares' | 'beneficial_total';
+    reportedTotal?: number | null;
+    components?: {
+      status: 'not_reviewed' | 'incomplete' | 'reconciled';
+      items: { ordinal: number; instrument: 'common_share' | 'rsu' | 'option' | 'warrant'; quantity: number; attribution: 'direct' | 'trust_or_family' | 'fund_or_control' | 'unknown'; description: string; source: Source }[];
+    };
     positionBasis: string;
     holdingsDate: string;
     filingDate?: string;
