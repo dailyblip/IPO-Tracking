@@ -3,6 +3,8 @@ import { ArrowUpRight, X } from 'lucide-react';
 import type { LiquidityReport } from '../shared/liquidity.js';
 import type { Source } from '../shared/types.js';
 const categories = { liquid: 'Currently liquid', future: 'Potential future liquidity', illiquid: 'Illiquid holdings', unknown: 'Insufficient evidence' } as const;
+const instruments = { common_share: 'Common shares', rsu: 'RSU underlying shares', option: 'Option underlying shares', warrant: 'Warrant underlying shares' } as const;
+const attributions = { direct: 'Direct holding as disclosed', trust_or_family: 'Trust / family attribution', fund_or_control: 'Fund / control attribution', unknown: 'Attribution unconfirmed' } as const;
 function Evidence({ source }: { source: Source }) {
   const safeUrl = source.url?.startsWith('https://') ? source.url : null;
   let location = source.locator;
@@ -58,9 +60,18 @@ export function LiquidityAnalysis({ offeringId, personId, name, demo, request }:
         {report.positions.map(p => <section className="value-result" key={p.id}>
           <h3>{p.shareClass || 'Share class unspecified'}</h3><strong>{categories[p.category]}</strong>
           <p><strong>{p.positionBasis === 'post' ? 'Projected post-offering position' : p.positionBasis === 'pre' ? 'Pre-offering position' : 'Position basis unconfirmed'}</strong></p>
-          <p>{p.shares === null ? 'Share count unknown' : `${p.shares.toLocaleString()} disclosed shares`} · Filing date {p.filingDate || p.holdingsDate}</p>
+          <p>{p.quantityKind === 'beneficial_total' ? `${p.reportedTotal?.toLocaleString() ?? 'Unknown'} reported beneficial interests (includes awards)` : p.shares === null ? 'Share count unknown' : `${p.shares.toLocaleString()} disclosed shares`} · Filing date {p.filingDate || p.holdingsDate}</p>
           <p>Holdings as of: {p.holdingsAsOf || 'Not established in this snapshot'}. This is not confirmation of current holdings.</p>
           <p>{p.explanation}</p><p>{p.conditions}</p>
+          {p.quantityKind === 'beneficial_total' && <div className="holding-components">
+            <h4>What the reported total includes</h4>
+            <p>These components are parts of the total, not additional positions. Award-underlying shares are not confirmed issued shares. None of these amounts establishes current liquidity or personal cash value.</p>
+            {p.components?.status === 'reconciled' ? p.components.items.map(c => <div className="source-box" key={c.ordinal}><div>
+              <strong>{instruments[c.instrument]}: {c.quantity.toLocaleString()}</strong>
+              <p>{attributions[c.attribution]}</p><p>{c.description}</p>
+              <details><summary>Component evidence</summary><Evidence source={c.source}/></details>
+            </div></div>) : <p>Complete component evidence is unavailable in this snapshot. Do not treat the total as ordinary shares.</p>}
+          </div>}
           <p>Lock-up start: {p.lockupStart || 'Not confirmed'} · End: {p.lockupEnd || 'Not confirmed'}</p>
           {p.assessmentDate && <p>Evidence reviewed {p.assessmentDate} · Valid through {p.validThrough}. Expired assessments are classified as insufficient evidence.</p>}
           <p>Market-value estimate unavailable. {p.valuationReason}</p>

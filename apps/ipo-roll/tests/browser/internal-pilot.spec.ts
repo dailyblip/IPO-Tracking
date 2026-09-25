@@ -11,7 +11,7 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
   const d = JSON.parse(readFileSync(fixturePath!, "utf8"));
   const query = d.qa?.query || "University of Michigan";
   const matchedPerson = d.qa?.matchedPerson || "Brent Jewell";
-  const holderName = d.detail.people[0].name;
+  const holderName = d.qa?.holderName || d.detail.people[0].name;
   const liquidityFixture = process.env.IPO_ROLL_LIQUIDITY_FIXTURE
     ? JSON.parse(readFileSync(process.env.IPO_ROLL_LIQUIDITY_FIXTURE, "utf8")) : null;
   const errors: string[] = [];
@@ -96,12 +96,32 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
   if (liquidityFixture) {
     const p = liquidityFixture.positions[0];
     await expect(analysis.getByText(p.positionBasis === 'post' ? "Projected post-offering position" : "Pre-offering position", { exact: true })).toBeVisible();
-    await expect(analysis.getByText(`${p.shares.toLocaleString()} disclosed shares · Filing date ${p.filingDate || p.holdingsDate}`, { exact: true })).toBeVisible();
+    const quantityLabel = p.quantityKind === 'beneficial_total'
+      ? `${p.reportedTotal.toLocaleString()} reported beneficial interests (includes awards)`
+      : `${p.shares.toLocaleString()} disclosed shares`;
+    await expect(analysis.getByText(`${quantityLabel} · Filing date ${p.filingDate || p.holdingsDate}`, { exact: true })).toBeVisible();
+    if (p.quantityKind === 'beneficial_total') {
+      const components = analysis.locator('.holding-components');
+      await expect(components.getByRole('heading', { name: 'What the reported total includes' })).toBeVisible();
+      await expect(components.getByText(/parts of the total, not additional positions/)).toBeVisible();
+      await expect(components.locator('summary')).toHaveCount(p.components.items.length);
+      const labels: Record<string, string> = { common_share: 'Common shares', rsu: 'RSU underlying shares', option: 'Option underlying shares', warrant: 'Warrant underlying shares' };
+      for (const c of p.components.items) {
+        const card = components.locator('.source-box').filter({ has: page.getByText(`${labels[c.instrument]}: ${c.quantity.toLocaleString()}`, { exact: true }) });
+        await expect(card).toBeVisible();
+        await expect(card.getByText(c.description, { exact: true })).toBeVisible();
+        await card.getByText('Component evidence', { exact: true }).click();
+        await expect(card.getByText(c.source.excerpt, { exact: true })).toBeVisible();
+        await card.getByText('Component evidence', { exact: true }).click();
+      }
+      await expect(analysis.getByText(`${p.reportedTotal.toLocaleString()} disclosed shares`, { exact: false })).toHaveCount(0);
+    }
     await expect(analysis.getByText(`Holdings as of: ${p.holdingsAsOf || 'Not established in this snapshot'}. This is not confirmation of current holdings.`, { exact: true })).toBeVisible();
     const passages = `Source passages and footnotes (${p.evidence.length + 1})`;
+    const sourceDetails = analysis.locator('details').filter({ has: page.getByText(passages, { exact: true }) });
     await analysis.getByText(passages, { exact: true }).click();
-    await expect(analysis.getByText(p.evidence.at(-1).excerpt, { exact: true })).toBeVisible();
-    await expect(analysis.getByText(/Source blocks? \d+/).first()).toBeVisible();
+    await expect(sourceDetails.getByText(p.evidence.at(-1).excerpt, { exact: true })).toBeVisible();
+    await expect(sourceDetails.getByText(/Source blocks? \d+/).first()).toBeVisible();
     await analysis.getByText(passages, { exact: true }).click();
     await expect(analysis.getByText(/Lock-up start: Not confirmed/)).toBeVisible();
     await analysis.getByText("Source document version", { exact: true }).click();
@@ -121,6 +141,7 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
   await analysis.getByRole("button", { name: "Refresh analysis" }).click();
   await expect(analysis.getByRole("button", { name: "Refresh analysis" })).toBeEnabled();
   expect(generations).toBe(2);
+  await analysis.evaluate(el => { el.scrollTop = 0; });
   await page.screenshot({path: "test-results/liquidity-report.png", fullPage: true});
   await analysis.getByRole("button", { name: "Close liquidity analysis" }).click();
   await page.setViewportSize({ width: 390, height: 844 });
@@ -129,6 +150,11 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
   const box = await analysis.boundingBox();
   expect(box!.width).toBeLessThanOrEqual(390);
   await page.screenshot({path: "test-results/liquidity-report-mobile.png", fullPage: true});
+  if (liquidityFixture?.positions[0]?.quantityKind === 'beneficial_total') {
+    await analysis.getByRole('heading', { name: 'What the reported total includes' }).scrollIntoViewIfNeeded();
+    expect(await analysis.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+    await page.screenshot({path: 'test-results/liquidity-components-mobile.png'});
+  }
   await analysis.getByRole("button", { name: "Close liquidity analysis" }).click();
   expect(errors).toEqual([]);
 });

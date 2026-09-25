@@ -23,7 +23,7 @@ do $$ declare s record; r jsonb; r2 jsonb; begin
  if (select count(*) from jsonb_array_elements(r->'positions')x where x->>'category'='unknown')<>2 then raise exception 'Stale/unconfirmed holdings not held'; end if;
  if (select count(*) from jsonb_array_elements(r->'positions')x where x->>'category'='liquid')<>1 then raise exception 'Liquid classification wrong'; end if;
  if exists(select 1 from jsonb_array_elements(r->'positions')x where x->>'marketValue' is not null) then raise exception 'Invented value'; end if;
- if r->>'version'<>'liquidity/1.1' or exists(select 1 from jsonb_array_elements(r->'positions')x where x->>'holdingsAsOf' is not null or x->>'filingDate' is null) then raise exception 'Filing date used as holdings date'; end if;
+ if r->>'version'<>'liquidity/1.2' or exists(select 1 from jsonb_array_elements(r->'positions')x where x->>'holdingsAsOf' is not null or x->>'filingDate' is null) then raise exception 'Filing date used as holdings date'; end if;
  r2:=public.ipo_roll_request_liquidity(s.offering_id,s.person_id,'62000000-0000-4000-8000-000000000002');
  if r<>r2 then raise exception 'Reopen regenerated report'; end if;
  perform set_config('liquidity.test.first',r->>'id',true);
