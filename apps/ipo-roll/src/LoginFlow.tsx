@@ -48,14 +48,14 @@ export function LoginFlow() {
     query.addEventListener('change', update);
     return () => query.removeEventListener('change', update);
   }, []);
-  return <figure className="login-flow">
+  return <div className="login-flow">
     <div className="flow-stage">
       <ParticleTubes stopped={paused || reduced} />
     </div>
-    <figcaption><span>Illustrated data flow</span>
+    <div className="flow-controls">
       <button type="button" className="flow-motion" disabled={reduced} onClick={() => setPaused(!paused)} aria-label={reduced ? 'Animation off for reduced motion' : paused ? 'Play visualization' : 'Pause visualization'}>
-        {paused || reduced ? <Play size={12} /> : <Pause size={12} />}{reduced ? 'Motion off' : paused ? 'Play' : 'Pause'}
+        {paused || reduced ? <Play size={16} aria-hidden="true" /> : <Pause size={16} aria-hidden="true" />}
       </button>
-    </figcaption>
-  </figure>;
+    </div>
+  </div>;
 }
