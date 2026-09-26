@@ -1,5 +1,11 @@
 # IPO Roll development handoff
 
+## 2026-09-26: cleaner particle-stream geometry
+
+Owner flagged the tendrils. Replaced the crossing paths with six separated, gently curved streams, keeping their depth coherent. Tube cross-sections now follow the local path direction instead of a fixed world plane, and narrow smoothly where they join the sphere. Distance-resampled paths and interpolated particle locations remove uneven speed and sample stepping. Reduced the braid twist; preserved the sphere, typography, authentication and existing motion controls.
+
+Production build and targeted login browser test passed (8.4-second journey): changing/paused/resumed canvas pixels, reduced motion, no pre-login research requests/errors, desktop/laptop/wide-screen height and mobile width checks. Inspected desktop and mobile screenshots. Live authenticated login was not exercised. Prepared for commercial-branch publication; deployment verification follows below. No source data, database, dependency, legacy pipeline or access changes.
+
 ## 2026-09-25: cinematic character-stream scene
 
 Owner supplied Riley Ralmuto's public video reference and explicitly requested its style/aesthetics and stronger visual impact, not a copy. Inspected sampled frames of the 33-second clip for depth, character streams, lighting and camera movement. No reference footage/assets were incorporated. Added original `particleScene.ts`: perspective projection, slow camera orbit, an independently rotating spherical character lattice, six braided streams with traveling light pulses, atmospheric dust, orbital arcs and cached glyph glow. The sign-in typography/layout stays crisp and unchanged from the reviewed responsive pass.
