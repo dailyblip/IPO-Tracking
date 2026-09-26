@@ -1,5 +1,11 @@
 # IPO Roll development handoff
 
+## 2026-09-25: cinematic character-stream scene
+
+Owner supplied Riley Ralmuto's public video reference and explicitly requested its style/aesthetics and stronger visual impact, not a copy. Inspected sampled frames of the 33-second clip for depth, character streams, lighting and camera movement. No reference footage/assets were incorporated. Added original `particleScene.ts`: perspective projection, slow camera orbit, an independently rotating spherical character lattice, six braided streams with traveling light pulses, atmospheric dust, orbital arcs and cached glyph glow. The sign-in typography/layout stays crisp and unchanged from the reviewed responsive pass.
+
+Preserved pause/reduced motion/hidden-tab/offscreen controls and fixed rendering budget (about 4,600 glyph draws/frame, throttled by the existing frame loop). No WebGL/library dependency, external runtime request, public research payload or AI provider was added. The illustration does not claim to show live data. Production TypeScript/build and the targeted browser journey passed, including moving/static/resumed pixel comparisons, no research requests before sign-in, no browser errors, desktop/laptop/wide-screen height checks and phone width. Inspected desktop, laptop and phone screenshots. Prepared pending commercial commit/staging verification; no source data, authentication or private-report behavior changed.
+
 ## 2026-09-25: particle-tube login revision and typesetting
 
 Owner rejected the diagram's spacing and requested particle swarms flowing through illuminated tubes, with careful typography. Replaced the boxed SVG diagram with a locally rendered Canvas 2D particle field: eight curved conduits, clustered teal/blue particles, cached light sprites, a central branded collector and an orbiting swarm. Removed competing small diagram labels; capped desktop content width, tightened headline/brand spacing, and added a short-laptop-height layout. The form and existing authentication behavior are unchanged.
