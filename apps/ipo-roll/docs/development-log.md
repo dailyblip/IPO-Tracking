@@ -4,7 +4,9 @@
 
 Owner flagged the tendrils. Replaced the crossing paths with six separated, gently curved streams, keeping their depth coherent. Tube cross-sections now follow the local path direction instead of a fixed world plane, and narrow smoothly where they join the sphere. Distance-resampled paths and interpolated particle locations remove uneven speed and sample stepping. Reduced the braid twist; preserved the sphere, typography, authentication and existing motion controls.
 
-Production build and targeted login browser test passed (8.4-second journey): changing/paused/resumed canvas pixels, reduced motion, no pre-login research requests/errors, desktop/laptop/wide-screen height and mobile width checks. Inspected desktop and mobile screenshots. Live authenticated login was not exercised. Prepared for commercial-branch publication; deployment verification follows below. No source data, database, dependency, legacy pipeline or access changes.
+Production build and targeted login browser test passed (8.4-second journey): changing/paused/resumed canvas pixels, reduced motion, no pre-login research requests/errors, desktop/laptop/wide-screen height and mobile width checks. Inspected desktop and mobile screenshots. Live authenticated login was not exercised. No source data, database, dependency, legacy pipeline or access changes.
+
+Staging verified 2026-09-26 04:05 UTC at commercial commit `e4713a5a11bd38383c420474402b67d8294e8919`. Served `index-CrXnUxIT.js` SHA-256 `330472cf9f44669c073dc26dd6698d49c1291b234edc8ac76ac47f8cea35d3d4` matches the tested build. Health returns `ok` / `staging`; Test Research Monitor run `36216713528` passed. All ownership-history guard status lists were clear immediately before publication.
 
 ## 2026-09-25: cinematic character-stream scene
 
