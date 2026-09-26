@@ -1,5 +1,13 @@
 # IPO Roll development handoff
 
+## 2026-09-25: full-row navigation and animated login
+
+Owner requested clicking the highlighted IPO row to open details and a code-rendered high-tech login visualization. Overview, IPO Activity and Saved/Watchlist rows now open details from non-control cells. Company buttons remain keyboard-accessible and receive focus for dialog return; bookmark buttons and selected/copied text do not trigger row navigation. Highlighting extends to keyboard focus. Column ordering behavior is preserved.
+
+Added `LoginFlow.tsx` / `LoginFlow.css`: locally rendered SVG/CSS filing packets connect registration/prospectus/footnotes through IPO Roll to research areas. No video, remote graphics library, new dependency, actual company data or research API call is used on the unauthenticated login page. The illustration is explicitly labeled, includes Pause/Play, and honors system reduced-motion preferences. The existing sign-in handler is unchanged.
+
+Production TypeScript/build passed. Both targeted Playwright journeys passed: non-company cell opens across all three views, bookmark independence, Enter/Escape/focus return, reordered column clicking; login desktop/390px mobile no overflow, pause/resume, reduced-motion static state, no pre-login research requests and no browser errors. Desktop and full-page phone screenshots were visually inspected. Login UI uses mocked config for this test; live authenticated owner sign-in remains unverified. UI is prepared pending commercial commit/deployment verification.
+
 ## 2026-09-25: January 1 backfill authorized and started
 
 Owner expanded commercial staging coverage to January 1, 2026–present, superseding the prior commercial historical hold, including April/May and smaller qualifying operating-company IPOs. See `backfill-2026.md` for the durable monthly inventory and next review batch. Production/legacy scope and the ownership-history commit guard are unchanged.

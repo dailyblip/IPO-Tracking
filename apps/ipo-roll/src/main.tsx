@@ -1,5 +1,6 @@
 import { LiquidityAnalysis } from "./LiquidityAnalysis.js";
 import { OwnershipGrid } from "./OwnershipGrid.js";
+import { LoginFlow } from "./LoginFlow.js";
 import { valueHolding } from "../shared/holdings.js";
 import React, { useState, useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
@@ -47,6 +48,7 @@ import type {
 import "@fontsource-variable/manrope";
 import "@fontsource-variable/dm-sans";
 import "./style.css";
+import "./LoginFlow.css";
 const money = (v: number | null) =>
   v === null
     ? "—"
@@ -488,6 +490,13 @@ function App() {
     </div>
   );
 }
+function openOfferingRow(event: React.MouseEvent<HTMLTableRowElement>, open: () => void) {
+  // Keep nested controls independent and let researchers select/copy table text.
+  if ((event.target as Element).closest('button, a, input, select, textarea, [role="button"]') ||
+      window.getSelection()?.isCollapsed === false) return;
+  event.currentTarget.querySelector<HTMLButtonElement>('.company-cell')?.focus({ preventScroll: true });
+  open();
+}
 function Login({ configured }: { configured: boolean }) {
   const [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
@@ -505,7 +514,8 @@ function Login({ configured }: { configured: boolean }) {
           <br />
           <em>Follow the evidence.</em>
         </h1>
-        <p>Public-source intelligence, designed for deeper research.</p>
+        <p>Public filings. Connected people. Evidence you can follow.</p>
+        <LoginFlow />
       </div>
       <form
         className="login-card"
@@ -776,7 +786,7 @@ function OverviewScreen({
           </thead>
           <tbody>
             {rows.map((o) => (
-              <tr key={o.id}>
+              <tr key={o.id} className="offering-row" onClick={(e) => openOfferingRow(e, () => open(o.id))}>
                 <td>
                   <button className="company-cell" onClick={() => open(o.id)}>
                     <CompanyIcon name={o.company} />
@@ -1157,7 +1167,7 @@ function ActivityScreen({
                 </thead>
                 <tbody>
                   {items.map((o) => (
-                    <tr key={o.id}>
+                    <tr key={o.id} className="offering-row" onClick={(e) => openOfferingRow(e, () => open(o.id))}>
                       {columns.map((c) => (
                         <td key={c}>{cell(c, o)}</td>
                       ))}
