@@ -1,5 +1,13 @@
 # IPO Roll development handoff
 
+## 2026-09-25: particle-tube login revision and typesetting
+
+Owner rejected the diagram's spacing and requested particle swarms flowing through illuminated tubes, with careful typography. Replaced the boxed SVG diagram with a locally rendered Canvas 2D particle field: eight curved conduits, clustered teal/blue particles, cached light sprites, a central branded collector and an orbiting swarm. Removed competing small diagram labels; capped desktop content width, tightened headline/brand spacing, and added a short-laptop-height layout. The form and existing authentication behavior are unchanged.
+
+The renderer uses a fixed particle budget, caps device-pixel ratio at two, updates near 30 fps, and stops its frame loop when paused, reduced motion is enabled, the tab is hidden or the canvas is offscreen. No video, external animation service, dependency or research payload is used. The caption identifies an illustrated flow.
+
+Production build passed. Targeted Playwright test checks actual canvas pixel changes while running, stable pixels while paused/reduced-motion, successful resume, no unauthenticated research requests, no browser errors, mobile width and no vertical overflow at 1366×768 / 2048×1184. An initial test caught 79px laptop overflow; tighter spacing and a shorter graphic corrected it before the passing rerun. Inspected screenshots at 1440×1100, 1366×768, 2048×1184 and 390px phone width. Prepared pending commit/staging verification. No data, source rights, private reports or row-navigation logic changed.
+
 ## 2026-09-25: full-row navigation and animated login
 
 Owner requested clicking the highlighted IPO row to open details and a code-rendered high-tech login visualization. Overview, IPO Activity and Saved/Watchlist rows now open details from non-control cells. Company buttons remain keyboard-accessible and receive focus for dialog return; bookmark buttons and selected/copied text do not trigger row navigation. Highlighting extends to keyboard focus. Column ordering behavior is preserved.
