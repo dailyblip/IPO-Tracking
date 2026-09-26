@@ -1,4 +1,5 @@
 import { LiquidityAnalysis } from "./LiquidityAnalysis.js";
+import { OwnershipGrid } from "./OwnershipGrid.js";
 import { valueHolding } from "../shared/holdings.js";
 import React, { useState, useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
@@ -1750,11 +1751,11 @@ function DetailDrawer({
                 </button>
                 {person === p.id && (
                   <div className="person-body">
-                    {p.biography && <p>{p.biography}</p>}
-                    <section aria-label="Stock holdings and valuation">
+                    <OwnershipGrid positions={p.ownershipGrid} action={<LiquidityAnalysis offeringId={id} personId={p.id} name={p.name} demo={demo} request={api} />} />
+                    {p.biography && <details className="person-biography"><summary>Biography &amp; relationship</summary><p>{p.biography}</p></details>}
+                    {demo && <section aria-label="Sample stock holdings and valuation">
                       <h4>Stock holdings &amp; estimated market value</h4>
-                      <p>{p.holdingsReview || (demo ? "No reviewed individual holdings available. This does not establish zero ownership." : "Open Liquidity Analysis to review available positions, ownership footnotes and restrictions in a private saved report.")}</p>
-                      <LiquidityAnalysis offeringId={id} personId={p.id} name={p.name} demo={demo} request={api} />
+                      <p>{p.holdingsReview || "No reviewed individual holdings available. This does not establish zero ownership."}</p>
                       {demo && <StockValueButton person={p} />}
                       {(p.holdings || []).map((h) => {
                         return <div className="source-box" key={h.id}><div>
@@ -1766,7 +1767,7 @@ function DetailDrawer({
                           {h.footnotes.map((f,i) => <div key={i}><strong>Ownership footnote</strong><p>{f.excerpt}</p><SourceLink source={f}/></div>)}
                         </div></div>;
                       })}
-                    </section>
+                    </section>}
                     <div className="ownership-facts">
                       {p.shares !== null && (
                         <div>

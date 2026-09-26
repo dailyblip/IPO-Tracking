@@ -18,6 +18,7 @@ export type Person = {
   holdings?: import("./holdings.js").Holding[];
   holdingQuotes?: import("./holdings.js").HoldingQuote[];
   holdingsReview?: string;
+  ownershipGrid?: import("./ownership.js").OwnershipPosition[];
 };
 export type Offering = {
   id: string;
