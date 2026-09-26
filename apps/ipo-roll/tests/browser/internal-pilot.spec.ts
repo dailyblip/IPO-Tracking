@@ -89,6 +89,27 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
     .click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(page.getByText(holderName).first()).toBeVisible();
+  const holderToggle = page.locator('.person-toggle').filter({ hasText: holderName });
+  if (await holderToggle.getAttribute('aria-expanded') !== 'true') await holderToggle.click();
+  if (d.detail.people.find((p: any) => p.name === holderName)?.ownershipGrid?.length) {
+    const grid = page.getByRole('region', { name: 'Stock classes and lock-up periods' });
+    await expect(grid).toBeVisible();
+    expect(generations).toBe(0);
+    await expect(grid.getByRole('columnheader', { name: 'Stock / series' })).toBeVisible();
+    await grid.getByRole('button', { name: 'Footnotes' }).first().click();
+    await expect(grid.locator('.ownership-footnotes')).toBeVisible();
+    await grid.getByRole('button', { name: 'Footnotes' }).first().click();
+    await page.screenshot({ path: 'test-results/ownership-grid-desktop.png' });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(grid).toBeVisible();
+    expect(await page.locator('.detail-drawer').evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+    await grid.scrollIntoViewIfNeeded();
+    await grid.evaluate(el => { el.scrollLeft = el.scrollWidth; });
+    await expect(grid.getByRole('button', { name: 'Footnotes' }).first()).toBeInViewport();
+    await page.screenshot({ path: 'test-results/ownership-grid-mobile.png' });
+    await grid.evaluate(el => { el.scrollLeft = 0; });
+    await page.setViewportSize({ width: 1440, height: 1100 });
+  }
   await page.getByRole("button", { name: "Liquidity Analysis", exact: true }).click();
   const analysis = page.getByRole("dialog", { name: `Liquidity Analysis for ${holderName}` });
   await expect(analysis).toBeVisible();
