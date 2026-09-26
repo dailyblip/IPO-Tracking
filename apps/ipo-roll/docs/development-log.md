@@ -4,7 +4,9 @@
 
 Owner rejected the sphere/tendrils as lacking visual impact. Replaced that composition with an original tilted particle lens, two broad spiral currents, a dense rotating light lattice, traveling highlights, a restrained rim flare and atmospheric depth. Increased focal scale and light density after inspecting the first render. Retained precise HTML text/form layout, local Canvas rendering, pause/reduced-motion/visibility controls and the illustrated-data-flow label. No external assets, video, dependencies, runtime data calls or auth changes.
 
-Production build and targeted browser journey passed (9.3 seconds), including animation/pause/resume/reduced-motion pixels, desktop/laptop/wide-screen height checks, phone width, absence of browser errors and no research calls before sign-in. Inspected final desktop and 390px phone screenshots. These are simulated-config visual tests, not live authenticated login or a measured device-performance benchmark. Publication prepared; verify staging assets before reporting live. Legacy engine, database, customer data and private reports remain untouched.
+Production build and targeted browser journey passed (9.3 seconds), including animation/pause/resume/reduced-motion pixels, desktop/laptop/wide-screen height checks, phone width, absence of browser errors and no research calls before sign-in. Inspected final desktop and 390px phone screenshots. These are simulated-config visual tests, not live authenticated login or a measured device-performance benchmark. Legacy engine, database, customer data and private reports remain untouched.
+
+Staging verified 2026-09-26 04:22 UTC at commercial commit `cbcb5bcd7f7b040b10f5289d166bd66cd4619199`. Served assets match the tested build: `index-CqZVxztI.js`, SHA-256 `a0c1976af010066d190badfd067663182dd38d4fa7f573719686d0c44e46ca3b`; `index-BgRkCh2L.css`, SHA-256 `e13bfba8be74b33c6b9be45e38cc87495e9ad9a4c738d9445309612a438bdb72`. Health `ok` / `staging`; Test Research Monitor run `36217558079` passed. All ownership-history guard status lists were clear before committing. Owner aesthetic acceptance is pending.
 
 ## 2026-09-26: cleaner particle-stream geometry
 
