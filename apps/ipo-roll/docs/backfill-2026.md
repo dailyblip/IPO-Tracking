@@ -98,9 +98,30 @@ ARKO holdings triage is retained privately: the projected post-offering parent r
 
 Private reproducibility files: `february-b-reviews.json`, `select-february-b.py`, and `february-b-release/` (manifest, SQL, QA, holdings notes). March's two feed candidates, MiniMed and HMH, are now captured in six hash-verified documents but remain **unreviewed/unimported**. Automatic biography discovery found no candidates; manual review must preserve expected post-offering appointment wording. See private `march-capture-results.json` and `march-review-handoff.md`. These counts do not establish historical completeness.
 
+## March release and April capture — September 26, 2026
+
+Applied **two March offerings and six biographies**, bringing staging to **38 offerings / 95 biographies / 10 ownership positions**. Original feed inventory progress is January 5/5, February 9/9 and March 2/2 reviewed/imported; independent SEC completeness remains unverified for all months. Overall: 37 staged candidates, one issuer reconciliation, 52 new source reviews remaining.
+
+| Issuer | Ticker | Pricing date | Preliminary range | Final IPO price | Base offering value | Final prospectus |
+| --- | --- | --- | --- | ---: | ---: | --- |
+| MiniMed Group, Inc. | MMED | 2026-03-05 | $25.00–$28.00 | $20.00 | $560,000,000 | 0001628280-26-015648 |
+| HMH Holding Inc. | HMH | 2026-03-31 | $19.00–$22.00 | $20.00 | $210,400,000 | 0001193125-26-138102 |
+
+MiniMed's three reviewed executive roles retain literal **“Will serve as…”** wording in the role title and complete biography; these are proposed appointments in the filing snapshot, not confirmation of today's roles. HMH's three selected directors are explicitly stated to have joined its board in March. Karl Erik Kjelstad's cross-page biography preserves an Advanced Management Program credential, not an inferred MBA. HMH's final filing is April 1 but its prospectus/pricing date is March 31; both dates remain distinct. MiniMed's final price remains below, and separate from, the preliminary range.
+
+Archived 14 immutable private artifacts for six SEC documents. Rehearsal with rollback, atomic apply, exact replay and post-apply database role/RPC QA passed: counts, exact pricing/ranges/dates/values, HMH's filing-versus-pricing boundary, proposed-role wording, complete biography search, unsupported search rejection, no inferred beneficial-owner match, saved/unsaved IPOs, reviewer access, ordinary-customer denial and anonymous denial. Search now returns four University of Michigan matches and 15 Harvard matches. The same five private reports retain their identical aggregate fingerprint, with no new or refreshed reports and no leftover test accounts. Data stays unpublished/internal_review. No schema, access or application code changed; this data release needs no new application deployment.
+
+HTTP health checks timed out twice and the unauthenticated offerings check timed out; live HTTP availability/denial was not verified in this run. Database authorization passed independently. Live authenticated browser QA was not performed. Do not turn connection timeouts into a claim that the deployed application is broken or accessible.
+
+Captured **all 11 April feed candidates**, with 33 SEC documents and 44 automatically located **unreviewed** biography candidates. All original and normalized hashes were checked. These are capture-only, not imported offerings or verified biographies. Use private `april-capture-results.json` and readable accession block files under `archive/`; start with April 15 candidates Arxis and Madison Air. April capture used two bounded workers and the existing SEC request pacing. May–September and independent SEC coverage remain pending.
+
+Aktis ownership review is prepared separately in private `january-release/aktis-holdings-triage.md`: its October 31, 2025 as-if-converted voting/non-voting table includes option-underlying shares. Three named executive component totals reconcile arithmetically, but require the correct instrument/table-basis importer profile and separate complete lock-up review before canonical import. No position or liquidity assertion was inserted; shared fund authority remains distinct from personal economic ownership.
+
+Private applied inputs: `select-march.py`, `march-reviews.json` and `march-release/` (manifest, SQL and QA). Source payloads remain outside Git/frontend assets. No new owner setup, paid AI provider or spending is required for the next SEC batch.
+
 ## Next actions
 
-1. Continue the remaining March–September SEC Monitor queue, starting with the two captured March candidates. Reconcile current staging identities before each release, preserve preliminary pricing and final terms, and independently check omitted SEC candidates before marking a month complete.
+1. Continue the remaining April–September SEC Monitor queue, starting with captured Arxis and Madison Air, then the remaining nine April candidates. Reconcile current staging identities before each release, preserve preliminary pricing and final terms, and independently check omitted SEC candidates before marking a month complete.
 2. Review January ownership tables and footnotes independently before populating class/series, quantities, attribution, holdings dates or lock-up evidence. Unknown cash realizability stays unknown; do not infer personal proceeds from offering size or position differences.
 3. Apply only small reviewed releases with immutable evidence, rollback QA and exact replay. Keep rights as internal review and customer access denied until approved.
 4. Never generate or modify saved account-private Liquidity Analysis reports through backfill. Users request their own static report or explicit refresh.

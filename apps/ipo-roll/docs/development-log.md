@@ -1,5 +1,19 @@
 # IPO Roll development handoff
 
+## 2026-09-26: March release verified; April source capture complete
+
+Started from clean commercial HEAD `242fb91c1e4e33437136bd9f4c1b615518df60fa`; draft PR #581 remained open and Test Research Monitor passed. Held the shared development lock. Applied MiniMed and HMH plus six complete person-specific biographies. Staging is now **38 offerings / 95 biographies / 10 ownership positions**. Original feed candidates reviewed/imported: January 5/5, February 9/9, March 2/2; **not an independently verified SEC census**. Remaining inventory: 52 new reviews and one issuer reconciliation.
+
+MiniMed titles preserve the source's “Will serve as…” appointment timing, including in People Search. HMH director relationships are explicitly current as of the source; its March 31 pricing and April 1 filing dates stay distinct. MiniMed's $20 final price does not replace its $25–$28 preliminary range. Retained complete cross-page HMH biography evidence without converting an executive program into an MBA. Exact amounts/accessions are in `backfill-2026.md`.
+
+Archived 14 immutable private artifacts, rehearsed with rollback, applied atomically, replayed exactly and passed post-apply role/RPC QA for pricing, dates, role wording, biography search, saved/unsaved IPOs, unsupported/inferred-owner search rejection, reviewer access and customer/anonymous denial. Search coverage is four Michigan matches and 15 Harvard matches. Five private Liquidity Analysis reports kept the identical aggregate fingerprint; no new reports, versions, holdings or quotes; zero temporary QA accounts remain. This is applied staging data through the existing reviewer API, with no new application code or deployment required. Rights remain internal_review/unpublished.
+
+Public health requests timed out twice; the unauthenticated offerings request also timed out. Live HTTP availability/denial and authenticated browser journeys remain unverified for this run. These connection failures do not invalidate database QA or establish an application defect. No UI, schema, access, production pipeline/feed/Pages, schedule, billing or provider changes.
+
+Prepared the next month: captured all 11 April candidates, 33 SEC documents and 44 automatically located unreviewed biography candidates; original/normalized hashes verified. Two bounded capture workers reused the existing SEC pacing. April remains unreviewed/unimported. Private `april-capture-results.json` and readable block dumps are ready; start with Arxis and Madison Air (April 15), then remaining April candidates. Do not recapture or treat candidate counts as verified-person counts.
+
+Also prepared Aktis footnote decomposition for three executives: common shares versus option-underlying quantities reconcile to disclosed totals, but the as-if-conversion/table-basis and lock-up evidence require separate validated ingestion. See private `january-release/aktis-holdings-triage.md`; no unsupported holdings or personal cash claims inserted. Keep private reports static. Continue source-backed holdings and independent SEC coverage checks alongside the oldest-month queue. No new owner action, paid AI or spending needed; existing quote licensing/live-login/launch gates remain. Applied March reproducibility files are under ignored `march-reviews.json` and `march-release/`.
+
 ## 2026-09-26: remaining February feed candidates applied and verified
 
 Applied five source-reviewed offerings and 17 biographies: Once Upon a Farm, SpyGlass Pharma, SOLV Energy, ARKO Petroleum and Generate Biomedicines. Current staging totals are **36 offerings / 89 biographies / 10 ownership positions**. January 5/5 and February 9/9 original feed candidates are now reviewed/imported; this is not independent SEC completeness. Remaining inventory: 54 new source reviews and one issuer reconciliation. Prices, ranges, dates, values and accession identifiers are recorded in `backfill-2026.md`.
