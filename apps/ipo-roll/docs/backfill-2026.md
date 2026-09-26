@@ -55,6 +55,12 @@ Validation: full transaction rehearsal with rollback; apply; exact replay withou
 
 For the original 90-candidate inventory, January moves from zero to five reviewed staged candidates. Overall comparison is now 26 reviewed staged candidates, one existing issuer awaiting reconciliation and 63 requiring new source review. This is **not a complete January census or a completed year backfill**. Holder, footnote and liquidity coverage remains separately incomplete.
 
+## Acceleration authorized September 25 (Pacific)
+
+Owner requested faster completion. Development/backfill is now scheduled hourly, including overnight, while the historical backlog remains. Keep the separate 6 PM Pacific digest; skip overlapping work using the shared development lock. Prioritize source-reviewed imports and ownership/footnote coverage ahead of cosmetic changes. Reuse retained SEC artifacts and batch independent preparation within SEC access limits. Evidence, access and commit guards remain unchanged. Restore the previous 8 AM/noon/4 PM Pacific development cadence after independently verifying historical completion.
+
+February capture is now prepared: nine candidates, 27 verified source/normalized document pairs and 42 unreviewed biography candidate passages. No February offering/biography/holding has been imported yet. Reuse `import-output/year-2026/archive/` and `february-capture-results.json` for the next review.
+
 ## Next actions
 
 1. Continue the remaining February–September SEC Monitor queue, starting with nine February candidates. Reconcile current staging identities before each release, preserve preliminary pricing and final terms, and independently check omitted SEC candidates before marking a month complete.
