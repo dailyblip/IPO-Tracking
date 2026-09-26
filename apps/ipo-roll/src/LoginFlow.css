@@ -15,7 +15,7 @@
 .flow-topline > span:first-child { color: #80bbb9; }
 .flow-stage { position: relative; margin: 12px -20px 0; isolation: isolate; }
 .flow-canvas { display: block; width: 100%; aspect-ratio: 900 / 430; mask-image: linear-gradient(90deg, transparent, black 7%, black 94%, transparent); }
-.flow-core { position: absolute; left: 53.111%; top: 50%; transform: translate(-50%, -50%); width: 112px; height: 112px; border-radius: 50%; background: radial-gradient(circle at 38% 25%, #173c47, #0c1c29 68%); box-shadow: 0 0 0 1px #77dfcf44, 0 0 22px #50ead33b, 0 0 64px #3bd4d425, inset 0 0 28px #5bddcc0f; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+.flow-core { position: absolute; left: 53.111%; top: 50%; transform: translate(-50%, -50%); width: 112px; height: 112px; border-radius: 50%; background: radial-gradient(circle, #0b202bd9, #0b202b66 45%, transparent 70%); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-shadow: 0 2px 12px #001616; }
 .flow-core svg { width: 31px; height: 31px; fill: none; stroke: #76ebd8; stroke-width: 1.5; }
 .flow-core strong { font: 700 18px 'Manrope Variable', sans-serif; letter-spacing: -.02em; color: #e4fff9; }
 .flow-core strong span { color: #56d9d1; }
