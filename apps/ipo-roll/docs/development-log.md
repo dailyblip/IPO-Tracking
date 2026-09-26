@@ -4,7 +4,9 @@
 
 Removed the visible illustrated-data-flow caption at the owner's request. Replaced the labeled motion control with one 44px circular Pause/Play icon button. Screen-reader action labels, keyboard focus and reduced-motion behavior remain. The decorative wrapper no longer uses figure/caption semantics. No animation geometry, form, authentication or data changes.
 
-Production build and existing targeted login journey passed (13.6 seconds), covering click/focus, pause/resume/reduced-motion pixels, responsive coverage/overflow and no pre-login research calls/errors. Inspected the phone screenshot for caption removal and icon-only placement. Prepared for staging publication; no new tests, dependencies or database changes.
+Production build and existing targeted login journey passed (13.6 seconds), covering click/focus, pause/resume/reduced-motion pixels, responsive coverage/overflow and no pre-login research calls/errors. Inspected the phone screenshot for caption removal and icon-only placement. No new tests, dependencies or database changes.
+
+Staging verified 2026-09-26 05:04 UTC at commercial commit `99e5103e241298986a2ca0393557e3cc4af346c6`. Served JS `index-CHP2uPZn.js`, SHA-256 `455b7f388177e7f39dbcaf9f07f2031bcb97ef9c5c0493db6b4644c08b7d44bb`, and CSS `index-CiICTKzd.css`, SHA-256 `8a9da61fdd4d14ec1182cdac94ece9b1bc0bedd7581591b86e12f1f86170d5ee`, match the tested build. Health `ok` / `staging`; Test Research Monitor run `36219623529` passed. Ownership-history guard lists were clear immediately before committing.
 
 ## 2026-09-26: sharpen approved full-page particle composition
 
