@@ -1,5 +1,11 @@
 # IPO Roll development handoff
 
+## 2026-09-25: January 1 backfill authorized and started
+
+Owner expanded commercial staging coverage to January 1, 2026–present, superseding the prior commercial historical hold, including April/May and smaller qualifying operating-company IPOs. See `backfill-2026.md` for the durable monthly inventory and next review batch. Production/legacy scope and the ownership-history commit guard are unchanged.
+
+Read current main feed at `f4bdf65261fc583a406da3fd0b653b111143a2f6` and compared an exact private intake to staging: 90 interval candidates, 21 matching staged filing snapshots, one existing issuer requiring accession reconciliation, 68 requiring new source review. Staging still has 22 offerings; no reviewed historical offering has been added by this step. Generated private intake/queue and completed January capture: five candidates, 15 filing documents, 34 unreviewed biography candidates. Added checksum-validated `build_backfill_queue.py`; both targeted tests passed. Existing development and nightly-review task prompts now include this expanded scope and monthly coverage reporting. No new task, schema, access grant, cost or private liquidity report was created.
+
 ## 2026-09-25 evening: beneficial ownership quick-reference grid
 
 Owner requested an easy-to-read individual-research grid showing stock classes/series, quantities, lock-up periods and a Liquidity Analysis action, with the goal of understanding IPO-related wealth. Implemented `OwnershipGrid` inside the existing single-open person accordion, ahead of the expandable biography. Widened the company drawer for desktop comparison; phones horizontally scroll the labeled grid. Footnotes expand across the full table width. Rows separate reconciled common-share/option/RSU/trust components without adding the parent total again. Unsupported series, dates and quantities remain unconfirmed. Two separate summary areas distinguish estimated holdings value from documented personal IPO sale proceeds; neither currently has verified dollar data.
