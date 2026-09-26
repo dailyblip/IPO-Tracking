@@ -76,9 +76,31 @@ Biography search now supports the newly reviewed named executives and their lite
 
 Within the original 90-candidate inventory: January 5/5 and February 4/9 candidates are now reviewed/imported. Overall comparison is 30 staged candidates, one existing issuer reconciliation and 59 requiring new source review. This is inventory progress, not a complete SEC census. Remaining February: Once Upon a Farm, SOLV Energy, ARKO Petroleum, Generate Biomedicines and SpyGlass Pharma. See `february-a-release/manifest.json` and private holdings notes for reproducible release evidence.
 
+## Second February release — September 26, 2026
+
+Applied the remaining five February feed candidates and 17 complete, person-specific SEC biographies. Staging now has **36 offerings / 89 biographies / 10 ownership positions**. January 5/5 and February 9/9 candidates from the original feed inventory are reviewed/imported; **neither month is an independently verified complete SEC census**. Across that inventory, 35 candidates are staged, one issuer requires reconciliation, and 54 need new source review.
+
+| Issuer | Ticker | Pricing date | Preliminary range | Final IPO price | Base offering value | Final prospectus |
+| --- | --- | --- | --- | ---: | ---: | --- |
+| Once Upon a Farm, PBC | OFRM | 2026-02-05 | $17.00–$19.00 | $18.00 | $197,949,762 | 0001193125-26-041885 |
+| SpyGlass Pharma | SGP | 2026-02-05 | $15.00–$17.00 | $16.00 | $150,000,000 | 0001628280-26-006068 |
+| SOLV Energy | MWH | 2026-02-10 | $22.00–$25.00 | $25.00 | $512,500,000 | 0001193125-26-046879 |
+| ARKO Petroleum | APC | 2026-02-11 | $18.00–$20.00 | $18.00 | $199,999,998 | 0001193125-26-049767 |
+| Generate Biomedicines | GENB | 2026-02-26 | $15.00–$17.00 | $16.00 | $400,000,000 | 0001193125-26-083190 |
+
+Source documents retain issuer CIK and registration lineage. ARKO Petroleum's APC ticker is sourced from its prospectus; ARKO is its separate parent. Once Upon a Farm's total includes issuer and selling-stockholder shares, not a person's cash proceeds. No inferred holdings or quotes were added. Selected biographies include complete cross-page evidence for Malik Y. Kahook and manually located ARKO executives. Search now returns four University of Michigan matches and 14 Harvard matches; each result preserves the literal person-specific passage and company relationship, without converting employment or visiting appointments into degrees.
+
+Archived 35 immutable private evidence artifacts for 15 SEC documents. Rehearsal with rollback, atomic apply, exact replay and post-apply role/RPC QA passed: exact prices/dates/ranges/values, biography search and cross-page continuation, unsupported search rejection, no inferred beneficial-owner role, saved/unsaved IPOs, reviewer access, ordinary-customer denial and anonymous denial. Five pre-existing private liquidity reports retained the same aggregate fingerprint; no customer report was generated or refreshed. Zero temporary QA accounts remain. Data remains unpublished/internal_review. This is an applied data-only staging release, not a new application deployment.
+
+Live health returned 200/ok/staging after an initial timeout; unauthenticated offerings returned 401. Live authenticated browser QA remains unperformed. No UI, schema, source access, legacy engine/feed/Pages, production schedule, billing or provider changes.
+
+ARKO holdings triage is retained privately: the projected post-offering parent row lists Class A conversion interests overlapping its Class B position; never count these twice or attribute them to individual executives. Individual dashes are not confirmed present-day zero holdings, particularly because offering purchases are excluded. No January/February positions or lock-up dates are imported by this release.
+
+Private reproducibility files: `february-b-reviews.json`, `select-february-b.py`, and `february-b-release/` (manifest, SQL, QA, holdings notes). March's two feed candidates, MiniMed and HMH, are now captured in six hash-verified documents but remain **unreviewed/unimported**. Automatic biography discovery found no candidates; manual review must preserve expected post-offering appointment wording. See private `march-capture-results.json` and `march-review-handoff.md`. These counts do not establish historical completeness.
+
 ## Next actions
 
-1. Continue the remaining February–September SEC Monitor queue, starting with the five remaining February candidates. Reconcile current staging identities before each release, preserve preliminary pricing and final terms, and independently check omitted SEC candidates before marking a month complete.
+1. Continue the remaining March–September SEC Monitor queue, starting with the two captured March candidates. Reconcile current staging identities before each release, preserve preliminary pricing and final terms, and independently check omitted SEC candidates before marking a month complete.
 2. Review January ownership tables and footnotes independently before populating class/series, quantities, attribution, holdings dates or lock-up evidence. Unknown cash realizability stays unknown; do not infer personal proceeds from offering size or position differences.
 3. Apply only small reviewed releases with immutable evidence, rollback QA and exact replay. Keep rights as internal review and customer access denied until approved.
 4. Never generate or modify saved account-private Liquidity Analysis reports through backfill. Users request their own static report or explicit refresh.
