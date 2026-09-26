@@ -3,18 +3,49 @@ export const SCENE_WIDTH = 900, SCENE_HEIGHT = 430;
 type Vec = [number, number, number];
 const TAU = Math.PI * 2;
 const channels: Vec[][] = [
-  [[-620, -205, 70], [-270, -260, 110], [-255, 25, 50], [-128, 14, 0]],
-  [[-600, 55, 240], [-330, 160, 220], [-230, -15, 60], [-115, 55, 0]],
-  [[-380, 320, -200], [-310, 150, -220], [-230, -75, -50], [-95, -70, -25]],
-  [[116, -48, 0], [270, -100, 150], [250, -275, 280], [620, -165, 330]],
-  [[124, 30, 0], [260, 60, -50], [350, -80, -180], [640, 10, -120]],
-  [[90, 88, 0], [260, 160, 90], [325, 265, 100], [650, 255, 150]],
+  [[-620, -170, 70], [-370, -180, 60], [-205, -130, 28], [-103, -75, 10]],
+  [[-620, 0, 25], [-370, 24, 30], [-215, 0, 12], [-128, 0, 0]],
+  [[-620, 185, 55], [-370, 185, 40], [-205, 130, 22], [-103, 75, 10]],
+  [[103, -75, 10], [205, -130, 28], [370, -180, 60], [620, -170, 70]],
+  [[128, 0, 0], [215, 0, 12], [370, 24, 30], [620, 0, 25]],
+  [[103, 75, 10], [205, 130, 22], [370, 185, 40], [620, 185, 55]],
 ];
 function cubic(c: Vec[], t: number): Vec {
   const u = 1 - t;
   return [0, 1, 2].map(k => u ** 3 * c[0][k] + 3 * u * u * t * c[1][k] + 3 * u * t * t * c[2][k] + t ** 3 * c[3][k]) as Vec;
 }
-const channelSamples = channels.map(c => Array.from({ length: 241 }, (_, i) => cubic(c, i / 240)));
+// Resample by distance so particles keep a steady speed through bends.
+const channelSamples = channels.map(c => {
+  const raw = Array.from({ length: 481 }, (_, i) => cubic(c, i / 480));
+  const distance = [0];
+  for (let i = 1; i < raw.length; i++) {
+    distance.push(distance[i - 1] + Math.hypot(...raw[i].map((v, k) => v - raw[i - 1][k])));
+  }
+  let cursor = 1;
+  return Array.from({ length: 241 }, (_, i) => {
+    const target = i / 240 * distance[480];
+    while (cursor < 480 && distance[cursor] < target) cursor++;
+    const blend = (target - distance[cursor - 1]) / (distance[cursor] - distance[cursor - 1]);
+    return raw[cursor].map((v, k) => raw[cursor - 1][k] + (v - raw[cursor - 1][k]) * blend) as Vec;
+  });
+});
+function tubePoint(samples: Vec[], u: number, angle: number, incoming: boolean): Vec {
+  const index = Math.min(239, Math.floor(u * 240)), blend = u * 240 - index;
+  const a = samples[index], b = samples[index + 1];
+  const tangent = b.map((v, k) => v - a[k]);
+  const length = Math.hypot(...tangent);
+  const [tx, ty, tz] = tangent.map(v => v / length);
+  // A local perpendicular frame keeps the cross-section round along each bend.
+  const planar = Math.hypot(tx, ty), nx = -ty / planar, ny = tx / planar;
+  const bx = -tz * ny, by = tz * nx, bz = tx * ny - ty * nx;
+  const edge = incoming ? 1 - u : u;
+  const ease = Math.min(1, edge / .23);
+  const radius = 3 + 12 * ease * ease * (3 - 2 * ease);
+  const sn = Math.sin(angle) * radius, cs = Math.cos(angle) * radius;
+  return [a[0] + (b[0] - a[0]) * blend + nx * sn + bx * cs,
+    a[1] + (b[1] - a[1]) * blend + ny * sn + by * cs,
+    a[2] + (b[2] - a[2]) * blend + bz * cs];
+}
 const sphere = Array.from({ length: 1700 }, (_, i) => {
   const y = 1 - 2 * (i + .5) / 1700, r = Math.sqrt(1 - y * y), a = i * 2.399963;
   return [Math.cos(a) * r * 128, y * 128, Math.sin(a) * r * 128] as Vec;
@@ -67,22 +98,22 @@ export function createScenePainter(ctx: CanvasRenderingContext2D) {
     }
     channelSamples.forEach((samples, channel) => {
       const color = channel < 3 ? 0 : 1;
-      // Twisted filament rails reveal the volume, rather than flat connector lines.
+      // Gently braided, tapered streams meet the shell without crossing each other.
       for (let strand = 0; strand < 10; strand++) {
         ctx.beginPath();
-        samples.forEach((p, k) => {
-          const theta = strand / 10 * TAU + k * .022 + channel;
-          const q = project(p[0], p[1] + Math.sin(theta) * 19, p[2] + Math.cos(theta) * 19);
+        samples.forEach((_, k) => {
+          const theta = strand / 10 * TAU + k / 240 * 1.8;
+          const q = project(...tubePoint(samples, k / 240, theta, channel < 3));
           if (k) ctx.lineTo(q.x, q.y); else ctx.moveTo(q.x, q.y);
         });
         ctx.globalAlpha = .055; ctx.lineWidth = .6; ctx.strokeStyle = palettes[color]; ctx.stroke();
         for (let j = 0; j < 46; j++) {
           const u = (j / 46 + time * .045 + strand * .003 + channel * .16) % 1;
-          const p = samples[Math.floor(u * 240)];
-          const theta = strand / 10 * TAU + u * 5.28 + channel;
+          const theta = strand / 10 * TAU + u * 1.8;
+          const p = tubePoint(samples, u, theta, channel < 3);
           // Traveling pulses illuminate contiguous bands of character streams.
           const pulse = Math.pow((Math.sin(u * 21 - time * .7 + channel) + 1) / 2, 7);
-          mark(p[0], p[1] + Math.sin(theta) * 19, p[2] + Math.cos(theta) * 19,
+          mark(p[0], p[1], p[2],
             5 + pulse * 4, pulse > .8 ? 2 : color, (j + strand * 3) % glyphs.length, .22 + pulse * .75);
         }
       }
