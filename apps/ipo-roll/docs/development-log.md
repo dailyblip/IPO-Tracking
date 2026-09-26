@@ -6,7 +6,9 @@ Owner rejected the diagram's spacing and requested particle swarms flowing throu
 
 The renderer uses a fixed particle budget, caps device-pixel ratio at two, updates near 30 fps, and stops its frame loop when paused, reduced motion is enabled, the tab is hidden or the canvas is offscreen. No video, external animation service, dependency or research payload is used. The caption identifies an illustrated flow.
 
-Production build passed. Targeted Playwright test checks actual canvas pixel changes while running, stable pixels while paused/reduced-motion, successful resume, no unauthenticated research requests, no browser errors, mobile width and no vertical overflow at 1366×768 / 2048×1184. An initial test caught 79px laptop overflow; tighter spacing and a shorter graphic corrected it before the passing rerun. Inspected screenshots at 1440×1100, 1366×768, 2048×1184 and 390px phone width. Prepared pending commit/staging verification. No data, source rights, private reports or row-navigation logic changed.
+Production build passed. Targeted Playwright test checks actual canvas pixel changes while running, stable pixels while paused/reduced-motion, successful resume, no unauthenticated research requests, no browser errors, mobile width and no vertical overflow at 1366×768 / 2048×1184. An initial test caught 79px laptop overflow; tighter spacing and a shorter graphic corrected it before the passing rerun. Inspected screenshots at 1440×1100, 1366×768, 2048×1184 and 390px phone width. No data, source rights, private reports or row-navigation logic changed.
+
+Staging verified 2026-09-26 03:36 UTC at commercial commit `de7ac7cb32b54e7fe75649cd06397a6be3cd893d`. Render serves `index-BpGUk0fh.js` (SHA-256 `360cfe3b1663ff4f0ac9e591f40a997ad78dbdee8675f87da27200ef962e19be`) and `index-BWiGWeVq.css` (SHA-256 `8ec576ecb0fe800b5b759a4b476964443e129f24868337928107175e37c40629`), matching the tested assets. Health returns `ok` / `staging`; Test Research Monitor run `36215250624` passed. All guarded workflow queues were clear before committing. Live owner sign-in was not tested.
 
 ## 2026-09-25: full-row navigation and animated login
 
