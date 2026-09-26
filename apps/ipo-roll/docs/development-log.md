@@ -1,5 +1,11 @@
 # IPO Roll development handoff
 
+## 2026-09-26: restore directional conduits and processing core
+
+Owner rejected the vortex metaphor and preferred the tendrils' meaning but wanted better execution. Restored three separated curved input conduits and three ordered output lanes around an original extruded glass-like processing core. Input swarms use irregular spacing and slight drift; outputs use aligned packets. Added lit tube surfaces, depth-weighted particles, traveling highlights and illuminated connection points. Paths are distance-resampled and all data travels left-to-right. Typography/form structure and the illustration label remain intact; the core wordmark was repositioned to its new geometry. No orbit/vortex, live dataset, external dependency or runtime graphics request.
+
+Production build and targeted login browser test passed (9.8-second journey): moving/paused/resumed pixels, reduced-motion static state, no pre-login research calls or browser errors, desktop/laptop/wide-screen height and phone width. Inspected desktop and 390px phone screenshots, including the core's wordmark fit. Authentication is simulated config for visual QA; live sign-in and physical-device performance were not tested. Prepared for commercial staging publication; aesthetic acceptance remains with the owner. No database, source facts, private reports, production engine or schedules changed.
+
 ## 2026-09-26: luminous particle-lens direction
 
 Owner rejected the sphere/tendrils as lacking visual impact. Replaced that composition with an original tilted particle lens, two broad spiral currents, a dense rotating light lattice, traveling highlights, a restrained rim flare and atmospheric depth. Increased focal scale and light density after inspecting the first render. Retained precise HTML text/form layout, local Canvas rendering, pause/reduced-motion/visibility controls and the illustrated-data-flow label. No external assets, video, dependencies, runtime data calls or auth changes.
