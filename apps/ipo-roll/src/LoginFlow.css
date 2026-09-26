@@ -15,7 +15,7 @@
 .flow-topline > span:first-child { color: #80bbb9; }
 .flow-stage { position: relative; margin: 12px -20px 0; isolation: isolate; }
 .flow-canvas { display: block; width: 100%; aspect-ratio: 900 / 430; mask-image: linear-gradient(90deg, transparent, black 7%, black 94%, transparent); }
-.flow-core { position: absolute; left: 57.778%; top: 50.698%; transform: translate(-50%, -50%); width: 112px; height: 82px; border-radius: 50%; background: radial-gradient(ellipse, #07171edf, #07171e88 45%, transparent 70%); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-shadow: 0 2px 12px #001616; }
+.flow-core { position: absolute; left: 55.778%; top: 50.116%; transform: translate(-50%, -50%); width: 112px; height: 82px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-shadow: 0 2px 12px #001616; }
 .flow-core svg { width: 31px; height: 31px; fill: none; stroke: #76ebd8; stroke-width: 1.5; }
 .flow-core strong { font: 700 18px 'Manrope Variable', sans-serif; letter-spacing: -.02em; color: #e4fff9; }
 .flow-core strong span { color: #56d9d1; }
