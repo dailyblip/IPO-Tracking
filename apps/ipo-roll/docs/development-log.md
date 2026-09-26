@@ -1,5 +1,13 @@
 # IPO Roll development handoff
 
+## 2026-09-26: integrate particle flow across the login page
+
+Owner requested that the animation occupy the full composition instead of appearing as a separate lower-page add-on. Moved LoginFlow out of the brand content into an absolute background layer spanning the login container. Conduits sweep from the viewport edges behind the actual sign-in panel; removed the separate processor/duplicate wordmark and figure header/divider. Enlarged and balanced the headline, preserved a dark quiet area behind text, and placed the caption/motion control along the page footer. Mobile keeps the background behind stacked content.
+
+Canvas now measures both container dimensions, reflows curve coordinates to its aspect ratio, and uses uniform rendering scale so particles remain round. Render resolution caps at 2400px width and DPR two. Pause, reduced-motion, hidden-tab and offscreen behavior remain. No auth or application data flow changed.
+
+Production build and targeted login browser journey passed (13.4 seconds). Added explicit desktop/laptop/mobile assertions that the canvas fills the login container and that an actual email-field click receives focus through the background layer. Existing pixel animation/pause/resume/reduced-motion, no pre-login research calls/errors and overflow checks pass. Inspected desktop, laptop, wide-screen and phone screenshots. Tests use simulated config, not live authenticated login; physical-device performance remains unmeasured. Prepared for staging publication; no database, legacy engine, source data, dependency or schedule changes.
+
 ## 2026-09-26: restore directional conduits and processing core
 
 Owner rejected the vortex metaphor and preferred the tendrils' meaning but wanted better execution. Restored three separated curved input conduits and three ordered output lanes around an original extruded glass-like processing core. Input swarms use irregular spacing and slight drift; outputs use aligned packets. Added lit tube surfaces, depth-weighted particles, traveling highlights and illuminated connection points. Paths are distance-resampled and all data travels left-to-right. Typography/form structure and the illustration label remain intact; the core wordmark was repositioned to its new geometry. No orbit/vortex, live dataset, external dependency or runtime graphics request.

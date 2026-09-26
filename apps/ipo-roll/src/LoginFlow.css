@@ -1,26 +1,26 @@
 .login {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 100svh;
   grid-template-columns: minmax(0, 1.6fr) minmax(310px, .9fr);
   gap: clamp(32px, 5vw, 76px);
-  padding: 44px max(32px, calc((100vw - 1280px) / 2));
-  background: radial-gradient(ellipse at 32% 60%, #0e343e66, transparent 56%), linear-gradient(135deg, #0b111a, #0c151f 60%, #101d2a);
+  padding: 88px max(32px, calc((100vw - 1280px) / 2));
+  background: radial-gradient(ellipse at 65% 50%, #12374788, transparent 60%), linear-gradient(135deg, #080f18, #0c151f 60%, #0c1928);
 }
-.login-brand { min-width: 0; }
-.login-brand .brand { margin-bottom: 30px; }
-.login-brand h1 { font-size: clamp(28px, 3vw, 42px); line-height: 1.16; letter-spacing: -.04em; }
-.login-brand > p { margin-top: 16px; font-size: 13px; }
-.login-card { position: relative; background: linear-gradient(145deg, #192c3be8, #101c29f5); box-shadow: 0 30px 90px #0005, inset 0 1px #8bd9e910; border-color: #395062; }
+.login-brand { position: relative; z-index: 1; min-width: 0; text-shadow: 0 2px 25px #081019; }
+.login-brand .brand { margin-bottom: 40px; }
+.login-brand h1 { font-size: clamp(32px, 3.7vw, 54px); line-height: 1.13; letter-spacing: -.045em; }
+.login-brand > p { margin-top: 22px; font-size: 13px; }
+.login-card { position: relative; z-index: 1; background: linear-gradient(145deg, #192c3bf5, #101c29fa); box-shadow: 0 30px 90px #0006, 0 0 65px #53cbd710, inset 0 1px #8bd9e910; border-color: #395062; }
 .login-card::before { content: ''; position: absolute; height: 2px; top: -1px; left: 32px; right: 32px; background: linear-gradient(90deg, transparent, #5fdfc9, #699ce3, transparent); }
-.login-flow { margin: 34px 0 0; position: relative; }
-.flow-topline { display: flex; justify-content: space-between; gap: 12px; color: #7395a7; font-size: 9px; letter-spacing: .16em; }
-.flow-topline > span:first-child { color: #80bbb9; }
-.flow-stage { position: relative; margin: 12px -20px 0; isolation: isolate; }
-.flow-canvas { display: block; width: 100%; aspect-ratio: 900 / 430; mask-image: linear-gradient(90deg, transparent, black 7%, black 94%, transparent); }
-.flow-core { position: absolute; left: 55.778%; top: 50.116%; transform: translate(-50%, -50%); width: 112px; height: 82px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-shadow: 0 2px 12px #001616; }
-.flow-core svg { width: 31px; height: 31px; fill: none; stroke: #76ebd8; stroke-width: 1.5; }
-.flow-core strong { font: 700 18px 'Manrope Variable', sans-serif; letter-spacing: -.02em; color: #e4fff9; }
-.flow-core strong span { color: #56d9d1; }
-.login-flow figcaption { padding-top: 12px; border-top: 1px solid #27414d66; display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #7796a6; font-size: 10px; }
-.flow-motion { display: inline-flex; align-items: center; gap: 5px; background: transparent; border: 1px solid #365261; border-radius: 5px; padding: 5px 7px; color: #aec8d7; cursor: pointer; white-space: nowrap; }
+.login-flow { position: absolute; z-index: 0; inset: 0; margin: 0; pointer-events: none; }
+.flow-stage { position: absolute; inset: 0; }
+.flow-canvas { display: block; width: 100%; height: 100%; }
+/* Quiet space behind the headline; no rectangular frame around the scene. */
+.flow-stage::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 24% 47%, #09121cf2 0, #09121ca6 19%, transparent 46%); }
+.login-flow figcaption { position: absolute; z-index: 2; left: max(32px, calc((100vw - 1280px) / 2)); right: max(32px, calc((100vw - 1280px) / 2)); bottom: 28px; display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #7796a6; font-size: 10px; }
+.flow-motion { pointer-events: auto; display: inline-flex; align-items: center; gap: 5px; background: #0c1b27b3; border: 1px solid #365261; border-radius: 5px; padding: 7px 9px; color: #aec8d7; cursor: pointer; white-space: nowrap; }
 .flow-motion:hover { background: #203946; }
 .flow-motion:focus-visible { outline: 2px solid #62dac4; outline-offset: 3px; }
 .flow-motion:disabled { cursor: default; }
@@ -28,25 +28,21 @@
 .mini-table tbody .offering-row:hover, .research-table tbody .offering-row:hover,
 .mini-table tbody .offering-row:focus-within, .research-table tbody .offering-row:focus-within { background: #183643; box-shadow: inset 3px 0 #4dd1bc; }
 @media (max-width: 900px) {
-  .login { grid-template-columns: minmax(0, 1fr) minmax(290px, .85fr); gap: 26px; padding: 28px; }
-  .flow-core { width: 80px; height: 80px; }
-  .flow-core strong { font-size: 14px; }
-  .flow-core svg { width: 24px; height: 24px; }
-  .flow-topline { font-size: 7px; letter-spacing: .09em; }
+  .login { grid-template-columns: minmax(0, 1fr) minmax(290px, .85fr); gap: 26px; padding: 78px 28px; }
+  .login-brand h1 { font-size: 34px; }
+  .login-flow figcaption { left: 28px; right: 28px; }
 }
 @media (min-width: 901px) and (max-height: 850px) {
-  .login { padding-block: 26px; }
-  .login-brand .brand { margin-bottom: 22px; }
-  .login-brand h1 { font-size: 36px; }
-  .login-flow { margin-top: 22px; }
-  .flow-canvas { aspect-ratio: 900 / 390; }
+  .login { padding-block: 70px; }
+  .login-brand .brand { margin-bottom: 30px; }
+  .login-brand h1 { font-size: 44px; }
 }
 @media (max-width: 680px) {
-  .login { grid-template-columns: minmax(0, 1fr); padding: 26px 20px; gap: 26px; }
-  .login-brand .brand { margin-bottom: 24px; }
-  .login-brand h1 { font-size: 30px; }
-  .login-flow { margin-top: 24px; }
-  .flow-stage { margin-inline: -10px; }
-  .flow-core { width: 70px; height: 70px; gap: 3px; }
+  .login { grid-template-columns: minmax(0, 1fr); padding: 32px 20px 88px; gap: 38px; }
+  .login-brand .brand { margin-bottom: 30px; }
+  .login-brand h1 { font-size: 34px; }
+  .login-brand > p { margin-top: 18px; }
+  .flow-stage::after { background: linear-gradient(180deg, #09121c88, #09121cd9 15%, #09121c66 40%, transparent 75%); }
+  .login-flow figcaption { left: 20px; right: 20px; bottom: 22px; }
   .login-card { padding: 25px; }
 }

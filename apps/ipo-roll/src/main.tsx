@@ -504,6 +504,7 @@ function Login({ configured }: { configured: boolean }) {
     [busy, setBusy] = useState(false);
   return (
     <div className="login">
+      <LoginFlow />
       <div className="login-brand">
         <Logo />
         <div className="eyebrow">THE IPO RESEARCH WORKSPACE</div>
@@ -515,7 +516,6 @@ function Login({ configured }: { configured: boolean }) {
           <em>Follow the evidence.</em>
         </h1>
         <p>Public filings. Connected people. Evidence you can follow.</p>
-        <LoginFlow />
       </div>
       <form
         className="login-card"

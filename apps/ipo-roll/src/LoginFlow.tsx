@@ -9,9 +9,9 @@ function ParticleTubes({ stopped }: { stopped: boolean }) {
     const canvas = ref.current;
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx) return;
-    let frame = 0, last = 0, visible = true, disposed = false;
+    let frame = 0, last = 0, visible = true, disposed = false, sceneHeight = H;
     const render = createScenePainter(ctx);
-    function paint() { render(clock.current); }
+    function paint() { render(clock.current, sceneHeight); }
     function tick(now: number) {
       if (disposed || stopped || !visible || document.hidden) { frame = 0; return; }
       if (!last || now - last >= 32) {
@@ -22,10 +22,13 @@ function ParticleTubes({ stopped }: { stopped: boolean }) {
     }
     function resume() { last = 0; if (!frame && !stopped && visible && !document.hidden) frame = requestAnimationFrame(tick); }
     function resize() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const width = Math.max(1, canvas!.getBoundingClientRect().width);
-      canvas!.width = Math.round(width * dpr); canvas!.height = Math.round(width * H / W * dpr);
-      ctx!.setTransform(canvas!.width / W, 0, 0, canvas!.height / H, 0, 0); paint();
+      const bounds = canvas!.getBoundingClientRect();
+      const width = Math.max(1, bounds.width), height = Math.max(1, bounds.height);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2, 2400 / width);
+      canvas!.width = Math.round(width * dpr); canvas!.height = Math.round(height * dpr);
+      const scale = canvas!.width / W;
+      sceneHeight = canvas!.height / scale;
+      ctx!.setTransform(scale, 0, 0, scale, 0, 0); paint();
     }
     const sizeObserver = new ResizeObserver(resize); sizeObserver.observe(canvas);
     const visibility = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; resume(); }); visibility.observe(canvas);
@@ -46,10 +49,8 @@ export function LoginFlow() {
     return () => query.removeEventListener('change', update);
   }, []);
   return <figure className="login-flow">
-    <div className="flow-topline"><span>PUBLIC FILINGS</span><span>CONNECTED INTELLIGENCE</span></div>
     <div className="flow-stage">
       <ParticleTubes stopped={paused || reduced} />
-      <div className="flow-core"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="m18 3 14 8v15l-14 8L4 26V11z" /><path d="m9 13 9-5 9 5-9 5z M9 19l9 5 9-5 M9 25l9 5 9-5" /></svg><strong>IPO Roll<span>.</span></strong></div>
     </div>
     <figcaption><span>Illustrated data flow</span>
       <button type="button" className="flow-motion" disabled={reduced} onClick={() => setPaused(!paused)} aria-label={reduced ? 'Animation off for reduced motion' : paused ? 'Play visualization' : 'Pause visualization'}>
