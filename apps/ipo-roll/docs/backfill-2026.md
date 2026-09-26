@@ -59,11 +59,26 @@ For the original 90-candidate inventory, January moves from zero to five reviewe
 
 Owner requested faster completion. Development/backfill is now scheduled hourly, including overnight, while the historical backlog remains. Keep the separate 6 PM Pacific digest; skip overlapping work using the shared development lock. Prioritize source-reviewed imports and ownership/footnote coverage ahead of cosmetic changes. Reuse retained SEC artifacts and batch independent preparation within SEC access limits. Evidence, access and commit guards remain unchanged. Restore the previous 8 AM/noon/4 PM Pacific development cadence after independently verifying historical completion.
 
-February capture is now prepared: nine candidates, 27 verified source/normalized document pairs and 42 unreviewed biography candidate passages. No February offering/biography/holding has been imported yet. Reuse `import-output/year-2026/archive/` and `february-capture-results.json` for the next review.
+February capture is prepared for all nine candidates (27 filing documents, 42 automatically located unreviewed biography candidates). The first reviewed release below supersedes the capture-only status for four issuers. Automatic candidate counts are not verified-person counts. Reuse retained artifacts for the remaining review.
+
+## First February release — September 26, 2026
+
+Applied four reviewed offerings and 13 complete executive biographies, bringing staging to 31 offerings and 72 biographies; ownership positions remain 10. Archived 28 private evidence artifacts for 12 SEC filing documents. All data remains unpublished/internal_review. Rehearsal, apply, exact replay and post-apply database role/RPC QA passed; existing private reports remained unchanged. Live staging health passed, but the unauthenticated HTTP offerings check timed out and live authenticated browser QA was not performed.
+
+| Issuer | Ticker | Pricing date | Preliminary range | Final IPO price | Base offering value | Final prospectus |
+| --- | --- | --- | --- | ---: | ---: | --- |
+| Veradermics, Incorporated | MANE | 2026-02-03 | $14.00–$16.00 | $17.00 | $256,319,999 | 0001628280-26-005505 |
+| Eikon Therapeutics | EIKN | 2026-02-04 | $16.00–$18.00 | $18.00 | $381,196,800 | 0001193125-26-039375 |
+| Forgent Power Solutions | FPS | 2026-02-04 | $25.00–$29.00 | $27.00 | $1,512,000,000 | 0001193125-26-040029 |
+| Bob’s Discount Furniture | BOBS | 2026-02-04 | $17.00–$19.00 | $17.00 | $330,650,000 | 0001628280-26-005868 |
+
+Biography search now supports the newly reviewed named executives and their literal education/employment passages, including Ryan S. Fiedler’s investment banking experience and Carl Lukach’s Georgetown education across a page boundary. A biography is not an ownership position. Veradermics holdings are held because table and footnote date bases conflict (September 30 versus December 31, 2025), quantities mix common shares/options, and Tim/Timothy Durso needs identity reconciliation. Lock-up expiry alone would not establish current saleability.
+
+Within the original 90-candidate inventory: January 5/5 and February 4/9 candidates are now reviewed/imported. Overall comparison is 30 staged candidates, one existing issuer reconciliation and 59 requiring new source review. This is inventory progress, not a complete SEC census. Remaining February: Once Upon a Farm, SOLV Energy, ARKO Petroleum, Generate Biomedicines and SpyGlass Pharma. See `february-a-release/manifest.json` and private holdings notes for reproducible release evidence.
 
 ## Next actions
 
-1. Continue the remaining February–September SEC Monitor queue, starting with nine February candidates. Reconcile current staging identities before each release, preserve preliminary pricing and final terms, and independently check omitted SEC candidates before marking a month complete.
+1. Continue the remaining February–September SEC Monitor queue, starting with the five remaining February candidates. Reconcile current staging identities before each release, preserve preliminary pricing and final terms, and independently check omitted SEC candidates before marking a month complete.
 2. Review January ownership tables and footnotes independently before populating class/series, quantities, attribution, holdings dates or lock-up evidence. Unknown cash realizability stays unknown; do not infer personal proceeds from offering size or position differences.
 3. Apply only small reviewed releases with immutable evidence, rollback QA and exact replay. Keep rights as internal review and customer access denied until approved.
 4. Never generate or modify saved account-private Liquidity Analysis reports through backfill. Users request their own static report or explicit refresh.
