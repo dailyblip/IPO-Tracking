@@ -4,7 +4,9 @@
 
 Owner approved the full-page direction and requested less blurry particles. Replaced diffuse sprite bloom with a defined bright center and short faint halo, reduced pulse expansion, and tightened the moving light capsules. Composition, flow geometry, typography, colors, form and motion controls are retained. No new dependency, data or auth changes.
 
-Production build and existing targeted login browser journey passed (13.9 seconds), including full-container coverage, form click/focus, animation/pause/resume/reduced-motion pixels, overflow and no pre-login research calls/errors. Inspected desktop and phone screenshots for sharper distinct points. Live authenticated login was not tested. Prepared for staging publication.
+Production build and existing targeted login browser journey passed (13.9 seconds), including full-container coverage, form click/focus, animation/pause/resume/reduced-motion pixels, overflow and no pre-login research calls/errors. Inspected desktop and phone screenshots for sharper distinct points. Live authenticated login was not tested.
+
+Staging verified 2026-09-26 04:57 UTC at commercial commit `fcf22d94b331efc7c3f4fe783f7d06ab0ec4bf4a`. Served `index-CoNe2_z6.js` SHA-256 `8ff5674ef4989e9c6f23f8dbf7d1daba00489392aeaba555348b834e5b28cd61` matches the tested build. Health `ok` / `staging`; Test Research Monitor run `36219306024` passed. Ownership-history guard lists were clear immediately before committing.
 
 ## 2026-09-26: integrate particle flow across the login page
 
