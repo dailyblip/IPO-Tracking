@@ -1,4 +1,4 @@
-"""Offline, explicit projected-position review; never derives current wealth.
+"""Offline, explicit source-position review; never derives current wealth.
 
 Reuses the existing captured-document normalizer and canonical identity namespace.
 Generated SQL is private, administrative, transactional and replay-safe. It does
@@ -14,6 +14,7 @@ from capture_sec_evidence import sha, text_blocks
 from import_legacy import canonical
 from prepare_sec_review import read_object, passage, literal
 from review_components import parse_components
+from review_options import parse_pre_options
 
 
 def flat(value):
@@ -25,9 +26,12 @@ def build(packet, review, directory):
     profile = review.get('profile', 'projected-class-a-trust')
     dated = profile == 'dated-pre-common'
     mixed = profile == 'reviewed-mixed-awards'
-    if profile not in ('projected-class-a-trust', 'dated-pre-common', 'reviewed-mixed-awards'):
+    options = profile == 'dated-pre-options'
+    component_total = mixed or options
+    has_date = dated or component_total
+    if profile not in ('projected-class-a-trust', 'dated-pre-common', 'reviewed-mixed-awards', 'dated-pre-options'):
         raise ValueError('Unsupported review profile')
-    forms = ('424B4',) if dated else ('S-1/A', 'S-1', 'F-1', 'F-1/A')
+    forms = ('424B4',) if dated or options else ('S-1/A', 'S-1', 'F-1', 'F-1/A')
     if packet['lineage']['status'] != 'metadata_resolved' or current['form'] not in forms:
         raise ValueError('Filing does not match the explicit review profile')
     docs = [d for d in packet['documents'] if d['filing'] == current]
@@ -44,17 +48,24 @@ def build(packet, review, directory):
     def select(spec):
         return passage(blocks, spec['first'], spec['last'], text)
     headers, basis, restriction = [select(review[k]) for k in ('headers','basis','restriction')]
-    if dated or mixed:
+    if has_date:
         required_headers = ('Owned Before This Offering', 'Owned After This Offering') if mixed else ('before this offering', 'after this offering', 'Class A', 'Class B')
+        if options:
+            required_headers = ('SHARES BENEFICIALLY', 'OWNED PRIOR TO OFFERING', 'OWNED AFTER OFFERING', 'NUMBER PERCENTAGE')
         if not all(s in flat(headers['excerpt']) for s in required_headers):
             raise ValueError('Pre/post Class A/B header evidence required')
         as_of = date.fromisoformat(review['holdings_as_of'])
         if as_of > date.fromisoformat(current['filingDate']):
             raise ValueError('Holdings date cannot follow source filing')
         date_literal = as_of.strftime('%B') + f' {as_of.day}, {as_of.year}'
-        if f'beneficial ownership of our common stock as of {date_literal},' not in flat(basis['excerpt']):
+        noun = 'capital stock' if options else 'common stock'
+        if f'beneficial ownership of our {noun} as of {date_literal},' not in flat(basis['excerpt']):
             raise ValueError('Explicit holdings as-of evidence required')
-        if mixed:
+        if options:
+            if not all(s in flat(basis['excerpt']) for s in ('Applicable percentage ownership before the offering', 'automatic conversion of all outstanding shares of our redeemable convertible preferred stock', 'exercisable within 60 days of '+date_literal, 'does not reflect any potential purchases')):
+                raise ValueError('Complete pre/post conversion and option basis required')
+            terms = ('our officers, directors', 'have agreed, subject to specified exceptions', '180 days after the date of this prospectus', 'prior written consent', 'upon exercise', 'underlying shares of common stock shall continue to be subject', 'may, in their sole discretion', 'release all or any portion')
+        elif mixed:
             if not all(s in flat(basis['excerpt']) for s in ('Preferred Stock Conversion', 'SAFE Conversion', 'RSU Net Settlement')):
                 raise ValueError('Adjusted table assumptions required')
             terms = ('all of our directors and executive officers', '180 days from the date of this prospectus', 'various intervals', 'stock price exceeds certain thresholds', 'ability to release')
@@ -89,9 +100,10 @@ def build(packet, review, directory):
         seen.add(name)
         row, note = select(item['row']), select(item['footnote'])
         marker = str(item['footnote_number'])
-        if not flat(row['excerpt']).startswith(name + '(' + marker + ')') or not flat(note['excerpt']).startswith('(' + marker + ')'):
+        row_prefix = name + (' ' if options else '') + '(' + marker + ')'
+        if not flat(row['excerpt']).startswith(row_prefix) or not flat(note['excerpt']).startswith('(' + marker + ')'):
             raise ValueError('Row identity or footnote association mismatch')
-        if not dated and not mixed and 'trust' not in flat(note['excerpt']).lower():
+        if not has_date and 'trust' not in flat(note['excerpt']).lower():
             raise ValueError('This review path requires explicit trust-component evidence')
         n = item['shares']
         if type(n) is not int or not 0 < n <= 9007199254740991:
@@ -100,23 +112,29 @@ def build(packet, review, directory):
         if type(index) is not int or not item['row']['first'] <= index <= item['row']['last']:
             raise ValueError('Share cell outside selected row')
         cell = text[blocks[index]['start']:blocks[index]['end']]
-        if dated or mixed:
-            share_class = 'Common stock and underlying awards' if mixed else item['share_class']
+        if has_date:
+            share_class = 'Common stock underlying options' if options else 'Common stock and underlying awards' if mixed else item['share_class']
             if dated and (share_class not in ('Class A common stock', 'Class B common stock') or flat(note['excerpt']) != f'({marker})Represents {n:,} shares of {share_class}.'):
                 raise ValueError('Only an explicit simple common-share footnote is supported; mixed instruments and attribution require separate review')
             counts = re.findall(r'(?<![\d,])\d[\d,]*(?![\d,])', cell)
             if not counts or counts[0] != f'{n:,}':
                 raise ValueError('Pre-offering share count does not match row')
+            if options:
+                # Two explicit NUMBER/PERCENTAGE pairs; no dash/zero/extra cells.
+                pair = re.fullmatch(r'([\d,]+) (?:\d+(?:\.\d+)? %|\*) ([\d,]+) (?:\d+(?:\.\d+)? %|\*)', flat(cell))
+                if not pair:
+                    raise ValueError('Complete pre/post option row required')
+                post_total = int(pair[2].replace(',', ''))
         elif cell != f'{n:,}':
             raise ValueError('Selected share cell does not match count')
         person = uid('person-in-issuer', cik, name)
-        key = 'mixed-awards-pre' if mixed else 'dated-pre-'+share_class if dated else 'projected-A'
+        key = 'options-pre' if options else 'mixed-awards-pre' if mixed else 'dated-pre-'+share_class if dated else 'projected-A'
         oid = uid('holding-review', document, person, key)
-        position = dict(id=oid,person_id=person,name=name,shares=n,row=span(row),evidence=common+[span(note)],source_row_key=('reviewed-'+key+':' if dated or mixed else 'reviewed-projected-A:')+person)
-        if dated or mixed:
+        position = dict(id=oid,person_id=person,name=name,shares=n,row=span(row),evidence=common+[span(note)],source_row_key=('reviewed-'+key+':' if has_date else 'reviewed-projected-A:')+person)
+        if has_date:
             position.update(share_class=share_class,position_basis='pre',holdings_as_of=as_of.isoformat())
-        if mixed:
-            position['components'] = parse_components(note['excerpt'],marker,name,date_literal,n)
+        if component_total:
+            position['components'] = parse_pre_options(note['excerpt'],marker,name,date_literal,n,post_total) if options else parse_components(note['excerpt'],marker,name,date_literal,n)
             position['quantity_kind'] = 'beneficial_total'
         positions.append(position)
     if not positions:
@@ -138,9 +156,12 @@ def build(packet, review, directory):
         if mixed:
             explanation = 'Adjusted pre-offering beneficial-ownership disclosure as of '+p['holdings_as_of']+'. The table gives effect to preferred/SAFE conversions and RSU net settlement. The total includes award-underlying interests; components below are parts of this total, not extra holdings. Trust attribution does not establish personal economic ownership. No current position or saleability is confirmed.'
             conditions = 'The preliminary filing describes graduated lock-up releases, price-based conditions, exceptions and discretionary release. A uniform 180-day sale date is not established. RSU vesting/settlement and option exercise conditions are disclosed as of the source date; exercise price, actual settlement, current ownership and resale eligibility remain unverified. No price or cash proceeds are inferred.'
-        extra_column = ',holdings_as_of' if dated or mixed else ''
-        extra_value = ','+q(p['holdings_as_of']) if dated or mixed else ''
-        if mixed:
+        if options:
+            explanation = 'Pre-offering option-underlying interests disclosed as of '+p['holdings_as_of']+'. The complete footnote separates subsequent LLC distributions and any repurchase conditions; those post-offering interests are not added to this pre-offering total. Preferred-conversion assumptions remain in the table basis. These are not confirmed issued shares or current holdings.'
+            conditions = 'The prospectus describes a conditional 180-day restriction, exceptions and discretionary release. Exercise does not remove restrictions on the underlying shares. Actual exercise, vesting, exercise price, personal economic ownership, current holdings and resale eligibility remain unverified. No expiry date, market value, cash proceeds or intrinsic option value is inferred.'
+        extra_column = ',holdings_as_of' if has_date else ''
+        extra_value = ','+q(p['holdings_as_of']) if has_date else ''
+        if component_total:
             extra_column += ',quantity_kind'
             extra_value += ",'beneficial_total'"
         stmts += [f"if not exists(select 1 from research.parties p join research.people pp on pp.id=p.id join research.roles r on r.person_id=p.id where p.id='{pid}' and p.name={q(p['name'])} and pp.identity_verified and r.offering_id='{offering}' and r.verified) then raise exception 'Person identity mismatch'; end if;",

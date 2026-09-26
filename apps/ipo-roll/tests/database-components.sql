@@ -8,7 +8,7 @@ grant select on component_subject to authenticated;
 set local role authenticated;
 select set_config('request.jwt.claims','{"sub":"80000000-0000-4000-8000-000000000001","role":"authenticated"}',true);
 do $$ declare s record; r jsonb; p jsonb; n int:=0; begin
- for s in select h.*,p.name from research.ownerships h join research.parties p on p.id=h.party_id where h.quantity_kind='beneficial_total' loop
+ for s in select h.*,p.name from research.ownerships h join research.parties p on p.id=h.party_id where h.quantity_kind='beneficial_total' and h.offering_id='080c3186-0a1e-5d63-a098-0173d5b162c5' loop
   r:=public.ipo_roll_request_liquidity(s.offering_id,s.party_id,gen_random_uuid()); n:=n+1; p:=r#>'{positions,0}';
   if jsonb_array_length(r->'positions')<>1 then raise exception 'Duplicate aggregate/components'; end if;
   if p->>'quantityKind'<>'beneficial_total' or p->>'shares' is not null or p->>'marketValue' is not null or p->>'category'<>'unknown' then raise exception 'Mixed award total presented as liquid shares'; end if;
