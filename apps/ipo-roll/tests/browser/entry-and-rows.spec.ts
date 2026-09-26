@@ -43,6 +43,14 @@ test('login visualization is local, pausable, responsive and honors reduced moti
   await expect(page.locator('.login-flow')).toBeVisible();
   await expect(page.locator('video, iframe')).toHaveCount(0);
   const canvas = page.locator('.flow-canvas');
+  const fillsLogin = async () => {
+    const scene = await canvas.boundingBox(), login = await page.locator('.login').boundingBox();
+    expect(scene).not.toBeNull(); expect(login).not.toBeNull();
+    for (const key of ['x', 'y', 'width', 'height'] as const) {
+      expect(Math.abs(scene![key] - login![key])).toBeLessThan(1);
+    }
+  };
+  await fillsLogin();
   const pixels = () => canvas.evaluate(el => {
     const c = el as HTMLCanvasElement;
     const data = c.getContext('2d')!.getImageData(0, 0, c.width, c.height).data;
@@ -59,6 +67,7 @@ test('login visualization is local, pausable, responsive and honors reduced moti
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: 'test-results/login-flow-desktop.png', fullPage: true });
   await page.setViewportSize({ width: 1366, height: 768 });
+  await fillsLogin();
   expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(768);
   await page.screenshot({ path: 'test-results/login-flow-laptop.png', fullPage: true });
   await page.setViewportSize({ width: 2048, height: 1184 });
@@ -68,9 +77,12 @@ test('login visualization is local, pausable, responsive and honors reduced moti
   const resumed = await pixels();
   await expect.poll(pixels).not.toBe(resumed);
   await page.setViewportSize({ width: 390, height: 844 });
+  await fillsLogin();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   await page.getByRole('button', { name: 'Pause visualization' }).click();
   await page.screenshot({ path: 'test-results/login-flow-mobile.png', fullPage: true });
+  await page.getByLabel('Email address').click();
+  await expect(page.getByLabel('Email address')).toBeFocused();
   await page.getByLabel('Email address').fill('reviewer@example.invalid');
   await page.getByLabel('Password', { exact: true }).fill('not-a-real-credential');
   await expect(page.getByRole('button', { name: 'Sign in', exact: true })).toBeEnabled();

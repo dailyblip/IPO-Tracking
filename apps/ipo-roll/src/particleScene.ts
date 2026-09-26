@@ -6,12 +6,12 @@ type Point = { x: number; y: number };
 const colors = ['#43e8cb', '#63adff', '#d5fff5'];
 const noise = (i: number) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
 const paths = [
-  [[-50, 49], [202, 12], [242, 171], [434, 174]],
-  [[-60, 207], [150, 250], [282, 205], [434, 215]],
-  [[-40, 397], [183, 428], [227, 266], [434, 256]],
-  [[570, 174], [687, 173], [748, 127], [960, 127]],
-  [[570, 215], [697, 215], [790, 217], [960, 217]],
-  [[570, 256], [687, 258], [748, 307], [960, 307]],
+  [[-50, -8], [257, -30], [350, 146], [710, 180]],
+  [[-80, 308], [223, 362], [374, 289], [710, 219]],
+  [[-40, 468], [289, 472], [466, 327], [710, 258]],
+  [[710, 180], [790, 150], [850, 85], [970, 55]],
+  [[710, 219], [790, 219], [850, 219], [970, 219]],
+  [[710, 258], [790, 305], [850, 370], [970, 392]],
 ];
 // Resample curves by distance, avoiding particle acceleration through sharp bends.
 const tubes = paths.map(c => {
@@ -58,15 +58,17 @@ export function createScenePainter(ctx: CanvasRenderingContext2D) {
     ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
     ctx.drawImage(lights[color], x - size / 2, y - size / 2, size, size);
   }
-  return (time: number) => {
-    ctx.clearRect(0, 0, 900, 430); ctx.drawImage(backdrop, 0, 0);
+  return (time: number, sceneHeight = SCENE_HEIGHT) => {
+    ctx.clearRect(0, 0, 900, sceneHeight); ctx.drawImage(backdrop, 0, 0, 900, sceneHeight);
     ctx.globalCompositeOperation = 'lighter';
     // Distant light and sparse source fragments resolve into the incoming tubes.
     for (let i = 0; i < 170; i++) {
       const x = (noise(i) * 910 + time * 6) % 910;
-      dot(x, noise(i + 200) * 430, i % 17 ? 2 : 8, x < 500 ? 0 : 1, .12 + noise(i + 90) * .18);
+      dot(x, noise(i + 200) * sceneHeight, i % 17 ? 2 : 8, x < 500 ? 0 : 1, .12 + noise(i + 90) * .18);
     }
-    tubes.forEach((samples, channel) => {
+    tubes.forEach((tube, channel) => {
+      // Reflow paths to the viewport, but keep round particles and tube thickness.
+      const samples = tube.map(p => ({ x: p.x, y: p.y * sceneHeight / SCENE_HEIGHT }));
       const incoming = channel < 3, color = incoming ? 0 : 1;
       const radius = incoming ? 19 : 13;
       // Multiple fine lit surfaces imply a transparent, round conduit.
@@ -103,38 +105,6 @@ export function createScenePainter(ctx: CanvasRenderingContext2D) {
       const u = (time * .11 + channel * .31) % 1, p = position(samples, u, 0);
       dot(p.x, p.y, 36, color, .65); dot(p.x, p.y, 9, 2, .8);
     });
-    // The fixed processing core occludes the connections, making the flow readable.
-    ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
-    const polygon = (points: number[][], fill: string | CanvasGradient, stroke: string) => {
-      ctx.beginPath(); points.forEach(([x, y], i) => { if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y); }); ctx.closePath();
-      ctx.fillStyle = fill; ctx.fill(); ctx.strokeStyle = stroke; ctx.lineWidth = 1; ctx.stroke();
-    };
-    const side = ctx.createLinearGradient(580, 120, 606, 296); side.addColorStop(0, '#285773'); side.addColorStop(.5, '#102c42'); side.addColorStop(1, '#091b2b');
-    polygon([[581, 134], [603, 115], [603, 278], [581, 297]], side, '#5da9cd55');
-    polygon([[423, 134], [445, 115], [603, 115], [581, 134]], '#24464f', '#76dbcc66');
-    const face = ctx.createLinearGradient(423, 134, 581, 297);
-    face.addColorStop(0, '#1a383f'); face.addColorStop(.38, '#102730'); face.addColorStop(1, '#071720');
-    ctx.beginPath(); ctx.roundRect(423, 134, 158, 163, 12); ctx.fillStyle = face; ctx.fill();
-    const rim = ctx.createLinearGradient(423, 134, 581, 297);
-    rim.addColorStop(0, '#b1fff0'); rim.addColorStop(.45, '#4ad5ba99'); rim.addColorStop(1, '#68afffcc');
-    ctx.strokeStyle = rim; ctx.lineWidth = 1.5; ctx.stroke();
-    ctx.beginPath(); ctx.roundRect(431, 142, 142, 147, 8); ctx.strokeStyle = '#84dbc823'; ctx.lineWidth = .7; ctx.stroke();
-    // Interior circuits stay behind the wordmark's quiet central area.
-    ctx.strokeStyle = '#66c9cb33'; ctx.lineWidth = .65;
-    for (let row = 0; row < 4; row++) {
-      const y = 153 + row * 39;
-      ctx.beginPath(); ctx.moveTo(432, y); ctx.lineTo(443, y); ctx.lineTo(451, y + 8); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(572, y); ctx.lineTo(561, y); ctx.lineTo(553, y + 8); ctx.stroke();
-    }
-    ctx.globalCompositeOperation = 'lighter';
-    for (let channel = 0; channel < 3; channel++) {
-      const y = 174 + channel * 41;
-      dot(423, y, 22, 0, .55 + Math.sin(time * 1.1 - channel) * .15);
-      dot(582, y, 20, 1, .55 + Math.sin(time * 1.1 - channel - .5) * .15);
-    }
-    // Scanning lights suggest processing without rotating the entire structure.
-    const scan = (time * .12) % 1;
-    dot(437 + scan * 130, 134, 24, 0, .7);
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
   };
 }
