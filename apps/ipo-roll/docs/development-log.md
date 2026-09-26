@@ -1,5 +1,13 @@
 # IPO Roll development handoff
 
+## 2026-09-26: accelerate historical backfill and capture February
+
+Owner requested acceleration. Updated the existing development task to hourly including overnight, with the same exclusive-work lock, SEC access limits, evidence/access/commit guards and separate 6 PM Pacific digest. Prompt prioritizes source-reviewed imports and holder/footnote evidence ahead of cosmetic work and restores the previous 8 AM/noon/4 PM cadence after historical completion is independently verified.
+
+Started the next batch immediately: captured all nine February SEC Monitor candidates, including 27 SEC documents and 42 automatically located biography candidates. Verified every retained source and normalized-text SHA-256 and packet publication hold. Captures cover Eikon Therapeutics, Forgent Power Solutions, Once Upon a Farm, SOLV Energy, ARKO Petroleum, Generate Biomedicines, Veradermics, Bob's Discount Furniture and SpyGlass Pharma. These are captured/unreviewed records, not new imported offerings or confirmed people. Zero February research rows were applied in this step; staging remains at the previously verified 27 offerings/59 biographies/10 positions.
+
+Private packets/objects are under ignored `import-output/year-2026/archive/`; per-record results are in `february-capture-results.json`. Next run should reuse these artifacts for operating-company, current/root registration, preliminary/final pricing, complete biography and holder/footnote review. Missing automatic biography matches require manual passage review, never inferred identities. No schema, access, UI, production feed or private-report changes. No service purchases or new provider dependencies.
+
 ## 2026-09-26: apply first 2026 SEC Monitor backfill release
 
 Owner requested backfill using existing SEC Monitor data, within the approved January 1 onward scope. Reused the existing private intake, SEC capture and reviewed-release builders. Applied the 93-record intake at source commit `f4bdf65261fc583a406da3fd0b653b111143a2f6` to quarantine (90 interval candidates), then released five January operating-company offerings and 15 source-backed executive biographies: Aktis Oncology, BitGo, EquipmentShare, Ethos Technologies and York Space Systems. Reconciled the queued Yellowstone Midco name to York from its final prospectus. Retained 35 immutable evidence artifacts covering 15 SEC filing documents.
