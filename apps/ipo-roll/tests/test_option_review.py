@@ -44,7 +44,7 @@ class OptionReviewTests(unittest.TestCase):
                 parse_pre_options(note,'8','Jordan Example, Ph.D.','August 1, 2026',1200,1500)
 
     def test_requires_reconciled_complete_post_column(self):
-        for cell in ['1,200 3.4 % 1,501 3.0 %','1,200 3.4 % — —','1,200 3.4 % 1,500 3.0 % 100']:
+        for cell in ['1,200 3.4 % 1,501 3.0 %','1,200 3.4 % — —','1,200 3.4 % 1,500 3.0 % 100', '1,200 3.4 % 1,50,0 3.0 %']:
             with tempfile.TemporaryDirectory() as t:
                 d=Path(t);p,r=self.fixture(d,cell=cell)
                 with self.subTest(cell=cell),self.assertRaises(ValueError):m.build(p,r,d)

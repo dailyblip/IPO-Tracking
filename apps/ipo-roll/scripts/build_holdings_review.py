@@ -125,6 +125,8 @@ def build(packet, review, directory):
                 if not pair:
                     raise ValueError('Complete pre/post option row required')
                 post_total = int(pair[2].replace(',', ''))
+                if pair[2] != f'{post_total:,}':
+                    raise ValueError('Malformed post-offering quantity')
         elif cell != f'{n:,}':
             raise ValueError('Selected share cell does not match count')
         person = uid('person-in-issuer', cik, name)
