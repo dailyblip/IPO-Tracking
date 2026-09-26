@@ -1,5 +1,29 @@
 # Commercial 2026 backfill checkpoint
 
+## Latest applied checkpoint — September 26, 23:45 UTC
+
+**91 staged offerings / 207 sourced biographies / 12 positions / 14 components.** See development-log.md for the full session and workspace-recovery instructions. Source rights remain internal_review/unpublished.
+
+| Month of original feed snapshot | Feed candidates | Exact reviewed/imported snapshots | Holds |
+| --- | ---: | ---: | ---: |
+| January | 5 | 5 | 0 |
+| February | 9 | 9 | 0 |
+| March | 2 | 2 | 0 |
+| April | 11 | 11 | 0 |
+| May | 8 | 8 | 0 |
+| June | 13 | 13 | 0 |
+| July | 6 | 6 | 0 |
+| August | 13 | 13 | 0 |
+| September | 23 | 22 | 1 |
+| Total | 90 | 89 | 1 |
+
+The remaining original-feed hold is MFB Bancorp (0002152813, 0001104659-26-107563, registration 333-298928): a second-step conversion involving previously OTC-quoted shares. Wella's current amendment 0001628280-26-063205 is reconciled, preserving its existing registration root and earlier biographies.
+
+Additional independent SEC discoveries applied: Buda Juice (0002079720, 333-289874, 0001493152-26-001005) and Green Circle (0001926293, 333-276943, 0001493152-26-002087), both January IPOs with initial registrations before 2026. They are outside the 90-row Monitor comparison, hence 91 total staged offerings.
+
+This is NOT a completed independent SEC census. The source-reviewed 2026 inventory, biographies and beneficial-owner/footnote coverage are separate completeness measures. Full Q1/Q2/Q3 index reconstruction/candidate checkpoint is archived privately in ops.sec_artifacts under SHA-256 b91f8d3abff11629bba80676135770bbd4d63a4ab754e112fbb1cc1aaf1299b6. Do not count unclassified 424B4 candidates as IPOs. Continue missing months and source-reviewed exclusions; preserve MFB/direct-listing/foreign-listing holds until resolved.
+
+
 Owner authorization, September 25, 2026: extend IPO Roll's commercial staging backfill to **January 1, 2026 through the present**, including April/May and qualifying smaller operating-company IPOs. The previous historical hold is superseded for this commercial work. Do not change legacy ingestion, production schedules, Pages, or the ownership-history commit guard.
 
 Include IPOs priced during the interval even if their initial registration predates January 1, as well as qualifying filing activity during the interval. Resolve issuer and registration identity before updating an existing offering. Do not equate a later amendment with a new IPO. Pre-/post-offering snapshots must remain distinct.
