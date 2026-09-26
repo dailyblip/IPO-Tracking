@@ -1,5 +1,11 @@
 # IPO Roll development handoff
 
+## 2026-09-26: sharpen approved full-page particle composition
+
+Owner approved the full-page direction and requested less blurry particles. Replaced diffuse sprite bloom with a defined bright center and short faint halo, reduced pulse expansion, and tightened the moving light capsules. Composition, flow geometry, typography, colors, form and motion controls are retained. No new dependency, data or auth changes.
+
+Production build and existing targeted login browser journey passed (13.9 seconds), including full-container coverage, form click/focus, animation/pause/resume/reduced-motion pixels, overflow and no pre-login research calls/errors. Inspected desktop and phone screenshots for sharper distinct points. Live authenticated login was not tested. Prepared for staging publication.
+
 ## 2026-09-26: integrate particle flow across the login page
 
 Owner requested that the animation occupy the full composition instead of appearing as a separate lower-page add-on. Moved LoginFlow out of the brand content into an absolute background layer spanning the login container. Conduits sweep from the viewport edges behind the actual sign-in panel; removed the separate processor/duplicate wordmark and figure header/divider. Enlarged and balanced the headline, preserved a dark quiet area behind text, and placed the caption/motion control along the page footer. Mobile keeps the background behind stacked content.

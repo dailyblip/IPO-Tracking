@@ -41,7 +41,11 @@ export function createScenePainter(ctx: CanvasRenderingContext2D) {
   const lights = colors.map(color => {
     const canvas = document.createElement('canvas'); canvas.width = canvas.height = 40;
     const c = canvas.getContext('2d')!, g = c.createRadialGradient(20, 20, 0, 20, 20, 20);
-    g.addColorStop(0, '#eafff7'); g.addColorStop(.08, color); g.addColorStop(.23, color + '66'); g.addColorStop(1, color + '00');
+    // Defined point cores with a short, faint halo instead of diffuse bloom.
+    g.addColorStop(0, '#effffb'); g.addColorStop(.14, '#effffb');
+    g.addColorStop(.18, color); g.addColorStop(.22, color + '88');
+    g.addColorStop(.32, color + '18'); g.addColorStop(.6, color + '00');
+    g.addColorStop(1, color + '00');
     c.fillStyle = g; c.fillRect(0, 0, 40, 40); return canvas;
   });
   const backdrop = document.createElement('canvas'); backdrop.width = 900; backdrop.height = 430;
@@ -93,7 +97,7 @@ export function createScenePainter(ctx: CanvasRenderingContext2D) {
           const depth = (Math.cos(angle) + 1) / 2;
           const pulse = Math.pow((Math.cos(u * TAU * 2 - time * .95 + channel) + 1) / 2, 12);
           const edgeFade = Math.min(1, u * 12, (1 - u) * 12);
-          dot(p.x, p.y, 2.1 + depth * 2.5 + pulse * 5, pulse > .65 ? 2 : color,
+          dot(p.x, p.y, 2.1 + depth * 2.5 + pulse * 3, pulse > .65 ? 2 : color,
             (.2 + depth * .35 + pulse * .45) * edgeFade);
         }
       }
@@ -103,7 +107,7 @@ export function createScenePainter(ctx: CanvasRenderingContext2D) {
         ctx.globalAlpha = side < 0 ? .3 : .1; ctx.lineWidth = .7; ctx.strokeStyle = colors[color]; ctx.stroke();
       }
       const u = (time * .11 + channel * .31) % 1, p = position(samples, u, 0);
-      dot(p.x, p.y, 36, color, .65); dot(p.x, p.y, 9, 2, .8);
+      dot(p.x, p.y, 18, color, .35); dot(p.x, p.y, 5, 2, .9);
     });
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
   };
