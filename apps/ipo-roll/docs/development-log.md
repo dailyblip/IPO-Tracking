@@ -1,5 +1,11 @@
 # IPO Roll development handoff
 
+## 2026-09-26: luminous particle-lens direction
+
+Owner rejected the sphere/tendrils as lacking visual impact. Replaced that composition with an original tilted particle lens, two broad spiral currents, a dense rotating light lattice, traveling highlights, a restrained rim flare and atmospheric depth. Increased focal scale and light density after inspecting the first render. Retained precise HTML text/form layout, local Canvas rendering, pause/reduced-motion/visibility controls and the illustrated-data-flow label. No external assets, video, dependencies, runtime data calls or auth changes.
+
+Production build and targeted browser journey passed (9.3 seconds), including animation/pause/resume/reduced-motion pixels, desktop/laptop/wide-screen height checks, phone width, absence of browser errors and no research calls before sign-in. Inspected final desktop and 390px phone screenshots. These are simulated-config visual tests, not live authenticated login or a measured device-performance benchmark. Publication prepared; verify staging assets before reporting live. Legacy engine, database, customer data and private reports remain untouched.
+
 ## 2026-09-26: cleaner particle-stream geometry
 
 Owner flagged the tendrils. Replaced the crossing paths with six separated, gently curved streams, keeping their depth coherent. Tube cross-sections now follow the local path direction instead of a fixed world plane, and narrow smoothly where they join the sphere. Distance-resampled paths and interpolated particle locations remove uneven speed and sample stepping. Reduced the braid twist; preserved the sphere, typography, authentication and existing motion controls.
