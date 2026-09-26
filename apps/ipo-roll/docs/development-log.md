@@ -1,5 +1,11 @@
 # IPO Roll development handoff
 
+## 2026-09-26: icon-only motion control
+
+Removed the visible illustrated-data-flow caption at the owner's request. Replaced the labeled motion control with one 44px circular Pause/Play icon button. Screen-reader action labels, keyboard focus and reduced-motion behavior remain. The decorative wrapper no longer uses figure/caption semantics. No animation geometry, form, authentication or data changes.
+
+Production build and existing targeted login journey passed (13.6 seconds), covering click/focus, pause/resume/reduced-motion pixels, responsive coverage/overflow and no pre-login research calls/errors. Inspected the phone screenshot for caption removal and icon-only placement. Prepared for staging publication; no new tests, dependencies or database changes.
+
 ## 2026-09-26: sharpen approved full-page particle composition
 
 Owner approved the full-page direction and requested less blurry particles. Replaced diffuse sprite bloom with a defined bright center and short faint halo, reduced pulse expansion, and tightened the moving light capsules. Composition, flow geometry, typography, colors, form and motion controls are retained. No new dependency, data or auth changes.
