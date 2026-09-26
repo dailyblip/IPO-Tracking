@@ -1,5 +1,15 @@
 # IPO Roll development handoff
 
+## 2026-09-26: apply first 2026 SEC Monitor backfill release
+
+Owner requested backfill using existing SEC Monitor data, within the approved January 1 onward scope. Reused the existing private intake, SEC capture and reviewed-release builders. Applied the 93-record intake at source commit `f4bdf65261fc583a406da3fd0b653b111143a2f6` to quarantine (90 interval candidates), then released five January operating-company offerings and 15 source-backed executive biographies: Aktis Oncology, BitGo, EquipmentShare, Ethos Technologies and York Space Systems. Reconciled the queued Yellowstone Midco name to York from its final prospectus. Retained 35 immutable evidence artifacts covering 15 SEC filing documents.
+
+Staging verified at 2026-09-26 06:20 UTC: **27 offerings / 59 biographies / 10 ownership positions**. Michigan search has three matches; Harvard has ten. Each new issuer retains its pre-year registration, January pricing date, sourced preliminary price range, authoritative final price and base offering value. No inferred holdings, cash proceeds, live quotes or beneficial-owner relationships were added. Data remains unpublished/internal_review and unavailable to ordinary customers. Existing reviewer APIs can read the applied data without an application deployment. This is five reviewed January feed candidates, not a complete annual or monthly census.
+
+QA actually performed: full rollback rehearsal, atomic apply, exact replay, and post-apply database role/RPC checks for totals, duplicate prevention, pricing/lineage, search evidence, unsupported searches, no inferred owner matches, detail/current-price safeguards, customer isolation and anonymous denial. Five existing private Liquidity Analysis reports have the same before/after aggregate content fingerprint; no reports were generated or refreshed. Live authenticated browser QA was not performed. No application code, schema, production engine, Pages, schedules or access policy changes.
+
+Checkpoint: detailed evidence identifiers, reviewed values and remaining queue are in `backfill-2026.md`. Private source payloads/generated SQL remain outside Git. Remaining inventory: 63 candidates needing new review and one issuer reconciliation; February has nine candidates. Next work is the remaining SEC Monitor queue and independently reviewed ownership/footnote evidence. No new owner setup, AI provider or spending is required for this batch; quote rights remain a launch/valuation prerequisite.
+
 ## 2026-09-26: icon-only motion control
 
 Removed the visible illustrated-data-flow caption at the owner's request. Replaced the labeled motion control with one 44px circular Pause/Play icon button. Screen-reader action labels, keyboard focus and reduced-motion behavior remain. The decorative wrapper no longer uses figure/caption semantics. No animation geometry, form, authentication or data changes.

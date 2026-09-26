@@ -25,7 +25,7 @@ This is an inventory of the existing feed, **not a complete census of 2026 IPOs*
 
 Cohort uses pricing date when within the interval; otherwise the earliest qualifying filing date. These counts are not monthly completed-IPO totals. An exact staged snapshot does not establish complete holder/footnote coverage or current lifecycle status.
 
-## Work prepared
+## Initial capture checkpoint (superseded by release below)
 
 January capture completed for all five candidates: 15 filing documents and 34 automatically located biography candidates. These are **unreviewed candidate passages**, not verified people/affiliations. Capture packets and content-addressed bytes are retained privately under `import-output/year-2026/archive/`; no historical offering, biography or holding was imported in this step.
 
@@ -33,12 +33,32 @@ January capture completed for all five candidates: 15 filing documents and 34 au
 
 Private inputs/queue/capture artifacts are under ignored `import-output/year-2026/`. Recreate the intake from the exact source commit if the workspace expires; fetch a new read-only staging snapshot before applying any reviewed release. Captured evidence alone is not reviewed or imported. All generated source payloads stay out of Git and frontend assets.
 
+## January staging release — September 26, 2026
+
+Applied the previously prepared 93-record SEC Monitor intake to private staging quarantine (90 interval candidates); reviewed and released **five January offerings and 15 executive biographies**. Staging now contains **27 offerings, 59 biographies and 10 ownership positions**. This release adds no ownership positions or market quotes. All five offerings remain unpublished with `internal_review` access; ordinary customers cannot retrieve them.
+
+| Reviewed issuer | Ticker | Pricing date | Preliminary range | Final IPO price | Base offering value |
+| --- | --- | --- | --- | ---: | ---: |
+| Aktis Oncology | AKTS | 2026-01-08 | $16.00–$18.00 | $18.00 | $317,700,000 |
+| BitGo Holdings | BTGO | 2026-01-21 | $15.00–$17.00 | $18.00 | $212,788,710 |
+| EquipmentShare | EQPT | 2026-01-22 | $23.50–$25.50 | $24.50 | $747,250,000 |
+| Ethos Technologies | LIFE | 2026-01-28 | $18.00–$20.00 | $19.00 | $199,999,985 |
+| York Space Systems | YSS | 2026-01-28 | $30.00–$34.00 | $34.00 | $629,000,000 |
+
+Final prospectus accessions, respectively: `0001193125-26-009078`, `0001628280-26-003180`, `0001628280-26-003334`, `0001193125-26-029993`, `0001193125-26-030469`. Initial registrations predate 2026 and remain separate from pricing dates. The queued Yellowstone Midco identity was reconciled to York Space Systems from its prospectus, preserving issuer CIK and registration lineage. Base offering values are IPO offering amounts, not personal proceeds.
+
+Reviewed complete, person-specific SEC biography passages for three executives per issuer. People Search now returns three University of Michigan matches and ten Harvard matches across staging (previously two and eight). The newly supported Michigan match is Devjyoti Rudra at York. Biography evidence does not establish beneficial ownership, stock quantities or saleability.
+
+Retained 15 filing documents plus normalized text/metadata as 35 immutable private evidence artifacts in `ops.sec_artifacts`. The release uses existing import/review scripts; no pipeline rewrite or migration. Private inputs, reviewed selections, manifest and generated SQL remain under ignored `import-output/year-2026/january-release/` and `january-reviews.json`; source payloads are not Git/frontend assets.
+
+Validation: full transaction rehearsal with rollback; apply; exact replay without duplication; post-apply rollback QA checking counts, authoritative pricing versus preliminary ranges, root dates, issuer identity, detail quote safeguards, evidence search, no inferred beneficial-owner match, ordinary-customer denial and anonymous RPC denial. Five pre-existing private liquidity reports retained their identical aggregate content fingerprint. These are database role/RPC tests, not a live authenticated browser journey. The old `tests/database-month-review.sql` records the earlier 22/44 baseline and must be scoped to that cohort before reuse; its global exact counts are now historical.
+
+For the original 90-candidate inventory, January moves from zero to five reviewed staged candidates. Overall comparison is now 26 reviewed staged candidates, one existing issuer awaiting reconciliation and 63 requiring new source review. This is **not a complete January census or a completed year backfill**. Holder, footnote and liquidity coverage remains separately incomplete.
+
 ## Next actions
 
-1. Review the completed January captures for Aktis Oncology, BitGo, EquipmentShare, Ethos Technologies and Yellowstone Midco. Check authoritative current final terms, preceding preliminary pricing and operating-company eligibility. Review human biographies and holder identities independently.
-2. Apply small reviewed staging releases with immutable evidence, transaction rollback tests and exact replay checks. Preserve source rights as internal review; ordinary customer access remains denied. No duplicate re-import of existing offerings.
-3. Populate the approved beneficial ownership grid with class/series, shares versus awards, ownership attribution, holdings date, footnotes and lock-up evidence. Unknown cash realizability stays unknown. Do not infer sale proceeds from pre-/post-offering differences or issuer capital raised.
-4. Work forward through February–September gaps and reconcile missing SEC candidates. Account-private Liquidity Analysis is generated only on user request; this backfill must not generate, update or expose anyone's saved report.
-5. Report reviewed/imported progress by month in the existing nightly digest. No new owner setup or spending is needed for SEC review. Quote licensing continues to gate market-value estimates; do not add a paid AI provider.
-
-No month is yet marked complete. No historical research offering was published by this initial inventory/capture step.
+1. Continue the remaining February–September SEC Monitor queue, starting with nine February candidates. Reconcile current staging identities before each release, preserve preliminary pricing and final terms, and independently check omitted SEC candidates before marking a month complete.
+2. Review January ownership tables and footnotes independently before populating class/series, quantities, attribution, holdings dates or lock-up evidence. Unknown cash realizability stays unknown; do not infer personal proceeds from offering size or position differences.
+3. Apply only small reviewed releases with immutable evidence, rollback QA and exact replay. Keep rights as internal review and customer access denied until approved.
+4. Never generate or modify saved account-private Liquidity Analysis reports through backfill. Users request their own static report or explicit refresh.
+5. No new setup, spending or paid AI provider is needed for this SEC review. Quote licensing continues to gate market-value estimates.
