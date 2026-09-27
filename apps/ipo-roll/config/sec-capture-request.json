@@ -1,0 +1,8 @@
+{
+  "version": "sec-capture-request/1",
+  "request_id": "2026-09-27-424b1-initial",
+  "filings": [
+    {"cik": "0001841644", "accession": "0001213900-26-009315"},
+    {"cik": "0002081206", "accession": "0001753926-26-000308"}
+  ]
+}
