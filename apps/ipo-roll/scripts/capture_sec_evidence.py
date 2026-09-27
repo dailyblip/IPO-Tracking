@@ -262,7 +262,7 @@ def biography_candidates(blocks, names):
     return candidates
 
 
-def capture(record, archive, names=()):
+def capture(record, archive, names=(), additional_accessions=()):
     values = record['values']
     cik, accession = values['cik'], values['accession_no']
     rows, artifacts = load_history(archive, cik)
@@ -275,7 +275,15 @@ def capture(record, archive, names=()):
         match = next((r for r in lineage['history'] if r['accessionNumber'] == preliminary['accession']), None)
         if not match or match['form'] != preliminary['form'] or match['filingDate'] != preliminary['filed_on']:
             raise ValueError('Preliminary source is not in the verified registration history')
-    wanted = [lineage['root'], current]
+    if len(additional_accessions) != len(set(additional_accessions)):
+        raise ValueError('Additional filing accessions must be unique')
+    extra = []
+    for accession_number in additional_accessions:
+        filing = next((r for r in lineage['history'] if r['accessionNumber'] == accession_number), None)
+        if not filing:
+            raise ValueError('Additional filing is not in the verified registration history')
+        extra.append(filing)
+    wanted = [lineage['root'], current, *extra]
     if preliminary:
         wanted.append(match)
     documents = []
@@ -300,6 +308,8 @@ def main():
     parser.add_argument('--archive-dir', type=Path, required=True)
     parser.add_argument('--fetch', action='store_true', help='Opt into live SEC retrieval; requires real SEC_EDGAR_USER_AGENT')
     parser.add_argument('--person', action='append', default=[], help='Exact person name to locate; no inferred aliases')
+    parser.add_argument('--additional-accession', action='append', default=[],
+                        help='Explicit same-registration filing to capture for manual review')
     args = parser.parse_args()
     from import_legacy import digest
     batch = json.loads(args.intake.read_text())
@@ -310,7 +320,7 @@ def main():
     archive = Archive(args.archive_dir, args.fetch)
     record = batch['records'][args.record_index]
     names = args.person + [h['values']['name'] for h in record['holders'] if str(h['values'].get('holder_type', '')).lower() in ('individual', 'person')]
-    packet = capture(record, archive, names)
+    packet = capture(record, archive, names, args.additional_accession)
     packet['intake_batch_id'] = batch['id']
     target = args.archive_dir / ('review-' + record['id'] + '.json')
     target.write_text(json.dumps(packet, indent=2) + '\n')

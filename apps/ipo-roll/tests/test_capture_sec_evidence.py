@@ -12,6 +12,7 @@ spec.loader.exec_module(m)
 CIK = '0000000001'
 ROOT = dict(accessionNumber='0000000002-26-000001', filingDate='2026-08-01', form='S-1', fileNumber='333-123456', primaryDocument='root.htm')
 FINAL = {**ROOT, 'accessionNumber':'0000000002-26-000002','filingDate':'2026-09-21','form':'424B4','primaryDocument':'final.htm'}
+AMENDMENT = {**ROOT, 'accessionNumber':'0000000002-26-000004','filingDate':'2026-09-01','form':'S-1/A','primaryDocument':'amendment.htm'}
 BIO = 'Jordan Example has served as our Chief Executive Officer since 2020. Jordan Example received a degree from the University of Michigan in 2001.'
 def columns(rows):
     return {k:[r[k] for r in rows] for k in ROOT}
@@ -61,6 +62,20 @@ class CaptureTests(unittest.TestCase):
             self.assertEqual(packet['lineage']['status'],'metadata_resolved')
             text_hash=packet['documents'][1]['normalized_text_sha256']
             self.assertEqual(m.sha((d/'objects'/text_hash).read_bytes()),text_hash)
+    def test_explicit_intermediate_filing_capture_requires_same_lineage(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp)
+            data={'cik':1,'filings':{'recent':columns([ROOT,AMENDMENT,FINAL]),'files':[]}}
+            save(d,'https://data.sec.gov/submissions/CIK0000000001.json',json.dumps(data).encode())
+            for f in (ROOT,AMENDMENT,FINAL): save(d,m.document_url(CIK,f),('<html><p>'+BIO+'</p></html>').encode())
+            record={'id':'synthetic','values':{'cik':CIK,'accession_no':FINAL['accessionNumber'],'form':'424B4','filed':'2026-09-21'},'observations':[]}
+            packet=m.capture(record,m.Archive(d),[],[AMENDMENT['accessionNumber']])
+            self.assertEqual({d['filing']['accessionNumber'] for d in packet['documents']},
+                             {ROOT['accessionNumber'],AMENDMENT['accessionNumber'],FINAL['accessionNumber']})
+            with self.assertRaises(ValueError):
+                m.capture(record,m.Archive(d),[],['0000000002-26-999999'])
+            with self.assertRaises(ValueError):
+                m.capture(record,m.Archive(d),[],[AMENDMENT['accessionNumber']]*2)
     def test_corrupt_cache_or_missing_artifact_fails(self):
         with tempfile.TemporaryDirectory() as tmp:
             d=Path(tmp); url='https://data.sec.gov/submissions/CIK0000000001.json'
