@@ -1,5 +1,11 @@
 # IPO Roll development handoff
 
+## September 27 UTC: reuse the existing SEC contact in isolated Actions capture
+
+Owner authorized using the Research Monitor's existing `SEC_EDGAR_USER_AGENT` secret. Added a separate commercial-branch-only capture job with read-only repository permissions, bounded serial SEC retrieval, and encrypted-only artifact upload. It uses the secret in place, never exports it, and requires no staging database secret. First request selects the two public 424B1 CIK/accession identities already recorded in the census (PicPay and AGI); it does not approve or import either offering. See `sec-capture-actions.md` for recovery and subsequent bounded batches.
+
+Four targeted tests pass for request bounds/identity validation, missing-contact rejection, authenticated encryption/decryption and tamper rejection, and workflow branch/secret/upload boundaries. Recovery key is retained privately before publication. Live run/capture status must be verified after this commit; this entry alone does not establish that SEC capture or staging import succeeded. Prior staging totals and private reports are unchanged by this setup.
+
 ## September 27 UTC: oversized SEC evidence archive support
 
 Implemented the remaining large-document tooling gap in this checkpoint. Live capture stays bounded at 64 MB, while any logical source above the existing 20 MB immutable-object ceiling is archived as ordered 128 KB content-addressed chunks plus a canonical reconstruction manifest. The original full-file SHA-256 and byte count remain authoritative. Review packets and pilot manifests bind the logical file to the exact manifest/chunk hashes; all stored rows still satisfy the unchanged `ops.sec_artifacts` 20 MB constraint. No database limit, schema, grant or customer-facing source surface was expanded.
