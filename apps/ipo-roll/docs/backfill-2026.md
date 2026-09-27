@@ -1,5 +1,36 @@
 # Commercial 2026 backfill checkpoint
 
+## Independent census expansion — September 26 Pacific / September 27 UTC
+
+Owner explicitly requires comprehensive coverage without supplying missing-company examples. Restored the three retained Q1/Q2/Q3 full SEC master indexes from 11 ordered private archive chunks. Verified every chunk's hash/length, complete-index hashes/lengths, and checkpoint `b91f8d3abff11629bba80676135770bbd4d63a4ab754e112fbb1cc1aaf1299b6`. Index snapshots were retrieved September 26 at 23:11–23:12 UTC; they still need a cutoff/freshness check before any completeness claim.
+
+New offline `scripts/reconcile_sec_census.py` accounts by **CIK plus accession**, never issuer name or CIK alone. An already imported issuer's other filings remain `issuer_present_lineage_review`, not silently discarded. The original five-form scan had 3,039 rows. Expanded discovery includes 424B1/424B3 and S-11/F-10 registrations/amendments, producing **11,061 filing rows across 2,192 CIKs**: 92 exact current staged snapshots, 236 other filings for staged issuers requiring lineage reconciliation, and 10,733 unreviewed rows. These are NOT missing IPO counts: 7,910 rows are 424B3 and require resale/follow-on/other classification. Other form families remain explicitly tallied outside this discovery scope, not assumed irrelevant.
+
+| Filing month, not pricing month | Exact current snapshots | Known issuer / lineage review | Unreviewed filing rows |
+| --- | ---: | ---: | ---: |
+| January | 7 | 36 | 1,236 |
+| February | 10 | 8 | 1,204 |
+| March | 1 | 17 | 1,172 |
+| April | 10 | 43 | 1,244 |
+| May | 10 | 38 | 1,234 |
+| June | 11 | 30 | 1,122 |
+| July | 8 | 34 | 1,187 |
+| August | 13 | 18 | 1,303 |
+| September through retained snapshot | 22 | 12 | 1,031 |
+
+Found a concrete systematic omission: final **424B1** prospectuses were rejected by commercial intake/capture/review, which previously supported only 424B4 finals. Added 424B1 support without relaxing explicit operating-company, initial-IPO, preliminary-history or final-terms evidence checks. The expanded inventory includes 18 424B1 rows (some are joint registrants, funds or follow-ons; do not import them automatically). Source-confirmed priority candidates include PicPay, CIK 0001841644 / accession 0001213900-26-009315 (January 29), and AGI, CIK 0002081206 / accession 0001753926-26-000308 (February 11). These are **discovered, not imported**. SEC filing indexes:
+
+- https://www.sec.gov/Archives/edgar/data/1841644/000121390026009315/0001213900-26-009315-index.htm
+- https://www.sec.gov/Archives/edgar/data/2081206/000175392626000308/0001753926-26-000308-index.htm
+
+Also corrected index parsing for legitimate joint registrants sharing one accession: unrelated candidate selection now works; selecting an ambiguous multi-registrant accession still fails closed pending explicit issuer review.
+
+Private reproducibility files: `import-output/year-2026/census-checkpoint.b64`, `census-chunks/`, `census-staged.json`, and `census/inventory.json`. Staging comparison SHA-256: `77d56688957e4eb6b2e6820ba93e2deebf12754504e974a57e05bf5a69b85362`. All raw/candidate payloads stay ignored, outside public Git/frontend. Re-run the census script against a fresh staged comparison before future releases.
+
+**Remaining capture blockers:** the current shell has no configured `SEC_EDGAR_USER_AGENT`; do not invent/reuse a contact from unrelated identity metadata or acquire service secrets. Configure the existing authorized SEC capture contact through the execution service, never secrets in chat. PicPay's official primary document is 21,852,169 bytes, exceeding the current 20,000,000-byte capture/object cap; web retrieval also refuses its length. Implement tested, bounded lossless chunk archival and reconstruction, preserving full-file hash/provenance, rather than truncating evidence or increasing database limits blindly. AGI's listed primary document is 6,255,371 bytes. No live capture was attempted with a fabricated contact.
+
+**Status:** 68 Python tests passed, including 424B1 final/preliminary evidence, joint registrants, expanded discovery, same-name/different-issuer identity, same-issuer/different-accession retention, duplicate/malformed data and chunk/hash corruption rejection. No new offering, biography, holding, quote or private report imported/refreshed in this pass. Staging remains 92 offerings / 212 biographies / 12 positions across five offerings / 14 components / zero quotes. No frontend/backend deployment is required for these offline tooling changes. Full-year, month and holder coverage remain incomplete.
+
 ## Tooling recovery checkpoint — September 27
 
 The strict Aktis voting-common/option review path has been recovered and verified against retained SEC evidence. Rebuilding the private review reproduces the exact already-applied release ID `ee9a8b51-add2-5859-bf5e-56987285d014`; no staging rows were added or changed. Two reviewed Aktis executives account for the existing two positions/four components. The third reconciled option-only source row remains held because its person identity/issuer relationship was not part of the reviewed January release. This checkpoint improves reproducibility; it does not increase beneficial-owner coverage or establish current wealth, liquidity, a lock-up expiry, or cash proceeds.
@@ -163,8 +194,8 @@ Private applied inputs: `select-march.py`, `march-reviews.json` and `march-relea
 
 ## Next actions
 
-1. Continue the remaining April–September SEC Monitor queue, starting with captured Arxis and Madison Air, then the remaining nine April candidates. Reconcile current staging identities before each release, preserve preliminary pricing and final terms, and independently check omitted SEC candidates before marking a month complete.
+1. Use the expanded independent SEC census, not the superseded April–September Monitor queue (that original inventory is already reconciled except MFB). Process oldest-month registration groups and final prospectuses, explicitly recording imported/excluded/held evidence-backed decisions. Restore authorized SEC capture configuration and add bounded lossless support for large documents; then review the newly visible 424B1 candidates. Do not use names, existing CIKs, or 424B4-only filters as completeness gates.
 2. Review January ownership tables and footnotes independently before populating class/series, quantities, attribution, holdings dates or lock-up evidence. Unknown cash realizability stays unknown; do not infer personal proceeds from offering size or position differences.
 3. Apply only small reviewed releases with immutable evidence, rollback QA and exact replay. Keep rights as internal review and customer access denied until approved.
 4. Never generate or modify saved account-private Liquidity Analysis reports through backfill. Users request their own static report or explicit refresh.
-5. No new setup, spending or paid AI provider is needed for this SEC review. Quote licensing continues to gate market-value estimates.
+5. Paid quote providers are deferred by the owner. Filing-based historical IPO-price valuations and documented holder-sale gross proceeds may be implemented only with compatible reviewed securities/quantities and explicit evidence. Do not substitute IPO price for a current quote, infer cash from offering size or position differences, or modify saved reports. Provider purchase is not a standing owner action or prerequisite for filing-based work. SEC capture configuration above is a separate operational blocker; no paid AI provider is authorized or needed.

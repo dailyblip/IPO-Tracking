@@ -59,3 +59,25 @@ class ReviewBatchTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as t:
             p,r,i=self.fixture(Path(t));p['lineage']['current']['form']='424B4';r.pop('preliminary');r['fields'].pop('preliminary')
             with self.assertRaisesRegex(ValueError,'Priced offering needs'):m.build(p,r,i,Path(t))
+
+    def test_424b1_preserves_preliminary_price_and_requires_final_evidence(self):
+        with tempfile.TemporaryDirectory() as t:
+            d=Path(t);p,r,i=self.fixture(d)
+            root=copy.deepcopy(p['lineage']['root'])
+            final=dict(root, accessionNumber='0000000001-26-000002',form='424B1',filingDate='2026-09-02')
+            raw=b'<p>Example Manufacturing</p><p>This is the initial public offering. Price per share $22.00. Gross offering $22,000,000. September 2, 2026.</p><p>We manufacture industrial machines.</p>'
+            text,_=m.text_blocks(raw);h=m.sha(raw);th=m.sha(text.encode())
+            (d/'objects'/h).write_bytes(raw);(d/'objects'/th).write_text(text)
+            p['documents'].append(dict(filing=final,source=dict(content_sha256=h,url='https://www.sec.gov/Archives/edgar/data/1/000000000126000002/final.htm',retrieved_at='2026-09-23T00:00:00Z'),normalized_text_sha256=th,normalizer='sec-review/1'))
+            p['lineage']['current']=final;i['records'][0]['values']['filed']='2026-09-02'
+            r['people']=[]
+            r['fields']['preliminary']['accession']=root['accessionNumber']
+            for key in ('final_price','pricing_date','offering_value'):r['fields'][key]=dict(first=1)
+            r.update(preceding_filings_reviewed=True,final_price=22,pricing_date='2026-09-02',offering_value=22000000)
+            _,sql,_=m.build(p,r,i,d)
+            self.assertIn("'Priced'",sql);self.assertIn('$20.00–$24.00',sql)
+            self.assertNotIn('insert into research.market_prices',sql)
+            self.assertNotIn('insert into research.ownerships',sql)
+            for field,value in [('final_price',23),('pricing_date','2026-09-03'),('preceding_filings_reviewed',False)]:
+                bad=copy.deepcopy(r);bad[field]=value
+                with self.assertRaises(ValueError):m.build(p,bad,i,d)

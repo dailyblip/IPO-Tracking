@@ -19,7 +19,7 @@ from urllib.request import Request, build_opener, HTTPRedirectHandler
 
 VERSION = 'sec-review/1'
 MAX_BYTES = 20_000_000
-FORMS = {'S-1', 'S-1/A', 'F-1', 'F-1/A', '424B4'}
+FORMS = {'S-1', 'S-1/A', 'F-1', 'F-1/A', '424B1', '424B4'}
 
 
 def sha(raw):

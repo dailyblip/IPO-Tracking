@@ -98,7 +98,7 @@ def build(packet, review, intake, archive):
                 raise ValueError('Fixed filing price not supported')
             filing_price = f'${value:.2f}'
     final, pricing_date, value = None, None, None
-    if current['form'] == '424B4':
+    if current['form'] in ('424B1', '424B4'):
         if not review.get('preceding_filings_reviewed') or not all(k in fields for k in ('final_price','pricing_date','offering_value')):
             raise ValueError('Priced offering needs final terms and preliminary-history review')
         final, pricing_date, value = review['final_price'], review['pricing_date'], review['offering_value']
