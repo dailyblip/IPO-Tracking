@@ -16,6 +16,7 @@ import time
 from urllib.error import HTTPError
 from urllib.parse import urlsplit
 from urllib.request import Request, build_opener, HTTPRedirectHandler
+from discover_people import discover
 
 VERSION = 'sec-review/1'
 # A captured source may be larger than the database's immutable single-object
@@ -247,21 +248,22 @@ def text_blocks(raw):
 
 def biography_candidates(blocks, names):
     candidates = []
+    names = list(names) + [candidate['name'] for candidate in discover(blocks)]
     names = sorted(set(n for n in names if isinstance(n, str) and len(n.split()) >= 2 and not re.search(r'stanford', n, re.I)))
     for block in blocks:
         text = block['text']
-        if len(text) < 80 or len(text) > 5000 or re.search(r'stanford|#8c1515', text, re.I):
+        if len(text) < 35 or len(text) > 12000 or re.search(r'stanford|#8c1515', text, re.I):
             continue
         for name in names:
             if not re.match(r'^(?:(?:Mr|Ms|Mrs|Dr)\.\s+)?' + re.escape(name) + r'(?:\s|[,.:])', text, re.I):
                 continue
-            if not re.search(r'\b(?:served|serves|joined|received|earned|graduated|holds|has been|is our|is the)\b', text, re.I):
+            if not re.search(r'\b(?:served|serves|joined|received|earned|graduated|holds|has been|is currently|is expected to|will serve|was appointed|is our|is the)\b', text, re.I):
                 continue
             # Multiple named subjects in a block are ambiguous; require manual selection.
             if any(other != name and re.search(r'\b' + re.escape(other) + r'\b', text, re.I) for other in names):
                 continue
             candidates.append({'name': name, 'excerpt': text, 'locator': {'block': block['index'], 'start': block['start'], 'end': block['end']},
-                               'identity_status': 'unverified', 'relationship_status': 'unverified', 'approved': False})
+                               'identity_status': 'unverified', 'relationship_status': 'unverified', 'biography_complete': False, 'approved': False})
     return candidates
 
 

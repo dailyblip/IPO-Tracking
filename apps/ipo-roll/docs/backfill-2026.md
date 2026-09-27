@@ -1,5 +1,11 @@
 # Commercial 2026 backfill checkpoint
 
+## People/biography correction — September 27 Pacific
+
+Staging now has **94 offerings / 251 people / 251 biographies / 12 reviewed ownership positions**. Added 16 source-reviewed September-filing biographies to existing offerings: Orion180 +7 (9 management biographies now present) and Accelevation +9 (13 now present). Full biography continuations and search were verified through reviewer RPCs, with replay and access-denial tests. No new IPO, quantity or price was added. This corrects incomplete selected-person imports; it does not establish complete ownership-table coverage.
+
+Coverage must independently reconcile the management roster, every available biography, beneficial-owner table rows, institutional/group entries and controlling-person footnotes. The new private discovery checkpoint scans 51 retained current sources and leaves 43 unavailable local sources explicit. Its 462 unmatched paragraph starts across 46 offerings are unreviewed leads, not verified missing-person counts. See the development log for checkpoint SHA, replay-safe supplement tooling, applied batches and next steps. Owner clarification: anyone with a filing biography must have it attached and searchable, whether or not an ownership quantity has been reviewed.
+
 ## Latest census reconciliation — September 27 Pacific
 
 The four prior exact-filing exclusions are now consumed by the offline reconciler after checkpoint, source, passage and index-identity validation. Current private inventory: **94 exact current snapshots, 240 issuer-lineage reviews, 4 reviewed excluded filings, 10,723 unreviewed filing rows** (all 11,061 retained). Other filings of a reviewed issuer are never suppressed. Recovery: `import-output/year-2026/census-reviewed-94/inventory.json`. Seven census tests / 78 total Python tests pass, including conflicts and altered evidence. No new canonical IPO import in this reconciliation step.
