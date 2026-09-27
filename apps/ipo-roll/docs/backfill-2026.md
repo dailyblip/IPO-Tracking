@@ -1,5 +1,9 @@
 # Commercial 2026 backfill checkpoint
 
+## Tooling recovery checkpoint — September 27
+
+The strict Aktis voting-common/option review path has been recovered and verified against retained SEC evidence. Rebuilding the private review reproduces the exact already-applied release ID `ee9a8b51-add2-5859-bf5e-56987285d014`; no staging rows were added or changed. Two reviewed Aktis executives account for the existing two positions/four components. The third reconciled option-only source row remains held because its person identity/issuer relationship was not part of the reviewed January release. This checkpoint improves reproducibility; it does not increase beneficial-owner coverage or establish current wealth, liquidity, a lock-up expiry, or cash proceeds.
+
 ## Latest applied checkpoint — September 27, 00:29 UTC
 
 **92 staged offerings / 212 sourced biographies / 12 positions / 14 components / zero quotes.** All research remains `internal_review` and unpublished; ordinary customers are denied. Five pre-existing account-private Liquidity Analysis reports are unchanged.
