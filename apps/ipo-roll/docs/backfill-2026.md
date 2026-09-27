@@ -1,5 +1,11 @@
 # Commercial 2026 backfill checkpoint
 
+## Latest census reconciliation — September 27 Pacific
+
+The four prior exact-filing exclusions are now consumed by the offline reconciler after checkpoint, source, passage and index-identity validation. Current private inventory: **94 exact current snapshots, 240 issuer-lineage reviews, 4 reviewed excluded filings, 10,723 unreviewed filing rows** (all 11,061 retained). Other filings of a reviewed issuer are never suppressed. Recovery: `import-output/year-2026/census-reviewed-94/inventory.json`. Seven census tests / 78 total Python tests pass, including conflicts and altered evidence. No new canonical IPO import in this reconciliation step.
+
+Next source-capture request: January 8 Soren Acquisition `0001213900-26-002346`, Bleichroeder Acquisition II `0001213900-26-002472`; January 12 Atlas Critical Minerals `0001493152-26-001253`, Rubico `0001171843-26-000207`. Candidate status only until source review. Full-year completeness, end-date freshness and holder/footnote coverage remain open.
+
 ## Latest applied batch — September 27 UTC
 
 **94 offerings / 235 biographies** are now applied. Added PicPay (January pricing and filing; 9 reviewed biographies) and AGI Inc (February pricing and filing; 14 reviewed biographies). Source review covers all six captured root/amendment/final documents; both preliminary ranges, final prices and pricing dates are preserved. Release IDs and QA are recorded in `development-log.md`. Captured-only statements in earlier chronological sections below are superseded for these two issuers.

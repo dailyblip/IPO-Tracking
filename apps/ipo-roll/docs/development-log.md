@@ -1,5 +1,13 @@
 # IPO Roll development handoff
 
+## September 27 Pacific: integrate exact-filing review dispositions
+
+Verified clean branch checkpoint `b0aae024`, acquired the shared development lock, and confirmed staging remains 94 offerings / 235 biographies / five private reports. Added hash-pinned disposition inputs to `reconcile_sec_census.py`. It verifies retained original source bytes, normalized text, selected passage offsets/text and SEC URL CIK/accession, then requires exact index form/date identity. Duplicate/overlapping reviews, staged-offering conflicts, missing index rows, altered evidence and issuer-wide exclusions fail closed. This consumes human-reviewed classification; it does not infer exclusion from company names or prose heuristics.
+
+Applied the four previously archived January dispositions to the private census: **94 exact snapshots / 240 issuer-lineage rows / 4 reviewed excluded filings / 10,723 unreviewed rows**, preserving all 11,061 scoped index rows. Other filings for those issuers remain unresolved. Recovery: `import-output/year-2026/census-reviewed-94/inventory.json`; source checkpoint and evidence paths remain in the prior entry. Seven targeted census tests and all **78 Python tests** passed. No canonical offering, biography, holding, quote, saved report, database schema or application UI changed in this step.
+
+Next bounded capture request advances to January 8–12 final filings for Soren Acquisition, Bleichroeder Acquisition II, Atlas Critical Minerals and Rubico. These are unreviewed classification candidates, not approved imports. Capture execution and source review must be verified after publication. Full independent census and holdings coverage remain incomplete; no owner action or paid service is needed.
+
 ## September 27 UTC: PicPay and AGI reviewed, applied and verified
 
 Applied two independently indexed IPOs from encrypted capture run `36295785408`: January PicPay (9 biographies) and February AGI Inc (14 biographies). Staging is now **94 offerings / 235 biographies / 12 positions / 14 components / zero quotes**. These are additions beyond the original SEC Monitor inventory, not a completeness claim. Both remain `internal_review`, unpublished and inaccessible to ordinary customers.
