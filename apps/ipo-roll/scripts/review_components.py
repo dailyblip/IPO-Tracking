@@ -6,6 +6,16 @@ component is part of one reported total, never an additional aggregate position.
 import re
 
 
+def require_reconciled_total(total, components):
+    """Fail closed unless reviewed components exactly match the table total."""
+    subtotal = sum(component['quantity'] for component in components)
+    if subtotal != total:
+        raise ValueError(
+            'Components do not reconcile to the single table total '
+            f'(components={subtotal}, reported_total={total})'
+        )
+
+
 def parse_components(note, marker, name, date_literal, total):
     text = re.sub(r'\s+', ' ', note).strip()
     prefix = f'({marker}) Consists of '
@@ -52,8 +62,7 @@ def parse_components(note, marker, name, date_literal, total):
         if not 0 < quantity <= 9007199254740991:
             raise ValueError('Invalid component quantity')
         results.append(dict(ordinal=i+1,instrument=instrument,quantity=quantity,attribution=attribution,description=clause))
-    if sum(c['quantity'] for c in results) != total:
-        raise ValueError('Components do not reconcile to the single table total')
+    require_reconciled_total(total, results)
     if not any(c['instrument']!='common_share' for c in results):
         raise ValueError('This profile requires a mixed-award disclosure')
     return results
