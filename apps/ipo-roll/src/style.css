@@ -2030,12 +2030,36 @@ mark {
 .value-amount {font-size:25px;font-weight:700;color:#59dfd5;}
 .value-note {border-top:1px solid #2a3d4b;padding-top:16px;}
 
-.liquidity-summary { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:20px 0; }
-.liquidity-summary > div { border:1px solid var(--border,#34424c); padding:14px; border-radius:10px; }
-.liquidity-summary strong { display:block; font-size:24px; }
-.liquidity-summary span { display:block; font-size:13px; margin-top:5px; }
+.liquidity-summary { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin:16px 0 6px; }
+.liquidity-summary > div { border:1px solid var(--border,#34424c); padding:12px; border-radius:10px; }
+.liquidity-summary strong { display:block; font-size:22px; font-variant-numeric:tabular-nums; }
+.liquidity-summary span { display:block; font-size:11px; margin-top:5px; }
 .liquidity-dialog details { margin:18px 0; }
 .liquidity-dialog .source-box { overflow-wrap:anywhere; }
+.liquidity-dialog { width:min(1000px,calc(100vw - 32px)); }
+.liquidity-dialog summary { cursor:pointer; color:#b9d6e4; font-size:12px; font-weight:600; }
+.liquidity-dialog .ownership-heading .eyebrow { display:none; }
+.liquidity-dialog .ownership-heading h4 { font-size:15px; }
+.liquidity-dialog .ownership-reference { margin-top:20px; }
+.report-context { color:#a5bed0; font-size:13px; margin:4px 0 14px; }
+.report-asof { display:flex; flex-wrap:wrap; justify-content:space-between; gap:6px 16px; color:#96aebe; font-size:11px; border-block:1px solid #2a3d4b; padding:10px 0; }
+.report-asof strong { color:#e1ecf5; font-weight:500; }
+.report-method,.liquidity-scenario { border-top:1px solid #2a3d4b; padding-top:14px; }
+.assessment-detail { border-top:1px solid #2a3d4b; margin-top:16px; padding-top:12px; font-size:12px; line-height:1.6; }
+.assessment-detail dl { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.assessment-detail dt { color:#93afc3; }
+.assessment-detail dd { margin:3px 0; }
+.document-hash { overflow-wrap:anywhere; }
+.liquidity-status { display:block; font-size:10px; color:#a2bdce; margin-bottom:8px; }
+.report-refresh { display:flex; align-items:center; justify-content:space-between; gap:12px; border-top:1px solid #2a3d4b; padding-top:12px; }
+.report-refresh p { color:#93afc3; font-size:11px; max-width:260px; }
+.report-refresh button { flex-shrink:0; }
+.scenario-inputs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.scenario-inputs label { display:grid; gap:8px; color:#a5bed0; font-size:12px; }
+.scenario-inputs input { width:100%; min-width:0; padding:10px; border:1px solid #3b6472; border-radius:6px; background:#0c1822; color:#e1ecf5; font:inherit; }
+.scenario-inputs input:focus-visible { outline:2px solid #59dfd5; outline-offset:2px; }
+.scenario-output { display:block; margin-top:14px; color:#e1ecf5; font-size:14px; overflow-wrap:anywhere; }
+.scenario-boundaries { border-left:2px solid #3b6472; padding-left:12px; }
 
 .ownership-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
 .ownership-heading h4 { margin:4px 0 0; font-size:20px; color:#edf6ff; }
@@ -2066,17 +2090,25 @@ mark {
 .grid-evidence a { display:block; margin-top:5px; }
 .ownership-note { color:#9eb5c7; font-size:11px; line-height:1.7; }
 .ownership-empty { padding:20px; border:1px dashed #385364; border-radius:10px; color:#b7ccda; }
-.wealth-reference { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:20px; }
+.wealth-reference { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:16px 0; }
 .wealth-reference > div { padding:15px; border:1px solid #2d4757; border-radius:10px; background:linear-gradient(130deg,#132a34,#101f2c); }
 .wealth-reference small,.wealth-reference strong,.wealth-reference span { display:block; }
 .wealth-reference small { color:#a4c0d2; }
 .wealth-reference strong { font-size:17px; margin:5px 0; color:#e3eef7; }
 .wealth-reference span { font-size:11px; color:#9bb3c5; }
+.wealth-reference .value-basis { grid-column:1/-1; margin:0; font-size:11px; color:#9bb3c5; line-height:1.6; }
+.value-basis summary { cursor:pointer; font-size:11px; color:#a5bed0; }
 .person-biography { margin:22px 0; }
 .person-biography summary { cursor:pointer; color:#c1d6e5; font-weight:600; }
 @media(max-width:600px) {
   .ownership-heading { align-items:flex-start; gap:10px; }
   .ownership-heading h4 { font-size:18px; }
-  .wealth-reference { grid-template-columns:1fr; }
+  .wealth-reference { gap:8px; }
+  .wealth-reference > div { padding:12px 10px; }
+  .wealth-reference small { font-size:11px; min-height:30px; }
+  .wealth-reference strong { font-size:15px; }
+  .liquidity-summary { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .report-refresh { flex-wrap:wrap; }
+  .report-refresh p { max-width:none; }
   .ownership-scroll::before { content:'Swipe across for lock-up terms and footnotes →'; display:block; padding:8px 12px; color:#95b8cb; font-size:11px; }
 }
