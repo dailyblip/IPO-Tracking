@@ -7,7 +7,7 @@ from pathlib import Path
 
 sys.path.insert(0,str(Path(__file__).parents[1]/'scripts'))
 import build_holdings_review as m
-from review_components import parse_components
+from review_components import parse_components, require_reconciled_total
 
 NOTE = '(5) Consists of (i) 1,000 shares of common stock directly held by Jordan Example, (ii) 200 shares of common stock directly held by family trusts of which Mr. Example or his spouse serves as trustee, (iii) 30 shares of common stock underlying RSUs directly held by Mr. Example that vest and settle within 60 days of September 15, 2026, and (iv) 400 shares of common stock underlying stock options directly held by Mr. Example that are currently exercisable or would be exercisable within 60 days of September 15, 2026.'
 
@@ -26,6 +26,23 @@ class ComponentsTests(unittest.TestCase):
             with self.subTest(before=before),self.assertRaises(ValueError):self.parse(NOTE.replace(before,after))
         with self.assertRaises(ValueError):self.parse(total=1631)
         with self.assertRaises(ValueError):self.parse(NOTE+' Additional 100 options are not included.')
+
+    def test_real_disclosure_one_share_difference_stays_held(self):
+        # A reviewed filing reports 668,855 total shares, while its four
+        # enumerated components sum to 668,854. The importer must preserve the
+        # discrepancy for human review instead of rounding or inventing a share.
+        components = [
+            dict(quantity=29221),
+            dict(quantity=5173),
+            dict(quantity=10823),
+            dict(quantity=623637),
+        ]
+        self.assertEqual(sum(component['quantity'] for component in components),668854)
+        with self.assertRaisesRegex(
+            ValueError,
+            r'components=668854, reported_total=668855',
+        ):
+            require_reconciled_total(668855,components)
 
     def test_trust_rsus_require_resolved_antecedent(self):
         note='(5) Consists of (i) 1,000 shares of common stock directly held by a family trust of which Jordan Example serves as trustee and (ii) 30 shares of common stock underlying RSUs directly held by the family trust that vest and settle within 60 days of September 15, 2026.'

@@ -1,5 +1,13 @@
 # IPO Roll development handoff
 
+## 2026-09-27: non-reconciling AgomAb holding held with regression guard
+
+Reviewed Tim Knotnerus's ownership-table row and footnote in AgomAb's final 424B4 and preceding F-1/A. The table reports 668,855 shares as of December 31, 2025, while the four disclosed components (29,221 Series A conversion shares, 5,173 Series B conversion shares, 10,823 directly held common shares and 623,637 option-underlying shares) total 668,854. Both filings repeat the one-share difference. No quantity was rounded, repaired or imported; no liquidity classification, cash value, quote or private report was generated.
+
+The strict component reconciler now emits the disclosed subtotal and reported total when it fails closed, and a regression test locks the 668,854 versus 668,855 case. All **55 Python tests** pass, including the focused five-test component suite. Publication is recorded below after the ownership-history workflow guard and branch checks complete. Staging remains **92 offerings / 212 biographies / 12 ownership positions / 14 components / zero quotes**, with five unchanged private reports.
+
+The same source review found three director rows whose totals repeat entity/fund holdings while their footnotes deny voting/investment power or disclaim beneficial ownership. Those rows remain held rather than being presented as personal wealth. The contractual 180-day boundary is not evidence of current saleability. Next source priority remains independent SEC census classification plus reviewed holder/footnote coverage; this guard prevents an apparent one-share discrepancy from entering that accelerated path silently.
+
 ## 2026-09-27: independent AgomAb IPO applied and verified
 
 Recovered the commercial worktree at checkpoint `4f88b543843d9589f0cb68e38d3e6ef1d0b63df2`, confirmed draft PR #581 remains open, and verified the Research Monitor test workflow for that checkpoint passed. The disconnected local review-tool changes were not present, so they were not represented as recovered or committed. Work proceeded from the remote checkpoint without reimporting any prior batch.
