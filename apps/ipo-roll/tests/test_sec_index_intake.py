@@ -15,6 +15,21 @@ RAW = b"""Description: Master Index of EDGAR Dissemination Feed\n\nCIK|Company N
 
 
 class SecIndexIntakeTests(unittest.TestCase):
+    def test_424b1_is_discovered_but_not_automatically_approved(self):
+        payload = m.build(RAW.replace(b'424B4', b'424B1'), SOURCE,
+                          ['0001493152-26-001005'], STAMP, COMMIT)
+        self.assertEqual(payload['records'][0]['values']['form'], '424B1')
+        self.assertEqual(payload['eligibility'], 'unreviewed')
+        self.assertFalse(payload['published'])
+
+    def test_joint_registrants_do_not_block_unrelated_index_selection(self):
+        joint = (b'111|Joint Issuer|424B1|2026-01-09|edgar/data/111/0000000001-26-000001.txt\n'
+                 b'222|Joint Parent|424B1|2026-01-09|edgar/data/222/0000000001-26-000001.txt\n')
+        payload=m.build(RAW+joint,SOURCE,['0001493152-26-001005'],STAMP,COMMIT)
+        self.assertEqual(len(payload['records']),1)
+        with self.assertRaisesRegex(ValueError,'multiple registrants'):
+            m.build(RAW+joint,SOURCE,['0000000001-26-000001'],STAMP,COMMIT)
+
     def test_exact_row_build_is_deterministic_and_quarantine_only(self):
         args = (RAW, SOURCE, ["0001493152-26-001005"], STAMP, COMMIT)
         payload = m.build(*args)

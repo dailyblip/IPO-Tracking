@@ -22,6 +22,14 @@ def save(d, url, raw):
     (d/'objects'/m.sha(raw)).write_bytes(raw)
     (d/'requests'/(m.sha(url.encode())+'.json')).write_text(json.dumps(dict(url=url,content_sha256=m.sha(raw),bytes=len(raw),retrieved_at='2026-09-23T00:00:00+00:00')))
 class CaptureTests(unittest.TestCase):
+    def test_424b1_uses_same_registration_lineage_guards(self):
+        final = {**FINAL, 'form': '424B1'}
+        result = m.resolve_lineage([ROOT, AMENDMENT, final], final['accessionNumber'])
+        self.assertEqual(result['root'], ROOT)
+        self.assertEqual(result['current']['form'], '424B1')
+        with self.assertRaises(ValueError):
+            m.resolve_lineage([ROOT, {**final, 'fileNumber': '333-999999'}], final['accessionNumber'])
+
     def test_lineage_excludes_parallel_registration(self):
         other = {**ROOT,'accessionNumber':'0000000002-26-000003','fileNumber':'333-999999'}
         result=m.resolve_lineage([other,ROOT,FINAL],FINAL['accessionNumber'])

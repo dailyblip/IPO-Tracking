@@ -18,7 +18,7 @@ from prepare_sec_review import literal
 
 
 VERSION = "sec-index-intake/1"
-FORMS = {"S-1", "S-1/A", "F-1", "F-1/A", "424B4"}
+FORMS = {"S-1", "S-1/A", "F-1", "F-1/A", "424B1", "424B4"}
 FINDINGS = [
     "OPERATING_COMPANY_REVIEW_REQUIRED",
     "SOURCE_DOCUMENT_CAPTURE_REQUIRED",
@@ -64,7 +64,9 @@ def parse_rows(raw: bytes):
         data = match.groupdict()
         if data["form"] not in FORMS:
             continue
-        key = data["accession"]
+        # Joint registrants legitimately share an accession. Do not reject the
+        # entire quarterly index because two distinct CIKs co-filed a prospectus.
+        key = (data["cik"], data["accession"])
         if key in seen:
             raise ValueError("Duplicate SEC index accession")
         seen.add(key)
@@ -90,6 +92,8 @@ def build(raw: bytes, source_url: str, accessions: list[str], retrieved_at: str,
     selected = [r for r in parse_rows(raw) if r["accession"] in wanted]
     if {r["accession"] for r in selected} != wanted:
         raise ValueError("Selected accession missing from exact index")
+    if len(selected) != len(wanted):
+        raise ValueError("Selected accession has multiple registrants; explicit issuer review required")
     selected.sort(key=lambda r: (r["filed"], r["accession"]))
     input_sha = sha(raw)
     records = []
