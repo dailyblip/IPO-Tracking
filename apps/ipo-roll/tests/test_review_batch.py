@@ -97,6 +97,28 @@ class ReviewBatchTests(unittest.TestCase):
             p,r,i=self.fixture(Path(t));p['lineage']['current']['form']='424B4';r.pop('preliminary');r['fields'].pop('preliminary')
             with self.assertRaisesRegex(ValueError,'Priced offering needs'):m.build(p,r,i,Path(t))
 
+    def test_explicit_us_dollar_range_preserves_source_and_rejects_other_currencies(self):
+        for phrase, accepted in [('between US$20.00 and US$24.00', True),
+                                 ('between R$20.00 and R$24.00', False),
+                                 ('between US$20.00 and $24.00', False),
+                                 ('between $20.00 and US$24.00', False),
+                                 ('between US$20.00 and US$24.001', False)]:
+            with self.subTest(phrase=phrase), tempfile.TemporaryDirectory() as t:
+                d=Path(t);p,r,i=self.fixture(d)
+                doc=p['documents'][0]
+                raw=(d/'objects'/doc['source']['content_sha256']).read_bytes().replace(
+                    b'between $20.00 and $24.00', phrase.encode())
+                text,_=m.text_blocks(raw);h=m.sha(raw);th=m.sha(text.encode())
+                (d/'objects'/h).write_bytes(raw);(d/'objects'/th).write_text(text)
+                doc['source']['content_sha256']=h;doc['normalized_text_sha256']=th
+                if accepted:
+                    _,sql,_=m.build(p,r,i,d)
+                    self.assertIn(phrase,sql)
+                    self.assertIn('$20.00–$24.00',sql)
+                else:
+                    with self.assertRaisesRegex(ValueError,'Preliminary range'):
+                        m.build(p,r,i,d)
+
     def test_424b1_preserves_preliminary_price_and_requires_final_evidence(self):
         with tempfile.TemporaryDirectory() as t:
             d=Path(t);p,r,i=self.fixture(d)

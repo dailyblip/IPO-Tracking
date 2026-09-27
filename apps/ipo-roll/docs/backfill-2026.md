@@ -1,5 +1,25 @@
 # Commercial 2026 backfill checkpoint
 
+## Latest applied batch — September 27 UTC
+
+**94 offerings / 235 biographies** are now applied. Added PicPay (January pricing and filing; 9 reviewed biographies) and AGI Inc (February pricing and filing; 14 reviewed biographies). Source review covers all six captured root/amendment/final documents; both preliminary ranges, final prices and pricing dates are preserved. Release IDs and QA are recorded in `development-log.md`. Captured-only statements in earlier chronological sections below are superseded for these two issuers.
+
+| Current source filing month | Applied offering snapshots | Newly applied in this batch |
+| --- | ---: | ---: |
+| January | 8 | 1 |
+| February | 11 | 1 |
+| March | 1 | 0 |
+| April | 10 | 0 |
+| May | 10 | 0 |
+| June | 11 | 0 |
+| July | 8 | 0 |
+| August | 13 | 0 |
+| September | 22 | 0 |
+
+These are current filing-month counts, not pricing-month census totals. No month is certified complete. Holdings remain 12 positions / 14 components across five offerings; the 23 new biographies do not establish holdings. Five private static reports are unchanged, zero quotes. Reviewer API source/search/pricing and customer/anonymous denial checks passed; live login/browser QA remains unverified in this batch. Source rights stay internal-review-only.
+
+Next bounded capture request contains four January final-prospectus **classification candidates**, not imports: CIK/accession `0001472326 / 0001193125-26-000752`, `0002002453 / 0001493152-26-000242`, `0002086545 / 0001213900-26-001875`, `0002046042 / 0001104659-26-002168`. Review initial offering versus follow-on/resale and operating company versus blank check from actual documents. Full independent SEC census, snapshot freshness, unpriced registration activity and beneficial-owner footnotes remain open.
+
 ## Independent census expansion — September 26 Pacific / September 27 UTC
 
 Owner explicitly requires comprehensive coverage without supplying missing-company examples. Restored the three retained Q1/Q2/Q3 full SEC master indexes from 11 ordered private archive chunks. Verified every chunk's hash/length, complete-index hashes/lengths, and checkpoint `b91f8d3abff11629bba80676135770bbd4d63a4ab754e112fbb1cc1aaf1299b6`. Index snapshots were retrieved September 26 at 23:11–23:12 UTC; they still need a cutoff/freshness check before any completeness claim.
