@@ -11,9 +11,16 @@ import re
 from pathlib import Path
 
 from build_internal_pilot import uid
-from capture_sec_evidence import sha, text_blocks
+from capture_sec_evidence import MAX_BYTES as MAX_LOGICAL_ARTIFACT_BYTES, sha, text_blocks
 from import_legacy import canonical
 from prepare_sec_review import literal, passage, read_object
+
+
+INLINE_ARTIFACT_BYTES = 20_000_000
+# Keeps a worst-case base64 SQL value comfortably below the archive file split
+# threshold while avoiding any reliance on compressibility.
+ARCHIVE_CHUNK_BYTES = 128_000
+ARCHIVE_FORMAT = 'sec-artifact-chunks/1'
 
 
 def flat(s):
@@ -32,6 +39,74 @@ def sql_value(v):
 
 def insert(table, values):
     return "insert into " + table + "(" + ",".join(values) + ") values(" + ",".join(sql_value(v) for v in values.values()) + ");"
+
+
+def plan_artifact_archive(objects, inline_limit=INLINE_ARTIFACT_BYTES,
+                          chunk_bytes=ARCHIVE_CHUNK_BYTES,
+                          max_bytes=MAX_LOGICAL_ARTIFACT_BYTES):
+    """Return database-sized objects and immutable reconstruction metadata."""
+    if not (0 < chunk_bytes <= inline_limit <= max_bytes):
+        raise ValueError('Invalid artifact archive limits')
+    stored, chunked = {}, {}
+    for checksum, raw in sorted(objects.items()):
+        if sha(raw) != checksum:
+            raise ValueError('Artifact content hash mismatch')
+        if not (0 < len(raw) <= max_bytes):
+            raise ValueError('Artifact exceeds bounded logical archive limit')
+        if len(raw) <= inline_limit:
+            stored[checksum] = raw
+            continue
+        chunks = []
+        for ordinal, start in enumerate(range(0, len(raw), chunk_bytes)):
+            part = raw[start:start + chunk_bytes]
+            part_hash = sha(part)
+            stored.setdefault(part_hash, part)
+            if stored[part_hash] != part:
+                raise ValueError('Artifact chunk hash collision')
+            chunks.append(dict(ordinal=ordinal, start=start, raw_bytes=len(part),
+                               sha256=part_hash))
+        descriptor = dict(version=ARCHIVE_FORMAT, sha256=checksum,
+                          raw_bytes=len(raw), chunk_bytes=chunk_bytes,
+                          chunks=chunks)
+        manifest_raw = canonical(descriptor).encode()
+        if len(manifest_raw) > inline_limit:
+            raise ValueError('Artifact reconstruction manifest exceeds inline limit')
+        manifest_hash = sha(manifest_raw)
+        stored.setdefault(manifest_hash, manifest_raw)
+        if stored[manifest_hash] != manifest_raw:
+            raise ValueError('Artifact manifest hash collision')
+        chunked[checksum] = dict(descriptor, manifest_sha256=manifest_hash)
+    return stored, chunked
+
+
+def restore_artifact(checksum, stored, chunked):
+    """Reconstruct one logical artifact and recheck every byte boundary/hash."""
+    if checksum not in chunked:
+        raw = stored[checksum]
+        if sha(raw) != checksum:
+            raise ValueError('Stored artifact hash mismatch')
+        return raw
+    descriptor = chunked[checksum]
+    manifest_hash = descriptor['manifest_sha256']
+    manifest = dict(descriptor)
+    del manifest['manifest_sha256']
+    manifest_raw = stored[manifest_hash]
+    if sha(manifest_raw) != manifest_hash or canonical(manifest).encode() != manifest_raw:
+        raise ValueError('Artifact reconstruction manifest mismatch')
+    parts = []
+    expected_start = 0
+    for ordinal, spec in enumerate(descriptor['chunks']):
+        if spec['ordinal'] != ordinal or spec['start'] != expected_start:
+            raise ValueError('Artifact chunks are not ordered and contiguous')
+        part = stored[spec['sha256']]
+        if len(part) != spec['raw_bytes'] or sha(part) != spec['sha256']:
+            raise ValueError('Artifact chunk hash/length mismatch')
+        parts.append(part)
+        expected_start += len(part)
+    raw = b''.join(parts)
+    if len(raw) != descriptor['raw_bytes'] or sha(raw) != checksum:
+        raise ValueError('Reconstructed artifact hash/length mismatch')
+    return raw
 
 
 def build(packet, review, intake, archive):
@@ -57,6 +132,7 @@ def build(packet, review, intake, archive):
         artifacts[d['normalized_text_sha256']] = read_object(archive, d['normalized_text_sha256'])
     for m in packet['metadata_artifacts']:
         artifacts[m['content_sha256']] = read_object(archive, m['content_sha256'])
+    stored_artifacts, chunked_artifacts = plan_artifact_archive(artifacts)
     cur = current['accessionNumber']
     if cur not in docs or root['accessionNumber'] not in docs:
         raise ValueError('Missing root or current filing')
@@ -126,6 +202,7 @@ def build(packet, review, intake, archive):
         people.append(dict(p, biography=bio))
     manifest = dict(version='reviewed-month/1', intake_record_id=record['id'],
                     capture=packet, review=review, fields=fields, people=people,
+                    artifact_archive=chunked_artifacts,
                     audience='internal_review', published=False,
                     snapshot_note='Captured filing snapshot; not a live market or ownership update')
     digest = sha(canonical(manifest).encode())
@@ -133,7 +210,8 @@ def build(packet, review, intake, archive):
     offering = uid('offering', packet['cik'], root['accessionNumber'])
     company = uid('company', packet['cik'])
     review_packet = dict(version='sec-selected-review/1', capture=packet, people=people,
-                         rights_status='unreviewed', publication_allowed=False, field_review=fields)
+                         rights_status='unreviewed', publication_allowed=False,
+                         field_review=fields, artifact_archive=chunked_artifacts)
     packet_hash = sha(canonical(review_packet).encode())
     packet_id = uid('review-packet', packet_hash)
     stmts = [insert('ops.sec_review_packets',dict(id=packet_id,intake_record_id=record['id'],packet_sha256=packet_hash,packet=canonical(review_packet))),
@@ -159,7 +237,7 @@ def build(packet, review, intake, archive):
         stmts.extend([insert('research.parties',dict(id=pid,name=p['name'],kind='person')),insert('research.people',dict(id=pid,identity_verified=True)),insert('research.roles',dict(id=uid('role',pid,offering,p['relationship']),person_id=pid,offering_id=offering,title=p['title'],relationship=p['relationship'],evidence_id=sid,verified=True)),insert('research.biographies',dict(id=bid,person_id=pid,span_id=sid,approved=True))])
         # This claim attests only to literal reviewed text, not an inferred affiliation.
         stmts.append(insert('research.claims',dict(id=uid('claim',bid,'biography_text'),biography_id=bid,predicate='biography_text',object_text=flat(p['biography']['excerpt']),evidence_id=sid,verified=True)))
-    for checksum in artifacts:
+    for checksum in stored_artifacts:
         stmts.append(insert('ops.sec_packet_artifacts',dict(packet_id=packet_id,artifact_sha256=checksum)))
     manifest['offering_id']=offering
     body=canonical(manifest)
@@ -168,7 +246,9 @@ def build(packet, review, intake, archive):
     # Exact replay skips the entire immutable release; divergent data fails instead of overwriting it.
     guard=f"if exists(select 1 from ops.pilot_manifests where release_id='{release}' and manifest={literal(body)}::jsonb) then return; end if;"
     sql='do '+tag+' begin '+guard+'\n'+'\n'.join(stmts)+'\nend '+tag+';\n'
-    return dict(offering_id=offering,release_id=release,company=name,people=len(people)),sql,artifacts
+    result = dict(offering_id=offering,release_id=release,company=name,
+                  people=len(people),chunked_artifacts=len(chunked_artifacts))
+    return result,sql,stored_artifacts
 
 
 def main():
@@ -180,7 +260,11 @@ def main():
     for review in reviews:
         packet=json.loads((a.capture_dir/review['capture_file']).read_text())
         result,statement,artifacts=build(packet,review,intake,a.archive_dir)
-        results.append(result);sql.append(statement);objects.update(artifacts)
+        results.append(result);sql.append(statement)
+        for checksum, raw in artifacts.items():
+            objects.setdefault(checksum, raw)
+            if objects[checksum] != raw:
+                raise ValueError('Cross-packet artifact hash collision')
         (a.output_dir/(review['capture_file'].replace('.json','.sql'))).write_text('begin;\n'+statement+'commit;')
     sql.append('commit;')
     (a.output_dir/'import.sql').write_text('\n'.join(sql))
@@ -196,7 +280,9 @@ def main():
     if current:chunks.append(current)
     for i,lines in enumerate(chunks):
         (a.output_dir/f'archive-{i:03}.sql').write_text('begin;\n'+'\n'.join(lines)+'\ncommit;')
-    print(json.dumps(dict(companies=len(results),people=sum(r['people'] for r in results),artifacts=len(objects),archive_chunks=len(chunks))))
+    print(json.dumps(dict(companies=len(results),people=sum(r['people'] for r in results),
+                          artifacts=len(objects),chunked_artifacts=sum(r['chunked_artifacts'] for r in results),
+                          archive_chunks=len(chunks))))
 
 
 if __name__=='__main__':main()
