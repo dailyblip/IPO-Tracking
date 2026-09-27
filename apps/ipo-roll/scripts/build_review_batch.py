@@ -165,12 +165,15 @@ def build(packet, review, intake, archive):
         text = flat(fields['preliminary']['excerpt'])
         if 'low' in prelim:
             lo, hi = prelim['low'], prelim['high']
-            if not (0 < lo <= hi) or f'between ${lo:.2f} and ${hi:.2f}' not in text:
+            currency = r'(?P<usd>US)?\$'
+            pattern = (r'\bbetween ' + currency + re.escape(f'{lo:.2f}') +
+                       r' and (?(usd)US)\$' + re.escape(f'{hi:.2f}') + r'(?!\d|[.,]\d)')
+            if not (0 < lo <= hi) or not re.search(pattern, text):
                 raise ValueError('Preliminary range not supported')
             filing_price = f'${lo:.2f}–${hi:.2f}'
         else:
             value = prelim['fixed']
-            if value <= 0 or f'fixed at ${value:.2f}' not in text:
+            if value <= 0 or not re.search(r'\bfixed at (?:US)?\$' + re.escape(f'{value:.2f}') + r'(?!\d|[.,]\d)', text):
                 raise ValueError('Fixed filing price not supported')
             filing_price = f'${value:.2f}'
     final, pricing_date, value = None, None, None
