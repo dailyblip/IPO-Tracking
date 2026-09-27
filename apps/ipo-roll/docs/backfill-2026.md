@@ -1,5 +1,19 @@
 # Commercial 2026 backfill checkpoint
 
+## Latest applied checkpoint — September 27, 00:29 UTC
+
+**92 staged offerings / 212 sourced biographies / 12 positions / 14 components / zero quotes.** All research remains `internal_review` and unpublished; ordinary customers are denied. Five pre-existing account-private Liquidity Analysis reports are unchanged.
+
+Added one independently SEC-discovered operating-company IPO outside the original Monitor inventory:
+
+| Issuer | Ticker | Pricing date | Preliminary range | Final IPO price | Base offering value | Final prospectus |
+| --- | --- | --- | --- | ---: | ---: | --- |
+| AgomAb Therapeutics NV | AGMB | 2026-02-05 | $15.00–$17.00 | $16.00 | $200,000,000 | 0001104659-26-011523 |
+
+The exact Q1 SEC master-index row, January 16 F-1, January 29 F-1/A and February 6 424B4 are retained privately with verified hashes. Five complete executive biographies were released; selected commercial biography evidence has no Stanford reference. No holder position, lock-up expiry, quote, saleability or personal proceeds were inferred. The offering was rehearsed, applied, replayed and tested through customer/reviewer roles and the application RPCs. Polaryx was held as an explicit direct listing rather than forced into the operating-company IPO cohort.
+
+The original Monitor comparison below remains **89 exact reviewed/imported snapshots of 90 candidates plus one MFB hold**. Independent additions are now Buda Juice, Green Circle and AgomAb, producing 92 total staged offerings. This is still **not a complete independent SEC census**, and biography coverage is not beneficial-owner/footnote completeness.
+
 ## Latest applied checkpoint — September 26, 23:45 UTC
 
 **91 staged offerings / 207 sourced biographies / 12 positions / 14 components.** See development-log.md for the full session and workspace-recovery instructions. Source rights remain internal_review/unpublished.
