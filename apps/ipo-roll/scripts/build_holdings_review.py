@@ -15,6 +15,7 @@ from import_legacy import canonical
 from prepare_sec_review import read_object, passage, literal
 from review_components import parse_components
 from review_options import parse_pre_options
+from review_voting_options import parse_voting_options
 
 
 def flat(value):
@@ -27,11 +28,12 @@ def build(packet, review, directory):
     dated = profile == 'dated-pre-common'
     mixed = profile == 'reviewed-mixed-awards'
     options = profile == 'dated-pre-options'
-    component_total = mixed or options
+    voting_options = profile == 'dated-voting-options'
+    component_total = mixed or options or voting_options
     has_date = dated or component_total
-    if profile not in ('projected-class-a-trust', 'dated-pre-common', 'reviewed-mixed-awards', 'dated-pre-options'):
+    if profile not in ('projected-class-a-trust', 'dated-pre-common', 'reviewed-mixed-awards', 'dated-pre-options', 'dated-voting-options'):
         raise ValueError('Unsupported review profile')
-    forms = ('424B4',) if dated or options else ('S-1/A', 'S-1', 'F-1', 'F-1/A')
+    forms = ('424B4',) if dated or options or voting_options else ('S-1/A', 'S-1', 'F-1', 'F-1/A')
     if packet['lineage']['status'] != 'metadata_resolved' or current['form'] not in forms:
         raise ValueError('Filing does not match the explicit review profile')
     docs = [d for d in packet['documents'] if d['filing'] == current]
@@ -52,19 +54,26 @@ def build(packet, review, directory):
         required_headers = ('Owned Before This Offering', 'Owned After This Offering') if mixed else ('before this offering', 'after this offering', 'Class A', 'Class B')
         if options:
             required_headers = ('SHARES BENEFICIALLY', 'OWNED PRIOR TO OFFERING', 'OWNED AFTER OFFERING', 'NUMBER PERCENTAGE')
+        elif voting_options:
+            required_headers = ('Number of shares of voting common stock beneficially owned', 'Number of Class A common stock beneficially owned', 'Percentage of shares beneficially owned', 'Before offering', 'After offering')
         if not all(s in flat(headers['excerpt']) for s in required_headers):
             raise ValueError('Pre/post Class A/B header evidence required')
         as_of = date.fromisoformat(review['holdings_as_of'])
         if as_of > date.fromisoformat(current['filingDate']):
             raise ValueError('Holdings date cannot follow source filing')
         date_literal = as_of.strftime('%B') + f' {as_of.day}, {as_of.year}'
-        noun = 'capital stock' if options else 'common stock'
-        if f'beneficial ownership of our {noun} as of {date_literal},' not in flat(basis['excerpt']):
+        noun = 'capital stock' if options or voting_options else 'common stock'
+        date_boundary = ':' if voting_options else ','
+        if f'beneficial ownership of our {noun} as of {date_literal}{date_boundary}' not in flat(basis['excerpt']):
             raise ValueError('Explicit holdings as-of evidence required')
         if options:
             if not all(s in flat(basis['excerpt']) for s in ('Applicable percentage ownership before the offering', 'automatic conversion of all outstanding shares of our redeemable convertible preferred stock', 'exercisable within 60 days of '+date_literal, 'does not reflect any potential purchases')):
                 raise ValueError('Complete pre/post conversion and option basis required')
             terms = ('our officers, directors', 'have agreed, subject to specified exceptions', '180 days after the date of this prospectus', 'prior written consent', 'upon exercise', 'underlying shares of common stock shall continue to be subject', 'may, in their sole discretion', 'release all or any portion')
+        elif voting_options:
+            if not all(s in flat(basis['excerpt']) for s in ('automatic conversion of all of our redeemable convertible preferred stock', 'shares of common stock subject to options', 'currently exercisable or will become exercisable within 60 days of '+date_literal)):
+                raise ValueError('Complete conversion and option table basis required')
+            terms = ('Our directors and executive officers', 'have entered into lock-up agreements', 'limited exceptions', '180 days after the date of this prospectus', 'prior written consent', 'securities which may be issued upon exercise of a stock option or warrant', 'lock-up securities received upon such exercise', 'may release')
         elif mixed:
             if not all(s in flat(basis['excerpt']) for s in ('Preferred Stock Conversion', 'SAFE Conversion', 'RSU Net Settlement')):
                 raise ValueError('Adjusted table assumptions required')
@@ -100,7 +109,10 @@ def build(packet, review, directory):
         seen.add(name)
         row, note = select(item['row']), select(item['footnote'])
         marker = str(item['footnote_number'])
-        row_prefix = name + (' ' if options else '') + '(' + marker + ')'
+        row_name = item.get('row_name') if voting_options else name
+        if voting_options and not item.get('row_name'):
+            raise ValueError('Voting-common review requires an exact source row name')
+        row_prefix = row_name + (' ' if options else '') + '(' + marker + ')'
         if not flat(row['excerpt']).startswith(row_prefix) or not flat(note['excerpt']).startswith('(' + marker + ')'):
             raise ValueError('Row identity or footnote association mismatch')
         if not has_date and 'trust' not in flat(note['excerpt']).lower():
@@ -113,7 +125,7 @@ def build(packet, review, directory):
             raise ValueError('Share cell outside selected row')
         cell = text[blocks[index]['start']:blocks[index]['end']]
         if has_date:
-            share_class = 'Common stock underlying options' if options else 'Common stock and underlying awards' if mixed else item['share_class']
+            share_class = 'Voting common stock and underlying options' if voting_options else 'Common stock underlying options' if options else 'Common stock and underlying awards' if mixed else item['share_class']
             if dated and (share_class not in ('Class A common stock', 'Class B common stock') or flat(note['excerpt']) != f'({marker})Represents {n:,} shares of {share_class}.'):
                 raise ValueError('Only an explicit simple common-share footnote is supported; mixed instruments and attribution require separate review')
             counts = re.findall(r'(?<![\d,])\d[\d,]*(?![\d,])', cell)
@@ -127,16 +139,23 @@ def build(packet, review, directory):
                 post_total = int(pair[2].replace(',', ''))
                 if pair[2] != f'{post_total:,}':
                     raise ValueError('Malformed post-offering quantity')
+            elif voting_options:
+                pair = re.fullmatch(r'([\d,]+) — (?:\d+(?:\.\d+)?%|\*%) (?:\d+(?:\.\d+)?%|\*%)', flat(cell))
+                if not pair or pair[1] != f'{n:,}':
+                    raise ValueError('Complete voting-common row required')
         elif cell != f'{n:,}':
             raise ValueError('Selected share cell does not match count')
         person = uid('person-in-issuer', cik, name)
-        key = 'options-pre' if options else 'mixed-awards-pre' if mixed else 'dated-pre-'+share_class if dated else 'projected-A'
+        key = 'voting-options-pre' if voting_options else 'options-pre' if options else 'mixed-awards-pre' if mixed else 'dated-pre-'+share_class if dated else 'projected-A'
         oid = uid('holding-review', document, person, key)
         position = dict(id=oid,person_id=person,name=name,shares=n,row=span(row),evidence=common+[span(note)],source_row_key=('reviewed-'+key+':' if has_date else 'reviewed-projected-A:')+person)
         if has_date:
             position.update(share_class=share_class,position_basis='pre',holdings_as_of=as_of.isoformat())
         if component_total:
-            position['components'] = parse_pre_options(note['excerpt'],marker,name,date_literal,n,post_total) if options else parse_components(note['excerpt'],marker,name,date_literal,n)
+            if voting_options:
+                position['components'] = parse_voting_options(note['excerpt'], marker, date_literal, n)
+            else:
+                position['components'] = parse_pre_options(note['excerpt'],marker,name,date_literal,n,post_total) if options else parse_components(note['excerpt'],marker,name,date_literal,n)
             position['quantity_kind'] = 'beneficial_total'
         positions.append(position)
     if not positions:
@@ -161,6 +180,9 @@ def build(packet, review, directory):
         if options:
             explanation = 'Pre-offering option-underlying interests disclosed as of '+p['holdings_as_of']+'. The complete footnote separates subsequent LLC distributions and any repurchase conditions; those post-offering interests are not added to this pre-offering total. Preferred-conversion assumptions remain in the table basis. These are not confirmed issued shares or current holdings.'
             conditions = 'The prospectus describes a conditional 180-day restriction, exceptions and discretionary release. Exercise does not remove restrictions on the underlying shares. Actual exercise, vesting, exercise price, personal economic ownership, current holdings and resale eligibility remain unverified. No expiry date, market value, cash proceeds or intrinsic option value is inferred.'
+        if voting_options:
+            explanation = 'Pre-offering beneficial-ownership disclosure as of '+p['holdings_as_of']+'. The table gives effect to preferred-stock conversion and includes option-underlying interests exercisable within 60 days of the source date. Components below are parts of this total, not extra holdings. No current position, option exercise, personal economic ownership or saleability is confirmed.'
+            conditions = 'The prospectus describes a conditional 180-day restriction, exceptions and discretionary release. Exercise does not remove restrictions on received shares. No lock-up expiry date, current resale eligibility, security-matched quote, market value or cash proceeds is inferred.'
         extra_column = ',holdings_as_of' if has_date else ''
         extra_value = ','+q(p['holdings_as_of']) if has_date else ''
         if component_total:

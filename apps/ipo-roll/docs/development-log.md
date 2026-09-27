@@ -1,5 +1,13 @@
 # IPO Roll development handoff
 
+## 2026-09-27: recover exact Aktis voting-common review tooling
+
+Recovered the missing deterministic `dated-voting-options` review path from the immutable applied Aktis manifest and its retained SEC source, without changing staging data. The strict parser accepts only the reviewed common-share-plus-option or option-only footnote shapes, requires the exact holdings date and source row name, and reconciles every component to the single reported beneficial-ownership total. Unsupported trust/fund/conversion/award clauses, source dates, instruments, malformed rows and arithmetic differences fail closed.
+
+Ran the recovered builder against Aktis's retained final 424B4. It reproduced the already-applied release ID `ee9a8b51-add2-5859-bf5e-56987285d014` exactly: Matthew Roden's 1,280,943 total decomposes into 91,998 common shares plus 1,188,945 option-underlying interests; Paul L. Feldman's 328,650 total decomposes into 118,283 plus 210,367. Both remain historical October 31, 2025 beneficial totals with unknown attribution/current ownership/saleability, no lock-up expiry, quote, market value or cash proceeds. Akos Czibere's option-only row remains held because his identity/role was not included in the reviewed January commercial release; the parser does not create or infer that relationship.
+
+All **60 Python tests** pass, including five new voting-option tests and the earlier AgomAb one-share mismatch regression. The Research Monitor workflow for the preceding reconciliation-guard commit `90468b07` passed. This is tooling recovery for reproducibility, not a new holding import or private-report refresh. Staging remains **92 offerings / 212 biographies / 12 positions / 14 components / zero quotes**, and the five account-private reports remain static.
+
 ## 2026-09-27: non-reconciling AgomAb holding held with regression guard
 
 Reviewed Tim Knotnerus's ownership-table row and footnote in AgomAb's final 424B4 and preceding F-1/A. The table reports 668,855 shares as of December 31, 2025, while the four disclosed components (29,221 Series A conversion shares, 5,173 Series B conversion shares, 10,823 directly held common shares and 623,637 option-underlying shares) total 668,854. Both filings repeat the one-share difference. No quantity was rounded, repaired or imported; no liquidity classification, cash value, quote or private report was generated.
