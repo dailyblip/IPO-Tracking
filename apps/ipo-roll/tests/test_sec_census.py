@@ -50,6 +50,10 @@ class CensusTests(unittest.TestCase):
                              ['reviewed_excluded_filing','unreviewed_candidate','unreviewed_candidate'])
             self.assertEqual(sum(m.summarize(result)['2026-01'].values()),3)
             self.assertEqual(result[0]['review']['disposition'],'resale_not_initial_ipo')
+            cp['rows'][0]['disposition']='held_uplisting_scope'
+            held=m.reconcile(rows,[],self.load_fixture(d,cp))
+            self.assertEqual(held[0]['status'],'reviewed_held_filing')
+            self.assertEqual(held[1]['status'],'unreviewed_candidate')
 
     def test_disposition_conflicts_and_out_of_scope_fail_closed(self):
         with tempfile.TemporaryDirectory() as t:
