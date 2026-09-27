@@ -1,5 +1,13 @@
 # IPO Roll development handoff
 
+## September 27 UTC: oversized SEC evidence archive support
+
+Implemented the remaining large-document tooling gap in `d93a659c`. Live capture stays bounded at 64 MB, while any logical source above the existing 20 MB immutable-object ceiling is archived as ordered 128 KB content-addressed chunks plus a canonical reconstruction manifest. The original full-file SHA-256 and byte count remain authoritative. Review packets and pilot manifests bind the logical file to the exact manifest/chunk hashes; all stored rows still satisfy the unchanged `ops.sec_artifacts` 20 MB constraint. No database limit, schema, grant or customer-facing source surface was expanded.
+
+Seventy Python tests pass. A separate 21.85 MB incompressible simulation produced 171 chunks plus one manifest, reconstructed byte-for-byte, revalidated the full hash and kept the largest encoded SQL payload below 171 KB. Staging's SEC immutability/customer/anonymous-denial rollback suite passed. Fresh staging counts remain **92 offerings / 212 biographies / 12 positions / 14 components / zero quotes / five unchanged private reports**. This checkpoint changes capture/review tooling only; it did not capture PicPay, import an offering, deploy application code, refresh a private report or claim census completion.
+
+The current execution service still lacks its configured `SEC_EDGAR_USER_AGENT`, so live SEC capture was not attempted and no contact was fabricated. Once that already-approved operational setting is restored through the service, the confirmed 21.85 MB PicPay source can use this path instead of truncation or a blob-limit increase. Continue oldest-first 424B1 and registration-group review from the comprehensive census. Paid quote feeds remain deferred; historical IPO-price estimates remain separate future filing-based work under the owner's evidence rules.
+
 ## September 26 Pacific / September 27 UTC: systematic census omissions fixed
 
 Owner requested comprehensive reconciliation rather than a list of user-supplied missing companies. Acquired `/tmp/ipo-roll-development.lock`; started from clean `f67dfb8741e3b135b0a95bfae11399a3bb8f112a`. Restored and hash-verified all three full SEC indexes from eleven retained private chunks. The new offline census checks CIK/accession identities, expands beyond the prior five forms, and records known-issuer unmatched filings separately rather than assuming that issuer coverage means registration coverage. See `backfill-2026.md` for all monthly filing-row counts and exact provenance. Inventory: 11,061 scoped filing rows / 2,192 CIKs, not an IPO count; 92 exact current staged matches, 236 lineage reviews, 10,733 unreviewed candidates.

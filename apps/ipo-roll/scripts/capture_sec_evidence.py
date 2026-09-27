@@ -18,7 +18,10 @@ from urllib.parse import urlsplit
 from urllib.request import Request, build_opener, HTTPRedirectHandler
 
 VERSION = 'sec-review/1'
-MAX_BYTES = 20_000_000
+# A captured source may be larger than the database's immutable single-object
+# ceiling. build_review_batch archives those sources as verified chunks while
+# preserving this bounded full-file capture limit and the original SHA-256.
+MAX_BYTES = 64_000_000
 FORMS = {'S-1', 'S-1/A', 'F-1', 'F-1/A', '424B1', '424B4'}
 
 

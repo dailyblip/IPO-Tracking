@@ -34,6 +34,43 @@ class ReviewBatchTests(unittest.TestCase):
             self.assertIn('then return; end if;',sql)
             self.assertTrue(all(m.sha(raw)==h for h,raw in objects.items()))
 
+    def test_large_artifacts_are_losslessly_chunked_without_raising_blob_limit(self):
+        raw = (b'large-sec-source-' * 300) + b'end'
+        logical_hash = m.sha(raw)
+        stored, chunked = m.plan_artifact_archive(
+            {logical_hash: raw}, inline_limit=4096, chunk_bytes=1000, max_bytes=8192)
+        self.assertNotIn(logical_hash, stored)
+        self.assertEqual(chunked[logical_hash]['raw_bytes'], len(raw))
+        self.assertGreater(len(chunked[logical_hash]['chunks']), 1)
+        self.assertTrue(all(len(value) <= 4096 for value in stored.values()
+                            if value != stored[chunked[logical_hash]['manifest_sha256']]))
+        self.assertEqual(m.restore_artifact(logical_hash, stored, chunked), raw)
+        self.assertTrue(all(m.sha(value) == checksum for checksum, value in stored.items()))
+
+        damaged = dict(stored)
+        first = chunked[logical_hash]['chunks'][0]['sha256']
+        damaged[first] = b'changed'
+        with self.assertRaisesRegex(ValueError, 'chunk hash/length'):
+            m.restore_artifact(logical_hash, damaged, chunked)
+
+        reordered = copy.deepcopy(chunked)
+        reordered[logical_hash]['chunks'].reverse()
+        with self.assertRaisesRegex(ValueError, 'manifest mismatch'):
+            m.restore_artifact(logical_hash, stored, reordered)
+
+    def test_artifact_archive_limits_fail_closed(self):
+        raw = b'12345'; checksum = m.sha(raw)
+        for kwargs in (
+            dict(inline_limit=0, chunk_bytes=1, max_bytes=5),
+            dict(inline_limit=4, chunk_bytes=5, max_bytes=5),
+            dict(inline_limit=4, chunk_bytes=2, max_bytes=4),
+        ):
+            with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
+                m.plan_artifact_archive({checksum: raw}, **kwargs)
+        with self.assertRaisesRegex(ValueError, 'content hash mismatch'):
+            m.plan_artifact_archive({'0' * 64: raw}, inline_limit=4,
+                                    chunk_bytes=2, max_bytes=5)
+
     def test_wrong_identity_unsupported_role_price_and_classification_fail(self):
         with tempfile.TemporaryDirectory() as t:
             p,r,i=self.fixture(Path(t))
