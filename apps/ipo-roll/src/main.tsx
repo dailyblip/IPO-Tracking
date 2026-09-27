@@ -1731,9 +1731,6 @@ function DetailDrawer({
             <h3 className="section-heading">
               People & ownership <span>{data.people.length}</span>
             </h3>
-            <p className="muted">
-              People with a source-supported relationship to this offering.
-            </p>
             {data.people.map((p) => (
               <div className="person-accordion" key={p.id}>
                 <button
@@ -1762,8 +1759,11 @@ function DetailDrawer({
                 {person === p.id && (
                   <div className="person-body">
                     <OwnershipGrid positions={p.ownershipGrid} action={<LiquidityAnalysis offeringId={id} personId={p.id} name={p.name} demo={demo} request={api} />} />
-                    {p.biography && <details className="person-biography"><summary>Biography &amp; relationship</summary><p>{p.biography}</p></details>}
-                    {demo && <section aria-label="Sample stock holdings and valuation">
+                    <details className="person-biography"><summary>Biography &amp; relationship evidence</summary>
+                      {p.biography && <p>{p.biography}</p>}
+                      <div className="source-box"><FileText size={17} /><div><strong>{p.source.title}</strong><p>{p.source.excerpt}</p><SourceLink source={p.source} /></div></div>
+                    </details>
+                    {demo && <details className="person-biography"><summary>Sample stock holdings and valuation</summary><section aria-label="Sample stock holdings and valuation">
                       <h4>Stock holdings &amp; estimated market value</h4>
                       <p>{p.holdingsReview || "No reviewed individual holdings available. This does not establish zero ownership."}</p>
                       {demo && <StockValueButton person={p} />}
@@ -1777,8 +1777,8 @@ function DetailDrawer({
                           {h.footnotes.map((f,i) => <div key={i}><strong>Ownership footnote</strong><p>{f.excerpt}</p><SourceLink source={f}/></div>)}
                         </div></div>;
                       })}
-                    </section>}
-                    <div className="ownership-facts">
+                    </section></details>}
+                    {(!p.ownershipGrid?.length && (p.shares !== null || p.percent !== null)) && <details className="person-biography"><summary>Additional disclosed ownership</summary><div className="ownership-facts">
                       {p.shares !== null && (
                         <div>
                           <small>Disclosed shares</small>
@@ -1791,15 +1791,7 @@ function DetailDrawer({
                           <strong>{p.percent}%</strong>
                         </div>
                       )}
-                    </div>
-                    <div className="source-box">
-                      <FileText size={17} />
-                      <div>
-                        <strong>{p.source.title}</strong>
-                        <p>{p.source.excerpt}</p>
-                        <SourceLink source={p.source} />
-                      </div>
-                    </div>
+                    </div><SourceLink source={p.source} /></details>}
                   </div>
                 )}
               </div>
