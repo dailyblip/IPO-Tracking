@@ -81,7 +81,8 @@ def parse_index(raw, source_url, index_hash, start, end):
 
 
 DISPOSITIONS = {'resale_not_initial_ipo', 'follow_on_prior_2025_ipo',
-                'secondary_offering_prior_2025_ipo', 'excluded_blank_check_company'}
+                'secondary_offering_prior_2025_ipo', 'excluded_blank_check_company',
+                'follow_on_prior_public_offering', 'held_uplisting_scope'}
 
 
 def load_dispositions(path, expected_hash, archive):
@@ -152,7 +153,8 @@ def reconcile(rows, staged, dispositions=None):
             if row['form'] != review['form'] or row['filed'] != review['filed']:
                 raise ValueError('Disposition/index identity mismatch')
         # A known issuer is NOT proof that another registration is imported.
-        status = ('reviewed_excluded_filing' if review else
+        status = ('reviewed_held_filing' if review and review['disposition'] == 'held_uplisting_scope' else
+                  'reviewed_excluded_filing' if review else
                   'exact_current_snapshot' if key in exact else
                   'issuer_present_lineage_review' if key[0] in issuers else
                   'unreviewed_candidate')

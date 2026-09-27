@@ -4,7 +4,9 @@
 
 The four prior exact-filing exclusions are now consumed by the offline reconciler after checkpoint, source, passage and index-identity validation. Current private inventory: **94 exact current snapshots, 240 issuer-lineage reviews, 4 reviewed excluded filings, 10,723 unreviewed filing rows** (all 11,061 retained). Other filings of a reviewed issuer are never suppressed. Recovery: `import-output/year-2026/census-reviewed-94/inventory.json`. Seven census tests / 78 total Python tests pass, including conflicts and altered evidence. No new canonical IPO import in this reconciliation step.
 
-Next source-capture request: January 8 Soren Acquisition `0001213900-26-002346`, Bleichroeder Acquisition II `0001213900-26-002472`; January 12 Atlas Critical Minerals `0001493152-26-001253`, Rubico `0001171843-26-000207`. Candidate status only until source review. Full-year completeness, end-date freshness and holder/footnote coverage remain open.
+January 8–12 capture `36328121647` passed with all 48 files verified. New exact-filing exclusions: Soren `0001213900-26-002346` and Bleichroeder II `0001213900-26-002472` (blank checks); Rubico `0001171843-26-000207` (follow-on after a November 2025 public offering). Atlas Critical Minerals `0001493152-26-001253` is **held for uplisting scope/lineage review**, not silently excluded: source describes prior OTCQB quotations and January 9 Nasdaq trading. No additional canonical IPOs imported.
+
+Latest reconciled totals supersede the paragraph above: **94 exact snapshots / 240 issuer-lineage reviews / 7 reviewed excluded filings / 1 held filing / 10,719 unreviewed filing rows**. Private output: `import-output/year-2026/census-reviewed-eight/inventory.json`. Second source-linked review checkpoint `ab7a9b122b8985766ff65c3f0daa25b0f6348bda09baf591148f9c38a7b465e5` is durable in staging `ops.sec_artifacts`; encrypted source recovery is documented in the development log. Full-year completeness, end-date freshness and holder/footnote coverage remain open. Next source batch starts January 14; do not recapture the eight reviewed filings.
 
 ## Latest applied batch — September 27 UTC
 
