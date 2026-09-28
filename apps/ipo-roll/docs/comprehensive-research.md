@@ -149,6 +149,28 @@ is 15 of 94 offerings, leaving 79 without records. Next cursor is Eikon
 Therapeutics. This checkpoint does not establish current value, liquidity, full-
 cohort ownership completion or an independent complete IPO census.
 
+## One quantity with pre/post percentages and attributed duplicate row — September 28 UTC
+
+Eikon Therapeutics extends the full-table contract to a source that reports one
+December 31, 2025 quantity beside both pre- and projected post-offering percentages.
+The quantity is a pre-offering beneficial total and is stored once. A projected
+post-offering quantity must not be reverse-calculated from its percentage.
+
+The repeated Joshua Wolfe row exactly matches the Lux-affiliated holder-group total.
+Keep the group quantity once and link Wolfe as the SEC-reported beneficial owner
+with shared voting/dispositive authority and the source disclaimer; do not turn the
+fund amount into his personal economics. Apply the same separation to other fund
+controllers and Mahler's named ultimate beneficial owner. Leon Chen remains visible
+with a null direct row while the source expressly says he has no voting or
+dispositive power over the Column Group securities.
+
+The complete review accounts for all ten management biographies, 14 table rows,
+15 footnotes, 13 selected positions, ten attributions and both held overlaps.
+Current any-position coverage is 16 of 94 offerings, leaving 78 without records.
+Next cursor is SpyGlass Pharma. This does not establish current value, vesting,
+liquidity, personal economics, full-cohort ownership completion or a complete IPO
+census.
+
 ## Repeatable checks now available
 
 Run `scripts/audit_staging_data.sql` read-only after each applied batch and retain

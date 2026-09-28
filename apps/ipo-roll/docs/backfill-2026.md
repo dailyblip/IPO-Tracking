@@ -1,5 +1,31 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: Eikon complete management and ownership review
+
+Applied six missing management biographies, nine named external footnote people,
+13 non-duplicative pre-offering positions and ten holder-person attribution links
+from the complete reviewed Eikon Therapeutics sections. All ten management
+biographies reconcile. Four holder groups and two holder organizations remain
+separate from people. Joshua Wolfe's repeated Lux total and the overlapping
+officers/directors aggregate are audited without duplicating quantities.
+
+The table provides one quantity as of December 31, 2025 and separate pre/post
+percentages. Each quantity is stored once as pre-offering; no post-offering amount
+is inferred. One dash remains null. Converted preferred shares, warrants, options,
+repurchase conditions, control authority and ultimate-beneficiary attribution are
+retained without promoting aggregate totals to issued, vested, liquid or personal
+economics.
+
+Current totals: **94 offerings / 386 people / 350 biographies / 267 positions / 16
+components / 56 attributions / zero quotes**. Any-position coverage is **16 of
+94**; **78 still have none**. Nine private reports remain unchanged. Rollback,
+atomic application, replay, eight staging privacy/regression suites, 104 Python
+tests, 18 Node/API tests and the production build pass. Browser and live reviewer-
+authenticated journeys remain unverified. Private recovery hashes and exact
+publication state are in the latest development log. Next no-position cursor:
+SpyGlass Pharma, then continue oldest-first; no month or full census is declared
+complete.
+
 ## September 28 UTC: Bob's complete management and base-scenario ownership review
 
 Applied 16 missing complete management biographies and 32 pre/base-post ownership
