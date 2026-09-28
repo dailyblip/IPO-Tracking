@@ -1,5 +1,26 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: York complete principal-stockholder review
+
+Applied 22 York Space Systems before/projected-after positions covering all nine
+named table people plus the two aggregate holder-group rows. The overlapping
+10-person officers/directors total is audited but not imported again. Added Michael
+Greene and David Rowe as AE Industrial footnote controllers with no invented
+biographies or personal quantities. Dashes remain null, group control remains
+separate from personal economics and alternative snapshots are never summed.
+
+Current totals: **94 offerings / 341 people / 320 biographies / 209 positions / 16
+components / 38 attributions / zero quotes**. Any-position coverage is **13 of 94**;
+**81 still have none**. Nine private reports remain unchanged. York's complete table
+review does not establish the other per-offering tracks or any complete month.
+
+Rollback/application/replay, five live database privacy/regression suites, 102
+Python tests, 18 Node/API tests and the production build pass. Browser and live
+reviewer-authenticated journeys remain unverified in this execution image. Private
+recovery evidence and prepared/applied publication distinctions are recorded in the
+latest development log. Next no-position cursor: Veradermics, then continue
+oldest-first.
+
 ## September 28 UTC: Ethos complete selling-stockholder review
 
 Applied 53 non-duplicative Ethos before/projected-after positions from the complete
