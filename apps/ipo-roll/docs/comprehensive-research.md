@@ -79,6 +79,28 @@ filing, interpret footnotes, approve financial facts or declare a company comple
 Current applied batch, tests and next exact files are in `development-log.md` and
 `backfill-2026.md`.
 
+## Multi-role subjects and HMH alternative columns — September 28 UTC
+
+A person may be both an executive and a director. The detail and search contracts
+must return one subject per person/offering with a nested, evidence-bearing role
+list; one role row must never become a second person, ownership grid or liquidity
+analysis. New static reports retain the complete role set deterministically while
+older saved snapshots remain untouched.
+
+HMH extends the full-table contract to a source combining pre-reorganization HMH
+B.V. ordinary shares, projected Class A/Class B interests, combined voting power
+and base/full-option alternatives. Store the reviewed pre/base-post share-class
+columns separately, never their overlapping voting-power percentages or the
+mutually exclusive full-option alternative. Conditional shares issuable at IPO
+from LTI awards expected to vest do not establish completed issuance, vesting,
+saleability, historical value or cash.
+
+HMH now has all 13 management biographies and 36 selected positions across twelve
+ownership subjects. Any-position coverage is 26 of 94 offerings, leaving 68
+without records. Next equal-date cursors are Arxis and Madison Air Solutions.
+This does not establish current ownership, value, liquidity, month completion or
+an independently complete IPO census.
+
 ## Dual-class rows, duplicate identities and entity managers — September 28 UTC
 
 AGI extends the complete-table contract to a 17-column principal-shareholders

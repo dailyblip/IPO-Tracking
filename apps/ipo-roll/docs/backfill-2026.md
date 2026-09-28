@@ -1,5 +1,24 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: HMH complete roster and ownership table
+
+Applied ten missing biographies to complete all 13 management/director people and
+biographies. Applied 36 before/base-post positions for two reported organizations
+and ten people. Filing dashes remain explicit unknowns; combined voting power,
+the full-option alternative and overlapping 13-person aggregate are reviewed but
+held out. Conditional LTI amounts for three executives are not treated as issued,
+vested, liquid, valuable or realized cash.
+
+Current totals: **94 offerings / 504 people / 427 biographies / 654 positions**;
+**26/94** offerings have positions and **68** have none. Nine private reports are
+unchanged. Rollback/application/replay, whole-section reconciliation, targeted
+privacy/value QA, the 94-offering structural audit, 20 Node/API tests, production
+build and 108 Python tests pass. The Opus review's multi-role duplication and
+Render proxy rate-limit findings are fixed in staging schema/local code; repository
+publication and frontend/server deployment are still pending. Full census, live
+links and authenticated browser journeys remain unverified. Next priced cursors:
+Arxis and Madison Air Solutions (April 15); no month or full census is complete.
+
 ## September 28 UTC: MiniMed complete roster and ownership table
 
 Applied ten missing biographies, completing all 13 expected executive/director

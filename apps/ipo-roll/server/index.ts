@@ -2,11 +2,13 @@ import { createApp } from "./app.js";
 import express from "express";
 import { resolve } from "node:path";
 const production = process.env.NODE_ENV === "production";
+const proxyHops = Number(process.env.IPO_ROLL_TRUST_PROXY_HOPS || 1);
 const app = createApp({
   demo: process.env.IPO_ROLL_DEMO === "1",
   url: process.env.SUPABASE_URL,
   key: process.env.SUPABASE_PUBLISHABLE_KEY,
   production,
+  proxyHops,
 });
 if (production) {
   app.use(express.static(resolve("dist"), { index: false }));
