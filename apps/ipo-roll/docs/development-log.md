@@ -1,5 +1,80 @@
 # IPO Roll development handoff
 
+## September 28 UTC: Ethos full selling-stockholder table
+
+Continued under the shared development lock from the verified PicPay checkpoint.
+The Ethos final 424B4 (`0001193125-26-029993`, source SHA-256
+`09466396165037e3f4d8df2b66e0141455dc3d7ed945701977767418160d0bbb`) exposed a
+second general attribution case: the SEC table repeats an organization total under
+a named person even when the filing does not establish that the quantity is the
+person's personal economic ownership or that the person controls the organization.
+
+**Applied to commercial staging:** additive migration
+`20260928054500_reported_beneficial_owner_attribution`, 12 footnote-named
+controllers/managers, 53 non-duplicative before/projected-after positions and 28
+holder-person attribution rows. The complete reviewed principal/selling-stockholder
+table accounts for 28 unique reported holder/group rows. It preserves six
+organization holders, 11 anonymous other-selling-stockholder groups and all direct
+named holders; people do not disappear because a quantity belongs to a fund or
+group. Four repeated/aggregate rows are explicitly audited but not imported again:
+duplicate Peter Colis and Lingke Wang rows, Nate J. Niparko's row repeating Accel
+totals, and the all-current-officers/directors aggregate. Proposed-sale columns
+remain evidence only, never completed sales or realized proceeds.
+
+Roelof Botha's projected 260,525-share Class A offering purchase is imported as a
+direct row. Sequoia's 12,000,124 Class B totals remain on Sequoia and are linked to
+Botha only as control authority. Accel's totals remain on Accel and are linked to
+Nathan J. Niparko with the new `reported_beneficial_owner` relation (the reviewed
+source uses Nate); this establishes an SEC-reported relationship, not personal
+economics or control. SoftBank, General Catalyst and Heroic Ventures likewise keep
+their organization totals separate from named footnote managers/controllers.
+Before and following positions are alternative snapshots and are never summed.
+
+Staging is now **94 offerings / 339 people / 320 biographies / 187 positions / 16
+components / 34 holder-person attributions / zero quotes**. Any-position coverage
+is **12 of 94 offerings**; 82 still have none, and record presence is not a
+whole-table-completeness claim. The **nine existing private reports are unchanged**.
+All imported liquidity classifications remain unknown. No current wealth, personal
+economic ownership, completed sale, cash proceeds, saleability or current price is
+inferred.
+
+`build_disclosed_holdings.py` now supports exact reviewed quantity subsets, source
+aliases, occurrence-counted repeated rows and explicit audited non-imported rows.
+The shared contract/UI adds `reported_beneficial_owner` without collapsing it into
+control or beneficiary entitlement. Database migration rehearsal/application and
+the combined controller/holdings application were atomic; exact replay produced no
+duplicates and preserved all private-report checksums.
+
+**QA completed:** 102 Python tests, 18 Node/API tests and the production build pass.
+The Ethos staging suite confirms 42 disclosed subjects, exact 53 positions,
+organization/group visibility, Peter's duplicate exclusion, Botha's direct/entity
+split, Niparko's reported-holder attribution, version 1.4 all-unknown reports,
+cross-account/guessed-ID/customer/anonymous denial and static-report isolation.
+Existing party-attribution, ownership-grid and private-liquidity suites also pass;
+the generic liquidity test was tightened so its synthetic subject cannot already
+have a direct or attributed position. The real reviewer detail and rollback report
+fixtures are captured, but desktop/mobile Playwright rerun is **unverified** because
+this recovered execution image has no browser binary and the browser CDN returned
+an empty/corrupt archive. That is a test-environment limitation, not a browser-journey
+pass or product-failure claim. Live reviewer authentication remains unverified.
+
+Supabase migration state and fresh counts are verified. Security advisors show no
+new ownership-attribution issue; known default-deny operational tables and disabled
+leaked-password protection remain unchanged. Performance advisors add no new Ethos
+issue. Private deterministic review/release/QA bundle
+`98f0cc51df2a49b79fc4ecdd10672c0feecec2bc70cd5b21061172365e264327`
+is verified in `ops.sec_artifacts` (768,000 raw tar bytes; 91,008 gzip bytes;
+gzip SHA-256 `4c6b21800eb985c0608830c69920e2ae0d070a82c01f6198edf1a8f40a2c5ff6`).
+The raw filing remains in its existing private SEC artifact; no private review or
+source payload is added to Git/frontend assets.
+
+**Publication status:** data and migration are applied to staging. Application,
+importer and test changes are prepared and locally verified but not yet committed,
+published or Render-verified at this checkpoint. Next source cursor: York. Continue
+the same whole-table organization/group/person reconciliation across the 82
+no-position offerings; full census, holdings and continuous discovery/QA completion
+remain open.
+
 ## September 28 UTC: reported-holder attribution and PicPay ownership
 
 Continued under the shared development lock from verified commercial commit

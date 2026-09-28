@@ -109,8 +109,15 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
     await expect(grid).toBeVisible();
     expect(generations).toBe(0);
     await expect(grid.getByRole('columnheader', { name: 'Stock / series' })).toBeVisible();
+    const firstPosition = d.detail.people.find((p: any) => p.name === holderName)?.ownershipGrid?.[0];
+    if (firstPosition?.attribution?.kind === 'reported_beneficial_owner') {
+      await expect(grid.getByText(`SEC-reported beneficial owner · reported holder: ${firstPosition.reportedHolder.name}`, { exact: true }).first()).toBeVisible();
+    }
     await grid.getByRole('button', { name: 'Footnotes' }).first().click();
     await expect(grid.locator('.ownership-footnotes')).toBeVisible();
+    if (firstPosition?.attribution?.kind === 'reported_beneficial_owner') {
+      await expect(grid.getByText('SEC beneficial-owner attribution', { exact: true }).first()).toBeVisible();
+    }
     await grid.getByRole('button', { name: 'Footnotes' }).first().click();
     await page.screenshot({ path: 'test-results/ownership-grid-desktop.png' });
     await page.setViewportSize({ width: 390, height: 844 });
