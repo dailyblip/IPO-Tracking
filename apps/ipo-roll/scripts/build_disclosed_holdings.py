@@ -91,9 +91,9 @@ def build(packet, review, directory):
     columns = review['columns']
     keys = [c['key'] for c in columns]
     if len(keys) != len(set(keys)) or not columns: raise ValueError('Unique ordered columns required')
-    bases = [c.get('position_basis') for c in columns if c['kind'] == 'quantity']
-    if len(bases) != len(set(bases)):
-        raise ValueError('Alternative quantities on the same basis require separate scenario review')
+    scenarios = [(c.get('position_basis'), c.get('share_class')) for c in columns if c['kind'] == 'quantity']
+    if len(scenarios) != len(set(scenarios)):
+        raise ValueError('Alternative quantities on the same basis/class require separate scenario review')
     for c in columns:
         if c['kind'] not in ('quantity','percent','proposed_sale','unselected_quantity'): raise ValueError('Unsupported column')
         if c['kind'] == 'unselected_quantity' and not c.get('not_imported_reason'):
@@ -116,16 +116,19 @@ def build(packet, review, directory):
             raise ValueError('Whole source row / ordered cells mismatch')
         for c, cell in zip(columns, cells):
             if c['kind'] in ('quantity','proposed_sale','unselected_quantity'): quantity(cell)
-            elif not re.fullmatch(r'(?:\d+(?:\.\d+)?\s*%|\*\s*%?|[—–-])', cell):
+            elif not re.fullmatch(r'(?:(?:100(?:\.0+)?|\d{1,2}(?:\.\d+)?)\s*%?|\*\s*%?|[—–-])', cell):
                 raise ValueError('Invalid percent cell')
         notes = [selected(spec)[0] for spec in person.get('footnotes', [])]
-        security = person['share_class']
-        if not security or security.casefold() not in ' '.join([header_text,basis_text]+[flat(spans[n]['excerpt']) for n in notes]).casefold():
-            raise ValueError('Security class must appear in selected evidence')
+        person_security = person.get('share_class')
+        evidence_text = ' '.join([header_text,basis_text]+[flat(spans[n]['excerpt']) for n in notes]).casefold()
+        securities = {c.get('share_class', person_security) for c in columns if c['kind'] == 'quantity'}
+        if None in securities or any(not security or security.casefold() not in evidence_text for security in securities):
+            raise ValueError('Each imported security class must appear in selected evidence')
         if not person.get('interpretation_note'): raise ValueError('Explicit row limitations required')
         pid = uid('person-in-issuer', cik, name)
         for c, cell in zip(columns,cells):
             if c['kind'] != 'quantity': continue
+            security = c.get('share_class', person_security)
             positions.append(dict(id=uid('disclosed-holding', document, pid, c['key']), person_id=pid,
                 name=name, share_class=security, position_basis=c['position_basis'], shares=quantity(cell),
                 raw_quantity=cell, holdings_as_of=as_of, row=sid, evidence=common+notes,

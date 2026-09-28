@@ -1,5 +1,21 @@
 # Commercial 2026 backfill checkpoint
 
+## September 27 late Pacific: second holdings batch
+
+Applied **76 January-filing positions** across BitGo (40/10 people) and
+EquipmentShare (36/nine people). Totals: **94 offerings / 323 people / 320
+biographies / 128 positions / 16 components / zero quotes**. Any-position coverage
+is **10 of 94 offerings**; **84 remain without positions**. No IPO, biography,
+quote, valuation or completed census month was added.
+
+Class A/Class B and before/projected-after snapshots remain separate. EquipmentShare
+full-option figures are not duplicated, its co-founder totals overlap, and filing
+dashes stay null. Selling columns are not realized proceeds. Rollback/application/
+replay, access isolation, saved-report immutability, full tests, build and captured
+desktop/mobile reviewer journeys passed. Nine prior private reports remain unchanged.
+Next cursor: PicPay, then Ethos and York. See the latest development-log entry for
+evidence limitations and prepared/applied/published distinctions.
+
 ## September 28 UTC: holdings quantities expanded beyond Neutron
 
 Applied **20 January-filing positions** (Buda Juice 18; Green Circle two) and

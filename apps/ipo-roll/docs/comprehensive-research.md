@@ -105,3 +105,9 @@ complete tables. Private 94-company/source-version queue plus per-track structur
 audit is checkpointed with the first batch. Next no-position cursor: BitGo. The
 remaining 86 and entity/group/controller gaps remain development work, requiring
 no owner-supplied company list. See development-log for source-backed counts.
+
+The next batch extended the contract to exact multiple-series rows. BitGo and
+EquipmentShare Class A/Class B totals now remain distinct on each before/projected
+after basis; alternate offering scenarios and overlapping co-founder/group totals
+cannot be summed. Current any-position coverage is 10 of 94 offerings, with 84
+still unverified. The next preserved source/version cursor is PicPay.

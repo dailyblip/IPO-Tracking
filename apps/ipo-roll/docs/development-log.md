@@ -1,5 +1,66 @@
 # IPO Roll development handoff
 
+## September 27 late Pacific: BitGo and EquipmentShare multi-series holdings
+
+Continued under the shared development lock from verified commercial commit
+`58578746226b4ac9da3cce4de41e6106a2941ae2`. Applied **76 source-reported table
+positions across 19 people**: BitGo 40 positions for all 10 management-table people
+and EquipmentShare 36 positions for all nine. Staging totals are now **94 offerings /
+323 people / 320 biographies / 128 positions / 16 components / zero quotes**.
+Holdings-record presence increased from eight to **10 offerings**; **84 still have
+no positions**, and presence does not establish whole-table completeness.
+
+BitGo preserves Class A and Class B as four independent per-person snapshots
+(before/projected after) dated December 31, 2025. Mike Belshe's totals remain
+mixed direct/trust/RSU/option beneficial ownership with trustee/control attribution;
+they are not personal liquid common shares. EquipmentShare preserves Class A and
+Class B before/projected after dated December 15, 2025. Jabbok and William Schlacks
+report the same overlapping shared-control totals under their voting agreement;
+they must never be added. Its full-underwriters-option alternative was reviewed but
+not imported alongside the selected no-exercise scenario. Three director rows with
+all dashes remain null, never zero. Proposed selling columns in both filings do not
+become completed sales or cash proceeds. Every imported assessment remains unknown,
+with instrument/attribution/restriction decomposition pending.
+
+Extended `build_disclosed_holdings.py` to validate multiple share classes for the
+same person and basis by exact class/basis key. Every class must occur in selected
+source evidence. Numeric percentages without a repeated `%` cell are accepted only
+within 0–100 because some SEC tables place the symbol in the header/adjacent cell;
+out-of-range/exponential formats fail. Alternative duplicate class/basis scenarios
+fail closed. No schema, access, quote, AI-provider or production-schedule change.
+
+**QA:** each company passed rollback rehearsal, real application, exact replay,
+all-row reviewer RPC checks, private report checksum, cross-account/guessed-ID
+denial, ordinary-customer/anonymous denial, report reopen and explicit immutable
+refresh. Nine pre-existing private reports stayed unchanged; disposable QA accounts
+and reports rolled back. All 100 Python and 18 Node/API tests passed, as did the
+production build. Captured BitGo reviewer RPC rendered its four-row Class A/Class B
+grid and source footnotes in desktop and 390px browser journeys; screenshots were
+inspected. Browser auth was simulated, not a live reviewer login. The current
+94-offering structural audit reports no identity/source/lifecycle failures; 10
+holdings-source checks pass and 84 remain unverified. Financial interpretation,
+whole ownership rosters, census completeness and live signed-in QA remain separate.
+
+**Prepared/applied versus published:** source reviews, SQL receipts and QA are
+private staging evidence. The 76 records are applied through existing authenticated
+APIs. Importer/test changes and this ledger are prepared locally; verify the
+ownership-history workflow guard, commit, Render deployment where applicable and
+branch alignment before calling the code published. No frontend code changed in
+this batch, so the already deployed grid renders the data without a new UI design.
+
+Private recovery bundle `3d38b6e5726eb5d86875eeff97a9dbce80229c94cfb97a7c4657e4cfc3466c26`
+is verified in `ops.sec_artifacts` (2,020,591 raw bytes; gzip SHA-256
+`9bd24439d1dc22d0590b6ef8029f50a06e96c636e711c8a81e47d912df9701b9`).
+It contains 15 BitGo/EquipmentShare review, manifest, SQL, QA, fixture and cohort
+audit files. Exact SEC objects remain in their previously archived source packets;
+no private payload is committed or bundled into the frontend.
+
+Next holdings cursor: PicPay (`0001213900-26-009315`), then Ethos and York. Review
+all management/entity/group rows and named controllers, not just existing biography
+records. Continue the independent SEC census and automated discovery-to-import QA
+path; neither the full holdings backfill nor ongoing automatic ingestion is complete.
+No owner action is needed for the next source-reviewed batches.
+
 ## September 28 UTC: site-wide holdings gap; first multi-company quantities batch
 
 Owner clarified that blank holdings affect the full site, not only Neutron.
