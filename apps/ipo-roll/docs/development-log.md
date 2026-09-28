@@ -51,11 +51,19 @@ gzip SHA-256 `a4fbac18331253a2f4a582292e6ef6456df38667c0c35d06cee9bfed0d40913d`)
 The raw filing remains in its existing private SEC artifact; no private source or
 review payload is added to Git/frontend assets.
 
-**Publication status:** staging data are applied and verified through database
-roles, but the new Forgent regression/ledger checkpoint is prepared locally and is
-not yet published. Browser code is unchanged. The next oldest priced no-position
-cursor is AgomAb Therapeutics (`0001104659-26-011523`), followed oldest-first.
-Full census, ownership and continuous discovery/QA completion remain open.
+**Publication verified:** staging data are applied and served through the existing
+authenticated API. Test/ledger checkpoint
+`f9d0dddf5ed71852c48edea2bb5babf2a4925ccd` is published on the commercial
+branch; Test Research Monitor run `36413548964` passed. Live staging health returns
+`200` with staging mode, while anonymous Forgent detail and Peter Jonna person-
+search requests both return `401`. Browser assets remain byte-identical
+(`index-CDjzLtb_.js`
+`842864cf2728ff8c00f07b37c58e2a2471f02e76b116f973a35be3254302fe6a`;
+`index-D9gnMbrz.css`
+`890e0086c82d3f580cb831eec71ad3754bce8773a509da40ee1d3a91b836dc54`).
+The next oldest priced no-position cursor is AgomAb Therapeutics
+(`0001104659-26-011523`), followed oldest-first. Full census, ownership and
+continuous discovery/QA completion remain open.
 
 ## September 28 UTC: SpyGlass complete roster, ownership rows and controller links
 
