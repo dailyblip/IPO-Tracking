@@ -1,5 +1,74 @@
 # IPO Roll development handoff
 
+## September 28 UTC: reported-holder attribution and PicPay ownership
+
+Continued under the shared development lock from verified commercial commit
+`a4b703dfccd15ee56ae3236d4290cb3779ae3e87`. The owner reported that holdings
+remain blank across the site. The next source cursor, PicPay final 424B1
+`0001213900-26-009315`, exposed the general modeling gap: its table reports five
+foundations/companies plus an aggregate group, while footnotes separately identify
+beneficiaries and upstream controllers. Attaching an entity total directly to a
+controller would incorrectly turn voting authority into personal wealth.
+
+**Applied to commercial staging:** additive migrations
+`20260928050000_party_ownership_attribution` and
+`20260928051500_ownership_attribution_evidence_index`, four evidenced people
+(Anderson Chamon, Aguinaldo Gomes Ramos Filho, Joesley Mendonça Batista and Wesley
+Mendonça Batista), six immediately-before-offering holder positions, four explicit
+beneficiary-entitlement links and two control-authority links. The reported holders
+remain J&F International B.V., Banco Original S.A., Stichting JAB, Stichting ACC
+Family, Stichting AGR and Stichting ECS. PicPay Class A/Class B quantities and
+voting percentages were reviewed as separate source cells. The aggregate total is
+not imported again. The two projected post-offering alternatives remain unimported
+pending multi-row scenario support; they must not be summed with the selected
+snapshot.
+
+Staging is now **94 offerings / 327 people / 320 biographies / 134 positions /
+16 components / six holder-person attributions / zero quotes**. Any-position
+coverage is **11 of 94 offerings**; 83 still have none, and presence is not
+whole-table completeness. PicPay's six organization holders are independently
+visible. José Antonio Batista Costa, Anderson Chamon, Aguinaldo Gomes Ramos Filho
+and Eduardo Chedid Simões see the foundation position only as beneficiary
+entitlement. Joesley and Wesley see J&F's quantity only as control authority, with
+personal economic ownership expressly unestablished. All liquidity classifications
+stay unknown. No historical value, current wealth, completed sale, cash proceeds,
+lock-up release or current ownership is inferred.
+
+The authenticated detail contract now includes disclosed organization/group
+holders and identifies the reported holder on attributed rows. Private Liquidity
+Analysis accepts any disclosed party, preserves account ownership/RLS, and forces
+entity-attributed beneficial totals to unknown. New snapshots are version 1.4;
+the **nine existing private reports were not rewritten**. The UI code relabels the
+section “People & holders,” distinguishes entity records, and exposes attribution
+evidence in the existing quick-reference grid. `build_disclosed_holdings.py` v2
+adds exact organization/group rows and reviewed beneficiary/control links while
+reproducing the v1 person-only manifest contract unchanged.
+
+**QA completed:** 101 Python tests, 18 Node/API tests and the production build pass.
+Three staging rollback suites pass: existing ownership-grid privacy, existing
+private report reopen/explicit refresh/tamper/cross-account/anonymous denial, and
+the new PicPay entity/beneficiary/control contract including organization-requested
+reports. The test confirms 19 PicPay subjects, exact six quantities/classes,
+control held at unknown, cross-account existence denial and unauthenticated denial.
+Both imports replay exactly. Security advisor shows no new attribution-table issue;
+the known leaked-password warning and intentional default-deny operational tables
+remain. Live authenticated owner-browser QA is still unverified.
+
+Private deterministic review/release/QA bundle
+`5827d1fc8047e5bee25be261069daafadba4251359b0dd0e691b4b470f09f059`
+is verified in `ops.sec_artifacts` (215,040 raw tar bytes; 22,116 gzip bytes;
+gzip SHA-256 `0335949a4671f39ce2725e2b1915330180d9a7417d0b382dff7634688ea7b2f4`).
+The 21.8 MB raw SEC source remains in its previously durable private artifact;
+neither source payload nor review JSON is added to Git/frontend assets.
+
+**Prepared for publication:** migration files, generalized importer, UI contract,
+tests and ledger are local and tested. Database/data are applied; the new frontend
+bundle and repository checkpoint are not yet published at this paragraph's
+checkpoint. The ownership-history workflow guard must be clear immediately before
+commit. Next data cursor remains Ethos, then York, while the attribution contract is
+reused across all 83 no-position offerings and all incomplete organization/group
+rows. Full holdings, census and continuous discovery/QA completion remain open.
+
 ## September 27 late Pacific: BitGo and EquipmentShare multi-series holdings
 
 Continued under the shared development lock from verified commercial commit

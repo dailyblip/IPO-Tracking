@@ -9,6 +9,7 @@ export type Source = {
 export type Person = {
   id: string;
   name: string;
+  kind?: "person" | "organization" | "group" | "unresolved";
   role: string;
   relationship: string;
   shares: number | null;

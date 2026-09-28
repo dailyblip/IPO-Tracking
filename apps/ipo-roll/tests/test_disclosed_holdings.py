@@ -88,5 +88,30 @@ class DisclosedHoldingsTests(unittest.TestCase):
             (d/'objects'/m.sha(raw)).write_bytes(raw)
             with self.assertRaisesRegex(ValueError,'Whole source row'):m.build(p,r,d)
 
+    def test_organization_holder_keeps_beneficiary_and_control_attribution_distinct(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp);p,r=self.fixture(d)
+            raw=(b'<p>Immediately Prior to this Offering Class A common shares</p>'
+                 b'<p>Ownership as of January 1, 2026 reports beneficial ownership.</p>'
+                 b'<table><tr><td>Example Foundation(1)</td><td>1,000</td><td>5 %</td></tr></table>'
+                 b'<p>(1) Jordan Example holds the beneficial entitlement to shares held by Example Foundation.</p>')
+            text,_=m.text_blocks(raw);h=m.sha(raw);(d/'objects'/h).write_bytes(raw)
+            p['documents'][0]['source']['content_sha256']=h;p['documents'][0]['normalized_text_sha256']=m.sha(text.encode())
+            r.update(skip_undisclosed_quantities=True,
+                columns=[dict(key='pre',kind='quantity',position_basis='pre',header_literal='Immediately Prior',share_class='Class A common shares'),dict(key='pre_pct',kind='percent')],
+                people=[dict(name='Example Foundation',source_label='Example Foundation(1)',party_kind='organization',identity_reviewed=True,
+                    alias_reviewed=True,alias_reason='Numeric footnote marker removed from the canonical holder name.',
+                    row=dict(first=2,last=2),cells=['1,000','5 %'],footnotes=[dict(first=3,last=3)],
+                    interpretation_note='Foundation is the reported holder; beneficiary entitlement is separately attributed.',
+                    attributions=[dict(name='Jordan Example',kind='beneficial_entitlement',identity_reviewed=True,
+                        description='Source states beneficiary entitlement through the foundation; direct title and present saleability are not established.',evidence=dict(first=3,last=3))])])
+            manifest,sql=m.build(p,r,d)
+            self.assertEqual(manifest['version'],'disclosed-holdings/2')
+            self.assertEqual(manifest['positions'][0]['party_kind'],'organization')
+            self.assertIn('insert into research.ownership_attributions',sql)
+            self.assertIn("'beneficial_entitlement'",sql)
+            bad=copy.deepcopy(r);bad['people'][0]['attributions'][0].update(kind='control_authority',description='Controls voting decisions.')
+            with self.assertRaisesRegex(ValueError,'personal economic'):m.build(p,bad,d)
+
 
 if __name__=='__main__':unittest.main()

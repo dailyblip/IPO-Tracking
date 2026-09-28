@@ -1,5 +1,23 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: PicPay entity holders and attributed people
+
+Applied six reviewed PicPay pre-offering positions: one Class B organization and
+five Class A organizations. Added four beneficiary-entitlement links (José Antonio
+Batista Costa, Anderson Chamon, Aguinaldo Gomes Ramos Filho and Eduardo Chedid
+Simões) and two upstream-control links (Joesley and Wesley Mendonça Batista). The
+organizations remain the reported holders; control is not personal economics, and
+the aggregate total is not counted again. Four missing footnote-named people were
+added without invented biographies.
+
+Current totals: **94 offerings / 327 people / 320 biographies / 134 positions /
+16 components / six holder-person attributions / zero quotes**. Holdings-record
+presence is **11 of 94 offerings**; **83 have none**. PicPay's no-option and
+full-option projected tables remain reviewed-but-unimported alternatives, not
+missing rows to be silently combined with the pre-offering snapshot. Nine private
+reports remain unchanged. No month or full table is certified complete. Next
+cursor: Ethos, then York; use the new organization/beneficiary/control contract.
+
 ## September 27 late Pacific: second holdings batch
 
 Applied **76 January-filing positions** across BitGo (40/10 people) and
