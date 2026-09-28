@@ -244,8 +244,13 @@ export function createApp(config: Config) {
       ? await c.rpc("ipo_roll_liquidity_report", args)
       : await c.rpc("ipo_roll_request_liquidity", { ...args, p_request: req.body.requestId, p_previous: req.body.previousId || null });
     if (result.error) {
-      const status = result.error.code === "P0002" ? 404 : result.error.code === "22023" ? 400 : result.error.code === "42501" ? 403 : 503;
-      res.status(status).json({ error: status === 404 ? "Analysis subject not available." : "Unable to load your private analysis. Please retry." }); return;
+      const quotaReached = result.error.code === "54000" && [
+        "Liquidity report daily quota reached", "Liquidity report subject quota reached",
+      ].includes(result.error.message);
+      const status = quotaReached ? 429 : result.error.code === "P0002" ? 404 : result.error.code === "22023" ? 400 : result.error.code === "42501" ? 403 : 503;
+      res.status(status).json({ error: quotaReached
+        ? "Your report creation limit has been reached for the past 24 hours. You can still open saved analyses; try creating or refreshing later."
+        : status === 404 ? "Analysis subject not available." : "Unable to load your private analysis. Please retry." }); return;
     }
     res.json(result.data);
   });
