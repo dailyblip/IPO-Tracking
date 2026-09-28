@@ -1,5 +1,69 @@
 # IPO Roll development handoff
 
+## September 28 UTC: Generate Biomedicines complete management biographies
+
+Continued from the verified ARKO/census checkpoint under the shared development
+lock. Commercial commit `9ca3108b73d9b90c1c25fd5d605b7d9715ca62f5`
+was already published; Test Research Monitor run `36449915189` passed. The worktree
+was clean, PR #581 remained draft/open, staging totals matched the ledger and all
+nine private reports retained checksum `6934bc3145bb395df455112bc10190fb`.
+
+Reviewed Generate Biomedicines' final 424B4 accession
+`0001193125-26-083190`, CIK `0002100782`, registration `333-293204`, filed
+February 27, 2026. Current source SHA-256 is
+`89b9f14e858e28386ba3d83fe6d7e33754019320399bb806c5241f63badb9117`;
+normalized source SHA-256 is
+`7c0e6f1f21b56b710cef4a0cbe030cfd131021d79fa4f8f64fc2e186c402af39`.
+
+**Applied:** twelve missing people with complete source biographies: Michael
+Nally, Jason Silvers, Gevorg Grigoryan, Beth Grous, Aarif Khakoo, Laurie Lee,
+Sean Martin, Marsha Fanucci, Jane Mendillo, Paul Parker, Nancy Simonian and
+Rupert Vessey. Existing Noubar Afeyan, Frances Arnold and Stéphane Bancel records
+were preserved rather than replayed. Professional-prefix, middle-initial and
+credential differences were explicitly reviewed against the exact table and
+biography. Nally's Chief Executive Officer and Director title remains intact;
+Silvers' President/CFO title and February 2026 timing remain intact.
+
+All **15 unique management/director people and 15 complete biographies** now
+reconcile against the entire selected management table (blocks 3057–3115) and
+biography section (3116–3135), including all category headings, page markers and
+committee-note markers. Source biographies remain institution-neutral: factual
+Stanford and University of Michigan text is searchable like any other source
+evidence, without Stanford branding, counters, highlighting, navigation or
+special affiliation behavior. A biography match does not imply ownership.
+
+**Verified:** rollback rehearsal, atomic application and exact replay passed.
+Reviewer RPC detail returns 15 people; person-specific Stanford and Michigan
+biography searches return the reviewed people, while a Beneficial owner filter
+does not infer ownership. Ordinary-customer detail/search denial passed. Private
+reports remained byte-equivalent, and no test account remains. All **107 Python
+tests** pass; the new retained database regression covers roster/biography counts,
+neutral search, relationship separation, customer denial and report immutability.
+No ownership quantity, quote, value, private report, schema, UI, source right or
+production system changed.
+
+Staging is now **94 offerings / 484 people / 407 biographies / 566 positions**;
+23 offerings have any position and 71 still have none. These counts do not prove
+full census, ownership or footnote completeness.
+
+Private deterministic review bundle is checksum-verified in `ops.sec_artifacts`:
+raw SHA-256
+`e051e8c9a27cb35048fab05fe7a793916ca9d955053fdd81880d577395f5ac77`
+(112,640 tar bytes), gzip SHA-256
+`85d137a021033af4542acd2a21cb448f7efb0905edc1e61699ceb0d40b75f06f`
+(17,870 bytes). The bundle contains the explicit review, release manifest,
+fresh staging snapshot and whole-section reconciliation; private payloads remain
+outside Git/frontend assets.
+
+**Publication:** data are applied and reviewer-API verified; repository test and
+ledger changes are prepared for guarded publication. No frontend deployment is
+needed. Next, review Generate's complete principal-stockholders table beginning
+at block 3734 and all linked footnotes. Its January 15 basis, preferred conversions,
+exercisable options, Flagship fund/controller overlap and named former directors
+require separate component/attribution review before importing quantities or
+calculating historical value. In parallel, refresh the independent SEC cutoff and
+continue the durable discovery/review/import/QA path. No owner action blocks this.
+
 ## September 28 UTC: reverse SEC census QA
 
 Added reverse staged-inventory reconciliation to `reconcile_sec_census.py`.
