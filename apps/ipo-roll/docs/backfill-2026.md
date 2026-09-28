@@ -1,5 +1,31 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: AGI complete dual-class ownership review
+
+Applied 68 Class A/Class B pre/base-post positions for all 17 non-overlapping
+subjects in AGI's complete principal-shareholders table. Forty filing dashes
+remain explicit nulls. The full-option columns, overlapping 14-person aggregate
+and duplicate Marciano Testa row are audited without simultaneous or duplicate
+positions. Proposed-sale cells were reviewed and all are dashes; no completed
+sale, proceeds or cash is asserted.
+
+Three holder entities remain organizations. Marciano Testa's AGI Partners control
+link is distinct from his filing-reported aggregate and from personal economics.
+The named Lumina and Vinci organization investment managers remain retained in
+footnote evidence but unverified as structured organization-to-organization
+attributions because the current relation supports natural people. Historical
+IPO-price compatibility, present ownership, value and liquidity remain unknown.
+
+Current totals: **94 offerings / 467 people / 390 biographies / 549 positions / 16
+components / 150 attributions / zero quotes**. Any-position coverage is **22 of
+94**; **72 still have none**. Nine private reports and their checksum remain
+unchanged. Rollback/application/replay, 14 staging ownership/privacy suites, 105
+Python tests, 18 Node/API tests and the production build pass. Independent census,
+live links and reviewer-authenticated browser journeys remain unverified. Private
+recovery hashes and prepared publication state are in the latest development log.
+Next priced cursor: ARKO Petroleum Corp. (`0001193125-26-049767`), then Generate
+Biomedicines; no month or full census is declared complete.
+
 ## September 28 UTC: SOLV complete management and two-class ownership review
 
 Applied 16 missing complete management biographies, one source-named former

@@ -1,5 +1,67 @@
 # IPO Roll development handoff
 
+## September 28 UTC: AGI complete dual-class ownership review
+
+Continued under the shared development lock from the verified SOLV checkpoint.
+Reviewed AGI Inc.'s final 424B1 (`0001753926-26-000308`, registration
+`333-292720`, filed February 11, 2026; pricing date February 10, 2026; final IPO
+price $12) against the complete principal-shareholders table and all six linked
+footnotes. The retained raw source SHA-256 is
+`e1b371b2991607e9a160bb22905538ca3e90ae0ae97c4c3ee2b98bfc4d127e7f`;
+normalized source SHA-256 is
+`54ff1a05077064f670ec224ad34a9ca39d307c61ebdf255eadd02319784d391e`.
+
+**Applied to commercial staging:** added 68 positions covering all 17
+non-overlapping table subjects: all 14 directors/executives and three disclosed
+holder organizations, with separate Class A/Class B and pre/base-post snapshots.
+All 40 selected filing dashes remain explicit null positions. The full-
+underwriter-option columns are mutually exclusive alternatives and remain held.
+The overlapping 14-person aggregate and the table's repeated Marciano Testa row
+are audited but not imported twice. Proposed-sale columns were reviewed; every
+selected row reports a dash, so no sale, proceeds or cash is asserted.
+
+AGI Partners Limited, LCM Bigbang FIP and Vinci Capital Partners III H FIP remain
+organizations rather than people. Marciano Testa is linked to AGI Partners only
+as its filing-named controlling shareholder, with personal economic ownership of
+the entity's aggregate disclaimed. His own reported row, AGI Partners' two-class
+row and the other executives' filing-attributed rows remain overlapping source
+facts and must not be summed. The source names Lumina Capital Management Ltda.
+and Vinci Capital Gestora de Recursos Ltda. as organization investment managers;
+the current attribution relation supports natural people only, so those two
+organization-to-organization control links remain an explicit structured-data QA
+gap while their full footnotes and limitations are retained. No current
+ownership, historical IPO-price value, realized cash, market value, lock-up
+expiry or saleability is inferred.
+
+AGI's existing management review remains complete at **14 people / 14 complete
+biographies**. Staging is now **94 offerings / 467 people / 390 biographies / 549
+positions / 16 components / 150 holder-person attributions / zero quotes**.
+Any-position coverage is **22 of 94 offerings**; **72 still have none**. The nine
+existing private reports and checksum `6934bc3145bb395df455112bc10190fb` are
+unchanged; zero disposable test users remain.
+
+The holdings phase passed rollback rehearsal, atomic application and exact replay.
+AGI plus 13 existing ownership/privacy database suites pass, including class,
+basis, null/zero, overlap, controller, cross-account, guessed-ID, ordinary-
+customer and anonymous checks. **105 Python tests, 18 Node/API tests and the
+production build pass.** Structural filing/source/lifecycle/role/holding checks
+pass. Organization-controller relationships, independent census, financial
+interpretation/arithmetic, live source links, lock-up saleability and a live
+reviewer-authenticated browser journey remain unverified.
+
+Private deterministic review/release bundle
+`4a011e5e10e2ddc4e352a52efb7f64411c681073df1e4a7c60155f0fd71ace97`
+is verified in `ops.sec_artifacts` (512,000 raw tar bytes; 44,599 gzip bytes;
+gzip SHA-256 `1b54b48c9c8ff658a1f54fd60c58fb495b5192c53dd45e2184ac30e2a8ca38a3`).
+The raw filing remains in its existing private SEC artifact; no private source or
+review payload is added to Git/frontend assets.
+
+**Prepared, not yet published:** staging data are applied and served through the
+existing authenticated API; the repository checkpoint and deployment receipt are
+pending. The next oldest priced no-position cursor is ARKO Petroleum Corp.
+(`0001193125-26-049767`, CIK `0002080921`), followed by Generate Biomedicines.
+Full census, ownership and continuous discovery/QA completion remain open.
+
 ## September 28 UTC: SOLV complete management and two-class ownership review
 
 Continued under the shared development lock from the verified Once Upon a Farm
