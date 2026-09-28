@@ -12,11 +12,18 @@ export type Config = {
   url?: string;
   key?: string;
   production?: boolean;
+  proxyHops?: number;
 };
 export function createApp(config: Config) {
   if (config.demo && config.production)
     throw new Error("Sample mode is forbidden in production");
   const app = express();
+  if (config.production) {
+    const proxyHops = config.proxyHops ?? 1;
+    if (!Number.isInteger(proxyHops) || proxyHops < 1)
+      throw new Error("Production proxy hops must be a positive integer");
+    app.set("trust proxy", proxyHops);
+  }
   app.disable("x-powered-by");
   app.use(
     helmet({

@@ -1749,7 +1749,9 @@ function DetailDrawer({
                   <span>
                     <strong>{p.name}</strong>
                     <small>
-                      {p.role} · {p.relationship}
+                      {p.roles?.length
+                        ? p.roles.map((role) => `${role.title} · ${role.relationship}`).join(" · ")
+                        : `${p.role} · ${p.relationship}`}
                     </small>
                   </span>
                   <ChevronDown

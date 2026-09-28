@@ -12,6 +12,7 @@ export type Person = {
   kind?: "person" | "organization" | "group" | "unresolved";
   role: string;
   relationship: string;
+  roles?: { title: string; relationship: string; source: Source }[];
   shares: number | null;
   percent: number | null;
   source: Source;

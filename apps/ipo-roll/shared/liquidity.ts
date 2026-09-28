@@ -10,6 +10,7 @@ export type LiquidityReport = {
   person: string;
   relationship: string;
   relationshipSource: Source;
+  roles?: { title: string; relationship: string; source: Source }[];
   notice: string;
   positions: {
     id: string;

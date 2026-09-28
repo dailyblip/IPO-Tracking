@@ -15,7 +15,9 @@ function Evidence({ source }: { source: Source }) {
 
 export function LiquidityReportView({ report }: { report: LiquidityReport }) {
   return <>
-    <p className="report-context">{report.company} · {report.relationship}</p>
+    <p className="report-context">{report.company} · {report.roles?.length
+      ? report.roles.map(role => `${role.title} · ${role.relationship}`).join(' · ')
+      : report.relationship}</p>
     <div className="report-asof"><span>Analysis as of <strong>{new Date(report.asOf).toLocaleString()}</strong></span><span>Static snapshot · may be stale</span></div>
     <div className="liquidity-summary" aria-label="Reviewed position counts">
       {Object.entries(categories).map(([key, label]) => <div key={key}><strong>{report.positions.length ? report.positions.filter(p => p.category === key).length : '—'}</strong><span>{label}</span></div>)}
@@ -37,7 +39,10 @@ export function LiquidityReportView({ report }: { report: LiquidityReport }) {
         <p className="document-hash">SHA-256: {p.documentHash || 'Not recorded in this snapshot'}</p>
         <details><summary>Source passages and footnotes ({p.evidence.length + 1})</summary><Evidence source={p.source}/>{p.evidence.map((s,i) => <Evidence source={s} key={i}/>)}</details>
       </section>)}
-      <details><summary>Company relationship evidence</summary><Evidence source={report.relationshipSource}/></details>
+      <details><summary>Company relationship evidence</summary>
+        {report.roles?.length
+          ? report.roles.map((role, index) => <section key={`${role.title}-${role.relationship}-${index}`}><strong>{role.title} · {role.relationship}</strong><Evidence source={role.source}/></section>)
+          : <Evidence source={report.relationshipSource}/>}</details>
       <p>{report.notice}</p>
     </details>
   </>;

@@ -20,6 +20,20 @@ test("production refuses sample mode", () =>
     () => createApp({ demo: true, production: true }),
     /forbidden/,
   ));
+test("production validates its trusted proxy hop count", () =>
+  assert.throws(
+    () => createApp({ demo: false, production: true, proxyHops: 0 }),
+    /positive integer/,
+  ));
+test("forwarded clients use independent rate-limit buckets behind one trusted proxy", () =>
+  withServer({ demo: false, production: true, proxyHops: 1 }, async (url) => {
+    for (let i = 1; i <= 125; i++) {
+      const response = await fetch(url + "/api/overview", {
+        headers: { "X-Forwarded-For": `198.51.100.${i}` },
+      });
+      assert.equal(response.status, 503);
+    }
+  }));
 test("unconfigured staging fails closed", () =>
   withServer({ demo: false }, async (url) => {
     for (const path of [
