@@ -45,8 +45,8 @@ def reconcile(packet, review, snapshot, archive):
     results, seen_kinds, all_blocks = [], set(), set()
     for section in review['sections']:
         kind = section['kind']
-        if kind not in KINDS or kind in seen_kinds or section.get('boundaries_reviewed') is not True:
-            raise ValueError('Unique explicitly reviewed section boundaries required')
+        if kind not in KINDS or section.get('boundaries_reviewed') is not True:
+            raise ValueError('Explicitly reviewed section boundaries required')
         seen_kinds.add(kind)
         first, last = section['first'], section['last']
         if type(first) is not int or type(last) is not int or not 0 <= first <= last < len(blocks):
@@ -122,18 +122,22 @@ def reconcile(packet, review, snapshot, archive):
             raise ValueError('A context-only section does not establish roster coverage')
         results.append(dict(kind=kind, first=first, last=last, entries=entries,
                             source_entries=len(named), pending=sum(e['status'] not in ('person_present', 'biography_complete') for e in named)))
-    by_kind = {s['kind']: s for s in results}
+    by_kind = {kind: [s for s in results if s['kind'] == kind] for kind in KINDS}
     if not {'management_table', 'management_biographies'} <= seen_kinds:
         raise ValueError('Both management table and biography sections required')
     # A named management person cannot disappear because discovery found no bio.
-    roster = {e['canonical_name'] for e in by_kind['management_table']['entries'] if e['kind']=='person'}
-    bios = {e['canonical_name'] for e in by_kind['management_biographies']['entries'] if e['kind']=='person'}
+    roster = {e['canonical_name'] for section in by_kind['management_table']
+              for e in section['entries'] if e['kind']=='person'}
+    bios = {e['canonical_name'] for section in by_kind['management_biographies']
+            for e in section['entries'] if e['kind']=='person'}
     without_bio = sorted(roster-bios)
     result = dict(version='people-roster-reconciliation/1', offering_id=offering,
                   source_sha256=source_hash, normalized_sha256=doc['normalized_text_sha256'],
                   snapshot_observed_at=snapshot['observed_at'], snapshot_sha256=sha(canonical(snapshot).encode()),
                   sections=results, management_names_without_selected_biography=without_bio,
-                  management_complete=not without_bio and all(by_kind[k]['pending']==0 for k in ('management_table','management_biographies')),
+                  management_complete=not without_bio and all(
+                      section['pending']==0 for k in ('management_table','management_biographies')
+                      for section in by_kind[k]),
                   ownership_table_status='accounted_for_with_pending_review' if 'ownership_table' in seen_kinds else 'not_reviewed',
                   ownership_footnotes_status='accounted_for_with_pending_review' if 'ownership_footnotes' in seen_kinds else 'not_reviewed',
                   missing_named_footnote_people=sorted({p['name'] for s in results for e in s['entries']
