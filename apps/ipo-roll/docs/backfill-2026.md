@@ -1,5 +1,28 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: Veradermics full management and ownership review
+
+Applied eight missing management biographies, six footnote controllers, 13
+non-duplicative ownership quantities and eight group-controller links from the
+complete reviewed Veradermics sections. All 11 management biographies reconcile.
+Six holder organizations/groups remain separate from people. Repeated/aggregate
+rows and Patrick Enright's unexplained one-share discrepancy are audited without
+being double-counted or promoted to personal economics.
+
+The source gives one quantity column, before/after percentages and conflicting
+September 30 versus December 31, 2025 date language. Each quantity is therefore
+stored once with an `unspecified` basis and null holdings date; no date, value,
+liquidity, current ownership or cash result is guessed. Dashes remain null.
+
+Current totals: **94 offerings / 355 people / 328 biographies / 222 positions / 16
+components / 46 attributions / zero quotes**. Any-position coverage is **14 of 94**;
+**80 still have none**. Nine private reports remain unchanged. Rollback/application/
+replay, six staging privacy/regression suites, 104 Python tests, 18 Node/API tests
+and the production build pass. Browser and live reviewer-authenticated journeys
+remain unverified. Private recovery hashes and exact publication state are in the
+latest development log. Next no-position cursor: Bob's Discount Furniture, then
+continue oldest-first; no month or full census is declared complete.
+
 ## September 28 UTC: York complete principal-stockholder review
 
 Applied 22 York Space Systems before/projected-after positions covering all nine

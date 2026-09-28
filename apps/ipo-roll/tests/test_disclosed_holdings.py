@@ -49,6 +49,16 @@ class DisclosedHoldingsTests(unittest.TestCase):
                 bad=copy.deepcopy(r);bad['people'][0]['cells'][1]=invalid
                 with self.subTest(invalid=invalid),self.assertRaises(ValueError):m.build(p,bad,d)
 
+    def test_dash_percent_cells_remain_undisclosed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp);p,r=self.fixture(d)
+            r['people'][0]['cells'][1]='— %';r['people'][0]['cells'][3]='— %'
+            raw=(d/'objects'/p['documents'][0]['source']['content_sha256']).read_bytes().replace(b'5 %',b'\xe2\x80\x94 %').replace(b'0 %',b'\xe2\x80\x94 %')
+            source=m.sha(raw);text,_=m.text_blocks(raw);(d/'objects'/source).write_bytes(raw)
+            p['documents'][0]['source']['content_sha256']=source;p['documents'][0]['normalized_text_sha256']=m.sha(text.encode())
+            manifest,_=m.build(p,r,d)
+            self.assertEqual([x['shares'] for x in manifest['positions']],[1000,0])
+
     def test_wrong_row_columns_identity_header_class_date_and_source_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             d=Path(tmp);p,r=self.fixture(d)
@@ -151,6 +161,32 @@ class DisclosedHoldingsTests(unittest.TestCase):
                 elif mutate=='economic': bad['people'][0]['attributions'][0]['description']='SEC-reported relationship.'
                 else: bad['reviewed_non_imported_rows'][0]['cells'][0]='1,001'
                 with self.subTest(mutate=mutate),self.assertRaises(ValueError):m.build(p,bad,d)
+
+    def test_single_quantity_with_conflicting_source_dates_stays_unspecified(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp);p,r=self.fixture(d)
+            raw=(b'<p>NUMBER OF SHARES BENEFICIALLY OWNED BEFORE OFFERING AFTER OFFERING common stock</p>'
+                 b'<p>Ownership as of September 30, 2025. Percentages use December 31, 2025.</p>'
+                 b'<table><tr><td>Jordan Example</td><td>1,000</td><td>5 %</td><td>3 %</td></tr></table>')
+            text,_=m.text_blocks(raw);h=m.sha(raw);(d/'objects'/h).write_bytes(raw)
+            p['documents'][0]['source']['content_sha256']=h;p['documents'][0]['normalized_text_sha256']=m.sha(text.encode())
+            r.pop('holdings_as_of')
+            r.update(position_basis_limitation=('The introduction says September 30, 2025, while the '
+                     'denominator and option language use December 31, 2025; no date is selected.'),
+                columns=[dict(key='reported_total',kind='quantity',position_basis='unspecified',
+                              share_class='common stock',header_literal='NUMBER OF SHARES BENEFICIALLY OWNED'),
+                         dict(key='before_pct',kind='percent'),dict(key='after_pct',kind='percent')],
+                people=[dict(name='Jordan Example',source_label='Jordan Example',identity_reviewed=True,
+                    row=dict(first=2,last=2),cells=['1,000','5 %','3 %'],
+                    interpretation_note='The filing supplies one quantity and two percentages.')])
+            manifest,sql=m.build(p,r,d)
+            self.assertEqual(len(manifest['positions']),1)
+            self.assertEqual(manifest['positions'][0]['position_basis'],'unspecified')
+            self.assertIsNone(manifest['positions'][0]['holdings_as_of'])
+            self.assertIn("'unspecified'",sql)
+            self.assertIn('stored once',manifest['positions'][0]['explanation'])
+            bad=copy.deepcopy(r);bad.pop('position_basis_limitation')
+            with self.assertRaisesRegex(ValueError,'source limitation'):m.build(p,bad,d)
 
 
 if __name__=='__main__':unittest.main()

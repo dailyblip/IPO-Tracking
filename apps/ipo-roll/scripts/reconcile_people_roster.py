@@ -99,13 +99,18 @@ def reconcile(packet, review, snapshot, archive):
                     named_people, seen_names = [], set()
                     for named in part['named_people']:
                         name = named['name']
-                        if (not name or name in seen_names or name not in evidence['excerpt'] or
+                        source_name = named.get('source_name', name)
+                        if (source_name != name and
+                                (named.get('alias_reviewed') is not True or not named.get('alias_reason'))):
+                            raise ValueError('Named controller alias requires explicit review')
+                        if (not name or name in seen_names or source_name not in evidence['excerpt'] or
                                 named.get('attribution_reviewed') is not True or
                                 named.get('attribution_kind') not in ('shared_voting_dispositive', 'upstream_control') or
                                 not named.get('reason')):
                             raise ValueError('Literal named controller and reviewed attribution required')
                         seen_names.add(name)
-                        named_people.append(dict(name=name, attribution_kind=named['attribution_kind'],
+                        named_people.append(dict(name=name, source_name=source_name,
+                                                 attribution_kind=named['attribution_kind'],
                                                  reason=named['reason'],
                                                  status='person_present' if name in people else 'person_missing'))
                     result['named_people'] = named_people

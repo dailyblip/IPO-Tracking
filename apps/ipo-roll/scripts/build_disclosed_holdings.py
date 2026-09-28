@@ -99,7 +99,10 @@ def build(packet, review, directory):
         if c['kind'] == 'unselected_quantity' and not c.get('not_imported_reason'):
             raise ValueError('Unselected scenario quantity requires a reason')
         if c['kind'] == 'quantity':
-            if c['position_basis'] not in ('pre','post'): raise ValueError('Explicit pre/post basis required')
+            if c['position_basis'] not in ('pre','post','unspecified'):
+                raise ValueError('Explicit supported position basis required')
+            if c['position_basis'] == 'unspecified' and not review.get('position_basis_limitation'):
+                raise ValueError('Unspecified position basis requires an explicit source limitation')
             if not c['header_literal'] or c['header_literal'] not in header_text:
                 raise ValueError('Column header evidence mismatch')
     positions = []; names = set()
@@ -135,7 +138,7 @@ def build(packet, review, directory):
             raise ValueError('Whole source row / ordered cells mismatch')
         for c, cell in zip(columns, cells):
             if c['kind'] in ('quantity','proposed_sale','unselected_quantity'): quantity(cell)
-            elif not re.fullmatch(r'(?:(?:100(?:\.0+)?|\d{1,2}(?:\.\d+)?)\s*%?|\*\s*%?|[—–-])', cell):
+            elif not re.fullmatch(r'(?:(?:100(?:\.0+)?|\d{1,2}(?:\.\d+)?)\s*%?|\*\s*%?|[—–-]\s*%?)', cell):
                 raise ValueError('Invalid percent cell')
         notes = [selected(spec)[0] for spec in person.get('footnotes', [])]
         person_security = person.get('share_class')
@@ -173,13 +176,19 @@ def build(packet, review, directory):
             if c['kind'] != 'quantity' or c['key'] not in selected_quantity_keys: continue
             if review.get('skip_undisclosed_quantities') is True and quantity(cell) is None: continue
             security = c.get('share_class', person_security)
+            if c['position_basis'] == 'unspecified':
+                basis_explanation = ('Source-reported beneficial-ownership total with unresolved temporal basis. '
+                    + review['position_basis_limitation'] + ' The quantity is stored once and must not be '
+                    'duplicated across before/after bases. ')
+            else:
+                basis_explanation = ('Source-reported '+('before-IPO' if c['position_basis']=='pre' else 'projected after-IPO')+
+                    ' beneficial-ownership total. Alternative snapshots must not be summed. ')
             position = dict(id=uid('disclosed-holding', document, pid, c['key']),
                 name=name, share_class=security, position_basis=c['position_basis'], shares=quantity(cell),
                 raw_quantity=cell, holdings_as_of=as_of, row=sid, evidence=common+notes,
                 source_row_key='reviewed-table:'+pid+':'+c['key'],
-                explanation=('Source-reported '+('before-IPO' if c['position_basis']=='pre' else 'projected after-IPO')+
-                 ' beneficial-ownership total. '+person['interpretation_note']+
-                 ' Alternative snapshots must not be summed. This does not establish issued common shares, current personal wealth or liquidity.'),
+                explanation=(basis_explanation+person['interpretation_note']+
+                 ' This does not establish issued common shares, current personal wealth or liquidity.'),
                 conditions='Instrument, attribution and restriction decomposition remains incomplete. No saleability date or realized proceeds is established.')
             if party_kind == 'person' and not attributions:
                 position['person_id'] = pid
