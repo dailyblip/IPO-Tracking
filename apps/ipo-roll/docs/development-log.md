@@ -1,5 +1,62 @@
 # IPO Roll development handoff
 
+## September 28 UTC: SpyGlass complete roster, ownership rows and controller links
+
+Continued under the shared development lock from verified Eikon checkpoint
+`21cd206a21c7c41670b90fff2a4ba8f568e4ed32`. Reviewed SpyGlass Pharma,
+Inc.'s final 424B4 (`0001628280-26-006068`, registration `333-292779`, source
+SHA-256 `eaa327dee1dcf93a32d8a811e634f2f7b9de66c74bea52b21667983bc8c53409`)
+against the complete management table, all 14 biographies, the complete beneficial-
+ownership table and every linked footnote. Added ten missing complete management
+biographies plus 15 named external footnote controllers. SpyGlass now has all 14
+management biographies and 29 exact-filing people/roles (14 management plus 15
+controllers); controller records do not invent biographies.
+
+**Applied to commercial staging:** 14 non-duplicative December 31, 2025
+pre-offering positions: six reported organizations/groups and eight direct named-
+person rows. Eighteen evidence-linked attributions preserve control authority and
+reported-beneficial-owner distinctions. Ali Behbahani/NEA, Kirk Nielsen/Vensana
+and Geoff Pardo/Gilde repeat their affiliated holder totals, so each quantity is
+stored once on the reported holder and linked to the person rather than duplicated.
+The overlapping 13-person officers/directors aggregate is audited but not imported
+again. Four direct rows contain filing dashes and remain null, never zero.
+
+The table reports one quantity as of December 31, 2025 with separate before- and
+after-offering percentages. Each reviewed quantity is stored once as pre-offering;
+no projected quantity is reverse-calculated. Option, voting/dispositive, fund and
+controlled-company limitations remain explicit. All 14 liquidity assessments are
+unknown. No current value, completed sale, cash, personal economics or saleability
+is inferred.
+
+Staging is now **94 offerings / 411 people / 360 biographies / 281 positions / 16
+components / 74 holder-person attributions / zero quotes**. Any-position coverage
+is **17 of 94 offerings**; **77 still have none**, and row presence does not certify
+whole-table completion. The **nine existing private reports and checksum
+`6934bc3145bb395df455112bc10190fb` are unchanged**.
+
+People and holdings phases each passed rollback rehearsal, atomic application and
+exact replay. SpyGlass plus eight existing database privacy/regression suites pass,
+including cross-account, guessed-ID, ordinary-customer and anonymous denial.
+**104 Python tests, 18 Node/API tests and the production build pass.** The generic
+staging audit passes structural filing/lifecycle/source alignment for SpyGlass but
+correctly leaves source-link, lock-up, full-biography, whole-ownership, financial-
+interpretation, census and live authenticated-browser tracks unverified unless a
+separate reviewed receipt establishes them. Browser code is unchanged; desktop/
+mobile and live reviewer-authenticated journeys remain unverified here.
+
+Private deterministic review/release bundle
+`5913179234077de9504c0068a02e84e3b4e291d08ff6616d6ceb3d2c11dd20e2`
+is verified in `ops.sec_artifacts` (634,880 raw tar bytes; 93,133 gzip bytes;
+gzip SHA-256 `bd44b1bdd50f877218f563e1fcc1cae040aff869051fc362039ed308aad9b504`).
+The raw filing remains in its existing private SEC artifact; no private source or
+review payload is added to Git/frontend assets.
+
+**Publication status:** staging data are applied through the existing authenticated
+API. The test/ledger checkpoint is prepared locally and not yet published. The next
+oldest priced no-position cursor is Forgent Power Solutions
+(`0001193125-26-040029`), followed by Once Upon a Farm and AgomAb. Full census,
+ownership and continuous discovery/QA completion remain open.
+
 ## September 28 UTC: Eikon complete roster, fund attribution and single pre-offering totals
 
 Continued under the shared development lock from verified Bob's checkpoint
