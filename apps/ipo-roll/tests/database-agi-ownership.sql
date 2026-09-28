@@ -58,7 +58,7 @@ do $$ declare d jsonb; subject jsonb; holder jsonb; r jsonb;
   then raise exception 'AGI overlapping fourteen-person aggregate was imported'; end if;
 
  r:=public.ipo_roll_request_liquidity(offering,(holder->>'id')::uuid,'89920000-0000-4000-8000-000000000001');
- if r->>'version'<>'liquidity/1.4' or jsonb_array_length(r->'positions')<>4
+ if r->>'version'<>'liquidity/1.6' or jsonb_array_length(r->'positions')<>4
   or exists(select 1 from jsonb_array_elements(r->'positions') x where x->>'category'<>'unknown' or x->>'marketValue' is not null)
   then raise exception 'AGI private report promoted beneficial totals or market value'; end if;
  perform set_config('agi.report',r->>'id',true);

@@ -38,7 +38,7 @@ do $$ declare r jsonb; d jsonb; subject jsonb; report jsonb; begin
   then raise exception 'Multi-role evidence not aggregated deterministically: %',subject; end if;
  report:=public.ipo_roll_request_liquidity(current_setting('ipo_test.offering')::uuid,
   (subject->>'id')::uuid,'20000000-0000-4000-8000-000000000002');
- if report->>'version'<>'liquidity/1.5' or jsonb_array_length(report->'roles')<>2
+ if report->>'version'<>'liquidity/1.6' or jsonb_array_length(report->'roles')<>2
   then raise exception 'Multi-role report snapshot incomplete: %',report; end if;
  perform public.ipo_roll_set_saved(current_setting('ipo_test.offering')::uuid,true);
  if (public.ipo_roll_offerings(p_saved=>true)->>'total')::int<>1 then raise exception 'Watchlist filter failed'; end if;

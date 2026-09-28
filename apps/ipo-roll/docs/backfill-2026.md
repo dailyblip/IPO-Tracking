@@ -1,5 +1,18 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: account-private report boundary hardening
+
+Applied the Opus-reviewed database boundary fix without changing shared research
+facts or the backfill cursor. New static Liquidity Analysis generation is bounded
+to 100 reports per account and ten versions per offering/subject in a rolling 24
+hours across both RPC and direct authenticated insert paths. Internal functions
+no longer inherit PUBLIC execute; authenticated statements have a 15-second
+database timeout. New report version `liquidity/1.6` drops the obsolete filing-date
+alias while retaining explicit filing and holdings-as-of fields. Nine existing
+reports and all cohort counts remain unchanged. Rollback limit, access, evidence,
+HMH, API and build checks pass. Arxis and Madison Air Solutions remain the next
+priced ownership cursors; census/backfill completeness is unchanged.
+
 ## September 28 UTC: HMH complete roster and ownership table
 
 Applied ten missing biographies to complete all 13 management/director people and

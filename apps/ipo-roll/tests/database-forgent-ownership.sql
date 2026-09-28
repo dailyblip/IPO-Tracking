@@ -49,7 +49,7 @@ do $$ declare d jsonb; subject jsonb; holder jsonb; r jsonb; begin
   then raise exception 'Peter Jonna direct unknowns or Neos control attribution failed'; end if;
 
  r:=public.ipo_roll_request_liquidity('cbdf385c-db79-53e5-8398-9fb375460b3f',(subject->>'id')::uuid,'89900000-0000-4000-8000-000000000001');
- if r->>'version'<>'liquidity/1.4' or jsonb_array_length(r->'positions')<>8
+ if r->>'version'<>'liquidity/1.6' or jsonb_array_length(r->'positions')<>8
   or exists(select 1 from jsonb_array_elements(r->'positions') x where x->>'category'<>'unknown' or x->>'marketValue' is not null)
   or (select count(*) from jsonb_array_elements(r->'positions') x where x#>>'{attribution,kind}'='control_authority')<>4
   then raise exception 'Forgent private report promoted unknown/control holdings'; end if;
