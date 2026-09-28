@@ -1,5 +1,24 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: holdings quantities expanded beyond Neutron
+
+Applied **20 January-filing positions** (Buda Juice 18; Green Circle two) and
+**18 July-filing positions** (Neutron), representing 19 people across pre/projected
+post snapshots. Ten Neutron dash records have null quantity; zeros remain zero.
+No new IPO or biography. Totals: **94 offerings / 323 people / 320 biographies /
+52 positions / 16 components / zero quotes**. Holdings-record presence expanded
+from five to **eight offerings**, with **86 still lacking positions**. This is not
+whole-table completeness even for the eight. Entity/group rows, decomposition,
+liquidity and historical values remain incomplete. Buda denominator conflict
+retained; no percentages inferred. Nine existing private reports unchanged.
+
+Each batch passed source/hash/cell/date/identity review, rollback/application and
+replay QA. Full 94-row structural audit has no failures but unavailable coverage
+checks remain unverified. Private coverage queue next cursor is BitGo, then
+EquipmentShare, PicPay, Ethos and York. Recovery hash, tested/deployed distinctions
+and source nuances are in the latest development-log entry. No census month is
+complete; prior entries below are history.
+
 ## Latest applied coverage — September 27 night Pacific
 
 **94 offerings / 323 people / 320 biographies / 14 positions / 16 components**.

@@ -20,8 +20,14 @@ test('incomplete evidence keeps a labeled aggregate; classes and alternative bas
   const rows=ownershipRows([{...position,components:{status:'incomplete',items:[]}},
     {...position,id:'b',quantityKind:'reported_shares',shareClass:'Class B common stock',positionBasis:'post'}]);
   assert.equal(rows.length,2);
-  assert.equal(rows[0].attribution,'Breakdown incomplete · includes awards');
+  assert.equal(rows[0].attribution,'Reported beneficial total · breakdown pending');
   assert.equal(rows[1].security,'Class B common stock');
   assert.equal(rows[1].position.positionBasis,'post');
   assert.deepEqual(ownershipRows([]),[]);
+});
+test('reported zero and undisclosed quantity remain different',()=>{
+  const rows=ownershipRows([0,null].map((n,i)=>({...position,id:String(i),reportedTotal:n,components:{status:'incomplete',items:[]}})));
+  assert.equal(rows[0].quantity,0);
+  assert.equal(rows[1].quantity,null);
+  assert.ok(rows.every(r=>!r.attribution.includes('includes awards')));
 });
