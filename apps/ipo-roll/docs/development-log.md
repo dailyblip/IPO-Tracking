@@ -1,5 +1,69 @@
 # IPO Roll development handoff
 
+## September 28 UTC: Generate Biomedicines complete ownership table
+
+Continued from the published management checkpoint
+`a5e387494aa9df003466d2da3b35d0a720fae39d`; Test Research Monitor run
+`36456329153` passed before this follow-up. Reviewed the complete final 424B4
+principal-stockholders section for accession `0001193125-26-083190`, CIK
+`0002100782`, registration `333-293204`, against the same raw source SHA-256
+`89b9f14e858e28386ba3d83fe6d7e33754019320399bb806c5241f63badb9117`
+and normalized SHA-256
+`7c0e6f1f21b56b710cef4a0cbe030cfd131021d79fa4f8f64fc2e186c402af39`.
+
+**Applied:** all twelve non-aggregate holder subjects as **24 positions**: the
+January 15, 2026 before-offering and projected after-offering beneficial totals
+for one Flagship holder group and eleven named people. The after snapshot uses
+the filing's 127,450,201-share denominator, includes the offering, excludes
+purchases by named holders (including the directed-share program), and assumes
+no underwriter-option exercise. Same-row snapshots are alternatives and must not
+be summed. The overlapping 15-person aggregate is fully audited and held out.
+
+All thirteen linked footnotes are accounted for. They distinguish issued common
+stock, preferred-conversion shares, options exercisable within 60 days, trusts,
+fund/entity holdings and voting/investment authority. Flagship's 57,985,617-share
+group row stays on the group; Dr. Noubar Afeyan has a source-backed control link
+with the filing's direct-ownership and beneficial-ownership disclaimers. His
+58,010,304-share person row incorporates the same Flagship total plus 24,687
+options and therefore overlaps the group row. Stéphane Bancel's OCHA control
+statement and all component details remain in evidence without copying entity
+shares or inventing personal economics. No aggregate or alternative row is
+summed, and no position is treated as homogeneous issued common stock.
+
+Every selected position has a reviewed `unknown` liquidity assessment. No current
+quote, historical IPO-price value, current wealth, completed sale, cash proceeds,
+vesting, exercise completion, restriction release or saleability fact was added.
+The source's $16 IPO price is not used as a current quote or multiplied by these
+mixed beneficial totals.
+
+**Verified:** exact whole-row/ordered-column validation, full-section block
+coverage (ownership table 3734–3841; footnotes 3842–3868), atomic application,
+exact replay, 24/24 reviewed-unknown assessments, group/controller presentation,
+mixed-option row presentation, held aggregate, on-demand static report unknowns,
+cross-account report-existence/guessed-ID denial, ordinary-customer denial and
+anonymous denial. All **107 Python tests** pass. Existing private reports remain
+**9** with checksum `6934bc3145bb395df455112bc10190fb`; zero test accounts
+remain. Staging is now **94 offerings / 484 people / 407 biographies / 590
+positions**; **24 offerings** have positions and 70 still have none.
+
+Private recovery bundle SHA-256 is
+`4f7939f2cd99f26fe7381409f4e170283c0fbf8a13829453baeb008b672e72d6`
+(225,280 raw tar bytes); stored gzip SHA-256 is
+`3da1a859d0b779e0d5642c07fdd506b466b0f11b795d15584a181a28bb8e6edc`
+(35,702 bytes), verified in `ops.sec_artifacts`. The ownership release is also
+recorded idempotently in `ops.pilot_manifests`. Private source/review payloads
+remain outside Git and frontend assets.
+
+**Publication:** staging data and QA are applied and verified. The retained
+database regression and this ledger checkpoint are prepared for guarded branch
+publication; no frontend deployment is needed. The source-content reconciler
+correctly leaves entity/group representation and footnote interpretation as
+pending in its person-roster status even though the separate holdings manifest
+and manual review cover this batch; do not promote that structural status to a
+company-complete claim. Next oldest priced no-position cursor and the fresh SEC
+discovery cutoff should be selected from the current private queue, not stale
+prompt counts. No owner action blocks this.
+
 ## September 28 UTC: Generate Biomedicines complete management biographies
 
 Continued from the verified ARKO/census checkpoint under the shared development

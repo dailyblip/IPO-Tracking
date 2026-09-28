@@ -298,6 +298,29 @@ coverage is 17 of 94 offerings, leaving 77 without records. Next cursor is Forge
 Power Solutions, then Once Upon a Farm and AgomAb. This is a source-reviewed batch,
 not a complete ownership cohort, independent SEC census, value or liquidity claim.
 
+## Mixed fund, trust, conversion and option totals — September 28 UTC
+
+Generate Biomedicines extends the complete-table contract to a two-snapshot table
+whose reported totals combine issued common stock, preferred-conversion shares,
+options exercisable within 60 days, trusts, funds and attributed authority. Store
+the filing's January 15, 2026 before-offering and projected after-offering totals
+as alternative snapshots; never sum them or treat either total as a homogeneous
+issued-common position.
+
+The Flagship quantity remains on the reported holder group. Dr. Noubar Afeyan's
+source-backed voting/investment control link carries the direct-ownership and
+beneficial-ownership disclaimers and does not establish personal economic ownership.
+His separate person row explicitly incorporates the Flagship shares plus options,
+so those rows overlap and must not be summed. The same evidence-first distinction
+applies to trusts and Stéphane Bancel's OCHA control statement. The overlapping
+15-person aggregate is audited without duplicate import.
+
+The complete review accounts for all 15 management biographies, twelve unique
+ownership subjects, 24 selected positions and all thirteen footnotes. Any-position
+coverage is now 24 of 94 offerings, leaving 70 without records. No current quote,
+historical IPO-price value, completed sale, liquidity or full-cohort/census claim
+is established by this batch.
+
 ## Repeatable checks now available
 
 Run `scripts/audit_staging_data.sql` read-only after each applied batch and retain
