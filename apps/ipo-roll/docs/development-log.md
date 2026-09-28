@@ -2,6 +2,16 @@
 
 ## September 27 night: Neutron missing people corrected; controller search and cohort QA
 
+Publication verified: commercial commit `de6f061945a4a337c10c9467bd1d44e9c687dddd`.
+All five ownership-history guard status lists were clear before commit. Render
+serves `index-BwX4kXBy.js` with SHA-256
+`a0f25dbfbc344a31aa5ae734ac3f0545e9a032f5166ba2a402ad661f4abce5b0`,
+identical to the tested build. Staging health is 200/ok; real anonymous search and
+Neutron detail endpoints return 401. Test Research Monitor run `36373335487` passed.
+Controller import replay passed all reviewer/access/report checks and left counts
+323 people / 320 biographies / 14 positions / eight reports unchanged. No live
+signed-in browser check or full financial-coverage claim. No owner action needed.
+
 Owner reported missing Neutron Holdings people. Started from clean published
 `f2eacfca0a8028b7b610b7976361aa86ec03f7e4` under the shared development lock.
 Restored and hash-verified its exact current 424B4, accession
@@ -30,9 +40,9 @@ adds the separate relationship without changing RLS/access grants. Name search
 now includes reviewed people without biographies; shared footnotes cannot match
 biography-text searches. Importer requires explicit control-attribution review.
 Roster reconciliation now flags missing named controllers inside reviewed notes.
-**Prepared/tested app:** relationship filter, accurate people-results label and
-concise controller/missing-biography notices. Deployment is not yet verified at
-this checkpoint; data and RPC changes are already served by the existing app.
+**Tested/deployed app:** relationship filter, accurate people-results label and
+concise controller/missing-biography notices. See publication verification above;
+data and RPC changes are also applied.
 
 Verified staging: **94 offerings / 323 people / 320 biographies / 14 positions /
 16 components / zero quotes / eight unchanged private reports**. No new offering,
