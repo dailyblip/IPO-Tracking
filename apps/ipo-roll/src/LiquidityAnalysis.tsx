@@ -1,10 +1,11 @@
 import { useRef, useState } from 'react';
-import { ArrowUpRight, X } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Check, Layers, X } from 'lucide-react';
 import type { LiquidityReport } from '../shared/liquidity.js';
-import { LiquidityReportView } from './LiquidityReportView.js';
-import { LiquidityScenario } from './LiquidityScenario.js';
-export function LiquidityAnalysis({ offeringId, personId, name, demo, request }: {
+import { LiquidityProfileView } from './LiquidityProfileView.js';
+export type ProfileSection = 'overview' | 'activity' | 'people' | 'saved' | 'methodology';
+export function LiquidityAnalysis({ offeringId, personId, name, demo, request, ticker, saved, toggleSaved, navigate }: {
   offeringId: string; personId: string; name: string; demo: boolean;
+  ticker?: string; saved?: boolean; toggleSaved?: () => void; navigate?: (view: ProfileSection) => void;
   request: <T>(path: string, init?: RequestInit) => Promise<T>;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -34,19 +35,21 @@ export function LiquidityAnalysis({ offeringId, personId, name, demo, request }:
   function close() { dialog.current?.close(); setScenarioSession(n => n + 1); trigger.current?.focus(); }
   return <>
     <button className="value-trigger" ref={trigger} onClick={() => void load()} aria-haspopup="dialog">Liquidity Analysis <ArrowUpRight size={16}/></button>
-    <dialog className="value-dialog liquidity-dialog" ref={dialog} aria-label={`Liquidity Analysis for ${name}`} onKeyDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()} onCancel={e => { e.preventDefault(); close(); }}>
-      <div className="value-dialog-heading"><div><span className="eyebrow">PRIVATE TO YOUR ACCOUNT</span><h2>Liquidity Analysis</h2></div><button className="icon-button" aria-label="Close liquidity analysis" onClick={close}><X size={22}/></button></div>
-      <p className="value-person">{name}</p>
-      {busy && <p role="status">Loading your saved analysis…</p>}
-      {error && <p role="alert">{error}</p>}
-      {error && !demo && <button className="value-trigger" disabled={busy} onClick={() => void load()}>Retry analysis</button>}
-      {report && <>
-        <LiquidityReportView report={report}/>
-        <LiquidityScenario key={`${scenarioSession}-${report.id}`} report={report}/>
-        <div className="report-refresh"><p>Saved reports stay unchanged. Refresh creates a new dated version.</p>
-          <button className="value-trigger" disabled={busy} onClick={() => void load(true)}>Refresh analysis</button>
+    <dialog className="value-dialog liquidity-dialog liquidity-profile" ref={dialog} aria-label={`Liquidity Analysis for ${name}`} onKeyDown={e => e.stopPropagation()} onClick={e => e.stopPropagation()} onCancel={e => { e.preventDefault(); close(); }}>
+      <header className="profile-topbar"><div className="profile-brand"><Layers size={25}/> IPO Roll<span>.</span></div>
+        {navigate && <nav aria-label="Profile navigation">{([['people', 'People Search'], ['activity', 'IPO Activity'], ['saved', 'Saved / Watchlist'], ['methodology', 'Methodology'], ['overview', 'Overview']] as const).map(([view, label]) => <button key={view} className={view === 'people' ? 'active' : ''} onClick={() => { close(); navigate(view); }}>{label}</button>)}</nav>}
+        <span className="profile-privacy">PRIVATE TO YOUR ACCOUNT</span><button className="icon-button" aria-label="Close liquidity analysis" onClick={close}><X size={22}/></button>
+      </header>
+      <div className="profile-page">
+        <button className="profile-outline profile-back" onClick={close}><ArrowLeft size={14}/> Back to company research</button>
+        <div className="profile-person-heading"><span className="profile-avatar" aria-hidden="true">{name.split(' ').map(n => n[0]).slice(0, 2).join('')}</span><div className="profile-person-copy"><h1>{name}</h1><p>{report ? `${report.relationship} · ${report.company}` : 'Liquidity Analysis'}</p><small>Offering-specific source identity · cross-offering links not yet reviewed</small></div>
+          <div className="profile-actions">{toggleSaved && <button className="profile-outline" onClick={toggleSaved}>{saved ? 'Unwatch offering' : 'Watch offering'}</button>}{report && <><span className="profile-saved"><Check size={14}/> Private snapshot saved</span><button className="profile-primary" disabled={busy} onClick={() => void load(true)}>Refresh analysis</button></>}</div>
         </div>
-      </>}
+        {busy && <p role="status">Loading your saved analysis…</p>}
+        {error && <p role="alert">{error}</p>}
+        {error && !demo && <button className="profile-outline" disabled={busy} onClick={() => void load()}>Retry analysis</button>}
+        {report && <LiquidityProfileView report={report} ticker={ticker} onBack={close} scenarioKey={`${scenarioSession}-${report.id}`}/>}
+      </div>
     </dialog>
   </>;
 }

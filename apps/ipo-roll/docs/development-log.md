@@ -1,5 +1,48 @@
 # IPO Roll development handoff
 
+## September 28 UTC: match the supplied Opus person-profile composition
+
+The owner supplied the Opus profile screenshot and pointed out that the previous
+backend work had not reproduced its interface. This is now the visual reference
+for the Liquidity Analysis screen. Implemented a full-viewport graphite profile
+with top navigation, person header, teal actions, selected-offering sidebar,
+central evidence timeline and always-visible scenario panel. Existing Overview,
+IPO Activity, People Search, Saved/Watchlist and Methodology destinations remain;
+company/person accordion and the exact Liquidity Analysis trigger remain intact.
+
+`LiquidityProfileView.tsx` renders only the requesting account's existing saved
+snapshot. Dated events sort by their source dates; undated/projected positions
+remain explicitly undated/projected. Filing dates are not used as holdings dates.
+Conditional lock-up boundaries remain separate from confirmed release. The full
+ownership grid, value cards, assessments, footnotes and source-version passages
+remain expandable. Scenario inputs/sliders are explicit personal assumptions,
+never current quotes or a sum of beneficial totals, and reset on close/refresh.
+Saved-report reopening and explicit version creation retain their existing APIs.
+
+The layout deliberately shows only the selected offering until reviewed canonical
+identity links are implemented; it does not copy the prototype's fictional second
+company or reporting-owner CIK claim. Watch offering uses the existing authenticated
+watchlist operation. No fictional watch-person alert, completed sale, underwriting
+fee, cash total, quote or new evidence was added. No database migration, report
+rewrite, source publication or production engine/schedule change.
+
+**Validation:** 22 Node/API/render/calculation tests pass, TypeScript and production
+build pass, and diff whitespace checks pass. Added a render regression for profile
+composition, projected/attributed quantities, no invented companies/completed sales
+and unchanged snapshot input. Updated the captured-RPC desktop/mobile browser
+journey for three columns, evidence expansion, scenario isolation, refresh and
+return focus. **Browser QA did not run:** no Chromium executable is installed, and
+the Playwright browser download repeatedly returned an invalid/truncated archive.
+Do not describe visual fidelity, mobile screenshots or click journeys as verified.
+The cloud staging browser initially reached Render's application-loading screen;
+no authorized reviewer session has been established for profile interaction.
+
+Prepared for guarded publication and existing Render staging deployment. Build
+assets: `index-DVD2e5J1.js` and `index-BJQ6ZT7T.css`. Verify served assets before
+claiming the new layout is live. Still open: visual screenshot comparison in an
+available browser, authenticated profile journey, reviewed cross-offering links,
+independent-session quota QA and discovery/backfill work from the preceding entry.
+
 ## September 28 UTC: corrected Opus specification and serialized report creation
 
 Owner approved the corrected review with “Proceed.” Adopted
