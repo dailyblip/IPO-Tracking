@@ -15,11 +15,12 @@ components / 38 attributions / zero quotes**. Any-position coverage is **13 of 9
 review does not establish the other per-offering tracks or any complete month.
 
 Rollback/application/replay, five live database privacy/regression suites, 102
-Python tests, 18 Node/API tests and the production build pass. Browser and live
-reviewer-authenticated journeys remain unverified in this execution image. Private
-recovery evidence and prepared/applied publication distinctions are recorded in the
-latest development log. Next no-position cursor: Veradermics, then continue
-oldest-first.
+Python tests, 18 Node/API tests and the production build pass. Publication commit
+`a7daf8c4941bdda45217c081b815300d0531fe8b` and Test Research Monitor run
+`36385725250` are green; staging health and anonymous denial were reverified.
+Browser and live reviewer-authenticated journeys remain unverified in this
+execution image. Private recovery evidence is recorded in the latest development
+log. Next no-position cursor: Veradermics, then continue oldest-first.
 
 ## September 28 UTC: Ethos complete selling-stockholder review
 
