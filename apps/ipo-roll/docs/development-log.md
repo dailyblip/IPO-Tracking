@@ -41,12 +41,17 @@ inspected. Browser auth was simulated, not a live reviewer login. The current
 holdings-source checks pass and 84 remain unverified. Financial interpretation,
 whole ownership rosters, census completeness and live signed-in QA remain separate.
 
-**Prepared/applied versus published:** source reviews, SQL receipts and QA are
-private staging evidence. The 76 records are applied through existing authenticated
-APIs. Importer/test changes and this ledger are prepared locally; verify the
-ownership-history workflow guard, commit, Render deployment where applicable and
-branch alignment before calling the code published. No frontend code changed in
-this batch, so the already deployed grid renders the data without a new UI design.
+**Publication verified:** source reviews, SQL receipts and QA remain private staging
+evidence. The 76 records are applied through existing authenticated APIs. Importer,
+tests and ledger are published in commercial commit
+`dddae7e150cb1a965895103602b3a3e94e337109`; all five ownership-history workflow
+status lists were clear immediately before commit. No frontend code changed, so
+Render correctly continues serving the tested `/assets/index-f4s2VtQz.js`, SHA-256
+`f4836b390aa0ac46ad902e05a1701e25fe9e3bb7d46a4e72f42c0a93a4f2ec86`,
+matching the local build. Health is 200/ok/staging and anonymous BitGo detail/search
+remain 401. Test Research Monitor run `36376383667` passed. Record application
+and code publication are distinct from complete coverage. The existing grid renders
+the data without a new UI design.
 
 Private recovery bundle `3d38b6e5726eb5d86875eeff97a9dbce80229c94cfb97a7c4657e4cfc3466c26`
 is verified in `ops.sec_artifacts` (2,020,591 raw bytes; gzip SHA-256
