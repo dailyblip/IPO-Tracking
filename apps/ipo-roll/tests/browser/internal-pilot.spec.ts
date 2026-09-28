@@ -88,8 +88,8 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
     .getByRole("button", { name: `Open ${d.detail.company}` })
     .click();
   await expect(page.getByRole("dialog")).toBeVisible();
-  await expect(page.getByText(holderName).first()).toBeVisible();
   const holderToggle = page.locator('.person-toggle').filter({ hasText: holderName });
+  await expect(holderToggle).toBeVisible();
   if (await holderToggle.getAttribute('aria-expanded') !== 'true') await holderToggle.click();
   if (d.detail.people.find((p: any) => p.name === holderName)?.relationship === 'Footnote controller') {
     await expect(page.locator('.person-toggle')).toHaveCount(d.detail.people.length);
