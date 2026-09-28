@@ -20,8 +20,10 @@ Migration, application, replay, access/privacy suites, 102 Python tests, 18
 Node/API tests and the production build pass. Browser fixtures are captured, but
 the desktop/mobile rerun is unverified because this execution image could not
 install a Playwright browser. Private recovery hash and applied/prepared publication
-status are in the latest development-log entry. Next cursor: York, then continue
-systematically across all remaining no-position offerings.
+status are in the latest development-log entry. The commercial commit, CI and exact
+Render bundle are verified deployed; anonymous Ethos detail/search remain denied.
+Next cursor: York, then continue systematically across all remaining no-position
+offerings.
 
 ## September 28 UTC: PicPay entity holders and attributed people
 
