@@ -1,5 +1,22 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: ARKO conversion-safe ownership review
+
+All eight complete management biographies reconciled, including five previously
+applied director-nominee additions. Imported 17 projected positions: sixteen
+explicit undisclosed class quantities and one parent Class B total. The Class A
+conversion quantity is the same interest and remains held out with its full row
+and footnote evidence; the overlapping eight-person aggregate is also excluded.
+Organization-to-organization ACS attribution remains a structured-data gap.
+
+Current totals: **94 offerings / 472 people / 395 biographies / 566 positions**;
+**23/94** offerings have positions and **71** still have none. Nine private reports
+remain unchanged. Rollback/application/replay, targeted database privacy/grid QA,
+106 Python tests and a 94-offering structural audit passed. Full census, financial
+interpretation, live links and live reviewer-browser coverage remain unverified.
+Recovery hashes and exact publication state are in the development log. Next
+oldest priced cursor: Generate Biomedicines; no month is declared complete.
+
 ## September 28 UTC: AGI complete dual-class ownership review
 
 Applied 68 Class A/Class B pre/base-post positions for all 17 non-overlapping

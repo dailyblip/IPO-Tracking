@@ -48,9 +48,16 @@ def quantity(cell):
     # the quantity and percentage cells. It establishes row presence but no
     # exact quantity, so preserve it as unknown rather than zero or omission.
     if cell in ('—', '–', '-', '*'): return None
-    if not re.fullmatch(r'(?:0|[1-9]\d*|[1-9]\d{0,2}(?:,\d{3})+)', cell):
+    # EDGAR commonly renders a numeric footnote marker inside the quantity
+    # cell (for example, ``35,000,000 (1)``).  Preserve the literal cell for
+    # row reconciliation while parsing only the reviewed numeric quantity.
+    match = re.fullmatch(
+        r'(?P<quantity>0|[1-9]\d*|[1-9]\d{0,2}(?:,\d{3})+)(?:\s+\(\d+\))?',
+        cell,
+    )
+    if not match:
         raise ValueError('Invalid quantity cell')
-    n = int(cell.replace(',', ''))
+    n = int(match.group('quantity').replace(',', ''))
     if n > 9007199254740991: raise ValueError('Unsafe quantity')
     return n
 
@@ -151,6 +158,15 @@ def build(packet, review, directory):
             elif not re.fullmatch(r'(?:(?:100(?:\.0+)?|\d{1,2}(?:\.\d+)?)\s*%?|\*\s*%?|[—–-]\s*%?)', cell):
                 raise ValueError('Invalid percent cell')
         notes = [selected(spec)[0] for spec in person.get('footnotes', [])]
+        # A numeric suffix is evidence linkage, not disposable formatting.
+        # Require the matching selected note even for a reviewed but omitted
+        # conversion/scenario cell; parsing alone cannot approve its meaning.
+        for c, cell in zip(columns, cells):
+            marker = re.search(r'\s+\((\d+)\)$', cell)
+            if c['kind'] in ('quantity', 'proposed_sale', 'unselected_quantity') and marker:
+                pattern = r'^\(' + re.escape(marker.group(1)) + r'\)(?:\s|$)'
+                if not any(re.search(pattern, flat(spans[n]['excerpt'])) for n in notes):
+                    raise ValueError('Quantity footnote marker requires matching selected note')
         person_security = person.get('share_class')
         evidence_text = ' '.join([header_text,basis_text]+[flat(spans[n]['excerpt']) for n in notes]).casefold()
         securities = {c.get('share_class', person_security) for c in columns if c['kind'] == 'quantity'}

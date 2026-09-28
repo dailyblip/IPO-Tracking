@@ -35,7 +35,8 @@ class DisclosedHoldingsTests(unittest.TestCase):
         self.assertIsNone(m.quantity('—'));self.assertIsNone(m.quantity('*'))
         self.assertEqual(m.quantity('0'),0)
         self.assertEqual(m.quantity('1,234'),1234)
-        for v in ('1,23','-1','1.2','1e3','9007199254740992','12 34','00'):
+        self.assertEqual(m.quantity('35,000,000 (1)'),35000000)
+        for v in ('1,23','-1','1.2','1e3','9007199254740992','12 34','00','1,000(1)','1,000 (x)'):
                 with self.subTest(v=v),self.assertRaises(ValueError):m.quantity(v)
 
     def test_zero_width_edgar_table_spacing_is_ignored_for_row_identity(self):
@@ -48,6 +49,30 @@ class DisclosedHoldingsTests(unittest.TestCase):
             doc['source']['content_sha256']=source;doc['normalized_text_sha256']=m.sha(text.encode())
             manifest,_=m.build(p,r,d)
             self.assertEqual(manifest['positions'][0]['shares'],1000)
+
+    def test_quantity_marker_requires_its_selected_footnote(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp);p,r=self.fixture(d)
+            doc=p['documents'][0]
+            raw=(d/'objects'/doc['source']['content_sha256']).read_bytes()
+            raw=raw.replace(b'<td>1,000</td>',b'<td>1,000 (1)</td>')
+            source=m.sha(raw);text,_=m.text_blocks(raw);(d/'objects'/source).write_bytes(raw)
+            doc['source']['content_sha256']=source;doc['normalized_text_sha256']=m.sha(text.encode())
+            r['people'][0]['cells'][0]='1,000 (1)'
+            manifest,_=m.build(p,r,d)
+            self.assertEqual(manifest['positions'][0]['shares'],1000)
+            self.assertEqual(manifest['positions'][0]['raw_quantity'],'1,000 (1)')
+            for notes in ([],[r['basis']]):
+                bad=copy.deepcopy(r);bad['people'][0]['footnotes']=notes
+                with self.subTest(notes=notes),self.assertRaisesRegex(ValueError,'matching selected note'):
+                    m.build(p,bad,d)
+            # Holding out a conversion quantity does not waive its note review.
+            r['people'][0]['import_quantity_keys']=['post']
+            r['people'][0]['not_imported_quantity_reason']='Overlapping conversion scenario.'
+            manifest,_=m.build(p,r,d)
+            self.assertEqual(len(manifest['positions']),1)
+            r['people'][0]['footnotes']=[]
+            with self.assertRaisesRegex(ValueError,'matching selected note'):m.build(p,r,d)
 
     def test_percent_cells_allow_table_header_percent_convention_but_reject_out_of_range(self):
         with tempfile.TemporaryDirectory() as tmp:

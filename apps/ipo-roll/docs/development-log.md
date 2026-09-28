@@ -1,5 +1,67 @@
 # IPO Roll development handoff
 
+## September 28 UTC: ARKO management and conversion-safe ownership review
+
+Resumed the interrupted ARKO review under the shared development lock. PR #581
+remains draft/open on the commercial branch; published parent is
+`13404e7cacc14dca8564f22d6405497101bab325`. Fresh staging checks confirmed that
+five director-nominee biographies were already applied; they were not replayed.
+All eight management rows and complete biographies now reconcile against the
+whole selected sections, including the Edmiston and Heyer page continuations.
+Nominee timing remains explicit. The ownership-table spelling “Edminston” was
+reviewed against the management roster/biography before linking the same person.
+
+Reviewed final 424B4 `0001193125-26-049767`, CIK `0002080921`, registration
+`333-292265`. Raw source SHA-256
+`cc09db36079b98f426d1e677f997208f10d2b96105e61737ee0496b077d541f9`;
+normalized SHA-256
+`7f00296aa5653a9b0c5bba7612a3ed9eaea3ecb05c08137482033b51b8c5f423`.
+
+**Applied:** 17 projected post-offering positions: explicit null Class A/Class B
+quantities for eight named people, plus the parent's Class B beneficial total.
+The Class A amount is issuable on conversion of the same Class B shares. Its
+whole source cell and sole footnote remain in evidence, but this overlapping
+conversion scenario is deliberately held out of positions. The eight-person
+aggregate is audited without duplicate import. ARKO Corp. remains an organization;
+its wholly owned subsidiary ACS's legal-title relationship is retained in the
+footnote, with structured organization-to-organization attribution still open.
+Unknown holdings dates, current ownership, personal economics, historical value,
+liquidity, lock-up expiry and completed sales remain unknown.
+
+The importer now accepts a numeric quantity with a numeric footnote suffix only
+when its matching note is selected; omitted conversion cells must also retain
+that evidence. Raw cell text is preserved. Regression tests cover missing/wrong
+notes and the held-out conversion scenario.
+
+**Verified:** rollback rehearsal, atomic application, exact replay, targeted ARKO
+reviewer RPC/grid/private report QA, cross-account existence/guessed-ID denial,
+ordinary-customer and anonymous denial. All 106 Python tests pass. A fresh
+94-offering structural audit found no failing identity/source/lifecycle checks;
+missing coverage and interpretation tracks remain unverified. All nine existing
+private reports retain checksum `6934bc3145bb395df455112bc10190fb`; zero test
+accounts remain. No schema, UI, source rights or production changes were made.
+Live reviewer-authenticated browser QA was not performed in this batch.
+
+Staging totals: **94 offerings / 472 people / 395 biographies / 566 positions**.
+Any-position coverage is **23 of 94**; **71 still have none**. These counts do not
+establish a complete SEC census or complete ownership coverage.
+
+Private deterministic recovery bundle is stored and checksum-verified in
+`ops.sec_artifacts`: raw SHA-256
+`a1b3785b02341e9304c952582611af9beee07ddd85e3ded409fc502a6217973f`
+(215,040 tar bytes), gzip SHA-256
+`e66e1f7b9e0f9725df99fef2fad805a69c3e93732022f046645eab3fbe2c4082`
+(26,836 bytes). It contains both reviews, manifests, current management snapshot,
+whole-section reconciliation and the current cohort structural audit. Private
+source payloads remain excluded from Git/frontend assets.
+
+**Publication:** staging data applied and verified through database reviewer APIs;
+repository changes prepared for guarded publication. No frontend deployment is
+needed for these data/importer changes. Next oldest priced no-position cursor is
+Generate Biomedicines. Also advance the independent census and durable discovery-
+to-review/import path; neither is declared complete. No owner action blocks this
+work. Paid quotes remain deferred, not a standing owner action.
+
 ## September 28 UTC: AGI complete dual-class ownership review
 
 Continued under the shared development lock from the verified SOLV checkpoint.
