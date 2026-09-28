@@ -1,5 +1,71 @@
 # IPO Roll development handoff
 
+## September 28 UTC: Arxis / Madison Air source-depth batch
+
+**Applied and verified in staging.** Added 19 people and 18 complete biographies:
+Arxis adds six biographies, completing all nine named management entries in the
+selected filing; Madison Air adds twelve, completing all fifteen management
+entries, plus one footnote-named beneficial owner with no invented biography.
+Whole-section reconciliation against a fresh canonical snapshot passes both
+management tables and all 24 biographies, including page continuations.
+
+Imported 100 class/basis ownership records (Arxis 60; Madison 40) and 24 controller/
+reported-owner attribution links. These are multiple security-class and temporal
+snapshots, not 100 distinct people or additive holdings. Dashes stay null. Arxis
+Class A, Class B and convertible common stock stay distinct. Madison post-offering
+figures include the concurrent private placement; conditional Class B conversion
+is not an additional holding. Excluded unvested EAR award quantities are not added.
+The two-fund Kedge aggregate remains a group; no fund allocation is guessed.
+
+**Material held finding:** Arxis's aggregate row says TEN persons while the
+management table names nine. The overlapping aggregate is retained in private
+review evidence, not imported as a person or additional quantity. Madison's Larry
+Gies row duplicates attributed Holdings / Co-Investors positions and is likewise
+retained without double counting. His eight attributed class/basis records do
+not establish personal economic ownership. Ernesto Bertarelli's four attributed
+records preserve reported beneficial ownership and absence of a sourced biography.
+Full restriction/decomposition, historical valuation and liquidity remain unverified.
+
+Source versions: Arxis accession `0001193125-26-159369`, raw SHA-256
+`714c67dec440efa55f8341d9f31a83d50cd653cea45280a4014c3f07113960d9`;
+Madison accession `0001193125-26-160250`, raw SHA-256
+`280b398d748319545d4025e62584bcc823e1da5db044c30258cba0d81fa6017d`.
+All imported rows were checked against complete ordered HTML-table cells and
+linked footnotes; raw and normalized hashes match retained artifacts.
+
+Validation performed: combined rollback rehearsal; application; exact replay with
+no duplicates; reviewer detail RPC; entity/class/basis/quantity/attribution checks;
+missing-bio subject retained; unknown value/liquidity; static report reopening;
+cross-account report-existence denial; ordinary-customer source denial. All eleven
+existing reports remained byte-identical, with zero disposable QA users remaining.
+`tests/database-arxis-madison-ownership.sql` passes after application. The 94-offering
+structural audit has zero failed checks; interpretation/completeness and unperformed
+live-source/browser checks remain explicitly unverified. No frontend code or schema
+changed, so this data is served through the existing deployed authenticated API;
+live authenticated browser viewing was not tested.
+
+Current verified totals: **94 offerings / 523 people / 445 biographies / 754
+positions / 176 attribution links / 26 components / zero quotes**. Twenty-eight
+offerings have positions; 66 have none. Neither full cohort nor either company's
+liquidity analysis is complete. Saved reports require explicit refresh for new facts.
+
+Private recovery bundle stored and compressed-hash verified in `ops.sec_artifacts`:
+`40b263be19bd1a7e3a0849cadc53dc935c3aaa3407acb73e6119b6f5e6cdb913`
+(2,960,904 raw bytes; gzip SHA-256
+`02048e2a89162ed102dd908ed1c172c994cc7ecde20068ebf315e6cf67a29f53`).
+It contains reviews, whole-section receipts, canonical snapshots, import SQL,
+validation receipts and the current cohort audit. Four immutable import manifests
+also persist in `ops.pilot_manifests`; no source payload added to Git.
+
+Publication state: data applied/replayed and DB/API-function verified. This
+checkpoint carries the sanitized ledger and rollback QA on the commercial branch;
+no frontend deployment is required for the applied data.
+Next: Alamar Biosciences (`0001193125-26-161647`) and Kailera Therapeutics
+(`0001193125-26-161521`), then AEVEX (`0001193125-26-162601`), in current-filing
+date order. Retain prior held records and independent census/discovery work. Resolve the Arxis group
+count only with source evidence. No owner action is needed for continued backfill;
+no production, access, billing, quotes, DNS or saved-report changes.
+
 ## September 28 UTC: sparse-profile audit and Neutron component review
 
 **Applied/deployed receipt:** published commercial commit
