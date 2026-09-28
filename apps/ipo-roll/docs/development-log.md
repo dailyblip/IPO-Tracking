@@ -1,5 +1,47 @@
 # IPO Roll development handoff
 
+## September 28 UTC: sparse-profile audit and Neutron component review
+
+The owner again reported sparse IPO records, citing Neutron. A fresh staging
+count confirms 94 offerings, 26 with any positions and 68 without; 504 people,
+427 biographies and 654 positions. This is incomplete coverage, not evidence that
+filings contain little information. The recent profile layout added no source facts.
+Neutron's selected former president has a complete biography and pre/projected
+post totals, but its source footnote had not been decomposed.
+
+Hash-verified the retained current accession `0001628280-26-046635` against
+`5db0f3af0446d7c0875124e02f032611ebad446b1de8e9bd2634a873f50ae44a`.
+Reviewed all five clauses in footnote 2; their literal quantities reconcile exactly
+to the before-offering beneficial total. Prepared a replay-safe five-component
+supplement, preserving direct shares, options, gross RSUs, trust-held shares and
+trust-held preferred-conversion underlying shares. The conditional net RSU amount
+is descriptive evidence, not an additional component. No post-offering component
+allocation, personal trust ownership, completed sale, valuation or liquidity inferred.
+Private review/application/QA files: `import-output/neutron-components/`.
+
+Applied the additive `reviewed_preferred_conversion_components` migration to
+allow a separately labeled preferred-conversion component. No privileges, RLS,
+source publication, production jobs or saved reports changed. Implemented typed
+UI support and an expanded reconciled-component breakdown directly in the profile
+timeline. Before this change it was only reachable in the nested ownership grid.
+
+Validation so far: source byte hash, literal quantities and exact sum; rollback
+migration/data rehearsal; reviewer detail plus new private snapshot; preserved
+unknown liquidity/null value and incomplete projected components; reopen/refresh;
+cross-account read/write, ordinary-customer and anonymous denial. All 23 Node/API/
+render tests and production build pass. First reused QA failed because its old
+assertion still required an incomplete breakdown; corrected to the newly reviewed
+pre-position only, then passed. New sanitized database regression preserves this.
+Data supplement is PREPARED, not applied at this checkpoint; frontend publication
+and staging deployment verification are pending. Existing private reports require
+explicit refresh to include new components. Live authenticated browser remains
+unverified; no new reviewer credentials were obtained. No cohort/month completion.
+
+Next: apply/replay after the compatible frontend is served; archive private review;
+record final applied/deployed verification. Continue other source-footnote components,
+holder-specific restrictions and oldest-first Arxis/Madison Air review, plus the
+unfinished independent ongoing discovery-to-import path. No owner action required.
+
 ## September 28 UTC: match the supplied Opus person-profile composition
 
 The owner supplied the Opus profile screenshot and pointed out that the previous
