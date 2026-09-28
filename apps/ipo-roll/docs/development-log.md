@@ -60,9 +60,14 @@ gzip SHA-256 `d75f764901d501f716bdaac33efe99297ea9fe7dba51cda2c90e2aa40ff12645`)
 The raw filing remains in its existing private SEC artifact; no private source or
 review payload is added to Git/frontend assets.
 
-**Publication pending:** staging data are applied through the existing reviewer
-API. Repository QA checkpoint and CI verification remain to be published. The
-next oldest priced no-position cursor is AGI Inc
+**Publication verified:** staging data are applied and served through the existing
+authenticated API. Repository checkpoint
+`0c9824139624392672da83e8d6beb4f44f4523c2` is published on the commercial
+branch; Test Research Monitor run `36436150685` passed. Live staging health returns
+`200` with staging mode, while anonymous SOLV detail and Michael G. Fisch person-
+search requests both return `401`. Browser assets remain byte-identical
+(`index-CDjzLtb_.js` and `index-D9gnMbrz.css`). Live reviewer-authenticated browser
+QA remains unverified. The next oldest priced no-position cursor is AGI Inc
 (`0001753926-26-000308`, registration `333-292720`), followed by ARKO Petroleum
 and Generate Biomedicines. Full census, ownership and continuous discovery/QA
 completion remain open.
