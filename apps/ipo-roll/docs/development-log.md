@@ -54,9 +54,13 @@ gzip SHA-256 `960a5ab09a4fb499516a6b8fd52a862e40fdc8a1c03f61c779d43f7ee90e6410`)
 The raw filing remains in its existing private SEC artifact; no private source or
 review payload is added to Git/frontend assets.
 
-**Publication status:** staging data are applied and served by the existing
-authenticated API. This test/ledger checkpoint is prepared locally and is not yet
-published. Next no-position cursor is Eikon Therapeutics
+**Publication verified:** staging data are applied and served by the existing
+authenticated API. Durable test/ledger commit
+`cac74f7a6f215a399d68337f07e4b953ba5b7ac4` is published on the commercial
+branch, and Test Research Monitor run `36396980883` passed. Staging health is
+`ok` / `staging`; anonymous Bob's detail and Joshua Bekenstein search requests
+both return 401. The unchanged tested assets remain `index-CDjzLtb_.js` and
+`index-D9gnMbrz.css`. Next no-position cursor is Eikon Therapeutics
 (`0001193125-26-039375`), followed oldest-first; full census, ownership and
 continuous discovery/QA completion remain open.
 
