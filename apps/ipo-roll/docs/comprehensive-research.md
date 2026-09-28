@@ -79,6 +79,29 @@ filing, interpret footnotes, approve financial facts or declare a company comple
 Current applied batch, tests and next exact files are in `development-log.md` and
 `backfill-2026.md`.
 
+## Up-C Class A/Class B alternatives and deemed ownership — September 28 UTC
+
+SOLV extends the full-table contract to a post-Transactions Up-C table with Class
+A and Class B quantities on pre-offering, base projected-after and full-option
+columns. Import the pre/base-post snapshots separately. The full-option columns
+are mutually exclusive alternatives and cannot be presented or summed as current
+simultaneous holdings. Every selected dash stays visible as a null position.
+
+American Securities' sponsor total remains on the reported group and SOLV Energy
+Management Holdings LP remains an organization. Named people in the sponsor
+control chain receive only the filing-supported control or reported-beneficial-
+owner link, including its express disclaimer; the four group snapshots are never
+copied into personal economics. Management Holdings' Class B total and the
+one-for-one executive interests also remain separate rather than additive.
+Redemption/exchange mechanics, current ownership, historical IPO-price
+compatibility and liquidity require separate evidence.
+
+All 19 management biographies, 68 selected positions and 20 attributions are now
+present. Any-position coverage is 21 of 94 offerings, leaving 73 without records.
+The next oldest priced no-position cursor is AGI Inc; this does not establish
+full-cohort ownership, historical value, liquidity or an independently complete
+IPO census.
+
 ## Proposed-sale tables and mixed conversion totals — September 28 UTC
 
 Once Upon a Farm extends the complete-table contract to a seven-column principal-
