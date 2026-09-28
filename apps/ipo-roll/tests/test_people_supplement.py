@@ -104,6 +104,27 @@ class PeopleSupplementTests(unittest.TestCase):
             self.assertIsNone(manifest['people'][0]['biography_span'])
             self.assertNotIn('insert into research.biographies',sql)
 
+    def test_source_name_variant_requires_review_and_literal_relationship(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp);p,r=self.fixture(d)
+            doc=p['documents'][0]
+            raw=(d/'objects'/doc['source']['content_sha256']).read_bytes()
+            raw+=b'<p>J. Example Chief Legal Officer</p>'
+            doc['source']['content_sha256']=m.sha(raw)
+            doc['normalized_text_sha256']=m.sha(m.text_blocks(raw)[0].encode())
+            (d/'objects'/m.sha(raw)).write_bytes(raw)
+            person=r['people'][0]
+            person.update(relationship_name='J. Example',relationship_evidence=dict(first=3,last=3))
+            with self.assertRaisesRegex(ValueError,'alias review'):m.build(p,r,d)
+            person.update(alias_reviewed=True,alias_reason='Reviewed corresponding roster and complete biography for the same company role.')
+            manifest,sql=m.build(p,r,d)
+            self.assertEqual(manifest['people'][0]['name'],'Jordan Example')
+            self.assertEqual(manifest['review']['people'][0]['relationship_name'],'J. Example')
+            self.assertIn('Example University',sql)
+            for changes in ({'alias_reviewed':False},{'alias_reason':' '},{'relationship_name':'Different Name'},{'relationship_name':''},{'title':'Chief Financial Officer'}):
+                bad=copy.deepcopy(r);bad['people'][0].update(changes)
+                with self.subTest(changes=changes),self.assertRaises(ValueError):m.build(p,bad,d)
+
 
 if __name__ == '__main__':
     unittest.main()

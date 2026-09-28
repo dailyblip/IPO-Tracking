@@ -54,7 +54,14 @@ def build(packet, review, directory):
         if p['relationship'] not in ('Executive', 'Director', 'Beneficial owner'):
             raise ValueError('Unsupported relationship')
         sid, body = selected(p['relationship_evidence'])
-        if name not in body or not p['title'] or p['title'].casefold() not in body.casefold():
+        relationship_name = p.get('relationship_name', name)
+        if relationship_name != name and (p.get('alias_reviewed') is not True or
+                                         not isinstance(p.get('alias_reason'), str) or
+                                         not p['alias_reason'].strip()):
+            raise ValueError('Alternate relationship name requires explicit alias review')
+        if not isinstance(relationship_name, str) or len(relationship_name.strip()) < 3:
+            raise ValueError('Literal relationship name required')
+        if relationship_name not in body or not p['title'] or p['title'].casefold() not in body.casefold():
             raise ValueError('Name/title missing from relationship evidence')
         bio = None
         if p.get('biography'):
