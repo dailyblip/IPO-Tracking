@@ -249,18 +249,20 @@ def text_blocks(raw):
 def biography_candidates(blocks, names):
     candidates = []
     names = list(names) + [candidate['name'] for candidate in discover(blocks)]
-    names = sorted(set(n for n in names if isinstance(n, str) and len(n.split()) >= 2 and not re.search(r'stanford', n, re.I)))
+    names = sorted(set(n for n in names if isinstance(n, str) and len(n.split()) >= 2))
     for block in blocks:
         text = block['text']
-        if len(text) < 35 or len(text) > 12000 or re.search(r'stanford|#8c1515', text, re.I):
+        if len(text) < 35 or len(text) > 12000:
             continue
-        for name in names:
-            if not re.match(r'^(?:(?:Mr|Ms|Mrs|Dr)\.\s+)?' + re.escape(name) + r'(?:\s|[,.:])', text, re.I):
-                continue
+        starts = [n for n in names if re.match(r'^(?:(?:Mr|Ms|Mrs|Dr)\.\s+)?' + re.escape(n) + r'(?:\s|[,.:])', text, re.I)]
+        # "Jordan Example" and "Jordan Example, PhD" occupy the same subject
+        # prefix. Keep the longest literal source candidate, without merging
+        # canonical identities or mistaking credentials for a second person.
+        for name in sorted(starts, key=len, reverse=True)[:1]:
             if not re.search(r'\b(?:served|serves|joined|received|earned|graduated|holds|has been|is currently|is expected to|will serve|was appointed|is our|is the)\b', text, re.I):
                 continue
             # Multiple named subjects in a block are ambiguous; require manual selection.
-            if any(other != name and re.search(r'\b' + re.escape(other) + r'\b', text, re.I) for other in names):
+            if any(other not in starts and re.search(r'\b' + re.escape(other) + r'\b', text, re.I) for other in names):
                 continue
             candidates.append({'name': name, 'excerpt': text, 'locator': {'block': block['index'], 'start': block['start'], 'end': block['end']},
                                'identity_status': 'unverified', 'relationship_status': 'unverified', 'biography_complete': False, 'approved': False})

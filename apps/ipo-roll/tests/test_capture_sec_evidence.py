@@ -46,7 +46,7 @@ class CaptureTests(unittest.TestCase):
         self.assertNotIn('Next paragraph',match['excerpt'])
         self.assertFalse(match['approved'])
     def test_no_section_fallback_alias_inference_or_mixed_subjects(self):
-        for passage in ('Management section. '+BIO,'Mr. Example graduated from the University of Michigan and has served on our board for ten years.',BIO+' Taylor Other also serves on the board.',BIO+' Additional Stanford reference.'):
+        for passage in ('Management section. '+BIO,'Mr. Example graduated from the University of Michigan and has served on our board for ten years.',BIO+' Taylor Other also serves on the board.'):
             _,blocks=m.text_blocks(('<p>'+passage+'</p>').encode())
             self.assertEqual(m.biography_candidates(blocks,['Jordan Example','Taylor Other']),[])
     def test_url_controls(self):

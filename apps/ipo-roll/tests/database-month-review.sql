@@ -36,7 +36,11 @@ do $$ declare d jsonb; oid uuid; item record; begin
  for item in select id from research.offerings loop
   d:=public.ipo_roll_detail(item.id);
   if d is null or d->>'currentPrice' is not null then raise exception 'Detail missing or unsupported quote'; end if;
-  if d::text ~* 'stanford|#8c1515' then raise exception 'Legacy terminology leaked'; end if;
+  -- Source biographies can name any institution. Legacy enrichment keys and
+  -- affiliation signals must not return as commercial product features.
+  if jsonb_path_exists(d, '$.** ? (@.type() == "object").keyvalue() ? (@.key like_regex "stanford" flag "i")')
+     or (d->'signals')::text ~* 'stanford|#8c1515'
+     then raise exception 'Legacy affiliation feature leaked'; end if;
  end loop;
 end $$;
 reset role;

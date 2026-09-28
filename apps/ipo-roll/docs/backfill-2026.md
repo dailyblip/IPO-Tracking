@@ -1,5 +1,25 @@
 # Commercial 2026 backfill checkpoint
 
+## Comprehensive researcher pivot — September 27 Pacific
+
+Current verified staging: **94 offerings / 282 people / 282 biographies / 14
+reviewed positions / 16 components**. Added 31 source-reviewed January-filing
+biographies to existing offerings: Aktis +11, BitGo +7, EquipmentShare +6, York +7.
+Their reviewed management sections now reconcile to 14, 10, 9 and 10 complete
+biographies respectively. Added two separately reviewed Aktis option-only
+positions with dated source quantities and full footnotes/restrictions. Exact
+release replay leaves counts unchanged. No IPO additions, quote/value estimates,
+private-report rewrites or newly completed census months in this batch.
+
+Whole-section coverage receipts, source hashes, API/access tests and recovery
+paths are in the latest development log. Institutional mentions no longer cause
+source biographies to be dropped; commercial branding and search stay neutral.
+All 43 management biographies in these four filings are reconciled, while
+ownership/entity/controller and full-year census coverage remain incomplete.
+The Aktis table's 16 rows and 11 notes are inventoried, not all financially
+interpreted or imported. See `comprehensive-research.md` for separate completion
+criteria; prepared/captured/discovered records must never be counted as imports.
+
 ## People/biography correction — September 27 Pacific
 
 Staging now has **94 offerings / 251 people / 251 biographies / 12 reviewed ownership positions**. Added 16 source-reviewed September-filing biographies to existing offerings: Orion180 +7 (9 management biographies now present) and Accelevation +9 (13 now present). Full biography continuations and search were verified through reviewer RPCs, with replay and access-denial tests. No new IPO, quantity or price was added. This corrects incomplete selected-person imports; it does not establish complete ownership-table coverage.

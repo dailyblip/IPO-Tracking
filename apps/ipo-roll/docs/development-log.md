@@ -1,5 +1,101 @@
 # IPO Roll development handoff
 
+## September 27 Pacific: comprehensive research pivot; 31 biographies and two option positions applied
+
+Owner approved the full researcher pivot and said to continue. Started at clean
+`fde7309044a84dbb11685d3c4c0c52ba8e7b74fc`, fetched the commercial branch, checked
+draft/open PR #581 and live staging counts, and acquired the shared development
+lock. Added `comprehensive-research.md` with independent completion criteria for
+IPO census, management, biographies, ownership rows, footnotes, quantities,
+historical value and private liquidity. An imported company is never a completed
+company by itself.
+
+Corrected another structural omission: commercial capture and passage selection
+rejected whole SEC biographies mentioning Stanford. The owner's subsequent
+**every available biography** requirement supersedes that blanket evidence
+filter. Source education/employment is now institution-neutral; no Stanford
+branding, counters, semantic highlighting, special search or legacy enrichment
+was restored. Legacy intake field restrictions remain. Also fixed discovery
+mistaking a seeded name and its credential-bearing source prefix for two
+different people. Discovery remains unapproved and never merges identities.
+
+Applied **31 missing complete biographies** from retained January final
+prospectuses, without reimporting offerings:
+
+| Company | Added | Management biographies now reconciled |
+| --- | ---: | ---: |
+| Aktis Oncology | 11 | 14 |
+| BitGo | 7 | 10 |
+| EquipmentShare | 6 | 9 |
+| York Space Systems | 7 | 10 |
+
+Reviewed management-table identities, source spelling/credential differences and
+full biography boundaries. Preserved Michael Sherman's, Brian Murray's, John
+Weinstein's, Kirk Konert's and Andrew Boyd's cross-page continuations. Confirmed
+Chen Fang's already-imported biography was complete; did not duplicate it. York
+nominees remain labeled nominees. Andrew Levin's source-disclosed forthcoming
+resignation is in his role text and full biography. No unsupported current-role
+or personal-wealth claim was inferred.
+
+Added `reconcile_people_roster.py`: a private offline comparison of reviewed
+whole-section partitions against an exact-source, timestamped canonical
+snapshot. It rejects unaccounted/overlapping blocks, source/issuer mismatch,
+unreviewed aliases and duplicate canonical names, and compares complete biography
+text. All **43 named management biographies** across these four reviewed filings
+match staging. It does not certify exhaustive source discovery or company/holder
+completeness. Aktis's entire selected ownership table is accounted for: 11
+individual rows, four affiliated-entity aggregates and one overlapping group
+row. All 11 footnotes are inventoried. Entity representation, named footnote
+controllers, attribution and remaining quantity review are explicitly pending.
+
+Separately reviewed/applied two option-only positions now that their people exist:
+Akos Czibere, 124,805 underlying voting-common option interests; Ken Herrmann,
+75,103. Both are source-dated October 31, 2025 and described as exercisable within
+60 days of that date. Full source notes, table conversion assumptions and
+conditional lock-up/exercise restrictions are retained. These are not issued
+shares, confirmed current holdings, personal cash, intrinsic option values or
+proof of present saleability. No historical/current price estimate was added.
+
+Current verified staging: **94 offerings / 282 people / 282 biographies / 14
+positions / 16 components**. Each biography and holdings batch passed rollback
+rehearsal then transactional application with reviewer RPC/source/search tests,
+customer/anonymous denial and unchanged full-row private-report fingerprints.
+Exact replay of all five releases left counts unchanged. **91 Python tests pass**;
+`git diff --check` passes. A private option-QA assertion initially treated the
+component envelope as an array; corrected it to `components.items` and reran
+successfully before application. A revised legacy-key SQL assertion initially
+included non-object JSON nodes; corrected and verified that factual biography
+text passes while legacy affiliation keys fail. The old month fixture's fixed
+counts were not rerun against the expanded live dataset.
+
+No frontend/backend application or schema changes were needed. Applied data is
+available through the existing authorized APIs; signed-in visual/browser QA was
+not performed in this pass. Source rights remain internal_review/unpublished,
+ordinary customers denied. Saved private reports were not generated or refreshed.
+No purchases, new AI/quote provider, main/Monitor/production feed/schedule changes.
+
+Recovery: ignored `import-output/roster-pivot/` contains the four explicit people
+reviews, generated manifests/SQL, per-batch QA, canonical snapshot and complete
+section reviews/results; `aktis-options/` contains the two position reviews and
+QA. All five applied manifests are immutable in `ops.pilot_manifests`. Roster
+checkpoint SHA-256 `58cf2cd8b378a2bad78b3a050e5ce07b5c56e6bb4616f018fda80be8a0e28e39`
+is durable in `ops.sec_artifacts` (183,469 raw bytes, compressed SHA-256
+`c640ea30cd17c0470a8417efa2a2f01a6f843385eaaaf95cefb6556fa8e361a1`, verified).
+Do not rerun the pre-holdings biography QA assertion requiring empty grids after
+these two positions have been added; use the current holdings/coverage checks.
+
+Next: finish January management reconciliation (including Ethos and independent
+additions), restore missing retained sources, and add ownership-only people /
+organization / group / footnote-controller representation with proper name
+search and attribution. Aktis controllers pending include the MPM, Vida and
+Blue Owl named control parties; do not treat their fund totals as personal
+wealth. Continue the independent SEC IPO census separately; no new IPO was added
+in this pass and no month is complete. No owner decision or paid service needed
+for these next tasks. This commercial-branch checkpoint contains the validated
+tooling/docs; the data above is already applied. All five active/pending workflow
+status queries were clear before publication. No application deployment is
+required for this offline tooling change.
+
 ## September 27: missing people and biographies confirmed; first supplements applied
 
 Owner clarified the requirement: **every person with a biography in the filing must have that biography attached and searchable**, regardless of whether they have a reviewed ownership position. Ownership-table-only people must not disappear for lack of a biography. A complete people roster, biography coverage and quantified holdings coverage are separate review tasks. Preserve the compact expandable biography UI; this is a data-completeness correction.
