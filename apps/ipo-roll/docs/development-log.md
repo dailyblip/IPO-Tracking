@@ -58,9 +58,15 @@ promoted to pass. A private ordered company/source-hash coverage queue preserves
 all 94 records, with the first no-position cursor at BitGo. Presence of records
 is not completeness, including the existing eight offerings.
 
-**Publication:** data is applied and served by existing authenticated APIs. Generic
-importer/tests and concise truthful grid labels are prepared for the commercial
-branch; confirm commit and Render asset before calling these code changes deployed.
+**Publication verified:** commercial commit `80fadfed82ee16ef96232bb3b6dbbcf8ba20023a`
+contains the generic importer, tests and concise truthful grid labels. All five
+ownership-history active/queued status lists were clear immediately before commit.
+Render serves `/assets/index-f4s2VtQz.js`, SHA-256
+`f4836b390aa0ac46ad902e05a1701e25fe9e3bb7d46a4e72f42c0a93a4f2ec86`,
+matching the tested local build. Health returns 200/ok/staging; anonymous search
+and Neutron detail return 401. An initial network timeout resolved on retry.
+Test Research Monitor run `36375372114` passed. Data is applied and served by the
+authenticated app; private old reports require explicit refresh for new evidence.
 No migrations or new dependencies. No owner action needed; no paid quotes/AI.
 
 Private recovery bundle in `ops.sec_artifacts`:
