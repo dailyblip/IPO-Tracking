@@ -79,6 +79,20 @@ filing, interpret footnotes, approve financial facts or declare a company comple
 Current applied batch, tests and next exact files are in `development-log.md` and
 `backfill-2026.md`.
 
+## Aggregate holder groups and voting-only shares — September 28 UTC
+
+York demonstrates the full-table rule for an issuer whose ownership section mixes
+named people, aggregate fund groups, restricted shares, corporate-conversion
+figures and shares subject only to a director-election voting agreement. Every
+reported table row is either represented or explicitly audited as overlapping. The
+two aggregate groups remain groups; named upstream managers remain controller
+links; voting-only shares excluded by the table are not silently added; the
+officers/directors total is not counted on top of named people.
+
+Current any-position coverage is 13 of 94 offerings, leaving 81 without records.
+The next oldest no-position cursor is Veradermics. Reuse this exact-row/group/control
+contract and retain incomplete components, restrictions and economics as unknown.
+
 ## Reported beneficial owner without inferred control — September 28 UTC
 
 Ethos extends the party model with `reported_beneficial_owner` for a named SEC table

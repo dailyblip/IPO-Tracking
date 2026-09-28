@@ -1,5 +1,67 @@
 # IPO Roll development handoff
 
+## September 28 UTC: York complete principal-stockholder table
+
+Continued under the shared development lock from verified Ethos checkpoint
+`78cb1c4cb920312a717efe154197bcb97cd605e5`. Reviewed the complete York Space
+Systems final 424B4 principal-stockholder section (`0001193125-26-030469`, source
+SHA-256 `4337de975fd863c1d1c34ecf3cb2ebffaa3b163a49a3b670168b77a1c4810c8a`)
+against exact raw HTML cells and normalized blocks. All 10 existing management
+biographies remain present; the table itself reports nine named people, two
+aggregate holder groups and one overlapping officers/directors aggregate.
+
+**Applied to commercial staging:** 22 before/projected-after positions across all
+nine named table people plus the reported AE Industrial Partners and BlackRock
+groups. Dashes remain null/undisclosed, never zero. Dirk Wallinger, Kevin Messerle,
+Devjyoti Rudra and Tamra Erwin retain their exact projected post-offering totals;
+restricted-stock inclusions remain explicit in the evidence and are not treated as
+vested, liquid or personally economic. The 10-person officers/directors aggregate
+is explicitly audited but not imported again because it overlaps named rows and an
+executive who has a complete biography but no individual table row.
+
+Added footnote controllers Michael Greene and David Rowe without invented
+biographies. The AE Industrial quantities remain on the aggregate holder group and
+are attributed to Greene and Rowe only as control authority. The footnote states
+that they make voting and investment decisions and disclaim beneficial ownership
+except for pecuniary interests; personal economics are therefore unestablished.
+AE's pre-offering amount is the table's corporate-conversion common-stock basis;
+the post-offering total aggregates 10 named funds and excludes 64,178,201 shares
+subject only to director-election voting agreements. BlackRock's post total remains
+one disclosed group total covering its named managed funds/accounts; no unnamed
+portfolio manager is manufactured as a person.
+
+Staging is now **94 offerings / 341 people / 320 biographies / 209 positions / 16
+components / 38 holder-person attributions / zero quotes**. Any-position coverage
+is **13 of 94 offerings**; 81 still have none, and presence does not certify
+whole-table completeness. The **nine existing private reports are unchanged**. All
+22 York liquidity assessments remain unknown. No current wealth, issued-share
+status, saleability, completed sale, cash proceeds or personal economics is inferred.
+
+The controllers-plus-holdings transaction passed rollback rehearsal, atomic
+application and exact replay with no duplicate roles, positions, attributions or
+private-report changes. The new York staging suite confirms 14 visible subjects,
+exact 22 positions, null-versus-zero handling, both aggregate groups, direct versus
+control attribution, version 1.4 all-unknown private reports, cross-account and
+guessed-existence denial, ordinary-customer denial and anonymous denial. Ethos,
+PicPay party-attribution, generic private-liquidity and ownership-grid staging
+suites also pass. **102 Python tests, 18 Node/API tests and the production build
+pass.** Browser code is unchanged; the recovered execution image still has no
+usable Playwright binary, so desktop/mobile and live authenticated reviewer journeys
+remain unverified rather than claimed passing.
+
+Private deterministic review/release bundle
+`3247eaeb51b6554fed4fc070c48eda44ce0202fb87864bd72411be663176bc63`
+is verified in `ops.sec_artifacts` (266,240 raw tar bytes; 29,342 gzip bytes;
+gzip SHA-256 `8f79c09da334e781547642a571a36ad0ba14fcf70270f0b093c964d344d9328e`).
+The raw filing remains in its existing private SEC artifact; no private source or
+review payload is added to Git/frontend assets.
+
+**Publication status:** York data are applied and served by the existing
+authenticated API. The durable database test and ledger checkpoint are locally
+verified but not yet committed/published at this checkpoint. Next no-position cursor
+is Veradermics (`0001628280-26-005505`), followed oldest-first; full census,
+ownership and continuous discovery/QA completion remain open.
+
 ## September 28 UTC: Ethos full selling-stockholder table
 
 Continued under the shared development lock from the verified PicPay checkpoint.
