@@ -1,5 +1,72 @@
 # IPO Roll development handoff
 
+## September 28 UTC: AgomAb complete ownership table and named controllers
+
+Continued under the shared development lock from verified Forgent checkpoint
+`abcf1775f3fc9733b073d15dd03ad9e5de359033`. Reviewed AgomAb Therapeutics
+N.V.'s final 424B4 (`0001104659-26-011523`, registration `333-292790`, filed
+February 6, 2026; pricing date February 5, 2026; final IPO price $16) against the
+complete beneficial-ownership table and every linked footnote. The retained raw
+source SHA-256 is
+`f922046bc414b55d0cf6682fcb7a57d124733535aea9d4956a5061b23ce64983`;
+normalized source SHA-256 is
+`242bd87ecd4e2f3a2d236f11be9f74faaa67e40977ca96061c6736c496edd34d`.
+
+**Applied to commercial staging:** 20 newly visible people: Ming Fang plus 19
+named footnote controllers. Added 26 positions across all 13 non-duplicative
+selected subjects: eight reported organizations/groups, Tim Knotnerus, three
+named people whose filing rows use `*`, and the executive-committee group, each
+represented before and projected after the offering. Six `*` positions are
+explicit unknown quantities, not zero or omitted. The filing's repeated
+Felice/LSP, Ming/Redmile and Ohad/Pontifax person/fund totals are stored once on
+the reported holder and connected by attribution instead of duplicated. The
+overlapping 12-person aggregate is audited but not imported.
+
+Added 44 evidence-linked attributions preserving control-authority and reported-
+beneficial-owner distinctions. Tim Knotnerus's reported aggregate is 668,855
+shares in each selected scenario, while the enumerated footnote components total
+668,854. Only the reported aggregate is stored; no residual share or component is
+invented. Fund, trust and control authority remain separate from personal economic
+ownership. All liquidity remains unknown, and no current value, wealth, realized
+cash, lock-up expiry or saleability is inferred. No historical IPO-price value is
+published until class/conversion compatibility is separately established.
+
+AgomAb's existing management roster remains complete at **11 biographies for 11
+management people**. The 20 newly added controller/footnote people have no person
+biographies in the reviewed filing, so none were fabricated. Staging is now **94
+offerings / 439 people / 368 biographies / 355 positions / 16 components / 122
+holder-person attributions / zero quotes**. Any-position coverage is **19 of 94
+offerings**; **75 still have none**, and record presence does not certify the
+other completeness tracks. The **nine existing private reports and checksum
+`6934bc3145bb395df455112bc10190fb` are unchanged**.
+
+People and holdings phases passed rollback rehearsal, atomic application and exact
+replay. AgomAb plus ten existing database ownership/privacy suites pass, including
+cross-account, guessed-ID, ordinary-customer and anonymous denial. **105 Python
+tests, 18 Node/API tests and the production build pass.** Structural filing,
+source-version, lifecycle, role, holding and reviewed-table/controller checks pass.
+Independent SEC census, financial interpretation/arithmetic, live links, lock-up
+saleability and live reviewer-authenticated browser journeys remain unverified.
+
+The generic holdings builder now treats an ownership-table `*` quantity as an
+explicit unknown and ignores zero-width EDGAR layout glyphs when validating row
+identity. Row occurrence matching is whitespace-normalized while duplicate-count
+enforcement remains fail-closed. Regression tests cover both source patterns.
+
+Private deterministic review/release bundle
+`c5415033e286b7fc0205af01882a089f8732f62720db2a617ff765526059cbba`
+is verified in `ops.sec_artifacts` (675,840 raw tar bytes; 80,033 gzip bytes;
+gzip SHA-256 `0162f20c07f79645f1ff3977c4b9bd3d1143b521e7421eb9d6897f252d603ffc`).
+The raw filing remains in its existing private SEC artifact; no private source or
+review payload is added to Git/frontend assets.
+
+**Publication status:** staging data are applied. Code, database QA and ledgers
+are prepared locally but are not yet published in this checkpoint. The next oldest
+priced no-position cursor is Once Upon a Farm, PBC
+(`0001193125-26-041885`, registration `333-290577`), followed by AGI Inc, SOLV
+Energy, ARKO Petroleum and Generate Biomedicines. Full census, ownership and
+continuous discovery/QA completion remain open.
+
 ## September 28 UTC: Forgent complete biographies and two-class ownership scenarios
 
 Continued under the shared development lock from verified SpyGlass checkpoint
