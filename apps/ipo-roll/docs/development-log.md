@@ -50,7 +50,11 @@ private report reopen/explicit refresh/tamper/cross-account/anonymous denial, an
 the new PicPay entity/beneficiary/control contract including organization-requested
 reports. The test confirms 19 PicPay subjects, exact six quantities/classes,
 control held at unknown, cross-account existence denial and unauthenticated denial.
-Both imports replay exactly. Security advisor shows no new attribution-table issue;
+Both imports replay exactly. Captured PicPay reviewer detail and a rollback-generated
+version 1.4 report passed the desktop and 390px browser journey: control labeling,
+reported holder, quantity, evidence, reopen, explicit refresh, focus and mobile
+overflow. Screenshots were inspected. Browser authentication was simulated, not a
+live reviewer session. Security advisor shows no new attribution-table issue;
 the known leaked-password warning and intentional default-deny operational tables
 remain. Live authenticated owner-browser QA is still unverified.
 
@@ -61,13 +65,13 @@ gzip SHA-256 `0335949a4671f39ce2725e2b1915330180d9a7417d0b382dff7634688ea7b2f4`)
 The 21.8 MB raw SEC source remains in its previously durable private artifact;
 neither source payload nor review JSON is added to Git/frontend assets.
 
-**Prepared for publication:** migration files, generalized importer, UI contract,
-tests and ledger are local and tested. Database/data are applied; the new frontend
-bundle and repository checkpoint are not yet published at this paragraph's
-checkpoint. The ownership-history workflow guard must be clear immediately before
-commit. Next data cursor remains Ethos, then York, while the attribution contract is
-reused across all 83 no-position offerings and all incomplete organization/group
-rows. Full holdings, census and continuous discovery/QA completion remain open.
+**Publication in progress:** database/data are applied and feature commit
+`9e3900d84c83c06fe36533f1dfcab570d336f20d` is published on the commercial
+branch after all five ownership-history workflow statuses were clear. The new
+Render bundle/deployment is still pending at this paragraph's checkpoint. Next
+data cursor remains Ethos, then York, while the attribution contract is reused
+across all 83 no-position offerings and incomplete organization/group rows. Full
+holdings, census and continuous discovery/QA completion remain open.
 
 ## September 27 late Pacific: BitGo and EquipmentShare multi-series holdings
 
