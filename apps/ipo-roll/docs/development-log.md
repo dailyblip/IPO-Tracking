@@ -1,5 +1,39 @@
 # IPO Roll development handoff
 
+## September 28 UTC: reverse SEC census QA
+
+Added reverse staged-inventory reconciliation to `reconcile_sec_census.py`.
+Every staged offering now gets a per-filing pass/fail/unverified result, rather
+than silently disappearing from the report when its accession is absent from
+independent discovery. A pass requires exact CIK/accession plus matching form
+and filing date. Missing metadata or absent index rows remain unverified; a
+conflicting form/date fails. This does not infer eligibility from names or issuer
+presence, and it does not remove/import offerings or advance retrieval cutoffs.
+
+**Implemented and tested locally:** new synthetic tests cover accession mismatch,
+date/form conflicts, missing metadata and duplicate inventories. All **107 Python
+tests pass**. **Executed against staging:** freshly read all 94 offering identities,
+forms and filing dates; reassembled and hash-verified all retained SEC quarterly
+indexes from checkpoint `b91f8d3abff11629bba80676135770bbd4d63a4ab754e112fbb1cc1aaf1299b6`.
+All 94 match among 11,061 scoped candidate filing rows. The retained cutoff is
+**September 26, 2026**, not today's SEC freshness; exhaustive census,
+eligibility and automatic discovery-to-import remain unverified/unfinished.
+
+Private source-versioned audit stored and checksum-verified in `ops.sec_artifacts`:
+`40015a3af53c59967d34ea07b40eb79fbd2b50544f59e33c9fd8ec5cbee4c34d`
+(29,907 raw JSON bytes; gzip SHA-256
+`5940695486b936e5a152b046e2fb28a48d3c183f76a1a1fba4d82f821bbae5df`,
+4,151 bytes). Fresh identity snapshot and audit are locally recoverable under
+ignored `import-output/arko-ownership/`. No shared facts or private reports were
+changed by this read-only audit. Tooling is prepared for guarded commercial-branch
+publication; no application deployment is required.
+
+Next: capture a fresh independent SEC cutoff through the isolated commercial
+capture path, then connect exact-filing candidate/review/import receipts with
+rotation state. Do not equate this reverse QA check with an implemented durable
+scheduled ingestion pipeline. Continue Generate Biomedicines source review in
+parallel priority with census work. No new owner action or paid provider needed.
+
 ## September 28 UTC: ARKO management and conversion-safe ownership review
 
 Resumed the interrupted ARKO review under the shared development lock. PR #581
@@ -55,9 +89,12 @@ Private deterministic recovery bundle is stored and checksum-verified in
 whole-section reconciliation and the current cohort structural audit. Private
 source payloads remain excluded from Git/frontend assets.
 
-**Publication:** staging data applied and verified through database reviewer APIs;
-repository changes prepared for guarded publication. No frontend deployment is
-needed for these data/importer changes. Next oldest priced no-position cursor is
+**Publication verified:** commercial commit
+`3726709ba4f700de56ade6948a1f614260388c23` contains the ARKO checkpoint and
+importer changes; Test Research Monitor run `36449292245` passed. Live staging
+health returns `ok` / `staging`, and anonymous ARKO detail returns 401. The first
+health request timed out; the later check succeeded. Staging data were verified
+through database reviewer APIs. No frontend changes were made. Next oldest priced no-position cursor is
 Generate Biomedicines. Also advance the independent census and durable discovery-
 to-review/import path; neither is declared complete. No owner action blocks this
 work. Paid quotes remain deferred, not a standing owner action.

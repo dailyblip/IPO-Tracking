@@ -19,6 +19,28 @@ def row(cik, acc, form='424B1', filed='2026-01-02'):
 
 
 class CensusTests(unittest.TestCase):
+    def test_reverse_inventory_requires_exact_identity_and_filing_metadata(self):
+        raw=(row(1,'0000000001-26-000001')+row(2,'0000000002-26-000001')).encode()
+        rows,_=m.parse_index(raw,URL,m.sha(raw),'2026-01-01','2026-01-31')
+        staged=[dict(id='one',cik='1',accession_no=rows[0]['accession'],
+                     form='424B1',filing_date='2026-01-02')]
+        result=m.audit_staged_inventory(rows,staged)
+        self.assertEqual(result[0]['status'],'pass')
+        self.assertEqual(result[0]['index_sha256'],m.sha(raw))
+        for field,value in [('form','S-1'),('filing_date','2026-01-03')]:
+            bad=copy.deepcopy(staged);bad[0][field]=value
+            self.assertEqual(m.audit_staged_inventory(rows,bad)[0]['status'],'fail')
+            del bad[0][field]
+            self.assertEqual(m.audit_staged_inventory(rows,bad)[0]['status'],'unverified')
+        # Same issuer and display name do not establish a different accession.
+        staged[0]['accession_no']='0000000001-26-000099'
+        self.assertEqual(m.audit_staged_inventory(rows,staged)[0]['reason'],
+                         'not_found_in_scoped_indexes')
+        with self.assertRaisesRegex(ValueError,'Duplicate staged'):
+            m.audit_staged_inventory(rows,staged*2)
+        with self.assertRaisesRegex(ValueError,'Duplicate candidate'):
+            m.audit_staged_inventory(rows*2,staged)
+
     def disposition_fixture(self, directory):
         raw=b'<p>This prospectus registers resale shares, not an initial offering.</p>'
         text,blocks=m.text_blocks(raw)
