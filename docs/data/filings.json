@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-28T19:21:27.826569+00:00",
+  "generated_at": "2026-09-28T19:31:04.357223+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -473,6 +473,68 @@
         "file_number": "333-298782",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526396007/0001193125-26-396007-index.htm"
       }
+    },
+    {
+      "id": "s1:0002084031",
+      "company": "Regenlab USA Inc.",
+      "ticker": "RGNA",
+      "cik": "0002084031",
+      "accession_no": "0001829126-26-010431",
+      "form": "S-1",
+      "filed": "2026-09-25",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "priority": "Medium",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 2,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet",
+        "2 named beneficial owners disclosed"
+      ],
+      "people": [
+        {
+          "name": "Antonino Turzi",
+          "shares": 6153426,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": 98.64,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 6153426
+        },
+        {
+          "name": "Dr. Daphne Metzger, PhD",
+          "shares": 24329,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 24329
+        }
+      ],
+      "ownership_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1",
+        "filing_date": "2026-09-25",
+        "accession_no": "0001829126-26-010431",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2084031/000182912626010431/0001829126-26-010431-index.htm"
+      },
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2084031/000182912626010431/0001829126-26-010431-index.htm"
     },
     {
       "id": "s1:0002136571",
