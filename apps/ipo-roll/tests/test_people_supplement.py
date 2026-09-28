@@ -40,6 +40,23 @@ class PeopleSupplementTests(unittest.TestCase):
         self.assertEqual([c['name'] for c in candidates],['Jordan Example','Taylor Sample'])
         self.assertTrue(all(c['review_status']=='unreviewed' and not c['biography_complete'] for c in candidates))
 
+    def test_factual_education_is_not_filtered_by_institution(self):
+        from capture_sec_evidence import biography_candidates
+        from prepare_sec_review import passage
+        for school in ('Stanford University', 'University of Michigan', 'Harvard University'):
+            text, blocks=m.text_blocks(('<p>Jordan Example has served as our Chief Legal Officer since 2020. Jordan earned a degree from '+school+'.</p>').encode())
+            candidates=biography_candidates(blocks, [])
+            self.assertEqual(len(candidates),1)
+            self.assertFalse(candidates[0]['approved'])
+            self.assertIn(school,passage(blocks,0,0,text)['excerpt'])
+
+    def test_credentials_do_not_make_the_same_subject_look_like_two_people(self):
+        from capture_sec_evidence import biography_candidates
+        _,blocks=m.text_blocks(b'<p>Jordan Example, PhD has served as our Chief Medical Officer since 2020. Jordan earned a degree from Example University.</p>')
+        candidates=biography_candidates(blocks,['Jordan Example'])
+        self.assertEqual([p['name'] for p in candidates],['Jordan Example, PhD'])
+        self.assertEqual(candidates[0]['identity_status'],'unverified')
+
     def test_capture_uses_independent_names_and_flags_partial_biographies(self):
         from capture_sec_evidence import biography_candidates
         raw = b'<p>Jordan Example is expected to join our board on completion of this offering. Jordan previously worked in accounting.</p><p>Prior to this offering, there has been no public market for our common stock and no listing has been approved.</p>'
