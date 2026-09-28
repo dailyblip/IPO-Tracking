@@ -50,10 +50,14 @@ All disposable test accounts/reports were removed. Cohort remains **94 offerings
 504 people / 427 biographies / 654 positions / nine private reports**. Report
 fingerprint remains `6934bc3145bb395df455112bc10190fb`.
 
-**Status:** database migration applied and sequential staging QA verified;
-server/docs/tests prepared for guarded publication. Server deployment and live
-HTTP 429 with an authorized reviewer session are not yet verified. The existing
-frontend asset is unchanged. No production engine/feed/schedule/main changes.
+**Published:** code/spec/tests committed to `ipo-roll/foundation` at
+`175fcdaf0aac0d80a7c147e01af77f883f890b83`; Test Research Monitor run
+`36486713068` passed. All five ownership-history active/queued status checks were
+clear immediately before committing. Database migration is applied and sequential
+staging QA verified. Staging health returns `ok/staging` and anonymous offerings
+access returns 401. Exact Render backend revision and live HTTP 429 with an
+authorized reviewer session remain unverified; the unchanged frontend asset
+cannot prove backend rollout. No production engine/feed/schedule/main changes.
 
 **Next:** finish independent-session concurrency QA; cover approved holders without
 roles and request-key conflict paths; then continue Arxis/Madison Air April 15
