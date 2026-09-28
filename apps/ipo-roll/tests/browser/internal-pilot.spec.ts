@@ -134,6 +134,16 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
   const analysis = page.getByRole("dialog", { name: `Liquidity Analysis for ${holderName}` });
   await expect(analysis).toBeVisible();
   await expect(analysis.getByText("PRIVATE TO YOUR ACCOUNT")).toBeVisible();
+  await expect(analysis.getByRole('heading', { name: /Liquidity timeline/ })).toBeVisible();
+  await expect(analysis.getByRole('heading', { name: 'What-if scenario' })).toBeVisible();
+  const sidebar = await analysis.locator('.profile-offerings').boundingBox();
+  const timeline = await analysis.locator('.profile-timeline-panel').boundingBox();
+  const scenario = await analysis.locator('.profile-scenario-panel').boundingBox();
+  expect(sidebar!.x).toBeLessThan(timeline!.x);
+  expect(timeline!.x).toBeLessThan(scenario!.x);
+  expect(Math.abs(timeline!.y - scenario!.y)).toBeLessThan(2);
+  await page.screenshot({ path: 'test-results/profile-desktop.png' });
+  await analysis.getByText('Ownership grid, assessments & full source versions', { exact: true }).click();
   await expect(analysis.getByText('Retained stake value', { exact: true })).toBeVisible();
   await expect(analysis.getByText('Documented IPO sale proceeds', { exact: true })).toBeVisible();
   await expect(analysis.getByText('Static snapshot · may be stale')).toBeVisible();
@@ -160,10 +170,9 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
   } else {
     await expect(analysis.getByText('Holdings review pending · unknown is not zero.')).toBeVisible();
   }
-  await analysis.getByText('Explore a hypothetical price or date', { exact: true }).click();
   await analysis.getByLabel('Assumed shares', { exact: true }).fill('1200000');
   await analysis.getByLabel('Assumed price (USD)', { exact: true }).fill('19');
-  await expect(analysis.getByText('$22,800,000.00 hypothetical gross value', { exact: true })).toBeVisible();
+  await expect(analysis.locator('.scenario-output')).toContainText('$22,800,000.00');
   await analysis.getByLabel('Scenario date', { exact: true }).fill('2027-01-01');
   await expect(analysis.getByText(/Reaching a boundary does not establish release/)).toBeVisible();
   expect(generations).toBe(1);
@@ -188,11 +197,11 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
   expect(box!.width).toBeLessThanOrEqual(390);
   await page.screenshot({path: "test-results/liquidity-report-mobile.png", fullPage: true});
   expect(await analysis.evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+  if (!await analysis.locator('.profile-full-evidence').evaluate(el => (el as HTMLDetailsElement).open)) await analysis.getByText('Ownership grid, assessments & full source versions', { exact: true }).click();
   const values = analysis.locator('.wealth-reference > div');
   const left = await values.nth(0).boundingBox();
   const right = await values.nth(1).boundingBox();
   expect(Math.abs(left!.y - right!.y)).toBeLessThan(2);
-  await analysis.getByText('Explore a hypothetical price or date', { exact: true }).click();
   await expect(analysis.getByLabel('Assumed shares', { exact: true })).toHaveValue('');
   await expect(analysis.getByLabel('Assumed price (USD)', { exact: true })).toHaveValue('');
   await expect(analysis.getByLabel('Scenario date', { exact: true })).toHaveValue('');

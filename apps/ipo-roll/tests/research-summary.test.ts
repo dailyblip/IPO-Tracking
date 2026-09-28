@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import { LiquidityProfileView } from '../src/LiquidityProfileView.js';
 import { LiquidityReportView } from '../src/LiquidityReportView.js';
 import type { LiquidityReport } from '../shared/liquidity.js';
 
@@ -31,4 +32,13 @@ test('older saved reports retain their disclosed quantity and unknown dates with
   const empty = renderToStaticMarkup(createElement(LiquidityReportView, { report:{...report,positions:[]} }));
   assert.ok(empty.includes('unknown is not zero'));
   assert.equal((empty.match(/<strong>Not established<\/strong>/g) || []).length, 2);
+});
+
+test('profile layout preserves projected/attributed evidence and does not invent other companies or sales', () => {
+  const before = JSON.stringify(report);
+  const html = renderToStaticMarkup(createElement(LiquidityProfileView, { report, ticker:'EXM', onBack:()=>{}, scenarioKey:'test' }));
+  for (const label of ['Connected offering · 1','Liquidity timeline','What-if scenario','Projected post-offering position','Beneficial total','Not calculated','does not establish completed sales','reviewed identity links']) assert.ok(html.includes(label),label);
+  assert.ok(!html.includes('Actual holdings reported'));
+  assert.ok(!html.includes('Sold shares in the IPO'));
+  assert.equal(JSON.stringify(report),before);
 });

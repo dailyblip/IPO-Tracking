@@ -473,6 +473,7 @@ function App() {
           close={() => setSelected(null)}
           saved={saved.includes(selected)}
           toggle={() => toggle(selected)}
+          navigate={go}
         />
       )}{" "}
       {notice && (
@@ -1612,11 +1613,13 @@ function DetailDrawer({
   close,
   saved,
   toggle,
+  navigate,
 }: {
   id: string;
   close: () => void;
   saved: boolean;
   toggle: () => void;
+  navigate: (view: View) => void;
 }) {
   const [data, setData] = useState<Detail | null>(null),
     [error, setError] = useState(""),
@@ -1763,7 +1766,7 @@ function DetailDrawer({
                   <div className="person-body">
                     {p.kind && p.kind !== "person" && <p className="ownership-note">Reported holder entity · not an individual wealth estimate.</p>}
                     {p.relationship === "Footnote controller" && <p className="ownership-note">Named fund/control relationship · personal economic ownership not established.</p>}
-                    <OwnershipGrid positions={p.ownershipGrid} action={<LiquidityAnalysis offeringId={id} personId={p.id} name={p.name} demo={demo} request={api} />} />
+                    <OwnershipGrid positions={p.ownershipGrid} action={<LiquidityAnalysis offeringId={id} personId={p.id} name={p.name} demo={demo} request={api} ticker={data.ticker} saved={saved} toggleSaved={toggle} navigate={navigate} />} />
                     <details className="person-biography"><summary>Biography &amp; relationship evidence</summary>
                       {p.biography ? <p>{p.biography}</p> : <p>No reviewed biography available. The filing-backed relationship is shown below.</p>}
                       <div className="source-box"><FileText size={17} /><div><strong>{p.source.title}</strong><p>{p.source.excerpt}</p><SourceLink source={p.source} /></div></div>
