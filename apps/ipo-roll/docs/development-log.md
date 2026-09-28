@@ -1,5 +1,81 @@
 # IPO Roll development handoff
 
+## September 27 night: Neutron missing people corrected; controller search and cohort QA
+
+Owner reported missing Neutron Holdings people. Started from clean published
+`f2eacfca0a8028b7b610b7976361aa86ec03f7e4` under the shared development lock.
+Restored and hash-verified its exact current 424B4, accession
+`0001628280-26-046635`, CIK `0001699963`, source SHA-256
+`5db0f3af0446d7c0875124e02f032611ebad446b1de8e9bd2634a873f50ae44a`.
+The earlier import contained only two people despite nine management-table rows.
+Their existing biographies were complete; the other seven had not been imported.
+
+**Applied:** seven full July-filing biographies (Joseph Kraus, Zhoujia Brad Bao,
+Elizabeth Hamren, Andrew Macdonald, Brandon Pedersen, James Rowan and Sarah Smith).
+Kraus retains the filing's retired-President qualifier. Whole management-table
+blocks 2181–2217 and biography blocks 2218–2241 reconcile to **nine complete
+biographies**, including page continuations. Inventoried every ownership-table
+row (16) and all 10 footnotes. These inventories are not quantity completeness.
+
+Also applied three separately labeled **Footnote controller** records: Marc
+Andreessen, Benjamin Horowitz and Abigail P. Johnson. Reviewed full footnotes 7/8
+and searched the whole retained filing for their names; no full biography is
+present for these three. AH shared voting/dispositive authority and upstream FMR
+control remain distinct from personal economic ownership. FMR's 49% voting-power
+statement is not a Neutron holding. No fund quantity is assigned to a person.
+Neutron detail now returns **12 people / nine full biographies**.
+
+**Implemented/applied:** migration `20260928030724_footnote_controller_name_search`
+adds the separate relationship without changing RLS/access grants. Name search
+now includes reviewed people without biographies; shared footnotes cannot match
+biography-text searches. Importer requires explicit control-attribution review.
+Roster reconciliation now flags missing named controllers inside reviewed notes.
+**Prepared/tested app:** relationship filter, accurate people-results label and
+concise controller/missing-biography notices. Deployment is not yet verified at
+this checkpoint; data and RPC changes are already served by the existing app.
+
+Verified staging: **94 offerings / 323 people / 320 biographies / 14 positions /
+16 components / zero quotes / eight unchanged private reports**. No new offering,
+ownership quantity, valuation, quote, private-report version or commercial access.
+Both imports passed rollback rehearsals and transactional applications with exact
+biography/source/name checks, controller-only filtering, null personal quantities,
+no invented biographies, ordinary-customer/anonymous denial and full-row private
+report fingerprints. No temporary QA users remain. **94 Python tests, 17 Node/API
+tests and production build pass**. Captured reviewer RPC browser journey passes
+at desktop/390px, including controller evidence, 12-person count, private report
+reopen/explicit refresh and overflow. Screenshots inspected. Authentication/report
+creation were simulated in this browser test; live owner-login remains unverified.
+
+**Repeatable QA run:** new read-only `scripts/audit_staging_data.sql` returns a
+source-versioned per-offering check matrix. All 94 pass filing identity, offering
+source-version and lifecycle consistency. Role-source checks: 82 pass, 12
+unverified; holding-source checks: five pass, 89 unverified. Financial interpretation,
+full rosters, census completeness, link liveness and live browser checks remain
+unverified in this structural audit and need their separate evidence receipts.
+The existing source-start audit scanned 54/94 retained sources available locally,
+with 40 requiring restoration, and found 440 unmatched paragraph-start leads
+across 46 offerings. These include aliases/false positives, not 440 verified people.
+No source/accuracy/completeness pass is inferred from missing data or a parser test.
+The full automatic discovery-to-import/rotating-content-audit pipeline is still
+unfinished; a prompt or this read-only audit is not that completed pipeline.
+
+Recovery: ignored `import-output/neutron-review/` contains exact reviews, both
+manifests, import/rollback/QA SQL, full section reconciliation, current snapshot,
+reviewer RPC fixture, cohort inventory and both audit results. Applied manifests
+are in `ops.pilot_manifests`. Private recovery bundle in `ops.sec_artifacts`:
+`fe779649558dcfe0f78f4eb932edc7e09d87bb615bd6878cd47d6d305f7cc92e`
+(1,057,420 raw bytes; gzip SHA-256
+`453062864d83f8c3dbfecb21cd073ea4c3f702e8fe3943a76322a77df32c94f0`, verified).
+
+Next: represent the seven remaining Neutron entity/group table rows and review
+its instrument/conversion/attribution components before loading quantities. Restore
+40 missing local artifacts; continue oldest-first whole-roster review, resolve
+aliases from the audit and advance the January 14 independent census batch.
+Connect discovery, explicit review/import and the per-offering QA receipts into
+the durable staging pipeline; do not mark it implemented merely from instructions.
+No owner action is needed for these steps. Paid quotes remain deferred. All
+production/Research Monitor, source-rights, report-privacy and commit guards remain.
+
 ## September 27 evening: continuing development restored; 31 more biographies applied
 
 Owner asked why development stopped and explicitly requested a continuing process.

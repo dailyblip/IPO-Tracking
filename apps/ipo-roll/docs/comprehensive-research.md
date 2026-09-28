@@ -51,6 +51,8 @@ Paid quotes and new AI providers remain deferred, with no new spending authorize
 5. Run `reconcile_people_roster.py` against a fresh timestamped canonical snapshot.
    It requires matching offering/source, rejects gaps/overlap, compares full
    biography text, and retains entity/group/footnote work as pending.
+   Explicitly enumerate named controllers in each footnote; missing people remain
+   visible even when the surrounding note has already been reviewed.
 6. Archive private reviews/results in staging `ops.sec_artifacts`; approved import
    manifests remain in `ops.pilot_manifests`. Never put private payloads in Git.
 7. Test reviewer RPC/source/search, customer/anonymous denial, exact replay and
@@ -65,9 +67,9 @@ filing, interpret footnotes, approve financial facts or declare a company comple
 
 - Finish the January cohort's management/ownership reconciliation, then continue
   oldest-first through the remaining cohort; restore missing retained artifacts.
-- Add source-backed organization/group and footnote-controller representation
-  without requiring a biography, including name-only discovery for reviewed
-  people without biographies. Preserve source attribution and account access.
+- Finish source-backed organization/group representation. Separate footnote-controller
+  roles and name-only search without a biography are applied in staging, first
+  verified with Neutron; full-cohort controller coverage is still incomplete.
 - Generalize holdings review with reconciled security/attribution contracts; then
   implement supported filing-price values and actual sale proceeds.
 - Keep independent IPO census review advancing. Resolve every Monitor difference;
@@ -75,3 +77,15 @@ filing, interpret footnotes, approve financial facts or declare a company comple
 
 Current applied batch, tests and next exact files are in `development-log.md` and
 `backfill-2026.md`.
+
+## Repeatable checks now available
+
+Run `scripts/audit_staging_data.sql` read-only after each applied batch and retain
+its private per-offering/source-version matrix. It checks identity, lifecycle and
+source alignment only. Join separately reviewed section receipts by exact offering
+and source hash; its unverified fields must not be promoted by row counts. Run
+`audit_people_coverage.py` against the fresh inventory and retained artifact roots
+for additional unreviewed leads. Missing local files must be restored, not treated
+as zero gaps. These tools do not yet constitute the complete scheduled ingestion
+and rotating source-content audit pipeline; durable cursor/orchestration remains
+required alongside independent SEC census review.

@@ -194,7 +194,7 @@ export function createApp(config: Config) {
     if (
       q.length < 2 ||
       q.length > 160 ||
-      !["", "Beneficial owner", "Director", "Executive"].includes(
+      !["", "Beneficial owner", "Director", "Executive", "Footnote controller"].includes(
         relationship,
       ) ||
       !Number.isInteger(page) ||

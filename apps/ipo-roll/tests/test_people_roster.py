@@ -76,6 +76,37 @@ class RosterReconciliationTests(unittest.TestCase):
             (d/'objects'/s['source_sha256']).write_bytes(b'corrupt')
             with self.assertRaises(ValueError):reconcile(p,r,s,d)
 
+    def test_named_footnote_controllers_cannot_disappear_into_a_reviewed_note(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp);p,r,s=self.fixture(d)
+            raw=(d/'objects'/s['source_sha256']).read_bytes()
+            raw+=b'<p>(1) Alex Controller and Casey Partner manage Example Fund GP and may be deemed to share voting authority. No personal economic ownership is established.</p>'
+            source=sha(raw);(d/'objects'/source).write_bytes(raw)
+            p['documents'][0]['source']['content_sha256']=source
+            p['documents'][0]['normalized_text_sha256']=sha(text_blocks(raw)[0].encode())
+            r['source_sha256']=s['source_sha256']=source
+            s['people'][0]['biographies'][0]['source_sha256']=source
+            part=dict(kind='footnote',first=8,last=8,label='(1)',named_people_reviewed=True,
+                      named_people=[dict(name=n,attribution_reviewed=True,
+                                         attribution_kind='shared_voting_dispositive',
+                                         reason='Source names fund GP managers, not personal economic quantities.')
+                                    for n in ('Alex Controller','Casey Partner')])
+            r['sections'].append(dict(kind='ownership_footnotes',first=8,last=8,boundaries_reviewed=True,parts=[part]))
+            result=reconcile(p,r,s,d)
+            self.assertEqual(result['missing_named_footnote_people'],['Alex Controller','Casey Partner'])
+            s['people'] += [dict(name=n,biographies=[]) for n in result['missing_named_footnote_people']]
+            result=reconcile(p,r,s,d)
+            self.assertEqual(result['missing_named_footnote_people'],[])
+            self.assertFalse(result['company_complete'])
+            self.assertEqual(result['sections'][-1]['pending'],1)
+            for change in ('unreviewed','wrong_name','inferred_ownership','duplicate'):
+                bad=copy.deepcopy(r);part=bad['sections'][-1]['parts'][0]
+                if change=='unreviewed':part['named_people_reviewed']=False
+                elif change=='wrong_name':part['named_people'][0]['name']='Other Person'
+                elif change=='inferred_ownership':part['named_people'][0]['attribution_kind']='personal_ownership'
+                else:part['named_people']*=2
+                with self.subTest(change=change),self.assertRaises(ValueError):reconcile(p,bad,s,d)
+
 
 if __name__ == '__main__':
     unittest.main()
