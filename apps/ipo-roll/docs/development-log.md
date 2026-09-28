@@ -48,10 +48,13 @@ gzip SHA-256 `b78592d87c798fd82fa7f9ad0bb83b9d2f567c09b572498d1448c7d6f6943af9`)
 The raw filing remains in its existing private SEC artifact; no private source or
 review payload is added to Git/frontend assets.
 
-**Publication status:** staging data are applied and served by the existing
-authenticated API. Parser regression, database QA and ledger changes are prepared
-locally pending the ownership-history workflow guard and commercial-branch
-publication. Next no-position cursor is Bob's Discount Furniture
+**Publication verified:** staging data are applied and served by the existing
+authenticated API. Durable parser/QA/ledger commit
+`1c22cd794839fa4835ac2b91f567f32bc545594b` is published on the commercial
+branch, and Test Research Monitor run `36391245840` passed. Staging health is
+`ok` / `staging`; anonymous Veradermics detail and Patrick Enright search requests
+both return 401. The unchanged tested assets remain `index-CDjzLtb_.js` and
+`index-D9gnMbrz.css`. Next no-position cursor is Bob's Discount Furniture
 (`0001628280-26-005868`), followed oldest-first; full census, ownership and
 continuous discovery/QA completion remain open.
 
