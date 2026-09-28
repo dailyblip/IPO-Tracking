@@ -51,10 +51,17 @@ The raw filing remains in its existing private SEC artifact; no private source o
 review payload is added to Git/frontend assets.
 
 **Publication status:** staging data are applied and served by the existing
-authenticated API. This test/ledger checkpoint is prepared locally and is not yet
-published. Next no-position cursor is SpyGlass Pharma
-(`0001628280-26-006068`), followed oldest-first; full census, ownership and
-continuous discovery/QA completion remain open.
+authenticated API. Test/ledger checkpoint `21cd206a21c7c41670b90fff2a4ba8f568e4ed32`
+is published on `ipo-roll/foundation`; Test Research Monitor run `36403191462`
+passed. Live staging health returns `200` with staging mode, while anonymous Eikon
+detail and Peter Hébert person-search requests both return `401`. Browser assets
+remain byte-identical (`index-CDjzLtb_.js`
+`842864cf2728ff8c00f07b37c58e2a2471f02e76b116f973a35be3254302fe6a`;
+`index-D9gnMbrz.css`
+`890e0086c82d3f580cb831eec71ad3754bce8773a509da40ee1d3a91b836dc54`).
+Next no-position cursor is SpyGlass Pharma (`0001628280-26-006068`), followed
+oldest-first; full census, ownership and continuous discovery/QA completion remain
+open.
 
 ## September 28 UTC: Bob's complete management roster and base ownership scenarios
 
