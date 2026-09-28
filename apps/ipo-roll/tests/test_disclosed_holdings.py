@@ -113,5 +113,44 @@ class DisclosedHoldingsTests(unittest.TestCase):
             bad=copy.deepcopy(r);bad['people'][0]['attributions'][0].update(kind='control_authority',description='Controls voting decisions.')
             with self.assertRaisesRegex(ValueError,'personal economic'):m.build(p,bad,d)
 
+    def test_partial_quantity_selection_alias_attribution_and_omitted_rows_are_audited(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp);p,r=self.fixture(d)
+            raw=(b'<p>Class A common stock Class B common stock Before offering After offering</p>'
+                 b'<p>Ownership as of January 1, 2026 reports beneficial ownership.</p>'
+                 b'<table><tr><td>Example Fund (1)</td><td>1,000</td><td>5 %</td><td>2,000</td><td>9 %</td></tr>'
+                 b'<tr><td>All holders as a group</td><td>1,000</td><td>5 %</td><td>2,000</td><td>9 %</td></tr></table>'
+                 b'<p>(1) Alex Sample may be reported as a beneficial owner of Example Fund shares. Personal economic ownership is not established.</p>')
+            text,_=m.text_blocks(raw);h=m.sha(raw);(d/'objects'/h).write_bytes(raw)
+            p['documents'][0]['source']['content_sha256']=h;p['documents'][0]['normalized_text_sha256']=m.sha(text.encode())
+            r.update(columns=[
+                dict(key='pre_a',kind='quantity',position_basis='pre',header_literal='Before offering',share_class='Class A common stock'),
+                dict(key='pre_pct',kind='percent'),
+                dict(key='post_b',kind='quantity',position_basis='post',header_literal='After offering',share_class='Class B common stock'),
+                dict(key='post_pct',kind='percent')],
+                reviewed_non_imported_rows=[dict(source_label='All holders as a group',row=dict(first=3,last=3),
+                    cells=['1,000','5 %','2,000','9 %'],reason='Aggregate duplicates selected holder rows.')],
+                people=[dict(name='Example Fund',source_label='Example Fund (1)',party_kind='organization',identity_reviewed=True,
+                    alias_reviewed=True,alias_reason='Numeric footnote marker removed.',row=dict(first=2,last=2),
+                    cells=['1,000','5 %','2,000','9 %'],footnotes=[dict(first=4,last=4)],
+                    interpretation_note='Entity is the reported holder.',import_quantity_keys=['post_b'],
+                    not_imported_quantity_reason='The Class A quantity is represented by another non-overlapping reviewed record.',
+                    attributions=[dict(name='Alexander Sample',source_name='Alex Sample',alias_reviewed=True,
+                        alias_reason='Reviewed short-form name against the issuer roster.',kind='reported_beneficial_owner',
+                        identity_reviewed=True,description='The SEC table reports the person through the fund; personal economic ownership is not established.',
+                        evidence=dict(first=4,last=4))])])
+            manifest,sql=m.build(p,r,d)
+            self.assertEqual([(x['share_class'],x['shares']) for x in manifest['positions']],[('Class B common stock',2000)])
+            self.assertEqual(len(manifest['reviewed_non_imported_rows']),1)
+            self.assertIn("'reported_beneficial_owner'",sql)
+            for mutate in ('selection','reason','alias','economic','omitted'):
+                bad=copy.deepcopy(r)
+                if mutate=='selection': bad['people'][0]['import_quantity_keys']=['missing']
+                elif mutate=='reason': bad['people'][0]['not_imported_quantity_reason']=''
+                elif mutate=='alias': bad['people'][0]['attributions'][0]['alias_reviewed']=False
+                elif mutate=='economic': bad['people'][0]['attributions'][0]['description']='SEC-reported relationship.'
+                else: bad['reviewed_non_imported_rows'][0]['cells'][0]='1,001'
+                with self.subTest(mutate=mutate),self.assertRaises(ValueError):m.build(p,bad,d)
+
 
 if __name__=='__main__':unittest.main()

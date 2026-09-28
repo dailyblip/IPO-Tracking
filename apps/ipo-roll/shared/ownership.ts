@@ -16,6 +16,6 @@ export function ownershipRows(positions: OwnershipPosition[]) {
       quantity: c.quantity, attribution: attributions[c.attribution], source: c.source,
       description: c.description, position: p }))
     : [{ id: p.id, security: p.shareClass || 'Class / series unconfirmed', quantity: p.reportedTotal ?? null,
-      attribution: p.attribution ? `${p.attribution.kind === 'beneficial_entitlement' ? 'Beneficiary entitlement' : 'Voting / control authority'} · reported holder: ${p.reportedHolder?.name || 'unconfirmed'}` : p.quantityKind === 'beneficial_total' ? 'Reported beneficial total · breakdown pending' : 'See ownership footnotes',
+      attribution: p.attribution ? `${p.attribution.kind === 'beneficial_entitlement' ? 'Beneficiary entitlement' : p.attribution.kind === 'reported_beneficial_owner' ? 'SEC-reported beneficial owner' : 'Voting / control authority'} · reported holder: ${p.reportedHolder?.name || 'unconfirmed'}` : p.quantityKind === 'beneficial_total' ? 'Reported beneficial total · breakdown pending' : 'See ownership footnotes',
       source: p.source, description: p.explanation, position: p }]);
 }

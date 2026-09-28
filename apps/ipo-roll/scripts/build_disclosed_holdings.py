@@ -103,6 +103,20 @@ def build(packet, review, directory):
             if not c['header_literal'] or c['header_literal'] not in header_text:
                 raise ValueError('Column header evidence mismatch')
     positions = []; names = set()
+    reviewed_non_imported_rows = []
+    for omitted in review.get('reviewed_non_imported_rows', []):
+        if not omitted.get('reason') or not omitted.get('source_label'):
+            raise ValueError('Reviewed non-imported row requires a label and reason')
+        sid, row = selected(omitted['row'])
+        expected = flat(omitted['source_label'] + ' ' + ' '.join(omitted['cells']))
+        occurrences = omitted.get('row_occurrence_count', 1)
+        if not isinstance(occurrences, int) or occurrences < 1:
+            raise ValueError('Reviewed non-imported row occurrence count must be positive')
+        if re.sub(r'\s', '', row) != re.sub(r'\s', '', expected) or html_rows.count(expected) != occurrences:
+            raise ValueError('Reviewed non-imported whole row mismatch')
+        reviewed_non_imported_rows.append(dict(
+            source_label=omitted['source_label'], cells=omitted['cells'],
+            reason=omitted['reason'], evidence=sid))
     for person in review['people']:
         name = person['name']; label = person['source_label']
         if name in names or not person.get('identity_reviewed'): raise ValueError('Unique reviewed identity required')
@@ -114,8 +128,10 @@ def build(packet, review, directory):
             raise ValueError('Source label/alias review required')
         sid, row = selected(person['row']); cells = person['cells']
         expected=flat(label + ' ' + ' '.join(cells))
-        if (len(cells) != len(columns) or re.sub(r'\s','',row)!=re.sub(r'\s','',expected)
-                or html_rows.count(expected)!=1):
+        occurrences = person.get('row_occurrence_count', 1)
+        if (not isinstance(occurrences, int) or occurrences < 1 or len(cells) != len(columns)
+                or re.sub(r'\s','',row)!=re.sub(r'\s','',expected)
+                or html_rows.count(expected)!=occurrences):
             raise ValueError('Whole source row / ordered cells mismatch')
         for c, cell in zip(columns, cells):
             if c['kind'] in ('quantity','proposed_sale','unselected_quantity'): quantity(cell)
@@ -129,23 +145,32 @@ def build(packet, review, directory):
             raise ValueError('Each imported security class must appear in selected evidence')
         if not person.get('interpretation_note'): raise ValueError('Explicit row limitations required')
         pid = uid('person-in-issuer', cik, name) if party_kind == 'person' else uid('party-in-issuer', cik, party_kind, name)
+        quantity_keys = {c['key'] for c in columns if c['kind'] == 'quantity'}
+        selected_quantity_keys = set(person.get('import_quantity_keys', quantity_keys))
+        if not selected_quantity_keys or not selected_quantity_keys <= quantity_keys:
+            raise ValueError('Imported quantity keys must select reviewed quantity columns')
+        if selected_quantity_keys != quantity_keys and not person.get('not_imported_quantity_reason'):
+            raise ValueError('Partially imported row requires a quantity omission reason')
         attributions = []
         for item in person.get('attributions', []):
             if party_kind == 'person':
                 raise ValueError('Direct person row cannot also be an attributed entity row')
-            if item.get('kind') not in ('beneficial_entitlement','control_authority'):
+            if item.get('kind') not in ('beneficial_entitlement','control_authority','reported_beneficial_owner'):
                 raise ValueError('Unsupported ownership attribution')
             if not item.get('identity_reviewed') or not item.get('description'):
                 raise ValueError('Attributed person identity and limitation review required')
-            if item['kind'] == 'control_authority' and 'personal economic' not in item['description'].casefold():
-                raise ValueError('Control attribution must disclaim personal economic ownership')
+            if item['kind'] in ('control_authority','reported_beneficial_owner') and 'personal economic' not in item['description'].casefold():
+                raise ValueError('Non-economic attribution must disclaim personal economic ownership')
             attribution_span, attribution_text = selected(item['evidence'])
-            if item['name'] not in attribution_text:
+            source_name = item.get('source_name', item['name'])
+            if source_name != item['name'] and (item.get('alias_reviewed') is not True or not item.get('alias_reason')):
+                raise ValueError('Attributed person alias review required')
+            if source_name not in attribution_text:
                 raise ValueError('Attributed person missing from evidence')
             attributions.append(dict(person_id=uid('person-in-issuer',cik,item['name']),name=item['name'],
                                      kind=item['kind'],description=item['description'],evidence=attribution_span))
         for c, cell in zip(columns,cells):
-            if c['kind'] != 'quantity': continue
+            if c['kind'] != 'quantity' or c['key'] not in selected_quantity_keys: continue
             if review.get('skip_undisclosed_quantities') is True and quantity(cell) is None: continue
             security = c.get('share_class', person_security)
             position = dict(id=uid('disclosed-holding', document, pid, c['key']),
@@ -165,7 +190,8 @@ def build(packet, review, directory):
     version = 'disclosed-holdings/2' if any('party_id' in p for p in positions) else 'disclosed-holdings/1'
     manifest=dict(version=version,offering_id=offering,document_id=document,
                   source_sha256=source,normalized_sha256=doc['normalized_text_sha256'],review=review,
-                  positions=positions,spans=spans,audience='internal_review',published=False)
+                  positions=positions,reviewed_non_imported_rows=reviewed_non_imported_rows,
+                  spans=spans,audience='internal_review',published=False)
     body=canonical(manifest); release=uid('disclosed-holdings-release',sha(body.encode())); q=literal
     tag='$holdings_'+sha(body.encode())+'$'
     lines=['begin;',f'do {tag} declare parent_run uuid; packet_id uuid; begin',

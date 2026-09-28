@@ -1,5 +1,28 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: Ethos complete selling-stockholder review
+
+Applied 53 non-duplicative Ethos before/projected-after positions from the complete
+reviewed principal/selling-stockholder table, plus 12 footnote-named people and 28
+organization-person attribution rows. Six organization holders and 11 anonymous
+other-selling-stockholder groups remain visible as reported parties. Four exact
+duplicate/aggregate rows are audited as intentionally non-imported, not silently
+lost or double-counted. Proposed-sale quantities are not treated as completed sales.
+
+Current totals: **94 offerings / 339 people / 320 biographies / 187 positions / 16
+components / 34 attributions / zero quotes**. Any-position coverage is **12 of 94**;
+**82 still have none**. Nine private reports remain unchanged. Ethos has 42 visible
+disclosed subjects and 53 positions, but this does not certify the other coverage
+tracks or any month. All liquidity classifications remain unknown and no value,
+saleability, current ownership or personal economics is inferred from fund totals.
+
+Migration, application, replay, access/privacy suites, 102 Python tests, 18
+Node/API tests and the production build pass. Browser fixtures are captured, but
+the desktop/mobile rerun is unverified because this execution image could not
+install a Playwright browser. Private recovery hash and applied/prepared publication
+status are in the latest development-log entry. Next cursor: York, then continue
+systematically across all remaining no-position offerings.
+
 ## September 28 UTC: PicPay entity holders and attributed people
 
 Applied six reviewed PicPay pre-offering positions: one Class B organization and

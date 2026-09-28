@@ -3,7 +3,12 @@ begin;
 insert into auth.users(id,email) values('60000000-0000-4000-8000-000000000001','liquidity-a@example.invalid'),('60000000-0000-4000-8000-000000000002','liquidity-b@example.invalid'),('60000000-0000-4000-8000-000000000003','liquidity-c@example.invalid');
 insert into app.entitlements(user_id,active) select id,true from auth.users where id in ('60000000-0000-4000-8000-000000000001','60000000-0000-4000-8000-000000000002','60000000-0000-4000-8000-000000000003');
 insert into app.reviewers(user_id) values('60000000-0000-4000-8000-000000000001'),('60000000-0000-4000-8000-000000000002');
-create temporary table liquidity_test_subject as select r.offering_id,r.person_id,r.evidence_id,o.current_filing_id from research.roles r join research.offerings o on o.id=r.offering_id where o.stage='Priced' and not exists(select 1 from research.ownerships h where h.offering_id=r.offering_id and h.party_id=r.person_id) limit 1;
+create temporary table liquidity_test_subject as select r.offering_id,r.person_id,r.evidence_id,o.current_filing_id
+ from research.roles r join research.offerings o on o.id=r.offering_id where o.stage='Priced'
+ and not exists(select 1 from research.ownerships h where h.offering_id=r.offering_id and h.party_id=r.person_id)
+ and not exists(select 1 from research.ownership_attributions a join research.ownerships h on h.id=a.ownership_id
+  where h.offering_id=r.offering_id and a.person_id=r.person_id and a.approved)
+ limit 1;
 grant select on liquidity_test_subject to authenticated;
 insert into research.ownerships(id,offering_id,party_id,filing_id,share_class,position_basis,shares,source_row_key,evidence_id,approved)
  select ('61000000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid,offering_id,person_id,current_filing_id,'Test class '||n,'post',100,'liquidity-test-'||n,evidence_id,true from liquidity_test_subject cross join generate_series(1,5) n;

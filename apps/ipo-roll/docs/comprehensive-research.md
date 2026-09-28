@@ -79,6 +79,23 @@ filing, interpret footnotes, approve financial facts or declare a company comple
 Current applied batch, tests and next exact files are in `development-log.md` and
 `backfill-2026.md`.
 
+## Reported beneficial owner without inferred control — September 28 UTC
+
+Ethos extends the party model with `reported_beneficial_owner` for a named SEC table
+row that repeats an organization's totals without establishing personal economic
+ownership or control. It is distinct from beneficiary entitlement and control
+authority. The organization remains the reported holder; the person remains
+discoverable and linked; the quantity is stored once. Exact aliases and duplicate
+rows require source-reviewed contracts, and every intentionally omitted aggregate
+or repeated row is retained with a reason.
+
+Ethos is the first full principal/selling-stockholder-table application of this
+contract: 28 unique reported holder/group rows, 53 imported positions, 28
+attribution records and four audited duplicate/aggregate rows not imported again.
+Current any-position coverage is 12 of 94 offerings, leaving 82 without records.
+This is not a whole-cohort or month-completeness claim. Next cursor is York; reuse
+the same full-table accounting rather than importing only easily parsed people.
+
 ## Repeatable checks now available
 
 Run `scripts/audit_staging_data.sql` read-only after each applied batch and retain
