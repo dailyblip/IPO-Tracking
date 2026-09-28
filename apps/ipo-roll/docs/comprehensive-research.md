@@ -5,6 +5,16 @@ Research Monitor in useful, source-backed coverage and quick reference. Preserve
 the existing engine, Research Monitor, legacy feed/Pages and production schedules.
 Commercial work stays on `ipo-roll/foundation` and authorized private staging.
 
+## September 28 accepted profile/liquidity extension
+
+The owner approved `liquidity-profiles-spec.md` following the corrected Opus
+review. It preserves this census/backfill scope and adds reviewed cross-offering
+identity, evidence-linked timelines and position-specific historical/scenario
+views incrementally. Final offering terms are not proof of a completed sale.
+Private report quota serialization is applied; true concurrent-session QA remains
+unverified as recorded in the development log. None of the proposed profile or
+discovery orchestration work is described as deployed.
+
 ## Completion criteria
 
 Track these independently for each exact issuer/registration/current filing:

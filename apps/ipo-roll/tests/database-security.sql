@@ -7,6 +7,7 @@ set local role authenticated;
 select set_config('request.jwt.claims','{"sub":"10000000-0000-4000-8000-000000000002","role":"authenticated"}',true);
 do $$ begin
  if public.ipo_roll_has_access() then raise exception 'Non-entitled account admitted'; end if;
+ begin perform app.lock_liquidity_report_account(); raise exception 'Non-entitled quota mutex admitted' using errcode='ZX001'; exception when insufficient_privilege then null; end;
  if (select count(*) from app.watchlists)<>0 then raise exception 'Cross-user watchlist visible'; end if;
  if (public.ipo_roll_offerings()->>'total')::int<>0 then raise exception 'Research visible without entitlement'; end if;
  begin insert into app.entitlements(user_id,active) values(auth.uid(),true); raise exception 'Self-entitlement allowed'; exception when insufficient_privilege then null; end;
@@ -35,5 +36,10 @@ do $$ begin
   where r.rolname='authenticated' and setting='statement_timeout=15s'
  ) then raise exception 'Authenticated statement timeout is not configured'; end if;
 end $$;
-select 'PASS: entitlement, cross-user read/write, ownership reassignment, API functions, internal function ACLs and authenticated timeout' as result;
+set local role anon;
+do $$ begin
+ begin perform app.lock_liquidity_report_account(); raise exception 'Anonymous quota mutex admitted' using errcode='ZX001'; exception when insufficient_privilege then null; end;
+end $$;
+reset role;
+select 'PASS: quota helper authorization, entitlement, cross-user read/write, ownership reassignment, API functions, internal function ACLs and authenticated timeout' as result;
 rollback;

@@ -1,5 +1,16 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: corrected specification and quota follow-up
+
+No cohort data or backfill cursor changed. Applied private report serialization
+and preserved all nine report fingerprints; sequential boundary/privacy QA passes.
+Actual overlapping-session verification remains open, with a strict two-session
+harness prepared. The owner-approved corrected profile/liquidity specification
+keeps independent SEC discovery and January–present completion in scope. See the
+development log for exact applied/prepared/verified distinctions. Counts remain
+94 offerings / 504 people / 427 biographies / 654 positions; Arxis and Madison Air
+Solutions are the next source-review cursors.
+
 ## September 28 UTC: account-private report boundary hardening
 
 Applied the Opus-reviewed database boundary fix without changing shared research

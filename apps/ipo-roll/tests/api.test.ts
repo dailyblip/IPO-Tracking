@@ -168,3 +168,44 @@ test("verified accounts can inspect access without unlocking research", async ()
     await new Promise<void>((r) => upstream.close(() => r()));
   }
 });
+
+
+test("private report quota errors are actionable and other database details stay private", async () => {
+  const { createServer } = await import("node:http");
+  let dbError = { code: "54000", message: "Liquidity report subject quota reached" };
+  const upstream = createServer((req, res) => {
+    res.setHeader("Content-Type", "application/json");
+    if (req.url === "/auth/v1/user") {
+      res.end(JSON.stringify({ id: "10000000-0000-4000-8000-000000000001", is_anonymous: false }));
+    } else if (req.url === "/rest/v1/rpc/ipo_roll_has_access") {
+      res.end("true");
+    } else if (req.url === "/rest/v1/rpc/ipo_roll_request_liquidity") {
+      res.statusCode = 500;
+      res.end(JSON.stringify(dbError));
+    } else if (req.url === "/rest/v1/rpc/ipo_roll_liquidity_report") {
+      res.end(JSON.stringify({ id: "saved-report" }));
+    } else { res.statusCode = 500; res.end("{}"); }
+  }).listen(0, "127.0.0.1");
+  await new Promise<void>((r) => upstream.once("listening", r));
+  try {
+    const { port } = upstream.address() as { port: number };
+    await withServer({ demo: false, url: `http://127.0.0.1:${port}`, key: "publishable" }, async (url) => {
+      const path = "/api/offerings/10000000-0000-4000-8000-000000000001/people/10000000-0000-4000-8000-000000000002/liquidity";
+      const headers = { Authorization: "Bearer test", "Content-Type": "application/json" };
+      for (const message of ["Liquidity report subject quota reached", "Liquidity report daily quota reached"]) {
+        dbError = { code: "54000", message };
+        const response = await fetch(url + path, { method: "POST", headers, body: JSON.stringify({ requestId: "10000000-0000-4000-8000-000000000003" }) });
+        assert.equal(response.status, 429);
+        assert.equal(response.headers.get("cache-control"), "no-store");
+        assert.match((await response.json()).error, /still open saved analyses/);
+      }
+      assert.equal((await fetch(url + path, { headers })).status, 200);
+      for (const code of ["40001", "54000"]) {
+        dbError = { code, message: "internal secret diagnostic" };
+        const response = await fetch(url + path, { method: "POST", headers, body: JSON.stringify({ requestId: "10000000-0000-4000-8000-000000000003" }) });
+        assert.equal(response.status, 503);
+        assert.doesNotMatch(await response.text(), /secret/);
+      }
+    });
+  } finally { await new Promise<void>((r) => upstream.close(() => r())); }
+});
