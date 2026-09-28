@@ -56,11 +56,20 @@ gzip SHA-256 `1b54b48c9c8ff658a1f54fd60c58fb495b5192c53dd45e2184ac30e2a8ca38a3`)
 The raw filing remains in its existing private SEC artifact; no private source or
 review payload is added to Git/frontend assets.
 
-**Prepared, not yet published:** staging data are applied and served through the
-existing authenticated API; the repository checkpoint and deployment receipt are
-pending. The next oldest priced no-position cursor is ARKO Petroleum Corp.
-(`0001193125-26-049767`, CIK `0002080921`), followed by Generate Biomedicines.
-Full census, ownership and continuous discovery/QA completion remain open.
+**Publication verified:** staging data are applied and served through the existing
+authenticated API. Repository checkpoint
+`3425b493e5c234d9fcf8baefe9c85ef63d399aa2` is published on the commercial
+branch; Test Research Monitor run `36439901186` passed. Live staging health
+returns `200` with staging mode, while anonymous AGI detail and Marciano Testa
+person-search requests both return `401`. Browser assets remain byte-identical
+(`index-CDjzLtb_.js`
+`842864cf2728ff8c00f07b37c58e2a2471f02e76b116f973a35be3254302fe6a`;
+`index-D9gnMbrz.css`
+`890e0086c82d3f580cb831eec71ad3754bce8773a509da40ee1d3a91b836dc54`).
+Live reviewer-authenticated browser QA remains unverified. The next oldest priced
+no-position cursor is ARKO Petroleum Corp. (`0001193125-26-049767`, CIK
+`0002080921`), followed by Generate Biomedicines. Full census, ownership and
+continuous discovery/QA completion remain open.
 
 ## September 28 UTC: SOLV complete management and two-class ownership review
 
