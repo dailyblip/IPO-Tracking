@@ -2,6 +2,40 @@
 
 ## September 28 UTC: sparse-profile audit and Neutron component review
 
+**Applied/deployed receipt:** published commercial commit
+`f8d1f017bf4311e352bc81c10b5d151455e53cd1`; CI `36490514617` passed.
+The five active/queued ownership-history states were clear immediately before the
+commit. Migration is recorded in staging as `20260928220616`. Staging serves
+`index-DxrtPtfA.js` / `index-DTZ4K-br.css`, both SHA-256-identical to the tested build;
+cloud-browser script/style references agree. Initial HTTP verification timed out,
+then succeeded. Authenticated browser interaction remains unverified.
+
+Applied and replayed ten components across three pre-offering Neutron positions:
+the five-clause footnote 2 plus three-clause footnote 1 and two-clause footnote 3.
+All three literal component sums match their reported totals. No post-offering
+components were guessed. Updated the shared explanatory assessments to say that
+component review is complete while restrictions/liquidity remain unverified.
+Reviewer RPC/source, new snapshot, null value/unknown category, reopen/refresh,
+ordinary-customer/anonymous and cross-account denial tests passed; all eleven
+pre-existing private reports remained byte-identical and no QA users persisted.
+Current totals: 94 offerings / 504 people / 427 biographies / 654 positions /
+26 components / zero quotes; 26 offerings with positions and 68 without.
+All 94 structural audit rows have no failed checks; interpretation/completeness,
+live source links and authenticated browser remain unverified where not performed.
+Security advisor is unchanged: intentional default-deny INFO and known Auth warning.
+
+Private recovery bundle: `53d5894ef01ea69998cf2fb4f37b6dfaf7fe9dde36071b3fddb64071b3a45fd0`
+(151,089 raw bytes); gzip hash
+`0d96bbc0869e5b16c4acd47d7bb058a6146cd3d12b6d8cfe24bd70a89d89b88d`,
+verified in `ops.sec_artifacts`. It includes reviews, applied/replay SQL, reviewer/
+privacy QA and current source-versioned cohort audit. No source payload in Git.
+Footnote 4 additionally requires a distinct note-conversion representation; it
+was read but not imported. Next: review this representation, all Neutron holder
+restrictions and missing entity rows; continue Arxis/Madison Air and the independent
+discovery-to-import backlog. No complete-month/census claim or owner action.
+
+The following records the preparation stage, now superseded by the receipt above.
+
 The owner again reported sparse IPO records, citing Neutron. A fresh staging
 count confirms 94 offerings, 26 with any positions and 68 without; 504 people,
 427 biographies and 654 positions. This is incomplete coverage, not evidence that
