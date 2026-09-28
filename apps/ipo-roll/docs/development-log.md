@@ -1,5 +1,62 @@
 # IPO Roll development handoff
 
+## September 28 UTC: Forgent complete biographies and two-class ownership scenarios
+
+Continued under the shared development lock from verified SpyGlass checkpoint
+`1be0f9c0b798a283cb751360e4f27d0ffb0b7665`. Reviewed Forgent Power
+Solutions, Inc.'s final 424B4 (`0001193125-26-040029`, registration
+`333-292632`, source SHA-256
+`2aa64770624a61b1492736e65c263c91bc20b2250c9ba0f43a396e942c780943`)
+against the complete management table, all 11 biographies, the complete ownership
+table and all five linked notes. Added eight missing directors and biographies.
+The audit also caught and corrected Gary Niederpruem's biography continuation: the
+existing record ended before the immediately following qualification paragraph.
+All 11 management biographies now reconcile exactly to the selected full sections.
+
+**Applied to commercial staging:** 48 source positions covering the one reported
+Neos holder group plus all 11 named director/executive rows. Each subject has
+separate Class A/Class B and before/base-post scenarios. The four group quantities
+are populated; all 44 named-person quantities are filing dashes and remain null,
+not zero or omitted. The full-underwriter-option columns are alternative scenarios
+and are audited but not imported. The overlapping 11-person aggregate is also
+audited without double counting.
+
+Peter Jonna is linked to the four Neos group positions as control authority because
+the footnote names him at the top of the control chain. The filing's disclaimer is
+retained: those totals are not presented as Jonna's personal economic ownership.
+Other Neos-affiliated directors disclaim the group holdings. Incentive units and
+offering-related RSUs excluded from the table remain limitations, not invented
+shares. Historical IPO-price compatibility, restriction timing and liquidity are
+unresolved, so no value, current ownership, saleability or cash is inferred.
+
+Staging is now **94 offerings / 419 people / 368 biographies / 329 positions / 16
+components / 78 holder-person attributions / zero quotes**. Any-position coverage
+is **18 of 94 offerings**; **76 still have none**, and row presence does not certify
+whole-table completion. The **nine existing private reports and checksum
+`6934bc3145bb395df455112bc10190fb` are unchanged**.
+
+People and holdings phases passed rollback rehearsal, atomic application and exact
+replay. The targeted continuation correction also passed rollback/application/
+replay with exact source and prior-state assertions. Forgent plus nine existing
+database ownership/privacy suites pass, including cross-account, guessed-ID,
+ordinary-customer and anonymous denial. **104 Python tests, 18 Node/API tests and
+the production build pass.** Structural source, filing, lifecycle, role and holding
+alignment pass. Live links, lock-up interpretation, historical-value compatibility,
+independent census and live authenticated-browser journeys remain unverified.
+
+Private deterministic review/release bundle
+`59615d72faafe45175f64befb7f4acd10f4acd42cee28466fb0eada87474cc5e`
+is verified in `ops.sec_artifacts` (593,920 raw tar bytes; 58,399 gzip bytes;
+gzip SHA-256 `a4fbac18331253a2f4a582292e6ef6456df38667c0c35d06cee9bfed0d40913d`).
+The raw filing remains in its existing private SEC artifact; no private source or
+review payload is added to Git/frontend assets.
+
+**Publication status:** staging data are applied and verified through database
+roles, but the new Forgent regression/ledger checkpoint is prepared locally and is
+not yet published. Browser code is unchanged. The next oldest priced no-position
+cursor is AgomAb Therapeutics (`0001104659-26-011523`), followed oldest-first.
+Full census, ownership and continuous discovery/QA completion remain open.
+
 ## September 28 UTC: SpyGlass complete roster, ownership rows and controller links
 
 Continued under the shared development lock from verified Eikon checkpoint

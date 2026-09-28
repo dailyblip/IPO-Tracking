@@ -1,5 +1,29 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: Forgent complete management and ownership review
+
+Applied eight missing directors/biographies, corrected one truncated existing
+biography continuation, and added 48 two-class ownership positions from the full
+reviewed Forgent Power Solutions sections. All 11 management biographies reconcile.
+The one reported Neos group remains separate from its named upstream controller.
+
+Four Neos group quantities are populated across Class A/Class B and before/base-
+post scenarios. All 44 named-person entries are source dashes and remain explicit
+null records. The alternative full-option columns and overlapping 11-person total
+are audited without importing simultaneous or duplicate positions. Incentive units,
+excluded RSUs, control authority, personal economics, value and liquidity remain
+unknown unless separately established.
+
+Current totals: **94 offerings / 419 people / 368 biographies / 329 positions / 16
+components / 78 attributions / zero quotes**. Any-position coverage is **18 of 94**;
+**76 still have none**. Nine private reports and checksum remain unchanged.
+Rollback/application/replay, ten staging ownership/privacy suites, 104 Python tests,
+18 Node/API tests and the production build pass. Browser and live reviewer-
+authenticated journeys remain unverified. Private recovery hashes and exact
+publication state are in the latest development log. Next no-position cursor:
+AgomAb Therapeutics, then continue oldest-first; no month or full census is
+declared complete.
+
 ## September 28 UTC: SpyGlass complete management and ownership review
 
 Applied ten missing complete management biographies, 15 named external footnote

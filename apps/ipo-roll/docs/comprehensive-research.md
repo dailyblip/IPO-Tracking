@@ -79,6 +79,30 @@ filing, interpret footnotes, approve financial facts or declare a company comple
 Current applied batch, tests and next exact files are in `development-log.md` and
 `backfill-2026.md`.
 
+## Two stock classes, explicit dash rows and biography continuation — September 28 UTC
+
+Forgent extends the full-table contract to an Up-C ownership table that reports
+Class A and Class B positions across before, base projected-after and full-option
+scenarios. Import the reviewed before and base-post snapshots separately. The
+full-option columns are mutually exclusive alternatives and must not be added as
+simultaneous holdings. Every named dash row remains a null position for each
+selected class/basis so a person does not disappear and unknown is not displayed
+as zero.
+
+The one populated Neos holder group stays a group. Peter Jonna's named place at the
+top of the control chain is a control-authority link, not a copy of group quantities
+into personal economics. Incentive-unit values, excluded RSUs, disclaimers and
+Opco/Class B distinctions prevent an automatic IPO-price value or liquidity result.
+
+Whole-section reconciliation also detected an existing biography that ended one
+block early. A roster count was not accepted as complete until the reviewed
+continuation was applied and the fresh canonical excerpt matched both source blocks.
+Forgent now has all 11 complete management biographies and 48 selected ownership
+positions. Current any-position coverage is 18 of 94 offerings, leaving 76 without
+records. Next cursor is AgomAb Therapeutics; this checkpoint does not establish
+full-cohort ownership, historical value, liquidity or an independent complete IPO
+census.
+
 ## Aggregate holder groups and voting-only shares — September 28 UTC
 
 York demonstrates the full-table rule for an issuer whose ownership section mixes
