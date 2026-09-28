@@ -99,6 +99,12 @@ class RosterReconciliationTests(unittest.TestCase):
             self.assertEqual(result['missing_named_footnote_people'],[])
             self.assertFalse(result['company_complete'])
             self.assertEqual(result['sections'][-1]['pending'],1)
+            alias=copy.deepcopy(r)
+            alias_person=alias['sections'][-1]['parts'][0]['named_people'][0]
+            alias_person.update(name='Alexander Controller',source_name='Alex Controller',
+                                alias_reviewed=True,alias_reason='Reviewed short form in issuer footnote.')
+            alias_result=reconcile(p,alias,s,d)
+            self.assertIn('Alexander Controller',alias_result['missing_named_footnote_people'])
             for change in ('unreviewed','wrong_name','inferred_ownership','duplicate'):
                 bad=copy.deepcopy(r);part=bad['sections'][-1]['parts'][0]
                 if change=='unreviewed':part['named_people_reviewed']=False
@@ -106,6 +112,9 @@ class RosterReconciliationTests(unittest.TestCase):
                 elif change=='inferred_ownership':part['named_people'][0]['attribution_kind']='personal_ownership'
                 else:part['named_people']*=2
                 with self.subTest(change=change),self.assertRaises(ValueError):reconcile(p,bad,s,d)
+            missing_alias=copy.deepcopy(alias)
+            missing_alias['sections'][-1]['parts'][0]['named_people'][0]['alias_reviewed']=False
+            with self.assertRaisesRegex(ValueError,'alias'):reconcile(p,missing_alias,s,d)
 
 
 if __name__ == '__main__':

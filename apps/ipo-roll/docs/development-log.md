@@ -1,5 +1,60 @@
 # IPO Roll development handoff
 
+## September 28 UTC: Veradermics complete roster and single-quantity ownership table
+
+Continued under the shared development lock from verified York checkpoint
+`376cbe396ca77572870acf5e5e470957fcd0c9b7`. Reviewed Veradermics,
+Incorporated's final 424B4 (`0001628280-26-005505`, source SHA-256
+`573aa3776847c5964c0eea814b6c42c08ec7b0f816cc7202ca8219ddf34e20e4`)
+against the complete management, biography, beneficial-ownership and linked
+footnote sections. The management table and biography section now reconcile to
+all 11 people and all 11 full biographies. Added the eight missing management
+people plus six footnote controllers; controllers have no invented biographies.
+
+**Applied to commercial staging:** 13 non-duplicative source quantities: six
+holder organizations/groups and seven direct named-person rows. Eight group-to-
+person control-authority links keep fund/group totals separate from personal
+economics. John W. Childs's repeated organization total and the overlapping
+officers/directors aggregate are audited but not imported again. Patrick Enright's
+person-row total differs from the Longitude group by one share with no source
+explanation, so the group amount is linked as control authority and the unsupported
+personal quantity remains held. Filing dashes remain null, never zero.
+
+The table supplies one quantity column but before/after percentages. Its
+introduction says ownership is as of September 30, 2025, while the percentage
+denominators and option window use December 31, 2025. The importer now supports an
+explicitly reviewed `unspecified` position basis only with a written source
+limitation: each quantity is stored once with a null holdings date rather than
+duplicated across snapshots or assigned a guessed date. No value, current holding,
+personal economics, saleability, cash or liquidity classification is inferred.
+
+Staging is now **94 offerings / 355 people / 328 biographies / 222 positions / 16
+components / 46 holder-person attributions / zero quotes**. Any-position coverage
+is **14 of 94 offerings**; 80 still have none, and record presence does not certify
+whole-table completion. The **nine existing private reports are unchanged**. All
+13 Veradermics liquidity assessments remain unknown.
+
+Rollback rehearsal, atomic application and exact replay passed for both people and
+holdings phases. Veradermics, York, Ethos, PicPay party-attribution, generic private
+liquidity and ownership-grid database suites pass, including cross-account,
+guessed-existence, customer and anonymous denial. **104 Python tests, 18 Node/API
+tests and the production build pass.** Browser code is unchanged; desktop/mobile
+and live reviewer-authenticated journeys remain unverified in this execution image.
+
+Private deterministic review/release bundle
+`976dbd9bc355c157b37b1d1e7286b9febf4d4f61ebd931ba53fda0b3a4d895fc`
+is verified in `ops.sec_artifacts` (491,520 raw tar bytes; 66,156 gzip bytes;
+gzip SHA-256 `b78592d87c798fd82fa7f9ad0bb83b9d2f567c09b572498d1448c7d6f6943af9`).
+The raw filing remains in its existing private SEC artifact; no private source or
+review payload is added to Git/frontend assets.
+
+**Publication status:** staging data are applied and served by the existing
+authenticated API. Parser regression, database QA and ledger changes are prepared
+locally pending the ownership-history workflow guard and commercial-branch
+publication. Next no-position cursor is Bob's Discount Furniture
+(`0001628280-26-005868`), followed oldest-first; full census, ownership and
+continuous discovery/QA completion remain open.
+
 ## September 28 UTC: York complete principal-stockholder table
 
 Continued under the shared development lock from verified Ethos checkpoint

@@ -93,6 +93,22 @@ Current any-position coverage is 13 of 94 offerings, leaving 81 without records.
 The next oldest no-position cursor is Veradermics. Reuse this exact-row/group/control
 contract and retain incomplete components, restrictions and economics as unknown.
 
+## One quantity with two percentages and conflicting dates — September 28 UTC
+
+Veradermics adds a fail-closed contract for a table that reports one beneficial-
+ownership quantity beside both before- and after-offering percentages. The source
+also conflicts internally: the table introduction names September 30, 2025, while
+its denominators and option window use December 31, 2025. A reviewed release may
+store the quantity once as `position_basis = unspecified` with a null holdings date
+only when the exact conflict and limitation are retained in evidence. It must not
+clone the quantity into pre/post snapshots or select a date by assumption.
+
+The complete Veradermics review accounts for all 11 management biographies, six
+holder groups, seven direct named-person rows, eight named controllers and audited
+overlaps/discrepancies. Current any-position coverage is 14 of 94 offerings,
+leaving 80 without records. Next cursor is Bob's Discount Furniture. This extension
+does not establish value, liquidity, personal economics or full-cohort completion.
+
 ## Reported beneficial owner without inferred control — September 28 UTC
 
 Ethos extends the party model with `reported_beneficial_owner` for a named SEC table
