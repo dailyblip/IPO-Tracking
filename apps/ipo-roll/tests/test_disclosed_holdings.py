@@ -33,6 +33,7 @@ class DisclosedHoldingsTests(unittest.TestCase):
 
     def test_dash_zero_and_invalid_quantities(self):
         self.assertIsNone(m.quantity('—'));self.assertIsNone(m.quantity('*'))
+        self.assertIsNone(m.quantity('(3)'))
         self.assertEqual(m.quantity('0'),0)
         self.assertEqual(m.quantity('1,234'),1234)
         self.assertEqual(m.quantity('35,000,000 (1)'),35000000)

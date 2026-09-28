@@ -47,7 +47,9 @@ def quantity(cell):
     # Some SEC ownership tables repeat the less-than-one-percent marker in both
     # the quantity and percentage cells. It establishes row presence but no
     # exact quantity, so preserve it as unknown rather than zero or omission.
-    if cell in ('—', '–', '-', '*'): return None
+    # A cell containing only a linked footnote marker can likewise disclose no
+    # numeric quantity (for example, an RSU conversion count not yet known).
+    if cell in ('—', '–', '-', '*') or re.fullmatch(r'\(\d+\)', cell): return None
     # EDGAR commonly renders a numeric footnote marker inside the quantity
     # cell (for example, ``35,000,000 (1)``).  Preserve the literal cell for
     # row reconciliation while parsing only the reviewed numeric quantity.

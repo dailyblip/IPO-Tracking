@@ -1,5 +1,24 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: MiniMed complete roster and ownership table
+
+Applied ten missing biographies, completing all 13 expected executive/director
+people and complete biographies. Applied 28 before/base-post ownership positions
+across Medtronic plc and all 13 named people. Twenty-six quantities remain explicit
+unknowns; Que Dallara's linked RSU conversion quantity was not determinable and
+is not zero. The full-option scenario and overlapping 13-person aggregate are
+reviewed but held out. Medtronic remains an organization, and no historical/current
+value, cash, completed vesting/conversion or saleability was inferred.
+
+Current totals: **94 offerings / 494 people / 417 biographies / 618 positions**;
+**25/94** offerings have positions and **69** have none. Nine private reports are
+unchanged. Rollback/application/replay, full-section reconciliation, private
+authorization regression, a zero-failure 94-offering structural audit and all
+108 Python tests pass. Full census, fresh-after-September-26 discovery, source-link
+checks and authenticated browser journeys remain unverified. Recovery hashes and
+exact publication state are in the development log. Next no-position cursor: HMH
+Holding Inc.; no month or full census is declared complete.
+
 ## September 28 UTC: Generate Biomedicines management complete
 
 Applied twelve missing reviewed biographies, bringing Generate Biomedicines to

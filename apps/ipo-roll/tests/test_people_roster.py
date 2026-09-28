@@ -34,6 +34,29 @@ class RosterReconciliationTests(unittest.TestCase):
             self.assertEqual(result['ownership_table_status'],'not_reviewed')
             self.assertEqual(result['holdings_coverage'],'not_assessed')
 
+    def test_interleaved_management_sections_can_be_partitioned_without_gaps(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp);p,r,s=self.fixture(d)
+            raw=(d/'objects'/s['source_sha256']).read_bytes()
+            raw+=b'<p>Directors</p><p>Casey Director</p><p>Director Nominee</p><p>Casey Director will serve as a Director.</p>'
+            text,blocks=text_blocks(raw);source=sha(raw);(d/'objects'/source).write_bytes(raw)
+            p['documents'][0]['source']['content_sha256']=source
+            p['documents'][0]['normalized_text_sha256']=sha(text.encode())
+            r['source_sha256']=s['source_sha256']=source
+            s['people'][0]['biographies'][0]['source_sha256']=source
+            person=dict(kind='person',label='Casey Director',canonical_name='Casey Director',identity_reviewed=True)
+            r['sections'] += [
+                dict(kind='management_table',first=8,last=10,boundaries_reviewed=True,parts=[
+                    dict(kind='context',first=8,last=8,reason='Director heading'),
+                    dict(**person,first=9,last=10)]),
+                dict(kind='management_biographies',first=11,last=11,boundaries_reviewed=True,parts=[
+                    dict(**person,first=11,last=11,complete_biography_reviewed=True)])]
+            s['people'].append(dict(name='Casey Director',biographies=[dict(source_sha256=source,excerpt=blocks[11]['text'])]))
+            result=reconcile(p,r,s,d)
+            self.assertTrue(result['management_complete'])
+            self.assertEqual([x['kind'] for x in result['sections']].count('management_table'),2)
+            self.assertEqual([x['kind'] for x in result['sections']].count('management_biographies'),2)
+
     def test_missing_person_and_truncated_or_wrong_source_bio_fail_coverage(self):
         with tempfile.TemporaryDirectory() as tmp:
             d=Path(tmp);p,r,s=self.fixture(d)
