@@ -624,6 +624,26 @@ ARKO holdings triage is retained privately: the projected post-offering parent r
 
 Private reproducibility files: `february-b-reviews.json`, `select-february-b.py`, and `february-b-release/` (manifest, SQL, QA, holdings notes). March's two feed candidates, MiniMed and HMH, are now captured in six hash-verified documents but remain **unreviewed/unimported**. Automatic biography discovery found no candidates; manual review must preserve expected post-offering appointment wording. See private `march-capture-results.json` and `march-review-handoff.md`. These counts do not establish historical completeness.
 
+### Generate Biomedicines ownership follow-up — September 28, 2026
+
+The final 424B4 principal-stockholders table and all 13 footnotes are now fully
+reviewed. Staging contains 24 Generate positions covering twelve non-aggregate
+subjects on both the January 15, 2026 before-offering and projected after-offering
+bases. The overlapping 15-person aggregate is audited but not imported. Flagship
+fund totals stay on the holder group; Dr. Noubar Afeyan's control link preserves
+the source disclaimer and is not personal economic ownership. His reported person
+row overlaps the group total and must not be summed with it. Common, preferred-
+conversion, option, trust and fund components remain distinct in evidence.
+
+All selected liquidity assessments remain unknown, and no current quote, filing-
+price value or sale proceeds were created. Rehearsal/application/replay, complete
+section accounting, reviewer grid and private-report isolation QA passed. Existing
+reports remain byte-equivalent. Staging totals are 94 offerings, 484 people, 407
+biographies and 590 positions; 24 offerings have at least one position. This is a
+completed Generate source batch, not a complete February census, whole-cohort
+ownership audit, instrument decomposition, historical-value review or liquidity
+determination.
+
 ## March release and April capture — September 26, 2026
 
 Applied **two March offerings and six biographies**, bringing staging to **38 offerings / 95 biographies / 10 ownership positions**. Original feed inventory progress is January 5/5, February 9/9 and March 2/2 reviewed/imported; independent SEC completeness remains unverified for all months. Overall: 37 staged candidates, one issuer reconciliation, 52 new source reviews remaining.
