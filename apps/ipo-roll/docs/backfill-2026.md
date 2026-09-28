@@ -22,7 +22,7 @@ components / 150 attributions / zero quotes**. Any-position coverage is **22 of
 unchanged. Rollback/application/replay, 14 staging ownership/privacy suites, 105
 Python tests, 18 Node/API tests and the production build pass. Independent census,
 live links and reviewer-authenticated browser journeys remain unverified. Private
-recovery hashes and prepared publication state are in the latest development log.
+recovery hashes and verified publication receipt are in the latest development log.
 Next priced cursor: ARKO Petroleum Corp. (`0001193125-26-049767`), then Generate
 Biomedicines; no month or full census is declared complete.
 
