@@ -15,6 +15,6 @@ export function ownershipRows(positions: OwnershipPosition[]) {
       quantity: c.quantity, attribution: attributions[c.attribution], source: c.source,
       description: c.description, position: p }))
     : [{ id: p.id, security: p.shareClass || 'Class / series unconfirmed', quantity: p.reportedTotal ?? null,
-      attribution: p.quantityKind === 'beneficial_total' ? 'Breakdown incomplete · includes awards' : 'See ownership footnotes',
+      attribution: p.quantityKind === 'beneficial_total' ? 'Reported beneficial total · breakdown pending' : 'See ownership footnotes',
       source: p.source, description: p.explanation, position: p }]);
 }

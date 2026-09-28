@@ -1,5 +1,85 @@
 # IPO Roll development handoff
 
+## September 28 UTC: site-wide holdings gap; first multi-company quantities batch
+
+Owner clarified that blank holdings affect the full site, not only Neutron.
+Fresh staging audit found only **5 of 94 offerings** with any ownership records.
+Held the shared development lock; branch/PR started at `6245f6b3` with no other
+pending changes. Legacy engine/feed/schedules and source access are unchanged.
+
+**Applied and verified:** 38 source-reported table positions across 19 people:
+Buda Juice 18 (nine people, January filing), Green Circle two (one person,
+January filing), Neutron 18 (nine people, July filing). Before-IPO and projected
+after-IPO positions are alternative snapshots, never summed. Ten Neutron records
+retain undisclosed dashes as null; explicit Buda zeros remain zero. These are not
+38 issued common-share positions. Totals now **94 offerings / 323 people / 320
+biographies / 52 positions / 16 components / zero quotes**; **8 offerings have
+positions and 86 have none**. No new offerings/biographies or complete month/census.
+The nine existing private reports were checksum-identical through every applied
+transaction and replay (one more real report than the preceding handoff existed
+before this batch). No test users/reports persist.
+
+`build_disclosed_holdings.py` removes the old dependency on completing liquidity
+interpretation before displaying reviewed table quantities. Explicit review still
+requires exact source hashes/current registration, full HTML row/cell boundaries,
+ordered headers, identity/alias, security class, holdings date, basis and notes.
+This addresses normalized text gluing adjacent numeric cells without guessing
+how to split them. Rejects repeated scenarios, duplicate people/rows, wrong source
+and existing-holding overlaps. Exact replay adds nothing. All new positions are
+reported beneficial totals with incomplete components and unknown liquidity.
+No values, quotes, cash proceeds, personal attribution or lock-up dates inferred.
+
+Reviewed nuances: Buda's source percentages conflict with its stated post-offering
+denominator; percentages remain unimported/unresolved while literal quantities
+and the conflict are retained. Director grants and redemption assumptions remain
+projected. Buda holdings date is January 7 (prospectus), not January 8 filing.
+Green Circle uses November 28, 2025 current table, not its older incorporation
+schedule; Chan is imported once despite repeating in the same table, with his
+company attribution retained. Its full-overallotment alternative is not added.
+Neutron uses May 31 basis; option/RSU/trust mixed totals retain complete linked
+notes, not a claim that all are issued personal common shares. Proposed selling
+columns do not become completed-sale proceeds. Entity/group rows still require
+separate attribution review. All nine Neutron management rows are now represented.
+
+**QA performed:** rollback rehearsal, apply and exact replay for each company;
+reviewer RPC compared every imported total/null, basis, date, source and evidence.
+Tested ordinary-customer/anonymous denial, guessed report IDs, cross-account
+read/write denial, reopen idempotency, explicit refresh/new version and unchanged
+prior reports. All 98 Python tests and 18 Node/API tests pass; production build
+passes with existing bundle-size/lucide warnings. Captured real reviewer RPC and
+new report rendered in desktop and 390px browser tests, including footnotes,
+reopen/refresh, mobile overflow and focus. Screenshots inspected. Authentication
+is simulated for browser tests; live reviewer login is still unverified.
+
+Read-only structural audit ran across all 94: no identity/source/lifecycle failures;
+eight holdings-source checks pass, 86 are unverified. Whole-table completeness,
+financial interpretation, independent census and live source-link checks are not
+promoted to pass. A private ordered company/source-hash coverage queue preserves
+all 94 records, with the first no-position cursor at BitGo. Presence of records
+is not completeness, including the existing eight offerings.
+
+**Publication:** data is applied and served by existing authenticated APIs. Generic
+importer/tests and concise truthful grid labels are prepared for the commercial
+branch; confirm commit and Render asset before calling these code changes deployed.
+No migrations or new dependencies. No owner action needed; no paid quotes/AI.
+
+Private recovery bundle in `ops.sec_artifacts`:
+`843fe36988e19c151af412b91375c5cb0b61ae671f01f2da8eb0e6cc1b56ae30`,
+1,423,672 raw bytes; gzip SHA-256
+`62f207fa1880c2a44acd2b94fb12996c336ae5d6f1056eface805de0937ef5ad`.
+Verified storage hashes. Contains 27 review/manifests/SQL/QA/queue/fixture files from
+`import-output/holdings-cohort/`; raw SEC documents remain in their prior archives.
+No private payload is committed or bundled in the frontend.
+
+**Next work:** use the new review contract for BitGo (`0001628280-26-003180`),
+EquipmentShare (`0001628280-26-003334`), PicPay, Ethos, York in oldest-first batches;
+reconcile all table rows and named controllers, not just people with biographies.
+Continue instrument/attribution decomposition and holder-specific restrictions
+for imported totals; only then populate compatible historical value/liquidity.
+Maintain independent SEC census/new-discovery-to-import and full-biography QA
+work alongside holdings. The automatic end-to-end ingestion/QA pipeline and
+site-wide backfill remain incomplete. Do not replay applied batches blindly.
+
 ## September 27 night: Neutron missing people corrected; controller search and cohort QA
 
 Publication verified: commercial commit `de6f061945a4a337c10c9467bd1d44e9c687dddd`.

@@ -89,3 +89,19 @@ for additional unreviewed leads. Missing local files must be restored, not treat
 as zero gaps. These tools do not yet constitute the complete scheduled ingestion
 and rotating source-content audit pipeline; durable cursor/orchestration remains
 required alongside independent SEC census review.
+
+## Quantity import independent of liquidity review — September 28 UTC
+
+`build_disclosed_holdings.py` accepts explicitly reviewed whole ownership-table
+rows against exact raw HTML cell boundaries and normalized-source hashes. This
+allows reported beneficial totals to appear before full instrument/restriction
+decomposition. Aggregate totals remain labeled, pre/post alternatives separate,
+null distinct from zero; no inferred components/values or completed-sale proceeds.
+All same-source overlaps fail closed pending explicit review. Missing quantities
+never suppress people, and complete biographies do not imply ownership completeness.
+
+Current quantity coverage is eight of 94 offerings with any records, not eight
+complete tables. Private 94-company/source-version queue plus per-track structural
+audit is checkpointed with the first batch. Next no-position cursor: BitGo. The
+remaining 86 and entity/group/controller gaps remain development work, requiring
+no owner-supplied company list. See development-log for source-backed counts.
