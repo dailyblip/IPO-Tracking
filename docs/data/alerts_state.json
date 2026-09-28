@@ -1,7 +1,33 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-25T17:02:12.946065+00:00",
+  "updated_at": "2026-09-28T19:46:18.065680+00:00",
   "items": {
+    "0001193125-26-403094": {
+      "id": "0001193125-26-403094",
+      "cik": "0001802369",
+      "company": "ADARx Pharmaceuticals, Inc.",
+      "form": "424B4",
+      "filed": "2026-09-28",
+      "stage": "priced",
+      "price_range": "15-17",
+      "filing_price": "15-17",
+      "priority": "High",
+      "value": 446250000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526403094/0001193125-26-403094-index.htm"
+    },
+    "s1:0002084031": {
+      "id": "s1:0002084031",
+      "cik": "0002084031",
+      "company": "Regenlab USA Inc.",
+      "form": "S-1",
+      "filed": "2026-09-25",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2084031/000182912626010431/0001829126-26-010431-index.htm"
+    },
     "s1:0002136571": {
       "id": "s1:0002136571",
       "cik": "0002136571",
@@ -118,19 +144,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1997038/000119312526396704/0001193125-26-396704-index.htm"
-    },
-    "s1:0001802369": {
-      "id": "s1:0001802369",
-      "cik": "0001802369",
-      "company": "ADARx Pharmaceuticals, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-09-21",
-      "stage": "pre-pricing",
-      "price_range": "$15.00–$17.00",
-      "filing_price": "$15.00–$17.00",
-      "priority": "High",
-      "value": 350000000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526396007/0001193125-26-396007-index.htm"
     },
     "s1:0002113640": {
       "id": "s1:0002113640",
@@ -1211,6 +1224,19 @@
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
     },
+    "s1:0001802369": {
+      "id": "s1:0001802369",
+      "cik": "0001802369",
+      "company": "ADARx Pharmaceuticals, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-21",
+      "stage": "pre-pricing",
+      "price_range": "$15.00–$17.00",
+      "filing_price": "$15.00–$17.00",
+      "priority": "High",
+      "value": 350000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526396007/0001193125-26-396007-index.htm"
+    },
     "s1:0002124472": {
       "id": "s1:0002124472",
       "cik": "0002124472",
@@ -1239,6 +1265,20 @@
     }
   },
   "ciks": {
+    "0001802369": {
+      "company": "ADARx Pharmaceuticals, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-403094",
+      "last_filed": "2026-09-28",
+      "missing_runs": 0
+    },
+    "0002084031": {
+      "company": "Regenlab USA Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002084031",
+      "last_filed": "2026-09-25",
+      "missing_runs": 0
+    },
     "0002136571": {
       "company": "Evmand Corp",
       "stage": "pre-pricing",
@@ -1299,13 +1339,6 @@
       "company": "Iambic Therapeutics, Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0001997038",
-      "last_filed": "2026-09-21",
-      "missing_runs": 0
-    },
-    "0001802369": {
-      "company": "ADARx Pharmaceuticals, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001802369",
       "last_filed": "2026-09-21",
       "missing_runs": 0
     },

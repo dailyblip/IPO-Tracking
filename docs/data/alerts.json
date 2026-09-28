@@ -1,8 +1,37 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-25T17:02:12.946142+00:00",
-  "count": 127,
+  "generated_at": "2026-09-28T19:46:18.065725+00:00",
+  "count": 129,
   "alerts": [
+    {
+      "type": "ipo_priced",
+      "company": "ADARx Pharmaceuticals, Inc.",
+      "cik": "0001802369",
+      "filing_id": "0001193125-26-403094",
+      "form": "424B4",
+      "filed": "2026-09-28",
+      "stage": "priced",
+      "priority": "High",
+      "summary": "IPO advanced from pre-pricing monitoring to a filed 424B4.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526403094/0001193125-26-403094-index.htm",
+      "detected_at": "2026-09-28T19:46:18.065437+00:00",
+      "new_value": "$446M",
+      "key": "ipo_priced|0001193125-26-403094|0001802369|2026-09-28|$446M"
+    },
+    {
+      "type": "new_prepricing",
+      "company": "Regenlab USA Inc.",
+      "cik": "0002084031",
+      "filing_id": "s1:0002084031",
+      "form": "S-1",
+      "filed": "2026-09-25",
+      "stage": "pre-pricing",
+      "priority": "Medium",
+      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2084031/000182912626010431/0001829126-26-010431-index.htm",
+      "detected_at": "2026-09-28T19:46:18.065468+00:00",
+      "key": "new_prepricing|s1:0002084031|0002084031|2026-09-25|"
+    },
     {
       "type": "new_prepricing",
       "company": "Evmand Corp",
