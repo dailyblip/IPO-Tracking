@@ -42,7 +42,7 @@ do $$ declare d jsonb; holder jsonb; subject jsonb; r jsonb;
   or exists(select 1 from jsonb_array_elements(subject->'ownershipGrid') x where x->>'reportedTotal' is not null)
   then raise exception 'MiniMed indeterminable Dallara quantities failed'; end if;
  r:=public.ipo_roll_request_liquidity(offering,(subject->>'id')::uuid,'89950000-0000-4000-8000-000000000001');
- if r->>'version'<>'liquidity/1.4' or jsonb_array_length(r->'positions')<>2
+ if r->>'version'<>'liquidity/1.6' or jsonb_array_length(r->'positions')<>2
   or exists(select 1 from jsonb_array_elements(r->'positions') x
             where x->>'category'<>'unknown' or x->>'marketValue' is not null or x->>'historicalIpoValue' is not null)
   then raise exception 'MiniMed private report promoted null RSU quantities to value or liquidity'; end if;

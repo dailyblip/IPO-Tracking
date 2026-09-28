@@ -58,7 +58,7 @@ do $$ declare d jsonb; subject jsonb; holder jsonb; r jsonb;
   then raise exception 'Management person outside ownership table disappeared'; end if;
 
  r:=public.ipo_roll_request_liquidity(offering,(select (x->>'id')::uuid from jsonb_array_elements(d->'people')x where x->>'name'='Joshua Wolfe'),'89500000-0000-4000-8000-000000000001');
- if r->>'version'<>'liquidity/1.4' or jsonb_array_length(r->'positions')<>1
+ if r->>'version'<>'liquidity/1.6' or jsonb_array_length(r->'positions')<>1
   or r#>>'{positions,0,category}'<>'unknown'
   or r#>>'{positions,0,attribution,kind}'<>'reported_beneficial_owner'
   then raise exception 'Eikon private report promoted or incomplete'; end if;
@@ -88,4 +88,3 @@ do $$ declare baseline eikon_test_state; begin
 end $$;
 select 'PASS: full Eikon roster, audited overlaps, fund/controller distinctions and private-report denial' result;
 rollback;
-

@@ -64,7 +64,7 @@ do $$ declare d jsonb; subject jsonb; holder jsonb; r jsonb;
   then raise exception 'Overlapping twelve-person aggregate was imported'; end if;
 
  r:=public.ipo_roll_request_liquidity(offering,(subject->>'id')::uuid,'89910000-0000-4000-8000-000000000001');
- if r->>'version'<>'liquidity/1.4' or jsonb_array_length(r->'positions')<>2
+ if r->>'version'<>'liquidity/1.6' or jsonb_array_length(r->'positions')<>2
   or exists(select 1 from jsonb_array_elements(r->'positions') x where x->>'category'<>'unknown' or x->>'marketValue' is not null)
   then raise exception 'AgomAb private report promoted unknown holdings'; end if;
  perform set_config('agomab.report',r->>'id',true);
@@ -93,4 +93,3 @@ do $$ declare baseline agomab_test_state; begin
 end $$;
 select 'PASS: full AgomAb table, star/null semantics, audited overlaps, controller distinctions and private-report denial' result;
 rollback;
-

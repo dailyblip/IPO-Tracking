@@ -58,7 +58,7 @@ do $$ declare d jsonb; subject jsonb; holder jsonb; r jsonb;
   then raise exception 'Viking reported group failed'; end if;
 
  r:=public.ipo_roll_request_liquidity(offering,(subject->>'id')::uuid,'89100000-0000-4000-8000-000000000001');
- if r->>'version'<>'liquidity/1.4' or jsonb_array_length(r->'positions')<>1
+ if r->>'version'<>'liquidity/1.6' or jsonb_array_length(r->'positions')<>1
   or r#>>'{positions,0,category}'<>'unknown'
   or r#>>'{positions,0,positionBasis}'<>'unspecified'
   then raise exception 'Veradermics private report promoted or incomplete'; end if;

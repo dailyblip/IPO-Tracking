@@ -23,7 +23,7 @@ export type LiquidityReport = {
       items: { ordinal: number; instrument: 'common_share' | 'rsu' | 'option' | 'warrant'; quantity: number; attribution: 'direct' | 'trust_or_family' | 'fund_or_control' | 'unknown'; description: string; source: Source }[];
     };
     positionBasis: string;
-    holdingsDate: string;
+    holdingsDate?: string;
     filingDate?: string;
     holdingsAsOf?: string | null;
     filingAccession?: string;

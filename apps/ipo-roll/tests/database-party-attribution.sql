@@ -25,7 +25,7 @@ do $$ declare d jsonb; subject jsonb; entity jsonb; r jsonb; offering constant u
  if subject#>>'{ownershipGrid,0,reportedHolder,name}'<>'J&F International B.V.'
   or subject#>>'{ownershipGrid,0,attribution,kind}'<>'control_authority' then raise exception 'Control attribution lost'; end if;
  r:=public.ipo_roll_request_liquidity(offering,(subject->>'id')::uuid,'86100000-0000-4000-8000-000000000001');
- if r->>'version'<>'liquidity/1.4' or r#>>'{positions,0,category}'<>'unknown'
+ if r->>'version'<>'liquidity/1.6' or r#>>'{positions,0,category}'<>'unknown'
   or r#>>'{positions,0,reportedHolder,name}'<>'J&F International B.V.'
   or r#>>'{positions,0,attribution,kind}'<>'control_authority' then raise exception 'Control report promoted or incomplete'; end if;
  select x into strict entity from jsonb_array_elements(d->'people')x where x->>'name'='Stichting ACC Family';
