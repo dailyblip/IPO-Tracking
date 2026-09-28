@@ -79,6 +79,26 @@ filing, interpret footnotes, approve financial facts or declare a company comple
 Current applied batch, tests and next exact files are in `development-log.md` and
 `backfill-2026.md`.
 
+## Proposed-sale tables and mixed conversion totals — September 28 UTC
+
+Once Upon a Farm extends the complete-table contract to a seven-column principal-
+and-selling-holder table. Preserve before and projected-after beneficial totals as
+alternative snapshots and retain the proposed-sale column as reviewed evidence.
+A proposed offered quantity is not a completed sale, realized proceeds or proof of
+saleability. Filing dashes remain explicit null positions so named people do not
+disappear.
+
+The table's 29 non-overlapping subjects include people, organizations, reported
+fund groups and eight anonymized holder buckets. The overlapping ten-person
+management aggregate is not imported again. Cambridge and CAVU quantities stay on
+their reported groups; Filipp Chebotarev and Brett Thomas receive control-authority
+links only, never copied personal economics. Mixed issued shares, conversions,
+warrants, trusts and options prevent automatic historical IPO-price values.
+All ten management biographies and 58 selected positions are now present. Current
+any-position coverage is 20 of 94 offerings, leaving 74 without records. The next
+equal-date cursors are SOLV Energy and AGI Inc; this does not establish full-cohort
+ownership, historical value, liquidity or an independently complete IPO census.
+
 ## Footnote markers, repeated fund rows and one-share discrepancies — September 28 UTC
 
 AgomAb extends the complete-table contract to filings that place `*` in both the

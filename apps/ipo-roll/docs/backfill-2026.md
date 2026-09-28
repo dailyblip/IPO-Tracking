@@ -1,5 +1,30 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: Once Upon a Farm complete management and ownership review
+
+Applied six missing complete management biographies, two source-named selling
+stockholders and one named footnote controller. All ten management biographies now
+reconcile against the complete selected sections. Added 58 before/projected-after
+positions for all 29 non-overlapping ownership-table subjects and four group-
+controller links. Ten dash positions remain null; the overlapping ten-person
+aggregate is audited without double counting.
+
+All eight anonymized selling-holder buckets remain visible as source groups.
+Proposed sale amounts remain proposals rather than completed sales or cash.
+Cambridge/CAVU control, entity/fund holdings, personal economics, mixed converted
+securities/options, historical-value compatibility and liquidity remain distinct
+or unknown.
+
+Current totals: **94 offerings / 448 people / 374 biographies / 413 positions / 16
+components / 126 attributions / zero quotes**. Any-position coverage is **20 of
+94**; **74 still have none**. Nine private reports and their checksum remain
+unchanged. Rollback/application/replay, 12 staging ownership/privacy suites, 105
+Python tests, 18 Node/API tests and the production build pass. Independent census,
+live links and reviewer-authenticated browser journeys remain unverified. Private
+recovery hashes and exact publication state are in the latest development log.
+Next equal-date cursors: SOLV Energy and AGI Inc; no month or full census is
+declared complete.
+
 ## September 28 UTC: AgomAb complete ownership and controller review
 
 Applied 20 missing footnote people, 26 pre/projected-post ownership positions and

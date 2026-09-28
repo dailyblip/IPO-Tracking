@@ -1,5 +1,68 @@
 # IPO Roll development handoff
 
+## September 28 UTC: Once Upon a Farm complete management and ownership review
+
+Continued under the shared development lock from the published AgomAb checkpoint.
+Reviewed Once Upon a Farm, PBC's final 424B4 (`0001193125-26-041885`,
+registration `333-290577`, filed February 9, 2026; pricing date February 5,
+2026; final IPO price $18) against the complete management table, all ten
+biographies, both pages of the principal-and-selling-stockholders table and all
+19 linked footnotes. The retained raw source SHA-256 is
+`46d87f7881d562c790da8f930228e14f6d1ec1c634012672db482b4f36680e7e`;
+normalized source SHA-256 is
+`9ff1009b286f21f8c36a430c4c230e4c05b8086d7d8703e54f51daf2545a9635`.
+
+**Applied to commercial staging:** added six missing directors and their complete
+biographies, including Megan Bent's page continuation. Added Ari Raz and Avi Raz
+as source-named beneficial owners and Filipp Chebotarev as the Cambridge footnote
+controller, for nine new people/roles total. All ten management rows now have the
+complete selected biography and reconcile against the whole reviewed sections.
+
+Added 58 positions covering every one of the 29 non-overlapping source subjects,
+each separately represented before and projected after the offering. Ten dash
+positions remain explicit nulls, not zeros or omissions. The overlapping ten-
+person directors/executives aggregate is audited but not imported. All eight
+anonymized other-selling-stockholder buckets remain visible as source-reported
+groups rather than invented people. Proposed-sale quantities are retained in the
+immutable review, but are not completed sales, proceeds or cash.
+
+Cambridge and CAVU remain reported groups. Filipp Chebotarev is linked to the two
+Cambridge snapshots and Brett Thomas to the two CAVU snapshots as control
+authority, for four evidence-linked attributions. Those group totals are not
+copied into personal economics. S2G's footnote names an entity investment adviser,
+not an individual controller; Harbinger's ownership footnote does not name Megan
+Bent as controller, so neither relationship is inferred. The table totals mix
+issued common stock, preferred/note conversions, warrants, trusts and exercisable
+or newly vesting options. All liquidity remains unknown; no historical IPO-price
+value, current wealth, realized cash, completed sale or saleability is asserted.
+
+Staging is now **94 offerings / 448 people / 374 biographies / 413 positions / 16
+components / 126 holder-person attributions / zero quotes**. Any-position coverage
+is **20 of 94 offerings**; **74 still have none**, and row presence does not certify
+the other completion tracks. The **nine existing private reports and checksum
+`6934bc3145bb395df455112bc10190fb` are unchanged**.
+
+People and holdings phases passed rollback rehearsal, atomic application and exact
+replay. Once plus eleven existing ownership/privacy database suites pass, including
+cross-account, guessed-ID, ordinary-customer and anonymous denial. **105 Python
+tests, 18 Node/API tests and the production build pass.** The per-offering staging
+audit passes filing identity, source version, lifecycle, role and holding alignment.
+Independent census, financial interpretation/arithmetic, live links, lock-up
+saleability and live reviewer-authenticated browser journeys remain unverified.
+
+Private deterministic review/release bundle
+`dc5b2fd328091a8436656b2ab8659752f8bf189d0be1917a7754b098d6a311f3`
+is verified in `ops.sec_artifacts` (747,520 raw tar bytes; 91,705 gzip bytes;
+gzip SHA-256 `d07f60f8b2b292e6cf5496a286ddcbd727910ca6700b4b392c4f85704f5bff2d`).
+The raw filing remains in its existing private SEC artifact; no private source or
+review payload is added to Git/frontend assets.
+
+**Publication pending:** staging data are applied and served through the existing
+authenticated API; the repository checkpoint and workflow verification still
+need publication. The next equal-date February 10 pricing cursors are SOLV Energy
+and AGI Inc, followed by ARKO Petroleum and Generate Biomedicines. Full census,
+ownership and continuous discovery/QA completion remain open.
+
 ## September 28 UTC: AgomAb complete ownership table and named controllers
 
 Continued under the shared development lock from verified Forgent checkpoint
