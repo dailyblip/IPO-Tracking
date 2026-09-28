@@ -8,7 +8,7 @@ biographies now reconcile against the complete selected sections. Added 68 Class
 A/Class B pre/base-post positions for all 17 non-overlapping ownership-table
 subjects and 20 group-person attribution links.
 
-All 34 filing dashes in the selected quantity columns remain explicit nulls. The
+All 38 filing dashes in the selected quantity columns remain explicit nulls. The
 full-option columns and overlapping 19-person aggregate are audited without being
 added as simultaneous or duplicate positions. American Securities remains a
 group, Management Holdings remains an organization, and controller/deemed-owner
