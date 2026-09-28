@@ -20,7 +20,7 @@ export type LiquidityReport = {
     reportedTotal?: number | null;
     components?: {
       status: 'not_reviewed' | 'incomplete' | 'reconciled';
-      items: { ordinal: number; instrument: 'common_share' | 'rsu' | 'option' | 'warrant'; quantity: number; attribution: 'direct' | 'trust_or_family' | 'fund_or_control' | 'unknown'; description: string; source: Source }[];
+      items: { ordinal: number; instrument: 'common_share' | 'rsu' | 'option' | 'warrant' | 'preferred_conversion'; quantity: number; attribution: 'direct' | 'trust_or_family' | 'fund_or_control' | 'unknown'; description: string; source: Source }[];
     };
     positionBasis: string;
     holdingsDate?: string;

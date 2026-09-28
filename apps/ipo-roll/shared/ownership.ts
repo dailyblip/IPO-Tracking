@@ -7,7 +7,7 @@ export type OwnershipPosition = Pick<LiquidityReport['positions'][number],
   'restrictionTimeline' | 'conditions' | 'explanation' | 'assessmentDate' | 'evidence' |
   'reportedHolder' | 'attribution'>;
 
-const instruments = { common_share: 'Common shares', option: 'Option underlying shares', rsu: 'RSU underlying shares', warrant: 'Warrant underlying shares' };
+const instruments = { common_share: 'Common shares', option: 'Option underlying shares', rsu: 'RSU underlying shares', warrant: 'Warrant underlying shares', preferred_conversion: 'Common shares issuable on preferred conversion' };
 const attributions = { direct: 'Direct holding as disclosed', trust_or_family: 'Trust / family attribution', fund_or_control: 'Fund / control attribution', unknown: 'Attribution unconfirmed' };
 
 export function ownershipRows(positions: OwnershipPosition[]) {

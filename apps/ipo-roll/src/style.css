@@ -2192,3 +2192,9 @@ mark {
 @media(max-width:740px) { .profile-topbar { padding:14px 18px; gap:14px; flex-wrap:wrap; } .profile-topbar nav { order:3; width:100%; gap:0; } .profile-topbar nav button { padding:9px 10px; } .profile-topbar>.icon-button { margin-left:auto; } .profile-page { padding:22px 18px 40px; } .profile-person-heading { gap:14px; margin-top:24px; } .profile-person-copy { flex:1; } .profile-person-copy h1 { font-size:26px; } .profile-person-copy p { font-size:13px!important; } .profile-person-copy small { font-size:11px; } .profile-actions { width:100%; margin-left:0; justify-content:flex-start; } .profile-columns { grid-template-columns:minmax(0,1fr); } .profile-offerings { display:block; } .profile-offering-link { margin-top:12px; } .profile-timeline-panel,.profile-scenario-panel { padding:22px 17px; } .profile-event { grid-template-columns:1fr; gap:8px; padding-left:21px; } .profile-event-date { text-align:left; font-size:11px; } .profile-event-content::before { left:-22px; top:5px; } .profile-event:not(:last-child) .profile-event-content::after { left:-17px; bottom:-49px; } .profile-event-title h3 { font-size:14px; } }
 .profile-scenario-panel .scenario-output span { display:block; font-size:11px; font-weight:400; letter-spacing:0; color:#9eb3c7; margin-bottom:7px; }
 .profile-scenario-panel .scenario-output strong { display:block; font-size:29px; font-weight:750; }
+
+.profile-component-breakdown { margin: 16px 0; padding: 14px; border: 1px solid #25333e; border-radius: 10px; background: #0c141b; }
+.profile-component-breakdown ul { margin: 12px 0; padding-left: 18px; }
+.profile-component-breakdown li { margin: 12px 0; }
+.profile-component-breakdown li span { display: block; color: #9cafbd; font-size: 12px; }
+.profile-component-breakdown li p { font-size: 12px; }

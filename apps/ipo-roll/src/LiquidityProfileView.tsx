@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import type { LiquidityReport } from '../shared/liquidity.js';
 import type { Source } from '../shared/types.js';
 import { LiquidityReportView } from './LiquidityReportView.js';
+import { ownershipRows } from '../shared/ownership.js';
 import { LiquidityScenario } from './LiquidityScenario.js';
 
 function date(value: string | null | undefined) {
@@ -36,6 +37,7 @@ export function LiquidityProfileView({ report, ticker, onBack, scenarioKey }: { 
             <p><strong>{p.reportedTotal == null && p.shares == null ? 'Quantity not established' : `${(p.reportedTotal ?? p.shares)!.toLocaleString('en-US')} reported`}</strong> · {p.shareClass || 'Share class unspecified'}</p>
             {p.reportedHolder && <p>Reported holder: {p.reportedHolder.name}. {p.attribution?.description}</p>}
             <p className="profile-event-note">{p.quantityKind === 'beneficial_total' ? 'Beneficial total; may include awards or attributed interests. Not a personal-share total.' : 'Personal economic ownership and current saleability are not established by the quantity alone.'}</p>
+            {p.components?.status === 'reconciled' && <div className="profile-component-breakdown"><strong>What makes up this total</strong><ul>{ownershipRows([p]).map(row => <li key={row.id}><strong>{row.quantity?.toLocaleString('en-US')} · {row.security}</strong><span>{row.attribution}</span><p>{row.description}</p></li>)}</ul><small>Components of the reported total, not additional holdings. Conversion and award quantities do not confirm issuance or saleability.</small></div>}
             <SourceEvidence sources={[p.source, ...p.evidence]}/>
             <small className="profile-filing-date">Filed {date(p.filingDate || p.holdingsDate)} · {p.filingAccession || 'Accession not recorded'}</small>
           </TimelineEvent>

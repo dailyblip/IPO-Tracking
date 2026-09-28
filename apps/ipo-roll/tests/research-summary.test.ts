@@ -42,3 +42,16 @@ test('profile layout preserves projected/attributed evidence and does not invent
   assert.ok(!html.includes('Sold shares in the IPO'));
   assert.equal(JSON.stringify(report),before);
 });
+
+test('preferred conversion remains distinct and the profile exposes reconciled components without adding to totals', () => {
+  const converted = structuredClone(report);
+  converted.positions[0].components!.items[1] = {ordinal:2,instrument:'preferred_conversion',quantity:50,attribution:'trust_or_family',description:'Issuable upon conversion, not confirmed issued or personally owned.',source};
+  const before = JSON.stringify(converted);
+  const html = renderToStaticMarkup(createElement(LiquidityProfileView, {report:converted,onBack:()=>{},scenarioKey:'conversion'}));
+  assert.ok(html.includes('What makes up this total'));
+  assert.ok(html.includes('Common shares issuable on preferred conversion'));
+  assert.ok(html.includes('Issuable upon conversion, not confirmed issued or personally owned.'));
+  assert.ok(html.includes('Components of the reported total, not additional holdings'));
+  assert.ok(html.includes('Trust / family attribution'));
+  assert.equal(JSON.stringify(converted),before);
+});
