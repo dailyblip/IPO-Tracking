@@ -32,10 +32,22 @@ class DisclosedHoldingsTests(unittest.TestCase):
             self.assertEqual((manifest,sql),m.build(p,r,d))
 
     def test_dash_zero_and_invalid_quantities(self):
-        self.assertIsNone(m.quantity('—'));self.assertEqual(m.quantity('0'),0)
+        self.assertIsNone(m.quantity('—'));self.assertIsNone(m.quantity('*'))
+        self.assertEqual(m.quantity('0'),0)
         self.assertEqual(m.quantity('1,234'),1234)
         for v in ('1,23','-1','1.2','1e3','9007199254740992','12 34','00'):
                 with self.subTest(v=v),self.assertRaises(ValueError):m.quantity(v)
+
+    def test_zero_width_edgar_table_spacing_is_ignored_for_row_identity(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp);p,r=self.fixture(d)
+            doc=p['documents'][0]
+            raw=(d/'objects'/doc['source']['content_sha256']).read_bytes()
+            raw=raw.replace(b'<td>1,000</td>',b'<td>\xe2\x80\x8b 1,000 \xe2\x80\x8b</td>')
+            source=m.sha(raw);text,_=m.text_blocks(raw);(d/'objects'/source).write_bytes(raw)
+            doc['source']['content_sha256']=source;doc['normalized_text_sha256']=m.sha(text.encode())
+            manifest,_=m.build(p,r,d)
+            self.assertEqual(manifest['positions'][0]['shares'],1000)
 
     def test_percent_cells_allow_table_header_percent_convention_but_reject_out_of_range(self):
         with tempfile.TemporaryDirectory() as tmp:

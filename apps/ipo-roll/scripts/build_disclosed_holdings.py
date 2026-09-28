@@ -39,12 +39,15 @@ def table_rows(raw):
                         row['depth']-=1
                         if row['depth']==0: row['cells'].append(flat(' '.join(row['parts'])))
             if tag=='tr' and self.stack:
-                self.rows.append(flat(' '.join(self.stack.pop()['cells'])))
+                self.rows.append(flat(' '.join(self.stack.pop()['cells'])).replace('\u200b',''))
     parser=Rows(); parser.feed(raw.decode('utf-8',errors='replace')); return parser.rows
 
 
 def quantity(cell):
-    if cell in ('—', '–', '-'): return None
+    # Some SEC ownership tables repeat the less-than-one-percent marker in both
+    # the quantity and percentage cells. It establishes row presence but no
+    # exact quantity, so preserve it as unknown rather than zero or omission.
+    if cell in ('—', '–', '-', '*'): return None
     if not re.fullmatch(r'(?:0|[1-9]\d*|[1-9]\d{0,2}(?:,\d{3})+)', cell):
         raise ValueError('Invalid quantity cell')
     n = int(cell.replace(',', ''))
@@ -61,6 +64,11 @@ def build(packet, review, directory):
     doc = docs[0]; source = doc['source']['content_sha256']
     raw=read_object(directory, source); text, blocks = text_blocks(raw)
     html_rows=table_rows(raw)
+    def row_key(value):
+        return re.sub(r'\s','',value)
+    def row_occurrences(expected):
+        key=row_key(expected)
+        return sum(row_key(row)==key for row in html_rows)
     if sha(text.encode()) != doc['normalized_text_sha256']: raise ValueError('Normalized source mismatch')
     reviewed = date.fromisoformat(review['reviewed_on'])
     if not date.fromisoformat(current['filingDate']) <= reviewed <= date.today():
@@ -73,7 +81,9 @@ def build(packet, review, directory):
     def selected(spec):
         data = passage(blocks, spec['first'], spec['last'], text)
         sid = uid('disclosed-table-span', document, canonical(data)); spans[sid] = data
-        return sid, flat(data['excerpt'])
+        # EDGAR table layout frequently contains zero-width spacing glyphs.
+        # They are presentation artifacts, not part of names or numeric cells.
+        return sid, flat(data['excerpt']).replace('\u200b','')
     header, header_text = selected(review['headers'])
     basis, basis_text = selected(review['basis'])
     common = [header, basis]
@@ -115,7 +125,7 @@ def build(packet, review, directory):
         occurrences = omitted.get('row_occurrence_count', 1)
         if not isinstance(occurrences, int) or occurrences < 1:
             raise ValueError('Reviewed non-imported row occurrence count must be positive')
-        if re.sub(r'\s', '', row) != re.sub(r'\s', '', expected) or html_rows.count(expected) != occurrences:
+        if row_key(row) != row_key(expected) or row_occurrences(expected) != occurrences:
             raise ValueError('Reviewed non-imported whole row mismatch')
         reviewed_non_imported_rows.append(dict(
             source_label=omitted['source_label'], cells=omitted['cells'],
@@ -133,8 +143,8 @@ def build(packet, review, directory):
         expected=flat(label + ' ' + ' '.join(cells))
         occurrences = person.get('row_occurrence_count', 1)
         if (not isinstance(occurrences, int) or occurrences < 1 or len(cells) != len(columns)
-                or re.sub(r'\s','',row)!=re.sub(r'\s','',expected)
-                or html_rows.count(expected)!=occurrences):
+                or row_key(row)!=row_key(expected)
+                or row_occurrences(expected)!=occurrences):
             raise ValueError('Whole source row / ordered cells mismatch')
         for c, cell in zip(columns, cells):
             if c['kind'] in ('quantity','proposed_sale','unselected_quantity'): quantity(cell)

@@ -79,6 +79,25 @@ filing, interpret footnotes, approve financial facts or declare a company comple
 Current applied batch, tests and next exact files are in `development-log.md` and
 `backfill-2026.md`.
 
+## Footnote markers, repeated fund rows and one-share discrepancies — September 28 UTC
+
+AgomAb extends the complete-table contract to filings that place `*` in both the
+quantity and percentage cells for less-than-one-percent holders. These rows remain
+visible as explicit null positions; `*` is never parsed as zero or used to remove a
+person. Zero-width EDGAR layout glyphs may be ignored for row-identity comparison,
+but exact duplicate occurrence counts remain enforced.
+
+Every repeated person/fund total is stored once on the reported holder and linked
+to the named person with the filing-supported attribution type. The officers/
+executives aggregate is not added to its overlapping subjects. When the filing's
+reported Tim Knotnerus total differs by one share from its listed components, the
+reported aggregate is retained with the discrepancy and no residual is invented.
+AgomAb has all 11 management biographies, 26 selected positions and 44 attribution
+links. Current any-position coverage is 19 of 94 offerings, leaving 75 without
+records. Next cursor is Once Upon a Farm; this checkpoint does not establish full-
+cohort ownership, historical value, liquidity or an independent complete IPO
+census.
+
 ## Two stock classes, explicit dash rows and biography continuation — September 28 UTC
 
 Forgent extends the full-table contract to an Up-C ownership table that reports

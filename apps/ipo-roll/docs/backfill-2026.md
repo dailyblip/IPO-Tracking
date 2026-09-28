@@ -1,5 +1,30 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: AgomAb complete ownership and controller review
+
+Applied 20 missing footnote people, 26 pre/projected-post ownership positions and
+44 attribution links from the complete reviewed AgomAb ownership table and notes.
+All eight reported holder organizations/groups remain separate from named people.
+Three repeated person/fund rows and the overlapping 12-person aggregate are audited
+without duplicating quantities. Six `*` positions remain explicit nulls.
+
+Tim Knotnerus's reported 668,855-share total differs by one share from its
+enumerated components; the filing-reported aggregate is retained without inventing
+a component or residual. The existing management roster remains complete at 11/11
+biographies; no filing biographies exist for the newly added controllers. Control,
+fund/trust attribution, personal economics, historical-value compatibility and
+liquidity remain separate or unknown.
+
+Current totals: **94 offerings / 439 people / 368 biographies / 355 positions / 16
+components / 122 attributions / zero quotes**. Any-position coverage is **19 of
+94**; **75 still have none**. Nine private reports and their checksum remain
+unchanged. Rollback/application/replay, 11 staging ownership/privacy suites, 105
+Python tests, 18 Node/API tests and the production build pass. Independent census,
+live links and reviewer-authenticated browser journeys remain unverified. Private
+recovery hashes and exact publication state are in the latest development log.
+Next no-position cursor: Once Upon a Farm, then continue oldest-first; no month or
+full census is declared complete.
+
 ## September 28 UTC: Forgent complete management and ownership review
 
 Applied eight missing directors/biographies, corrected one truncated existing
