@@ -37,9 +37,16 @@ Do not describe visual fidelity, mobile screenshots or click journeys as verifie
 The cloud staging browser initially reached Render's application-loading screen;
 no authorized reviewer session has been established for profile interaction.
 
-Prepared for guarded publication and existing Render staging deployment. Build
-assets: `index-DVD2e5J1.js` and `index-BJQ6ZT7T.css`. Verify served assets before
-claiming the new layout is live. Still open: visual screenshot comparison in an
+Published to the guarded commercial branch at
+`2e09e02a427f19d50687e6516149fab757154d2f`; Test Research Monitor run
+`36488607890` passed. All five ownership-history active/queue states were clear
+immediately before committing. Render staging now serves `index-DVD2e5J1.js`
+and `index-BJQ6ZT7T.css`; both exact SHA-256 hashes match the tested local build.
+The first deployment check served the preceding frontend; the later expected-build
+check verified the new assets. Cloud browser reached the actual sign-in screen,
+confirming there is no authorized reviewer session for visual profile QA in that
+browser. The frontend rollout is verified; visual equivalence and authenticated
+click journeys remain unverified. Still open: visual screenshot comparison in an
 available browser, authenticated profile journey, reviewed cross-offering links,
 independent-session quota QA and discovery/backfill work from the preceding entry.
 
