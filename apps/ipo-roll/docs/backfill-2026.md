@@ -14,10 +14,12 @@ Current totals: **94 offerings / 504 people / 427 biographies / 654 positions**;
 unchanged. Rollback/application/replay, whole-section reconciliation, targeted
 privacy/value QA, the 94-offering structural audit, 20 Node/API tests, production
 build and 108 Python tests pass. The Opus review's multi-role duplication and
-Render proxy rate-limit findings are fixed in staging schema/local code; repository
-publication and frontend/server deployment are still pending. Full census, live
-links and authenticated browser journeys remain unverified. Next priced cursors:
-Arxis and Madison Air Solutions (April 15); no month or full census is complete.
+Render proxy rate-limit findings are fixed, published at `50be1c868396ffd4c9e67e0e0747eaf4800d9952`,
+CI-passing and deployed to staging. Staging health, matching production assets,
+current UI copy and unauthenticated API denial were verified. Full census, live
+source links and authenticated browser journeys remain unverified. Next priced
+cursors: Arxis and Madison Air Solutions (April 15); no month or full census is
+complete.
 
 ## September 28 UTC: MiniMed complete roster and ownership table
 
