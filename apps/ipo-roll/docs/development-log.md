@@ -68,12 +68,17 @@ gzip SHA-256 `4c6b21800eb985c0608830c69920e2ae0d070a82c01f6198edf1a8f40a2c5ff6`)
 The raw filing remains in its existing private SEC artifact; no private review or
 source payload is added to Git/frontend assets.
 
-**Publication status:** data and migration are applied to staging. Application,
-importer and test changes are prepared and locally verified but not yet committed,
-published or Render-verified at this checkpoint. Next source cursor: York. Continue
-the same whole-table organization/group/person reconciliation across the 82
-no-position offerings; full census, holdings and continuous discovery/QA completion
-remain open.
+**Publication verified:** data and migration are applied to staging; commit
+`edc2c59a6d62ce59cfb15c76d0042275c2f37f86` is published on the commercial
+branch and Test Research Monitor run `36383991983` passed. Render serves the tested
+`/assets/index-CDjzLtb_.js` (SHA-256
+`842864cf2728ff8c00f07b37c58e2a2471f02e76b116f973a35be3254302fe6a`) and
+`/assets/index-D9gnMbrz.css` (SHA-256
+`890e0086c82d3f580cb831eec71ad3754bce8773a509da40ee1d3a91b836dc54`)
+byte-for-byte. Health is 200/ok/staging; anonymous Ethos detail and Niparko search
+return 401. Next source cursor: York. Continue the same whole-table
+organization/group/person reconciliation across the 82 no-position offerings; full
+census, holdings and continuous discovery/QA completion remain open.
 
 ## September 28 UTC: reported-holder attribution and PicPay ownership
 
