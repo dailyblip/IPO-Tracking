@@ -1,5 +1,30 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: Bob's complete management and base-scenario ownership review
+
+Applied 16 missing complete management biographies and 32 pre/base-post ownership
+positions from the full reviewed Bob's Discount Furniture sections. All 19
+management biographies reconcile. The 16 unique ownership subjects comprise one
+Bain holder group and 15 named people; five dash rows remain null across both
+snapshots. The overlapping officers/directors aggregate and alternative full-
+underwriter-option column are audited but not added to the base scenario.
+
+No individual Bain controller is inferred because the footnote requires decisions
+by three or more partners and says none of the four named partners individually
+directs voting or disposition. Fund/group amounts therefore remain separate from
+personal economics. Options, trusts, restrictions, value and liquidity remain
+unknown unless separately established.
+
+Current totals: **94 offerings / 371 people / 344 biographies / 254 positions / 16
+components / 46 attributions / zero quotes**. Any-position coverage is **15 of
+94**; **79 still have none**. Nine private reports remain unchanged. Rollback,
+atomic application, replay, seven staging privacy/regression suites, 104 Python
+tests, 18 Node/API tests and the production build pass. Browser and live reviewer-
+authenticated journeys remain unverified. Private recovery hashes and exact
+publication state are in the latest development log. Next no-position cursor:
+Eikon Therapeutics, then continue oldest-first; no month or full census is declared
+complete.
+
 ## September 28 UTC: Veradermics full management and ownership review
 
 Applied eight missing management biographies, six footnote controllers, 13

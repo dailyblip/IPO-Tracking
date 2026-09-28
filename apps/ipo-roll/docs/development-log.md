@@ -1,5 +1,65 @@
 # IPO Roll development handoff
 
+## September 28 UTC: Bob's complete management roster and base ownership scenarios
+
+Continued under the shared development lock from the verified Veradermics
+checkpoint `a2d91454b361e2e05fa0ae0bed79d4514985b2f5`. Reviewed Bob's Discount
+Furniture, Inc.'s final 424B4 (`0001628280-26-005868`, registration
+`333-292627`, source SHA-256
+`aaf135a9a6506cd4caab3ddbb6d751ec3a30470339ab9ca86ddf85e7825169e3`)
+against the complete management table, biography section, beneficial-ownership
+table and all 12 linked footnotes. The management table and biography section now
+reconcile to all 19 people and all 19 complete biographies, with no missing named
+footnote people.
+
+**Applied to commercial staging:** 32 positions across all 16 unique ownership-
+table subjects: the Bain Capital reported holder group and 15 named people, each
+with the reported pre-offering and base projected-post quantities. Five named rows
+contain filing dashes, so their ten positions remain null/undisclosed rather than
+zero. The overlapping 19-person officers/directors aggregate is audited but not
+imported again. The full-underwriter-option column is an alternative scenario and
+is held rather than combined with the base post-offering figures; in particular,
+the Bain full-option amount of 95,370,751 shares is not imported alongside its
+98,288,251 base total.
+
+The Bain footnote names Joshua Bekenstein, Jennifer Davis, John Kilgallon and
+Philip Loughlin among the partners who make voting and investment decisions, but
+states decisions require three or more partners and none individually directs the
+vote or disposition. No individual control attribution or personal Bain quantity
+is therefore inferred. Option/trust inclusions remain source limitations, not
+liquidity or personal-economic conclusions. All 32 liquidity assessments remain
+unknown; no value, current ownership, completed sale, cash or saleability is
+inferred.
+
+Staging is now **94 offerings / 371 people / 344 biographies / 254 positions / 16
+components / 46 holder-person attributions / zero quotes**. Any-position coverage
+is **15 of 94 offerings**; 79 still have none, and record presence does not certify
+whole-table completion. The **nine existing private reports are unchanged**. The
+fresh whole-roster snapshot passes all 19 management biographies with no missing
+named footnote people. Its conservative company-level result remains incomplete
+because holdings interpretation is tracked separately from roster reconciliation.
+
+People and holdings phases each passed rollback rehearsal, atomic application and
+exact replay. Bob's, Veradermics, York, Ethos, party-attribution, generic private-
+liquidity and ownership-grid database suites pass, including cross-account,
+guessed-existence, ordinary-customer and anonymous denial. **104 Python tests, 18
+Node/API tests and the production build pass.** Browser code is unchanged;
+desktop/mobile and live reviewer-authenticated journeys remain unverified in this
+execution image.
+
+Private deterministic review/release bundle
+`aa60b29e91434be84946c71127a09689929e0e7b422185db716c69c1a210f5ee`
+is verified in `ops.sec_artifacts` (614,400 raw tar bytes; 80,491 gzip bytes;
+gzip SHA-256 `960a5ab09a4fb499516a6b8fd52a862e40fdc8a1c03f61c779d43f7ee90e6410`).
+The raw filing remains in its existing private SEC artifact; no private source or
+review payload is added to Git/frontend assets.
+
+**Publication status:** staging data are applied and served by the existing
+authenticated API. This test/ledger checkpoint is prepared locally and is not yet
+published. Next no-position cursor is Eikon Therapeutics
+(`0001193125-26-039375`), followed oldest-first; full census, ownership and
+continuous discovery/QA completion remain open.
+
 ## September 28 UTC: Veradermics complete roster and single-quantity ownership table
 
 Continued under the shared development lock from verified York checkpoint

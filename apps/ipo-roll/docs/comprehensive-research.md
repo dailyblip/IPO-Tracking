@@ -126,6 +126,29 @@ Current any-position coverage is 12 of 94 offerings, leaving 82 without records.
 This is not a whole-cohort or month-completeness claim. Next cursor is York; reuse
 the same full-table accounting rather than importing only easily parsed people.
 
+## Base post-offering versus full-option alternatives — September 28 UTC
+
+Bob's Discount Furniture extends the full-table rule to a filing that reports
+pre-offering quantities, shares offered, projected post-offering quantities without
+the underwriter option and a separate projected column with the option exercised.
+The selected base post-offering column and the full-option column are mutually
+exclusive scenarios: store the reviewed base snapshot once and explicitly hold the
+alternative rather than summing or presenting both as simultaneous positions.
+
+Every unique reported ownership subject remains represented, including null records
+for filing dashes. The overlapping officers/directors aggregate is audited without
+double counting. A footnote that names several partners but requires joint decisions
+and expressly denies individual direction does not establish individual control
+authority, personal economic ownership or a personal share quantity. The holder
+group remains the reported owner and the named management biographies remain
+discoverable independently of whether they have a disclosed quantity.
+
+The Bob's review accounts for all 19 management biographies, 16 unique ownership
+subjects, 32 selected positions and all 12 footnotes. Current any-position coverage
+is 15 of 94 offerings, leaving 79 without records. Next cursor is Eikon
+Therapeutics. This checkpoint does not establish current value, liquidity, full-
+cohort ownership completion or an independent complete IPO census.
+
 ## Repeatable checks now available
 
 Run `scripts/audit_staging_data.sql` read-only after each applied batch and retain
