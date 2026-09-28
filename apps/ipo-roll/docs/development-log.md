@@ -57,10 +57,14 @@ The raw filing remains in its existing private SEC artifact; no private source o
 review payload is added to Git/frontend assets.
 
 **Publication status:** York data are applied and served by the existing
-authenticated API. The durable database test and ledger checkpoint are locally
-verified but not yet committed/published at this checkpoint. Next no-position cursor
-is Veradermics (`0001628280-26-005505`), followed oldest-first; full census,
-ownership and continuous discovery/QA completion remain open.
+authenticated API. Durable test/ledger commit
+`a7daf8c4941bdda45217c081b815300d0531fe8b` is published on the commercial
+branch, and Test Research Monitor run `36385725250` passed. Staging health is
+`ok` / `staging`; the unchanged tested assets remain `index-CDjzLtb_.js` and
+`index-D9gnMbrz.css`. Anonymous York detail and Michael Greene search requests
+both return 401. Next no-position cursor is Veradermics
+(`0001628280-26-005505`), followed oldest-first; full census, ownership and
+continuous discovery/QA completion remain open.
 
 ## September 28 UTC: Ethos full selling-stockholder table
 
