@@ -21,7 +21,7 @@ without fabricated biographies.
 
 Added 68 positions covering all 17 non-overlapping table subjects: American
 Securities, SOLV Energy Management Holdings LP and 15 named people, each with
-separate Class A/Class B and pre/base-post snapshots. The filing's 34 Class A
+separate Class A/Class B and pre/base-post snapshots. The filing's 38 Class A
 and direct-row dashes remain explicit null positions, not zero or omissions. The
 full-underwriter-option columns are alternative projected scenarios and are held
 out rather than presented simultaneously. The overlapping 19-person aggregate is
