@@ -60,9 +60,17 @@ gzip SHA-256 `0162f20c07f79645f1ff3977c4b9bd3d1143b521e7421eb9d6897f252d603ffc`)
 The raw filing remains in its existing private SEC artifact; no private source or
 review payload is added to Git/frontend assets.
 
-**Publication status:** staging data are applied. Code, database QA and ledgers
-are prepared locally but are not yet published in this checkpoint. The next oldest
-priced no-position cursor is Once Upon a Farm, PBC
+**Publication verified:** staging data are applied and served through the existing
+authenticated API. Code/database-QA checkpoint
+`eec95b659b69ec19dc97c9dcd7ca6b0143517096` is published on the commercial
+branch; Test Research Monitor run `36422245079` passed. Live staging health returns
+`200` with staging mode, while anonymous AgomAb detail and Ming Fang person-search
+requests both return `401`. Browser assets remain byte-identical
+(`index-CDjzLtb_.js`
+`842864cf2728ff8c00f07b37c58e2a2471f02e76b116f973a35be3254302fe6a`;
+`index-D9gnMbrz.css`
+`890e0086c82d3f580cb831eec71ad3754bce8773a509da40ee1d3a91b836dc54`).
+The next oldest priced no-position cursor is Once Upon a Farm, PBC
 (`0001193125-26-041885`, registration `333-290577`), followed by AGI Inc, SOLV
 Energy, ARKO Petroleum and Generate Biomedicines. Full census, ownership and
 continuous discovery/QA completion remain open.
