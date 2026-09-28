@@ -1,5 +1,22 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: Arxis and Madison Air
+
+Applied source-reviewed additions: 19 people, 18 full biographies, 100 class/basis
+ownership records and 24 attribution links. All 24 management biographies across
+both current filings reconcile to whole selected sections. Dashes, class differences,
+projected snapshots, excluded EAR awards and fund/control attribution stay explicit.
+Arxis's TEN-person aggregate versus nine named managers is held; Madison's duplicate
+Gies aggregate and executive group are not double counted. Full liquidity and
+component review remains incomplete.
+
+Verified totals: 94 offerings / 523 people / 445 biographies / 754 positions /
+26 components / zero quotes. 28 offerings have positions; 66 have none. Existing
+11 static reports unchanged. Rollback/apply/replay, reviewer/private-report QA and
+94-row structural audit pass; unperformed source/browser/completeness checks remain
+unverified. Private recovery hash and precise verification scope are recorded in
+the development log. No month or full-census completion claim.
+
 ## September 28 UTC: Neutron component depth
 
 Applied ten source-reviewed components across three before-offering Neutron
