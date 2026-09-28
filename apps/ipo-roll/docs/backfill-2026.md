@@ -1,5 +1,19 @@
 # Commercial 2026 backfill checkpoint
 
+## Latest applied people coverage — September 27 evening Pacific
+
+**94 offerings / 313 people / 313 biographies / 14 positions / 16 components**.
+Added **25 January biographies** (Buda Juice 9, Green Circle 6, Ethos 10) and
+**six February biographies** (Agomab), all to already imported offerings. No new
+IPO or ownership quantity was imported. Whole selected management sections now
+reconcile to 9, 6, 13 and 11 complete biographies, respectively. All 39 biographies
+match exact source text and hashes, including prior records and page continuations.
+Customer/anonymous denial, reviewer detail/search and saved-report preservation
+checks passed in rollback rehearsals and applications. Eight private reports are
+unchanged; zero quotes. No month, independent IPO census or ownership-table
+coverage is declared complete. See the latest development log for durable private
+receipts, tests and the next work. Earlier entries below are chronological history.
+
 ## Comprehensive researcher pivot — September 27 Pacific
 
 Current verified staging: **94 offerings / 282 people / 282 biographies / 14

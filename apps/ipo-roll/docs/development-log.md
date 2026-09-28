@@ -1,5 +1,72 @@
 # IPO Roll development handoff
 
+## September 27 evening: continuing development restored; 31 more biographies applied
+
+Owner asked why development stopped and explicitly requested a continuing process.
+Verified that IPO Roll Development was disabled while the separate nightly review
+was enabled. Re-enabled the existing hourly development task, replaced its stale
+September 26 handoff, and specified resumable batches, shared-lock coordination,
+unblocked-task progression and durable checkpoints. Kept the 6 PM digest separate.
+No duplicate automation or always-running-worker claim. The existing instruction
+to return to 8 AM/noon/4 PM after independently verified historical completion
+remains; that completion gate has not been met.
+
+Started from clean `888ae35e2a06f6320f0b576abb8a4c4f49dc0eff`, fetched the branch,
+checked PR #581 and live counts, and acquired the shared development lock.
+Restored Buda Juice and Green Circle final source objects from private staging
+artifacts and verified their raw and normalized hashes. Applied four reviewed
+biography supplements to existing offerings:
+
+| Filing month | Company | Added biographies | Complete selected management roster |
+| --- | --- | ---: | ---: |
+| January | Buda Juice | 9 | 9 |
+| January | Green Circle | 6 | 6 |
+| January | Ethos | 10 | 13 |
+| February | Agomab | 6 | 11 |
+
+All 39 management biographies now match complete reviewed section partitions
+and a fresh canonical database snapshot. Buda's CEO appears twice in its source
+table but remains one person. Clint Bowers retains the biography's CFO Nominee
+label (the table says CFO); Green Circle nominees retain nominee titles. Retained
+cross-page continuations including Christopher Capozzi, Roelof Botha, Mark Mullin,
+David Epstein, Colin Bond, Marie Quintana and Lai Tai Yan. These are source-dated
+roles, not inferred current appointments. Ownership quantities remain separate.
+
+Added explicit `relationship_name` alias review to `build_people_supplement.py`
+for reviewed differences between a table and biography, with a required reason,
+literal source-name/title validation and unchanged canonical biography identity.
+Used for Buda's Don/Donald Short and Mo/Mohammad Hayat variants. No automatic
+identity merging, inferred affiliation or holdings was introduced.
+
+Verified staging: **94 offerings / 313 people / 313 biographies / 14 positions /
+16 components / zero quotes / eight private reports**. Each batch passed rollback
+rehearsal and transactional application with exact full-biography/source/name
+search checks, ordinary-customer denial and anonymous denial. Full-row saved-report
+fingerprints stayed unchanged in all transactions. **92 Python tests pass**,
+including alias-review rejection cases; `git diff --check` passes. No new IPO,
+position, valuation, schema or frontend/backend application change. The data is
+served by existing authenticated APIs; real signed-in browser QA was not performed.
+The offline tooling is being checkpointed on the commercial branch. No application
+deployment is needed for the data/tooling; no claim of a newly deployed UI.
+
+Recovery: ignored `import-output/roster-pivot/{ethos,agomab,buda,green-circle}/`
+contains reviews, manifests, import/QA SQL, whole-section reviews, snapshots and
+coverage receipts. `prepare_followup.py`, `prepare_restored.py` and
+`reconcile_followup.py` reproduce this review work. Applied manifests are durable
+in `ops.pilot_manifests`. Roster checkpoint in `ops.sec_artifacts`:
+`0a0e39cc31140c38a85e08ec80b39fea3514dbc5dbdfe0da9c4b2e95d2633661`
+(159,640 raw bytes; compressed SHA-256
+`78d139f8c3c481d91ed8ad194734dcbde56b5670f18fd1ea312d4ef1d8997579`, verified).
+Source packets for the restored pair can be recovered from their original applied
+manifest's `capture`; raw objects remain private in `ops.sec_artifacts`.
+
+Next: implement evidence-backed ownership-only/entity/group/controller roster
+representation and name search without fabricating quantities, then ingest the
+reviewed table components/footnotes. Continue January 14 independent IPO census
+classification from the prior checkpoint. No month or full holder coverage is
+complete. Paid quote providers remain deferred; no owner action is needed for
+these next tasks. Preserve all source-rights, report-privacy and commit guards.
+
 ## September 27 Pacific: comprehensive research pivot; 31 biographies and two option positions applied
 
 Owner approved the full researcher pivot and said to continue. Started at clean
