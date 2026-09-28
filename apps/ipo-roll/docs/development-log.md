@@ -65,13 +65,18 @@ gzip SHA-256 `0335949a4671f39ce2725e2b1915330180d9a7417d0b382dff7634688ea7b2f4`)
 The 21.8 MB raw SEC source remains in its previously durable private artifact;
 neither source payload nor review JSON is added to Git/frontend assets.
 
-**Publication in progress:** database/data are applied and feature commit
+**Publication verified:** database/data are applied and feature commit
 `9e3900d84c83c06fe36533f1dfcab570d336f20d` is published on the commercial
-branch after all five ownership-history workflow statuses were clear. The new
-Render bundle/deployment is still pending at this paragraph's checkpoint. Next
-data cursor remains Ethos, then York, while the attribution contract is reused
-across all 83 no-position offerings and incomplete organization/group rows. Full
-holdings, census and continuous discovery/QA completion remain open.
+branch after all five ownership-history workflow statuses were clear. Browser-QA
+follow-up `8b8ec367cfd51b66cf661d4e16a62c7863ec542e` is also published and Test
+Research Monitor runs `36381337466` / `36381625797` passed. Render serves
+`/assets/index-C6oD4x3v.js`, SHA-256
+`90b57b1e98c3843cfa9c878507d252e0c7a9012664e464862d3904bd37107e69`,
+matching the tested local bundle. Health is 200/ok/staging; anonymous PicPay detail
+and Anderson search return 401. Next data cursor remains Ethos, then York, while
+the attribution contract is reused across all 83 no-position offerings and
+incomplete organization/group rows. Full holdings, census and continuous
+discovery/QA completion remain open.
 
 ## September 27 late Pacific: BitGo and EquipmentShare multi-series holdings
 
