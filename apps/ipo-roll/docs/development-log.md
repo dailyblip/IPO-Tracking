@@ -1,5 +1,61 @@
 # IPO Roll development handoff
 
+## September 28 UTC: Eikon complete roster, fund attribution and single pre-offering totals
+
+Continued under the shared development lock from verified Bob's checkpoint
+`ff349b27dd22f595a1c7d3b220708d9d130d92f8`. Reviewed Eikon Therapeutics,
+Inc.'s final 424B4 (`0001193125-26-039375`, registration `333-292633`, source
+SHA-256 `123e9de588a29afa7e8999541d6dc71ed6f86e0862cc400515c93c424efb60c4`)
+against the complete management, biography, principal-stockholder and all 15 linked
+footnote sections. Added the six missing management biographies and nine named
+external controllers/beneficiaries. All ten management biographies and all named
+footnote people now reconcile against the whole selected sections.
+
+**Applied to commercial staging:** 13 non-duplicative December 31, 2025
+pre-offering positions: four holder groups, two holder organizations and seven
+direct named-person rows. Ten evidence-linked group/organization-to-person
+attributions preserve reported-beneficial-owner, control-authority and ultimate-
+beneficiary distinctions. Joshua Wolfe's table row exactly repeats the Lux group
+total, so it is represented as a reported-beneficial-owner attribution rather than
+a second quantity. The overlapping ten-person officers/directors aggregate is
+audited but not imported again. Leon Chen's filing dash remains null, and the
+Column Group note expressly states that he has no voting or dispositive power.
+
+The table reports one quantity as of December 31, 2025 with separate pre- and
+projected post-offering percentages. The source quantity is therefore stored once
+as a pre-offering beneficial total; no projected quantity is manufactured from the
+percentage. Fund conversion shares, warrants, common stock, exercisable options,
+early-exercisable options and repurchase conditions remain stated limitations of
+the aggregate totals. They are not treated as issued, vested, personally economic
+or liquid shares. All 13 liquidity assessments remain unknown; no current value,
+completed sale, cash or saleability is inferred.
+
+Staging is now **94 offerings / 386 people / 350 biographies / 267 positions / 16
+components / 56 holder-person attributions / zero quotes**. Any-position coverage
+is **16 of 94 offerings**; 78 still have none, and record presence does not certify
+whole-table completion. The **nine existing private reports are unchanged**.
+
+People and holdings phases each passed rollback rehearsal, atomic application and
+exact replay. Eikon, Bob's, Veradermics, York, Ethos, party-attribution, generic
+private-liquidity and ownership-grid database suites pass, including cross-account,
+guessed-existence, ordinary-customer and anonymous denial. **104 Python tests, 18
+Node/API tests and the production build pass.** Browser code is unchanged;
+desktop/mobile and live reviewer-authenticated journeys remain unverified in this
+execution image.
+
+Private deterministic review/release bundle
+`d7fd725d3ec06efdd23277d82fde40b68725e828367e0e021bdd809a5a323a03`
+is verified in `ops.sec_artifacts` (645,120 raw tar bytes; 90,650 gzip bytes;
+gzip SHA-256 `925717100967fbee640339d1946952b863b5694d30dcfe9260e51f0441b141d4`).
+The raw filing remains in its existing private SEC artifact; no private source or
+review payload is added to Git/frontend assets.
+
+**Publication status:** staging data are applied and served by the existing
+authenticated API. This test/ledger checkpoint is prepared locally and is not yet
+published. Next no-position cursor is SpyGlass Pharma
+(`0001628280-26-006068`), followed oldest-first; full census, ownership and
+continuous discovery/QA completion remain open.
+
 ## September 28 UTC: Bob's complete management roster and base ownership scenarios
 
 Continued under the shared development lock from the verified Veradermics
