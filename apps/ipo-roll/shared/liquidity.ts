@@ -28,6 +28,8 @@ export type LiquidityReport = {
     filingAccession?: string;
     documentHash?: string;
     source: Source;
+    reportedHolder?: { id: string; name: string; kind: 'person' | 'organization' | 'group' | 'unresolved' };
+    attribution?: { kind: 'beneficial_entitlement' | 'control_authority'; description: string; source: Source } | null;
     category: 'liquid' | 'future' | 'illiquid' | 'unknown';
     assessmentDate: string | null;
     validThrough: string | null;

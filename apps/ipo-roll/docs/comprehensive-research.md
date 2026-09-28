@@ -67,9 +67,10 @@ filing, interpret footnotes, approve financial facts or declare a company comple
 
 - Finish the January cohort's management/ownership reconciliation, then continue
   oldest-first through the remaining cohort; restore missing retained artifacts.
-- Finish source-backed organization/group representation. Separate footnote-controller
-  roles and name-only search without a biography are applied in staging, first
-  verified with Neutron; full-cohort controller coverage is still incomplete.
+- Reuse the applied source-backed organization/group attribution model. PicPay is
+  the first verified organization-holder batch: reported holder, beneficiary
+  entitlement and control authority remain separate in the grid/private snapshot.
+  Full-cohort holder/controller coverage is still incomplete.
 - Generalize holdings review with reconciled security/attribution contracts; then
   implement supported filing-price values and actual sale proceeds.
 - Keep independent IPO census review advancing. Resolve every Monitor difference;

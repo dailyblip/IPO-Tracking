@@ -27,6 +27,7 @@ export function OwnershipGrid({ positions, action, classifications }: { position
               <td><button className="grid-footnote-button" aria-expanded={expanded === row.id} onClick={() => setExpanded(expanded === row.id ? null : row.id)}>Footnotes</button></td>
             </tr>{expanded === row.id && <tr><td colSpan={5}><div className="ownership-footnotes"><p>{row.description}</p>
                 <Evidence source={row.source}/>
+                {p.attribution && <><strong>{p.attribution.kind === 'beneficial_entitlement' ? 'Beneficiary attribution' : 'Control attribution'}</strong><p>{p.attribution.description}</p><Evidence source={p.attribution.source}/></>}
                 {p.conditions && <><strong>Restrictions · reviewed {p.assessmentDate || 'date unknown'}</strong><p>{p.conditions}</p></>}
                 {p.restrictionTimeline?.map(t => <div key={t.id}><strong>{t.trigger}: {t.triggerDate} + {t.dayCount} calendar days → {t.boundaryDate}</strong><p>{t.conditions}</p><small>Trigger is day zero; no business-day, holiday or time-zone adjustment inferred. Terms reviewed {t.reviewedOn} · {t.method}</small>{t.evidence.map((s,i)=><Evidence source={s} key={i}/>)}</div>)}
                 {p.evidence.map((s,i)=><Evidence source={s} key={i}/>)}

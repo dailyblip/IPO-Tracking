@@ -1730,7 +1730,7 @@ function DetailDrawer({
               ))}
             </div>
             <h3 className="section-heading">
-              People & ownership <span>{data.people.length}</span>
+              People & holders <span>{data.people.length}</span>
             </h3>
             {data.people.map((p) => (
               <div className="person-accordion" key={p.id}>
@@ -1759,6 +1759,7 @@ function DetailDrawer({
                 </button>
                 {person === p.id && (
                   <div className="person-body">
+                    {p.kind && p.kind !== "person" && <p className="ownership-note">Reported holder entity · not an individual wealth estimate.</p>}
                     {p.relationship === "Footnote controller" && <p className="ownership-note">Named fund/control relationship · personal economic ownership not established.</p>}
                     <OwnershipGrid positions={p.ownershipGrid} action={<LiquidityAnalysis offeringId={id} personId={p.id} name={p.name} demo={demo} request={api} />} />
                     <details className="person-biography"><summary>Biography &amp; relationship evidence</summary>
