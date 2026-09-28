@@ -91,6 +91,19 @@ test("render captured reviewer RPC output with line-wrapped source evidence", as
   await expect(page.getByText(holderName).first()).toBeVisible();
   const holderToggle = page.locator('.person-toggle').filter({ hasText: holderName });
   if (await holderToggle.getAttribute('aria-expanded') !== 'true') await holderToggle.click();
+  if (d.detail.people.find((p: any) => p.name === holderName)?.relationship === 'Footnote controller') {
+    await expect(page.locator('.person-toggle')).toHaveCount(d.detail.people.length);
+    await expect(page.getByText('Named fund/control relationship · personal economic ownership not established.')).toBeVisible();
+    await page.getByText('Biography & relationship evidence', { exact: true }).click();
+    await expect(page.getByText('No reviewed biography available. The filing-backed relationship is shown below.')).toBeVisible();
+    await page.getByText('Biography & relationship evidence', { exact: true }).click();
+    await page.screenshot({ path: 'test-results/controller-desktop.png' });
+    await page.setViewportSize({ width: 390, height: 844 });
+    expect(await page.locator('.detail-drawer').evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
+    await holderToggle.scrollIntoViewIfNeeded();
+    await page.screenshot({ path: 'test-results/controller-mobile.png' });
+    await page.setViewportSize({ width: 1440, height: 1100 });
+  }
   if (d.detail.people.find((p: any) => p.name === holderName)?.ownershipGrid?.length) {
     const grid = page.getByRole('region', { name: 'Stock classes and lock-up periods' });
     await expect(grid).toBeVisible();

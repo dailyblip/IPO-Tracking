@@ -1,5 +1,21 @@
 # Commercial 2026 backfill checkpoint
 
+## Latest applied coverage — September 27 night Pacific
+
+**94 offerings / 323 people / 320 biographies / 14 positions / 16 components**.
+Added **seven July-filing biographies** to Neutron Holdings, plus three named
+footnote controllers with no invented biography or personal quantity. Neutron now
+has 12 people, all nine complete management biographies, 16 inventoried ownership
+rows and 10 inventoried notes. Entity/group and quantity work remains pending.
+No new IPO, price, quote or completed census month. Eight private reports unchanged.
+
+Structural source/lineage/lifecycle QA ran across all 94 offerings; whole-section
+Neutron reconciliation passed. Biography-start discovery scanned 54 sources, left
+40 unavailable local artifacts explicit and found 440 unreviewed candidate starts
+across 46 offerings (including aliases/false positives). These are not imports or
+a verified missing-person count. Current source hashes, private receipts and next
+steps are in the latest development-log entry. Earlier counts below are history.
+
 ## Latest applied people coverage — September 27 evening Pacific
 
 **94 offerings / 313 people / 313 biographies / 14 positions / 16 components**.

@@ -93,6 +93,22 @@ def reconcile(packet, review, snapshot, archive):
             else:
                 result['status'] = 'review_pending'
                 result['reason'] = part.get('reason', 'Representation/interpretation not checked by this person-roster audit')
+                if entry_kind == 'footnote' and 'named_people' in part:
+                    if part.get('named_people_reviewed') is not True:
+                        raise ValueError('Named footnote people require explicit review')
+                    named_people, seen_names = [], set()
+                    for named in part['named_people']:
+                        name = named['name']
+                        if (not name or name in seen_names or name not in evidence['excerpt'] or
+                                named.get('attribution_reviewed') is not True or
+                                named.get('attribution_kind') not in ('shared_voting_dispositive', 'upstream_control') or
+                                not named.get('reason')):
+                            raise ValueError('Literal named controller and reviewed attribution required')
+                        seen_names.add(name)
+                        named_people.append(dict(name=name, attribution_kind=named['attribution_kind'],
+                                                 reason=named['reason'],
+                                                 status='person_present' if name in people else 'person_missing'))
+                    result['named_people'] = named_people
             entries.append(result)
         if accounted != section_blocks:
             raise ValueError('Unaccounted source blocks: '+','.join(map(str, sorted(section_blocks-accounted))))
@@ -115,6 +131,8 @@ def reconcile(packet, review, snapshot, archive):
                   management_complete=not without_bio and all(by_kind[k]['pending']==0 for k in ('management_table','management_biographies')),
                   ownership_table_status='accounted_for_with_pending_review' if 'ownership_table' in seen_kinds else 'not_reviewed',
                   ownership_footnotes_status='accounted_for_with_pending_review' if 'ownership_footnotes' in seen_kinds else 'not_reviewed',
+                  missing_named_footnote_people=sorted({p['name'] for s in results for e in s['entries']
+                                                       for p in e.get('named_people', []) if p['status']=='person_missing'}),
                   holdings_coverage='not_assessed', company_complete=False)
     return result
 

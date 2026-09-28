@@ -51,8 +51,14 @@ def build(packet, review, directory):
         if not isinstance(name, str) or not 3 <= len(name) <= 180 or name in seen or not p.get('identity_reviewed'):
             raise ValueError('Explicit unique individual identity review required')
         seen.add(name)
-        if p['relationship'] not in ('Executive', 'Director', 'Beneficial owner'):
+        if p['relationship'] not in ('Executive', 'Director', 'Beneficial owner', 'Footnote controller'):
             raise ValueError('Unsupported relationship')
+        if p['relationship'] == 'Footnote controller' and (
+                p.get('attribution_reviewed') is not True or
+                p.get('attribution_kind') not in ('shared_voting_dispositive', 'upstream_control') or
+                not isinstance(p.get('attribution_reason'), str) or
+                not p['attribution_reason'].strip()):
+            raise ValueError('Footnote controller requires explicit control attribution review')
         sid, body = selected(p['relationship_evidence'])
         relationship_name = p.get('relationship_name', name)
         if relationship_name != name and (p.get('alias_reviewed') is not True or

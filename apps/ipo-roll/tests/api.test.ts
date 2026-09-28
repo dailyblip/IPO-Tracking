@@ -68,6 +68,8 @@ test("sample API is paginated, filters saved IDs before paging and rejects inval
     assert.equal(p.items[0].people, undefined);
     assert.equal((await fetch(url + "/api/offerings?min=-1")).status, 400);
     assert.equal((await fetch(url + "/api/people/search?q=x")).status, 400);
+    assert.equal((await fetch(url + "/api/people/search?q=Alex&relationship=Footnote%20controller")).status, 200);
+    assert.equal((await fetch(url + "/api/people/search?q=Alex&relationship=Unsupported")).status, 400);
     assert.equal((await fetch(url + "/api/offerings/missing")).status, 404);
     const r = await fetch(url + "/api/overview");
     assert.equal(r.headers.get("cache-control"), "no-store");

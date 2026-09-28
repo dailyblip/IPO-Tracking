@@ -104,6 +104,32 @@ class PeopleSupplementTests(unittest.TestCase):
             self.assertIsNone(manifest['people'][0]['biography_span'])
             self.assertNotIn('insert into research.biographies',sql)
 
+    def test_footnote_controller_requires_review_and_never_creates_personal_holdings(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp);p,r=self.fixture(d)
+            raw=b'<p>Alex Controller is the managing member of Example Fund GP and may be deemed to share voting power over securities held by Example Fund.</p>'
+            doc=p['documents'][0]
+            doc['source']['content_sha256']=m.sha(raw)
+            doc['normalized_text_sha256']=m.sha(m.text_blocks(raw)[0].encode())
+            (d/'objects'/m.sha(raw)).write_bytes(raw)
+            person=dict(name='Alex Controller',title='managing member of Example Fund GP',
+                        relationship='Footnote controller',identity_reviewed=True,
+                        relationship_evidence=dict(first=0,last=0),
+                        biography_status='not_found_in_reviewed_filing')
+            r['people']=[person]
+            with self.assertRaisesRegex(ValueError,'control attribution'):m.build(p,r,d)
+            person.update(attribution_reviewed=True,attribution_kind='shared_voting_dispositive',
+                          attribution_reason='Source attributes voting authority over fund securities; no personal economic quantity established.')
+            manifest,sql=m.build(p,r,d)
+            self.assertIsNone(manifest['people'][0]['biography_span'])
+            self.assertIn('Footnote controller',sql)
+            for table in ('ownerships','ownership_components','biographies','claims'):
+                self.assertNotIn('insert into research.'+table,sql)
+            for change in ({'attribution_reviewed':False},{'attribution_kind':'personal_ownership'},
+                           {'attribution_reason':' '},{'name':'Another Person'}):
+                bad=copy.deepcopy(r);bad['people'][0].update(change)
+                with self.subTest(change=change),self.assertRaises(ValueError):m.build(p,bad,d)
+
     def test_source_name_variant_requires_review_and_literal_relationship(self):
         with tempfile.TemporaryDirectory() as tmp:
             d=Path(tmp);p,r=self.fixture(d)

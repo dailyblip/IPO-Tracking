@@ -1328,6 +1328,7 @@ function PeopleScreen({ open }: { open: (id: string) => void }) {
           <option>Beneficial owner</option>
           <option>Director</option>
           <option>Executive</option>
+          <option>Footnote controller</option>
         </select>
         <span>
           <FileText size={14} />
@@ -1382,7 +1383,7 @@ function PeopleScreen({ open }: { open: (id: string) => void }) {
                 this page <span>· {total} matching {total === 1 ? "person" : "people"}</span>
               </strong>
               <small>
-                {demo ? "Illustrative results" : "Sourced biography results"}
+                {demo ? "Illustrative results" : "Sourced people results"}
               </small>
             </div>
             {matches.map((m) => (
@@ -1758,9 +1759,10 @@ function DetailDrawer({
                 </button>
                 {person === p.id && (
                   <div className="person-body">
+                    {p.relationship === "Footnote controller" && <p className="ownership-note">Named fund/control relationship · personal economic ownership not established.</p>}
                     <OwnershipGrid positions={p.ownershipGrid} action={<LiquidityAnalysis offeringId={id} personId={p.id} name={p.name} demo={demo} request={api} />} />
                     <details className="person-biography"><summary>Biography &amp; relationship evidence</summary>
-                      {p.biography && <p>{p.biography}</p>}
+                      {p.biography ? <p>{p.biography}</p> : <p>No reviewed biography available. The filing-backed relationship is shown below.</p>}
                       <div className="source-box"><FileText size={17} /><div><strong>{p.source.title}</strong><p>{p.source.excerpt}</p><SourceLink source={p.source} /></div></div>
                     </details>
                     {demo && <details className="person-biography"><summary>Sample stock holdings and valuation</summary><section aria-label="Sample stock holdings and valuation">
