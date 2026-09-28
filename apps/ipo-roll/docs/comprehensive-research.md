@@ -79,6 +79,30 @@ filing, interpret footnotes, approve financial facts or declare a company comple
 Current applied batch, tests and next exact files are in `development-log.md` and
 `backfill-2026.md`.
 
+## Dual-class rows, duplicate identities and entity managers — September 28 UTC
+
+AGI extends the complete-table contract to a 17-column principal-shareholders
+table with Class A/Class B quantities, proposed-sale columns and base/full-option
+projected snapshots. Import the pre and base-post quantities separately. Preserve
+the full-option alternative and proposed-sale cells in reviewed evidence rather
+than treating them as simultaneous holdings or completed sales. Every selected
+dash remains a null position.
+
+The officers/directors aggregate and repeated Marciano Testa 5% row overlap named
+rows and are audited without duplicate positions. AGI Partners and the Lumina and
+Vinci funds remain organizations. Marciano Testa's filing-named control of AGI
+Partners is not a copy of that entity's quantities into personal economics. The
+footnotes also name Lumina and Vinci organization investment managers; until the
+attribution model can represent organization-to-organization authority without
+duplicating holdings, retain those links as unverified structured data with full
+evidence and limitations.
+
+AGI now has all 14 management biographies and 68 selected ownership positions.
+Any-position coverage is 22 of 94 offerings, leaving 72 without records. The next
+oldest priced no-position cursor is ARKO Petroleum. This does not establish
+historical value, current ownership, liquidity, full-cohort ownership or an
+independently complete IPO census.
+
 ## Up-C Class A/Class B alternatives and deemed ownership — September 28 UTC
 
 SOLV extends the full-table contract to a post-Transactions Up-C table with Class
