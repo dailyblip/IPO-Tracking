@@ -1,5 +1,23 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: Neutron component depth
+
+Applied ten source-reviewed components across three before-offering Neutron
+positions. Direct common shares, options, gross RSUs, trust-held shares and
+preferred-conversion underlying shares remain distinct. No post-allocation,
+completed sale, current wealth or liquidity inferred. Current totals remain
+94 offerings / 504 people / 427 biographies / 654 positions; components increase
+from 16 to 26. Twenty-six offerings have positions and 68 have none. All eleven
+existing private reports are unchanged; users explicitly refresh for new evidence.
+
+Three exact footnote sums, source hashes, application/replay, reviewer/private
+snapshot/security checks pass. The current 94-offering structural audit has zero
+failures; unreviewed completeness/interpretation tracks remain unverified.
+Frontend code `f8d1f017bf4311e352bc81c10b5d151455e53cd1` is CI-passing and its
+staging assets match the tested build. Full recovery and next tasks are in the
+development log. Arxis/Madison Air and independent census/discovery remain open;
+no month/census is complete.
+
 ## September 28 UTC: corrected specification and quota follow-up
 
 No cohort data or backfill cursor changed. Applied private report serialization
