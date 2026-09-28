@@ -1,5 +1,20 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: Generate Biomedicines management complete
+
+Applied twelve missing reviewed biographies, bringing Generate Biomedicines to
+all **15 unique management/director people and 15 complete biographies** across
+the whole reviewed management table and biography section. Source institution
+mentions remain neutral searchable evidence and do not imply beneficial ownership.
+
+Current totals: **94 offerings / 484 people / 407 biographies / 566 positions**;
+**23/94** offerings have positions and **71** have none. Rollback/application/
+replay, source-section reconciliation, private reviewer/search/customer-denial QA
+and all 107 Python tests pass. Nine private reports remain unchanged. Generate's
+principal-stockholders table and footnotes are the next quantity review; no value,
+current ownership or liquidity is inferred. Full census and discovery automation
+remain unfinished. Recovery hashes and publication state are in the development log.
+
 ## September 28 UTC: reverse independent-index QA
 
 Fresh staging identity/form/date snapshot matches all 94 offerings against the
