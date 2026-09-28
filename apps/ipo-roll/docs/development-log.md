@@ -57,11 +57,19 @@ gzip SHA-256 `d07f60f8b2b292e6cf5496a286ddcbd727910ca6700b4b392c4f85704f5bff2d`)
 The raw filing remains in its existing private SEC artifact; no private source or
 review payload is added to Git/frontend assets.
 
-**Publication pending:** staging data are applied and served through the existing
-authenticated API; the repository checkpoint and workflow verification still
-need publication. The next equal-date February 10 pricing cursors are SOLV Energy
-and AGI Inc, followed by ARKO Petroleum and Generate Biomedicines. Full census,
-ownership and continuous discovery/QA completion remain open.
+**Publication verified:** staging data are applied and served through the existing
+authenticated API. Repository checkpoint
+`798a8cac0e523c2119f3e8bf116b1fdd7b7481a2` is published on the commercial
+branch; Test Research Monitor run `36426285678` passed. Live staging health returns
+`200` with staging mode, while anonymous Once detail and Filipp Chebotarev person-
+search requests both return `401`. Browser assets remain byte-identical
+(`index-CDjzLtb_.js`
+`842864cf2728ff8c00f07b37c58e2a2471f02e76b116f973a35be3254302fe6a`;
+`index-D9gnMbrz.css`
+`890e0086c82d3f580cb831eec71ad3754bce8773a509da40ee1d3a91b836dc54`).
+The next equal-date February 10 pricing cursors are SOLV Energy and AGI Inc,
+followed by ARKO Petroleum and Generate Biomedicines. Full census, ownership and
+continuous discovery/QA completion remain open.
 
 ## September 28 UTC: AgomAb complete ownership table and named controllers
 
