@@ -51,9 +51,17 @@ gzip SHA-256 `bd44b1bdd50f877218f563e1fcc1cae040aff869051fc362039ed308aad9b504`)
 The raw filing remains in its existing private SEC artifact; no private source or
 review payload is added to Git/frontend assets.
 
-**Publication status:** staging data are applied through the existing authenticated
-API. The test/ledger checkpoint is prepared locally and not yet published. The next
-oldest priced no-position cursor is Forgent Power Solutions
+**Publication verified:** staging data are applied and served through the existing
+authenticated API. Test/ledger checkpoint
+`53e349a325dad16378bf10ba21ea7a12e0d38759` is published on the commercial
+branch; Test Research Monitor run `36410045063` passed. Live staging health returns
+`200` with staging mode, while anonymous SpyGlass detail and Edwin de Graaf person-
+search requests both return `401`. Browser assets remain byte-identical
+(`index-CDjzLtb_.js`
+`842864cf2728ff8c00f07b37c58e2a2471f02e76b116f973a35be3254302fe6a`;
+`index-D9gnMbrz.css`
+`890e0086c82d3f580cb831eec71ad3754bce8773a509da40ee1d3a91b836dc54`).
+The next oldest priced no-position cursor is Forgent Power Solutions
 (`0001193125-26-040029`), followed by Once Upon a Farm and AgomAb. Full census,
 ownership and continuous discovery/QA completion remain open.
 
