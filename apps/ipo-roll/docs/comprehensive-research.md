@@ -171,6 +171,23 @@ Next cursor is SpyGlass Pharma. This does not establish current value, vesting,
 liquidity, personal economics, full-cohort ownership completion or a complete IPO
 census.
 
+## Repeated director rows and named fund controllers — September 28 UTC
+
+SpyGlass extends the one-quantity contract to a table with six reported holder
+organizations/groups, direct named-person rows, repeated director rows and an
+overlapping officers/directors aggregate. The repeated Ali Behbahani/NEA, Kirk
+Nielsen/Vensana and Geoff Pardo/Gilde amounts stay on their reported holders and are
+linked to the people as reported beneficial owners; they are not copied into a
+second personal position. Named footnote controllers remain searchable and linked
+without invented biographies or personal economics.
+
+The complete review accounts for all 14 management biographies, every unique table
+subject, all linked footnotes, 14 selected pre-offering positions, 18 attributions
+and the held aggregate/repeated rows. Filing dashes remain null. Current any-position
+coverage is 17 of 94 offerings, leaving 77 without records. Next cursor is Forgent
+Power Solutions, then Once Upon a Farm and AgomAb. This is a source-reviewed batch,
+not a complete ownership cohort, independent SEC census, value or liquidity claim.
+
 ## Repeatable checks now available
 
 Run `scripts/audit_staging_data.sql` read-only after each applied batch and retain

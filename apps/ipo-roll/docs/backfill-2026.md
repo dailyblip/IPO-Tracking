@@ -1,5 +1,30 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: SpyGlass complete management and ownership review
+
+Applied ten missing complete management biographies, 15 named external footnote
+people, 14 non-duplicative pre-offering positions and 18 holder-person attribution
+links from the complete reviewed SpyGlass Pharma sections. All 14 management
+biographies reconcile. Six reported holder organizations/groups remain separate
+from people. Three repeated person/organization totals and the overlapping 13-person
+officers/directors aggregate are audited without duplicating quantities.
+
+The table gives one quantity as of December 31, 2025 beside before/projected-after
+percentages. Each selected quantity is stored once as pre-offering; no post amount
+is inferred. Four filing dashes remain null. Options, control, fund attribution,
+personal economics, value, current ownership and liquidity remain unknown unless
+separately established.
+
+Current totals: **94 offerings / 411 people / 360 biographies / 281 positions / 16
+components / 74 attributions / zero quotes**. Any-position coverage is **17 of 94**;
+**77 still have none**. Nine private reports and their checksum remain unchanged.
+Rollback, atomic application, replay, nine staging privacy/regression suites, 104
+Python tests, 18 Node/API tests and the production build pass. Browser and live
+reviewer-authenticated journeys remain unverified. Private recovery hashes and
+exact publication state are in the latest development log. Next no-position cursor:
+Forgent Power Solutions, then continue oldest-first; no month or full census is
+declared complete.
+
 ## September 28 UTC: Eikon complete management and ownership review
 
 Applied six missing management biographies, nine named external footnote people,
