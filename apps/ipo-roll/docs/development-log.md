@@ -54,9 +54,10 @@ Private recovery bundle SHA-256 is
 recorded idempotently in `ops.pilot_manifests`. Private source/review payloads
 remain outside Git and frontend assets.
 
-**Publication:** staging data and QA are applied and verified. The retained
-database regression and this ledger checkpoint are prepared for guarded branch
-publication; no frontend deployment is needed. The source-content reconciler
+**Publication verified:** staging data and QA are applied; commercial commit
+`bf3d05ef10cd22cf7293712c5464981eeba0a527` is published and Test Research
+Monitor run `36463958727` passed. No frontend deployment was needed. The
+source-content reconciler
 correctly leaves entity/group representation and footnote interpretation as
 pending in its person-roster status even though the separate holdings manifest
 and manual review cover this batch; do not promote that structural status to a
