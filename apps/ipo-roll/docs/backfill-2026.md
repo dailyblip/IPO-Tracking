@@ -1,5 +1,31 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: SOLV complete management and two-class ownership review
+
+Applied 16 missing complete management biographies, one source-named former
+executive/beneficial owner and two named footnote controllers. All 19 management
+biographies now reconcile against the complete selected sections. Added 68 Class
+A/Class B pre/base-post positions for all 17 non-overlapping ownership-table
+subjects and 20 group-person attribution links.
+
+All 34 filing dashes in the selected quantity columns remain explicit nulls. The
+full-option columns and overlapping 19-person aggregate are audited without being
+added as simultaneous or duplicate positions. American Securities remains a
+group, Management Holdings remains an organization, and controller/deemed-owner
+links do not turn sponsor totals into personal economics. Up-C redemption,
+economic-interest, present-day ownership, historical-value compatibility and
+liquidity remain distinct or unknown.
+
+Current totals: **94 offerings / 467 people / 390 biographies / 481 positions / 16
+components / 146 attributions / zero quotes**. Any-position coverage is **21 of
+94**; **73 still have none**. Nine private reports and their checksum remain
+unchanged. Rollback/application/replay, 13 staging ownership/privacy suites, 105
+Python tests, 18 Node/API tests and the production build pass. Independent census,
+live links and reviewer-authenticated browser journeys remain unverified. Private
+recovery hashes and prepared publication state are in the latest development log.
+Next priced cursor: AGI Inc, then ARKO Petroleum and Generate Biomedicines; no
+month or full census is declared complete.
+
 ## September 28 UTC: Once Upon a Farm complete management and ownership review
 
 Applied six missing complete management biographies, two source-named selling

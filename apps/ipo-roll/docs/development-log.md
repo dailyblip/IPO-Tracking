@@ -1,5 +1,72 @@
 # IPO Roll development handoff
 
+## September 28 UTC: SOLV complete management and two-class ownership review
+
+Continued under the shared development lock from the verified Once Upon a Farm
+checkpoint. Reviewed SOLV Energy, Inc.'s final 424B4
+(`0001193125-26-046879`, registration `333-292778`, filed February 11, 2026;
+pricing date February 10, 2026; final IPO price $25) against the complete
+management table, all 19 biographies, the complete principal-stockholders table
+and all three linked footnotes. The retained raw source SHA-256 is
+`b5217e9176338a4f7b55334e32917e8f446fa62e41622198926f3dfa4c764855`;
+normalized source SHA-256 is
+`7fbe582e7f5a6293840dfeed6ab61acc63c2bdda8c957047eb476659c613002e`.
+
+**Applied to commercial staging:** added all 16 missing management/director
+biographies, Benjamin Catalano as the source-named former CFO/beneficial owner,
+and Michael G. Fisch and David Horing as ownership-footnote controllers. All 19
+management rows now have complete biographies and reconcile against the whole
+reviewed sections. The two controller people and former executive remain visible
+without fabricated biographies.
+
+Added 68 positions covering all 17 non-overlapping table subjects: American
+Securities, SOLV Energy Management Holdings LP and 15 named people, each with
+separate Class A/Class B and pre/base-post snapshots. The filing's 34 Class A
+and direct-row dashes remain explicit null positions, not zero or omissions. The
+full-underwriter-option columns are alternative projected scenarios and are held
+out rather than presented simultaneously. The overlapping 19-person aggregate is
+audited but not imported.
+
+American Securities remains a reported group and Management Holdings remains an
+organization. Michael G. Fisch and David Horing have control-authority links;
+Kevin S. Penn, Michael Sand and David Portnoy have source-qualified reported-
+beneficial-owner links with the filing's express disclaimer. This creates 20
+evidence-linked attributions across the group's four selected snapshots without
+copying the group quantities into personal economics. Management Holdings' Class
+B amount and each attributed executive amount are kept distinct; the filing's
+LLC-interest/redemption structure prevents an automatic historical IPO-price
+value. All liquidity remains unknown, and no present-day ownership, current
+wealth, realized cash or saleability is asserted.
+
+Staging is now **94 offerings / 467 people / 390 biographies / 481 positions / 16
+components / 146 holder-person attributions / zero quotes**. Any-position
+coverage is **21 of 94 offerings**; **73 still have none**, and row presence does
+not certify the other completion tracks. The **nine existing private reports and
+checksum `6934bc3145bb395df455112bc10190fb` are unchanged**.
+
+People and holdings phases passed rollback rehearsal, atomic application and exact
+replay. SOLV plus twelve existing ownership/privacy database suites pass,
+including cross-account, guessed-ID, ordinary-customer and anonymous denial.
+**105 Python tests, 18 Node/API tests and the production build pass.** The 94-row
+staging audit passes SOLV filing identity, source version, lifecycle, role and
+holding alignment. Independent census, financial interpretation/arithmetic, live
+links, lock-up saleability and live reviewer-authenticated browser journeys remain
+unverified.
+
+Private deterministic review/release bundle
+`c5cda5cacfd2101c46e6acf3ce8d37e6ff2aa29bf0dfd8bbb4207344f139c64b`
+is verified in `ops.sec_artifacts` (890,880 raw tar bytes; 88,647 gzip bytes;
+gzip SHA-256 `d75f764901d501f716bdaac33efe99297ea9fe7dba51cda2c90e2aa40ff12645`).
+The raw filing remains in its existing private SEC artifact; no private source or
+review payload is added to Git/frontend assets.
+
+**Publication pending:** staging data are applied through the existing reviewer
+API. Repository QA checkpoint and CI verification remain to be published. The
+next oldest priced no-position cursor is AGI Inc
+(`0001753926-26-000308`, registration `333-292720`), followed by ARKO Petroleum
+and Generate Biomedicines. Full census, ownership and continuous discovery/QA
+completion remain open.
+
 ## September 28 UTC: Once Upon a Farm complete management and ownership review
 
 Continued under the shared development lock from the published AgomAb checkpoint.
