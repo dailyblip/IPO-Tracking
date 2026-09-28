@@ -176,6 +176,40 @@ def summarize(rows):
     return {month: dict(counts) for month, counts in sorted(months.items())}
 
 
+def audit_staged_inventory(rows, staged):
+    """Reverse census check; absence never proves an offering is ineligible.
+
+    A match verifies only the exact filing's identity, date and form in these
+    retained indexes. Index freshness and offering eligibility remain separate.
+    """
+    indexed = {(r['cik'], r['accession']): r for r in rows}
+    if len(indexed) != len(rows):
+        raise ValueError('Duplicate candidate across indexes')
+    results, seen = [], set()
+    for offering in staged:
+        key = (offering['cik'].zfill(10), offering['accession_no'])
+        if key in seen:
+            raise ValueError('Duplicate staged filing identity')
+        seen.add(key)
+        filing = indexed.get(key)
+        status, reason = 'unverified', 'not_found_in_scoped_indexes'
+        if filing:
+            comparisons = [('form', 'form'), ('filing_date', 'filed')]
+            conflicts = [a for a, b in comparisons
+                         if offering.get(a) is not None and offering[a] != filing[b]]
+            missing = [a for a, _ in comparisons if offering.get(a) is None]
+            if conflicts:
+                status, reason = 'fail', 'filing_metadata_conflict'
+            elif missing:
+                reason = 'staged_filing_metadata_missing'
+            else:
+                status, reason = 'pass', 'exact_filing_metadata_match'
+        results.append(dict(offering_id=offering['id'], cik=key[0], accession=key[1],
+                            status=status, reason=reason,
+                            index_sha256=filing['index_sha256'] if filing else None))
+    return sorted(results, key=lambda r: (r['cik'], r['accession']))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--checkpoint', required=True, type=Path)
@@ -207,17 +241,22 @@ def main():
         if dispositions.keys() & reviewed.keys():
             raise ValueError('Overlapping disposition checkpoints')
         dispositions.update(reviewed)
-    result = reconcile(rows, json.loads(staged_raw), dispositions)
+    staged = json.loads(staged_raw)
+    result = reconcile(rows, staged, dispositions)
+    staged_audit = audit_staged_inventory(rows, staged)
     report = {'version': 'sec-census-reconciliation/1', 'start': args.start, 'end': args.end,
               'checkpoint_sha256': args.checkpoint_sha256, 'staged_sha256': sha(staged_raw),
               'indexes': index_evidence, 'forms': sorted(FORMS), 'other_form_counts': dict(outside),
               'filing_month_counts': summarize(result), 'candidates': result,
+              'staged_inventory_audit': staged_audit,
+              'staged_inventory_check_counts': dict(Counter(r['status'] for r in staged_audit)),
               'complete': False, 'publication_allowed': False,
               'limitations': ['Counts are filing rows, not unique IPOs or pricing-month totals.',
                              'Retained index snapshot requires end-date freshness reconciliation.',
                              'Other registration/prospectus forms require scope review.',
                              'Unreviewed and lineage rows require registration-lineage and source review.',
                              'Reviewed exclusions apply only to exact filings, never whole issuers.',
+                             'Staged filings absent from scoped indexes remain unverified, not excluded.',
                              'Exact offering matches do not establish biography/ownership completeness.']}
     args.output_dir.mkdir(parents=True, exist_ok=True)
     (args.output_dir / 'inventory.json').write_text(json.dumps(report, indent=2) + '\n')

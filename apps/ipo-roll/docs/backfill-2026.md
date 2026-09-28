@@ -1,5 +1,15 @@
 # Commercial 2026 backfill checkpoint
 
+## September 28 UTC: reverse independent-index QA
+
+Fresh staging identity/form/date snapshot matches all 94 offerings against the
+hash-verified retained SEC indexes (11,061 scoped filing rows). New reverse QA
+reports absent staged filings and missing metadata as unverified, and date/form
+conflicts as failures. All 107 Python tests pass. The source cutoff remains
+September 26; this is neither fresh-through-today discovery nor an exhaustive
+IPO census. No facts or private reports changed. Recovery details and next fresh
+capture/ingestion work are in the development log.
+
 ## September 28 UTC: ARKO conversion-safe ownership review
 
 All eight complete management biographies reconciled, including five previously
