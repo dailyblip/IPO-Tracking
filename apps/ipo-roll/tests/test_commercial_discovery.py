@@ -93,6 +93,24 @@ class CommercialDiscoveryTests(unittest.TestCase):
         self.assertEqual(second['entries'][0]['intake'], first['entries'][0]['intake'])
         self.assertEqual(second['previous_checkpoint_sha256'], first['checkpoint_sha256'])
 
+    def test_real_daily_header_compact_dates_and_identical_duplicate_rows(self):
+        spec, artifacts = fixture()
+        literal = line(filed='20260928')
+        raw = ('CIK|Company Name|Form Type|Date Filed|File Name\n' + literal + literal).encode()
+        daily = dict(url=DAILY, sha256=m.sha(raw), bytes=len(raw), retrieved_at=STAMP)
+        spec['indexes'].append(daily); artifacts[m.sha(raw)] = raw
+        queue = m.build_queue(spec, artifacts)
+        self.assertEqual(len(queue['entries']), 1)
+        self.assertEqual(queue['entries'][0]['status'], 'capture_pending')
+        self.assertEqual(queue['entries'][0]['filed'], '2026-09-28')
+        self.assertEqual(len(queue['entries'][0]['observations']), 2)
+        self.assertEqual(sum(s['identical_duplicate_rows'] for s in queue['index_sources']), 1)
+        conflict = raw + line(filed='20260928', company='Conflicting issuer name').encode()
+        changed = dict(daily, sha256=m.sha(conflict), bytes=len(conflict))
+        spec['indexes'] = [changed]
+        held = m.build_queue(spec, {m.sha(conflict): conflict})
+        self.assertEqual(held['entries'][0]['hold_reasons'], ['conflicting_index_rows'])
+
     def test_bad_hash_length_headers_dates_and_paths_fail_closed(self):
         spec, artifacts = fixture()
         for field, value in [('sha256', '0' * 64), ('bytes', 1),
@@ -102,13 +120,23 @@ class CommercialDiscoveryTests(unittest.TestCase):
             with self.subTest(field=field), self.assertRaises((ValueError, KeyError)):
                 m.build_queue(bad, artifacts)
         for raw in [b'not an index', (HEADER + '1|malformed\n').encode(),
-                    (HEADER + line(filed='2026-08-01')).encode()]:
+                    (HEADER + line(filed='2026-09-30')).encode()]:
             bad = copy.deepcopy(spec)
             bad['indexes'][0].update(url=DAILY, sha256=m.sha(raw), bytes=len(raw))
             with self.assertRaises(ValueError):
                 m.build_queue(bad, {m.sha(raw): raw})
         with self.assertRaises(ValueError):
             m.local_path(Path('/tmp/safe'), '../elsewhere')
+
+    def test_daily_dissemination_retains_late_released_actual_filing_dates(self):
+        spec, artifacts = fixture(rows=line(filed='20260925'), url=DAILY)
+        queue = m.build_queue(spec, artifacts)
+        self.assertEqual(queue['entries'][0]['filed'], '2026-09-25')
+        self.assertEqual(queue['entries'][0]['status'], 'capture_pending')
+        spec, artifacts = fixture(rows=line(filed='20251231'), url=DAILY)
+        queue = m.build_queue(spec, artifacts)
+        self.assertEqual(queue['entries'][0]['status'], 'held')
+        self.assertIn('earlier_filing_requires_2026_activity_review', queue['entries'][0]['hold_reasons'])
 
     def test_missing_days_and_current_day_are_incomplete_not_empty_success(self):
         spec, artifacts = fixture(url=DAILY, start='2026-09-25',
