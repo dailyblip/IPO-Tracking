@@ -30,6 +30,9 @@ INDEX_URL = re.compile(r'https://www\.sec\.gov/Archives/edgar/(?P<kind>full|dail
                        r'(?P<year>\d{4})/QTR(?P<quarter>[1-4])/master'
                        r'(?:\.(?P<day>\d{8}))?\.idx')
 NY = ZoneInfo('America/New_York')
+# Daily dissemination indexes use compact YYYYMMDD; quarterly masters use ISO.
+# Preserve the literal row while normalizing only its parsed filing-date field.
+DAILY_ROW = re.compile(ROW.pattern.replace(r'\d{4}-\d{2}-\d{2}', r'\d{8}'))
 
 
 def sha(raw):
@@ -87,30 +90,40 @@ def parse_artifact(spec, raw, as_of):
         first = last = day
     complete_last = min(last, available_through)
     text = raw.decode('latin-1')
-    if 'CIK|Company Name|Form Type|Date Filed|Filename' not in text:
+    if not any(header in text.splitlines() for header in (
+            'CIK|Company Name|Form Type|Date Filed|Filename',
+            'CIK|Company Name|Form Type|Date Filed|File Name')):
         raise ValueError('Missing SEC master-index header')
-    rows, seen, outside = [], set(), Counter()
+    rows, seen, outside, duplicate_rows = [], set(), Counter(), 0
     for line in text.splitlines():
         match_row = ROW.fullmatch(line)
+        if not match_row and match['kind'] == 'daily':
+            match_row = DAILY_ROW.fullmatch(line)
         if not match_row:
             if re.match(r'^\d+\|', line):
                 raise ValueError('Malformed SEC index data row')
             continue
         row = match_row.groupdict()
+        if len(row['filed']) == 8:
+            row['filed'] = datetime.strptime(row['filed'], '%Y%m%d').date().isoformat()
         filed = date.fromisoformat(row['filed'])
-        if not first <= filed <= last or filed > retrieved.astimezone(NY).date():
+        # Daily dissemination can include older filings released/corrected today.
+        # Their actual filing date must not be rewritten to the index date.
+        if (filed > last or filed > retrieved.astimezone(NY).date() or
+                (match['kind'] == 'full' and filed < first)):
             raise ValueError('SEC row outside index date or retrieval cutoff')
         key = identity(row['cik'].zfill(10), row['accession'])
-        if key in seen:
-            raise ValueError('Duplicate filing inside one index artifact')
-        seen.add(key)
+        if line in seen:
+            duplicate_rows += 1
+            continue
+        seen.add(line)
         if row['form'] not in FORMS:
             outside[row['form']] += 1
             continue
         rows.append(dict(row, cik=row['cik'].zfill(10), exact_index_row=line))
     evidence = {k: spec[k] for k in ('url', 'sha256', 'bytes', 'retrieved_at')}
     evidence.update(covered_from=first.isoformat(), covered_through=complete_last.isoformat(),
-                    current_day_complete=False)
+                    current_day_complete=False, identical_duplicate_rows=duplicate_rows)
     return rows, evidence, outside
 
 
@@ -165,7 +178,8 @@ def build_queue(spec, artifacts_by_sha, previous=None, staged=None, monitor_hint
         sources[canonical(evidence)] = evidence
         outside.update(other)
         for row in rows:
-            if not spec['start'] <= row['filed'] <= spec['end']:
+            daily_observation = '/daily-index/' in evidence['url'] and spec['start'] <= evidence['covered_from'] <= spec['end']
+            if not daily_observation and not spec['start'] <= row['filed'] <= spec['end']:
                 continue
             key = identity(row['cik'], row['accession'])
             if key not in entries:
@@ -178,11 +192,14 @@ def build_queue(spec, artifacts_by_sha, previous=None, staged=None, monitor_hint
                 entry['intake'] = intake_for(entry, engine)
                 entries[key] = entry
             entry = entries[key]
+            if row['filed'] < '2026-01-01':
+                entry['hold_reasons'].append('earlier_filing_requires_2026_activity_review')
             observed = dict(index_sha256=evidence['sha256'], index_url=evidence['url'],
                             row_sha256=sha(row['exact_index_row'].encode()))
             if observed not in entry['observations']:
                 entry['observations'].append(observed)
-            if row != entry['index_row']:
+            if ({k: v for k, v in row.items() if k != 'exact_index_row'} !=
+                    {k: v for k, v in entry['index_row'].items() if k != 'exact_index_row'}):
                 entry['hold_reasons'].append('conflicting_index_rows')
     # Quarter snapshots and dated daily snapshots may overlap. Identical rows
     # coalesce, while each different source hash remains visible in provenance.

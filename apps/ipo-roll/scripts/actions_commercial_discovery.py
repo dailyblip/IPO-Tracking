@@ -100,7 +100,9 @@ def get_index(archive, url):
         (rejected/(sha(raw)+'.json')).write_text(canonical(dict(url=url, content_type=kind, bytes=len(raw))))
     if kind not in ('text/plain', 'application/octet-stream', 'binary/octet-stream', 'text/html'):
         raise ValueError('Unexpected SEC index content type')
-    if b'CIK|Company Name|Form Type|Date Filed|Filename' not in raw or b'<html' in raw.lower():
+    if not any(header in raw.splitlines() for header in (
+            b'CIK|Company Name|Form Type|Date Filed|Filename',
+            b'CIK|Company Name|Form Type|Date Filed|File Name')) or b'<html' in raw.lower():
         raise ValueError('SEC response lacks master-index header')
     meta = dict(url=url, sha256=sha(raw), bytes=len(raw), retrieved_at=datetime.now(timezone.utc).isoformat())
     return raw, meta

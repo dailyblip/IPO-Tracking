@@ -15,8 +15,8 @@ import actions_commercial_discovery as m
 
 REQUEST = dict(version='sec-discovery-request/1', request_id='synthetic-discovery',
                start='2026-09-25', end='2026-09-28', capture_limit=4, engine_baseline_commit='a'*40)
-INDEX = (b'CIK|Company Name|Form Type|Date Filed|Filename\n'
-         b'1|Synthetic Company|S-1|2026-09-25|edgar/data/1/0000000001-26-000001.txt\n')
+INDEX = (b'CIK|Company Name|Form Type|Date Filed|File Name\n'
+         b'1|Synthetic Company|S-1|20260925|edgar/data/1/0000000001-26-000001.txt\n')
 
 
 class DiscoveryRunnerTests(unittest.TestCase):
