@@ -1,17 +1,18 @@
 import { Fragment, useState, type ReactNode } from 'react';
 import type { Source } from '../shared/types.js';
 import { ownershipRows, type OwnershipPosition } from '../shared/ownership.js';
+import { checkedHistoricalSnapshot, type SavedHistoricalValues, type HistoricalValueResult } from '../shared/historical-value.js';
 
 function Evidence({ source }: { source: Source }) {
   return <div className="grid-evidence"><strong>{source.title}</strong><p>{source.excerpt}</p>
     <small>{source.date}</small>{source.url?.startsWith('https://') && <a href={source.url} target="_blank" rel="noreferrer">Open filing ↗</a>}</div>;
 }
-export function OwnershipGrid({ positions, action, classifications }: { positions?: OwnershipPosition[]; action: ReactNode; classifications?: Record<string, string> }) {
+export function OwnershipGrid({ positions, action, classifications, historicalValues, showValues = true }: { positions?: OwnershipPosition[]; action: ReactNode; classifications?: Record<string, string>; historicalValues?: SavedHistoricalValues; showValues?: boolean }) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const rows = ownershipRows(positions || []);
   return <section className="ownership-reference" aria-label="Beneficial ownership quick reference">
     <div className="ownership-heading"><div><span className="eyebrow">INDIVIDUAL RESEARCH</span><h4>Beneficial ownership</h4></div>{action}</div>
-    <OwnershipValueSummary />
+    {showValues && <OwnershipValueSummary historicalValues={historicalValues}/>}
     {rows.length ? <>
       <div className="ownership-scroll" role="region" aria-label="Stock classes and lock-up periods" tabIndex={0}>
         <table className="ownership-grid">
@@ -41,17 +42,45 @@ export function OwnershipGrid({ positions, action, classifications }: { position
   </section>;
 }
 
-// The current reviewed position contract has neither a compatible historical
-// price basis nor verified holder sale proceeds. Do not derive either from a
-// beneficial total, an issuer offering amount or a current quote.
-export function OwnershipValueSummary() {
+function HistoricalAmount({ row }: { row: { saved: HistoricalValueResult; verified: boolean; security: string } }) {
+  const result = row.saved;
+  const established = row.verified && result.status === 'established';
+  const [whole, fraction] = (result.grossAmount || '').split('.');
+  const exactAmount = whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    + (fraction === undefined ? '' : `.${fraction.replace(/0+$/, '').padEnd(Math.min(2, fraction.length), '0')}`);
+  return <section className="assessment-detail">
+    <strong>{established ? `${result.currency} ${exactAmount}` : 'Not established'}</strong>
+    <span>{result.label}</span>
+    <small>{result.positionBasis === 'projected_post_offering' ? 'Projected position' : result.positionBasis === 'completed_holder_sale' ? 'Completed holder sale' : 'Disclosed historical position'} · {row.security || 'Class unconfirmed'}</small>
+    <small>{!established ? 'Value attribution unconfirmed' : result.valueScope === 'personal_economic_holding' ? 'Reviewed personal economic interest' : result.valueScope === 'reported_holder_holding' ? 'Reported organization or trust · not personal wealth' : 'Attribution unconfirmed'}</small>
+    <small>{result.positionBasis === 'completed_holder_sale' ? 'Sale' : 'Holdings'} {result.holdingsDate || 'date unconfirmed'} · Price {result.priceDate || 'date unconfirmed'}</small>
+    {established && <small>{result.pricedShares} price-compatible shares × {result.currency} {result.price}</small>}
+    {!established && <small>{row.verified ? (result.reason || 'Evidence incomplete').replaceAll('_', ' ') : 'Saved calculation could not be verified; no replacement estimate generated.'}</small>}
+    {result.conditions && <p>{result.conditions}</p>}
+    <details><summary>Saved value evidence &amp; limitations</summary>
+      {result.limitations.map((limitation) => <p key={limitation}>{limitation}</p>)}
+      <small>Calculation as of {result.analysisAsOf} · {result.method}</small>
+      {result.evidence.filter((source, index, all) => all.findIndex((s) => s.documentId === source.documentId && s.locator === source.locator && s.excerpt === source.excerpt) === index).map((source) => <div className="grid-evidence" key={`${source.documentId}-${source.locator}`}>
+        <strong>{source.filingAccession}</strong><p>{source.excerpt}</p><small>{source.filingDate} · {source.locator}</small>
+        <small>Source version {source.sourceVersion}</small><small className="document-hash">SHA-256 {source.documentHash}</small>
+        {source.url.startsWith('https://') && <a href={source.url} target="_blank" rel="noreferrer">Open filing ↗</a>}
+      </div>)}
+    </details>
+  </section>;
+}
+
+// Values are optional, account-private saved report outputs. Shared ownership
+// rows and beneficial totals never automatically qualify for multiplication.
+export function OwnershipValueSummary({ historicalValues }: { historicalValues?: SavedHistoricalValues }) {
+  const checked = historicalValues ? checkedHistoricalSnapshot(historicalValues) : undefined;
   return <div className="wealth-reference" aria-label="Retained stake and IPO sale proceeds">
-    <div><small>Retained stake value</small><strong>Not established</strong><span>Historical IPO-price basis</span></div>
-    <div><small>Documented IPO sale proceeds</small><strong>Not established</strong><span>Gross personal sales · not company proceeds</span></div>
+    <div><small>{checked?.holdings.length ? 'Historical holdings estimate' : 'Retained stake value'}</small>{checked?.holdings.length ? <><span>Historical disclosed positions · post-sale retention is not inferred</span>{checked.holdings.map((row) => <HistoricalAmount row={row} key={row.saved.positionId}/>)}</> : <><strong>Not established</strong><span>Historical IPO-price basis · reviewed compatibility required</span></>}</div>
+    <div><small>Documented IPO sale proceeds</small>{checked?.sales.length ? checked.sales.map((row) => <HistoricalAmount row={row} key={row.saved.positionId}/>) : <><strong>Not established</strong><span>Gross holder sales · not company proceeds</span></>}</div>
     <details className="value-basis"><summary>Value basis &amp; limitations</summary>
       <p>Retained stake value needs reviewed retained quantities, compatible security/class or conversion terms, and the final IPO price. It is a historical estimate, not current wealth.</p>
       <p>Sale proceeds need evidence of this holder’s completed sales and sale price. Proposed sales do not qualify. Fees, taxes and net proceeds are unknown.</p>
       <p>Beneficial ownership may include trust, fund or voting interests and awards. It does not by itself establish personal economic ownership or saleability. Current market value is unavailable without an approved quote feed.</p>
+      {historicalValues && <p>{historicalValues.notice} Analysis as of {historicalValues.asOf}. Explicit refresh creates a new report version.</p>}
     </details>
   </div>;
 }

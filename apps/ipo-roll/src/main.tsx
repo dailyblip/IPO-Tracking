@@ -1330,6 +1330,7 @@ function PeopleScreen({ open }: { open: (id: string) => void }) {
           <option>Director</option>
           <option>Executive</option>
           <option>Footnote controller</option>
+          <option>Footnote-named person</option>
         </select>
         <span>
           <FileText size={14} />
@@ -1766,6 +1767,7 @@ function DetailDrawer({
                   <div className="person-body">
                     {p.kind && p.kind !== "person" && <p className="ownership-note">Reported holder entity · not an individual wealth estimate.</p>}
                     {p.relationship === "Footnote controller" && <p className="ownership-note">Named fund/control relationship · personal economic ownership not established.</p>}
+                    {p.roles?.some(role => role.relationship === "Footnote-named person") && <p className="ownership-note">Named in a filing footnote · this relationship alone does not establish issuer-stock ownership or individual control.</p>}
                     <OwnershipGrid positions={p.ownershipGrid} action={<LiquidityAnalysis offeringId={id} personId={p.id} name={p.name} demo={demo} request={api} ticker={data.ticker} saved={saved} toggleSaved={toggle} navigate={navigate} />} />
                     <details className="person-biography"><summary>Biography &amp; relationship evidence</summary>
                       {p.biography ? <p>{p.biography}</p> : <p>No reviewed biography available. The filing-backed relationship is shown below.</p>}

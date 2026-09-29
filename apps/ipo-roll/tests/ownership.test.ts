@@ -13,7 +13,7 @@ test('ownership grid replaces aggregate with components without double counting 
   assert.equal(rows.length,2);
   assert.equal(rows.reduce((n,r)=>n+(r.quantity||0),0),150);
   assert.equal(rows[0].attribution,'Trust / family attribution');
-  assert.equal(rows[1].security,'Option underlying shares');
+  assert.equal(rows[1].security,'Option underlying shares · Reported class: Common shares and underlying awards');
   assert.equal(rows[1].attribution,'Attribution unconfirmed');
 });
 test('incomplete evidence keeps a labeled aggregate; classes and alternative bases remain separate',()=>{

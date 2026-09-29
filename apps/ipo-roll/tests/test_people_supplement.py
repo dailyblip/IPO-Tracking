@@ -151,6 +151,32 @@ class PeopleSupplementTests(unittest.TestCase):
                 bad=copy.deepcopy(r);bad['people'][0].update(changes)
                 with self.subTest(changes=changes),self.assertRaises(ValueError):m.build(p,bad,d)
 
+    def test_neutral_footnote_name_preserves_upstream_relationship_without_attributing_issuer_shares(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp);p,r=self.fixture(d)
+            raw=b'<p>Example Fund GP is beneficially owned by Alex Named Person. No individual issuer-stock allocation is specified.</p>'
+            doc=p['documents'][0]
+            doc['source']['content_sha256']=m.sha(raw)
+            doc['normalized_text_sha256']=m.sha(m.text_blocks(raw)[0].encode())
+            (d/'objects'/m.sha(raw)).write_bytes(raw)
+            person=dict(name='Alex Named Person',title='Example Fund GP is beneficially owned by',
+                        relationship='Footnote-named person',identity_reviewed=True,
+                        relationship_evidence=dict(first=0,last=0),
+                        biography_status='not_found_in_reviewed_filing',
+                        interpretation_note='Upstream entity relationship only; individual issuer ownership and control are unestablished.')
+            r['people']=[person]
+            manifest,sql=m.build(p,r,d)
+            self.assertEqual(manifest['people'][0]['relationship'],'Footnote-named person')
+            self.assertIsNone(manifest['people'][0]['biography_span'])
+            self.assertIn(person['interpretation_note'],sql)
+            for table in ('ownerships','ownership_attributions','ownership_components','biographies','claims'):
+                self.assertNotIn('insert into research.'+table,sql)
+            for changes in ({'interpretation_note':''},{'interpretation_note':None},
+                            {'attribution_reviewed':True},{'attribution_kind':'upstream_control'},
+                            {'attribution_reason':'Implied control'},{'name':'Unmentioned Person'}):
+                bad=copy.deepcopy(r);bad['people'][0].update(changes)
+                with self.subTest(changes=changes),self.assertRaises(ValueError):m.build(p,bad,d)
+
 
 if __name__ == '__main__':
     unittest.main()

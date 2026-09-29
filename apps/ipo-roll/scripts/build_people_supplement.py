@@ -51,7 +51,7 @@ def build(packet, review, directory):
         if not isinstance(name, str) or not 3 <= len(name) <= 180 or name in seen or not p.get('identity_reviewed'):
             raise ValueError('Explicit unique individual identity review required')
         seen.add(name)
-        if p['relationship'] not in ('Executive', 'Director', 'Beneficial owner', 'Footnote controller'):
+        if p['relationship'] not in ('Executive', 'Director', 'Beneficial owner', 'Footnote controller', 'Footnote-named person'):
             raise ValueError('Unsupported relationship')
         if p['relationship'] == 'Footnote controller' and (
                 p.get('attribution_reviewed') is not True or
@@ -59,6 +59,11 @@ def build(packet, review, directory):
                 not isinstance(p.get('attribution_reason'), str) or
                 not p['attribution_reason'].strip()):
             raise ValueError('Footnote controller requires explicit control attribution review')
+        if p['relationship'] == 'Footnote-named person' and (
+                not isinstance(p.get('interpretation_note'), str) or
+                not p['interpretation_note'].strip() or
+                any(key in p for key in ('attribution_reviewed', 'attribution_kind', 'attribution_reason'))):
+            raise ValueError('Footnote-named person requires a neutral interpretation note without control attribution')
         sid, body = selected(p['relationship_evidence'])
         relationship_name = p.get('relationship_name', name)
         if relationship_name != name and (p.get('alias_reviewed') is not True or

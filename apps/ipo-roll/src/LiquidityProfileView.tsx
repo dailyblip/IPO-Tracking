@@ -4,6 +4,8 @@ import type { Source } from '../shared/types.js';
 import { LiquidityReportView } from './LiquidityReportView.js';
 import { ownershipRows } from '../shared/ownership.js';
 import { LiquidityScenario } from './LiquidityScenario.js';
+import { OwnershipValueSummary } from './OwnershipGrid.js';
+import { checkedHistoricalSnapshot } from '../shared/historical-value.js';
 
 function date(value: string | null | undefined) {
   if (!value) return 'Date not established';
@@ -21,6 +23,7 @@ function TimelineEvent({ when, title, badge, tone, children }: { when: string; t
 export function LiquidityProfileView({ report, ticker, onBack, scenarioKey }: { report: LiquidityReport; ticker?: string; onBack: () => void; scenarioKey: string }) {
   const positions = [...report.positions].sort((a, b) => (a.holdingsAsOf || '9999').localeCompare(b.holdingsAsOf || '9999'));
   const boundaries = report.positions.flatMap(p => (p.restrictionTimeline || []).map(t => ({ p, t }))).sort((a, b) => a.t.boundaryDate.localeCompare(b.t.boundaryDate));
+  const establishedSales = report.historicalValues ? checkedHistoricalSnapshot(report.historicalValues).sales.filter(row => row.verified && row.saved.status === 'established') : [];
   return <div className="profile-columns">
     <aside className="profile-offerings" aria-label="Connected offerings">
       <h2>Connected offering · 1</h2>
@@ -31,6 +34,7 @@ export function LiquidityProfileView({ report, ticker, onBack, scenarioKey }: { 
     </aside>
     <section className="profile-timeline-panel" aria-labelledby="profile-timeline-title">
       <div className="profile-panel-heading"><h2 id="profile-timeline-title">Liquidity timeline{ticker ? ` · ${ticker}` : ''}</h2><span>Evidence from this snapshot</span></div>
+      {report.historicalValues && <OwnershipValueSummary historicalValues={report.historicalValues}/>}
       <ol className="profile-timeline">
         {[...positions.map(p => (
           <TimelineEvent key={`position-${p.id}`} sortDate={p.positionBasis === 'post' ? null : p.holdingsAsOf} when={p.positionBasis === 'post' ? 'Projected' : date(p.holdingsAsOf)} title={p.positionBasis === 'post' ? 'Projected post-offering position' : 'Disclosed ownership position'} badge={p.positionBasis === 'post' ? 'Projected' : 'Reported'} tone={p.positionBasis === 'post' ? 'projected' : 'reported'}>
@@ -43,9 +47,10 @@ export function LiquidityProfileView({ report, ticker, onBack, scenarioKey }: { 
           </TimelineEvent>
         )), ...boundaries.map(({p, t}) => <TimelineEvent key={`${p.id}-${t.id}`} sortDate={t.boundaryDate} when={date(t.boundaryDate)} title="Lock-up boundary" badge="Scheduled · conditional" tone="conditional"><p>{p.shareClass || 'Share class unspecified'} · {t.trigger} + {t.dayCount} days.</p><p>{t.conditions}</p><p className="profile-event-note">Calendar boundary, not a confirmed release or permission to sell.</p><SourceEvidence sources={t.evidence}/></TimelineEvent>)].sort((a, b) => (a.props.sortDate || '9999').localeCompare(b.props.sortDate || '9999'))}
         {!report.positions.length && <TimelineEvent when="Review pending" title="Holdings evidence incomplete" badge="Not established" tone="projected"><p>No reviewed positions are included in this snapshot. This does not establish zero ownership.</p></TimelineEvent>}
-        <TimelineEvent when="Not established" title="Completed holder sales" badge="Evidence required" tone="projected"><p>This snapshot does not establish completed sales or cash proceeds for this holder. Final offering terms alone do not prove a sale closed.</p></TimelineEvent>
+        {!establishedSales.length && <TimelineEvent when="Not established" title="Completed holder sales" badge="Evidence required" tone="projected"><p>This snapshot does not establish completed sales or cash proceeds for this holder. Final offering terms alone do not prove a sale closed.</p></TimelineEvent>}
+        {establishedSales.map(row => <TimelineEvent key={`sale-${row.saved.positionId}`} when={date(row.saved.holdingsDate)} title="Documented holder sale" badge="Saved evidence" tone="reported"><p>The saved calculation above records this holder's sourced gross sale consideration. Fees, taxes, net proceeds and receipt of cash remain unknown.</p></TimelineEvent>)}
       </ol>
-      <details className="profile-full-evidence"><summary>Ownership grid, assessments &amp; full source versions</summary><LiquidityReportView report={report}/></details>
+      <details className="profile-full-evidence"><summary>Ownership grid, assessments &amp; full source versions</summary><LiquidityReportView report={report} showValues={!report.historicalValues}/></details>
     </section>
     <aside className="profile-scenario-panel" aria-label="What-if scenario"><LiquidityScenario key={scenarioKey} report={report} expanded/></aside>
   </div>;
