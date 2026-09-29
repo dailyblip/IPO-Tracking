@@ -13,7 +13,7 @@ function Evidence({ source }: { source: Source }) {
   return <div className="grid-evidence"><strong>{source.title}</strong><p>{source.excerpt}</p><small>{source.date} · {location}</small>{source.url?.startsWith('https://') && <a href={source.url} target="_blank" rel="noreferrer">View source ↗</a>}</div>;
 }
 
-export function LiquidityReportView({ report }: { report: LiquidityReport }) {
+export function LiquidityReportView({ report, showValues = true }: { report: LiquidityReport; showValues?: boolean }) {
   return <>
     <p className="report-context">{report.company} · {report.roles?.length
       ? report.roles.map(role => `${role.title} · ${role.relationship}`).join(' · ')
@@ -24,7 +24,7 @@ export function LiquidityReportView({ report }: { report: LiquidityReport }) {
     </div>
     <p className="ownership-note">Position counts, not share or dollar totals. Status reflects this saved analysis date.</p>
     <OwnershipGrid positions={report.positions.map(p => ({ ...p, reportedTotal: p.reportedTotal ?? (p.quantityKind === 'beneficial_total' ? null : p.shares), filingDate: p.filingDate || p.holdingsDate }))}
-      classifications={Object.fromEntries(report.positions.map(p => [p.id, categories[p.category]]))} action={null}/>
+      classifications={Object.fromEntries(report.positions.map(p => [p.id, categories[p.category]]))} action={null} historicalValues={report.historicalValues} showValues={showValues}/>
     <details className="report-method"><summary>Assessment details &amp; source versions</summary>
       <p>{report.method} · {report.version}</p>
       {report.positions.map(p => <section className="assessment-detail" key={p.id}>

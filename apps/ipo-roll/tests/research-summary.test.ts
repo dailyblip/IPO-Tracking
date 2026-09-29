@@ -5,6 +5,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { LiquidityProfileView } from '../src/LiquidityProfileView.js';
 import { LiquidityReportView } from '../src/LiquidityReportView.js';
 import type { LiquidityReport } from '../shared/liquidity.js';
+import { ownershipRows } from '../shared/ownership.js';
 
 const source = { title:'Synthetic filing',url:'https://example.test/filing',date:'2026-09-01',excerpt:'Exact synthetic evidence',locator:'{"first_block":4,"last_block":5}' };
 const report: LiquidityReport = { id:'test-report',version:'liquidity/1.1',asOf:'2026-09-01T00:00:00Z',method:'Synthetic evidence review',offeringId:'o',personId:'p',company:'Example',person:'Example Person',relationship:'Director',relationshipSource:source,notice:'Private static report',positions:[{
@@ -54,4 +55,42 @@ test('preferred conversion remains distinct and the profile exposes reconciled c
   assert.ok(html.includes('Components of the reported total, not additional holdings'));
   assert.ok(html.includes('Trust / family attribution'));
   assert.equal(JSON.stringify(converted),before);
+});
+
+test('component rows preserve the reported class and entity attribution in both the grid and profile', () => {
+  const attributed = structuredClone(report);
+  const position = attributed.positions[0];
+  position.shareClass = 'Class B common stock';
+  position.reportedHolder = { id:'fund',name:'Example Fund LP',kind:'organization' };
+  position.attribution = { kind:'control_authority',description:'Voting authority only; personal economic interest is not established.',source };
+  position.components!.items[0].attribution = 'direct';
+  const before = JSON.stringify(attributed);
+  const rows = ownershipRows(attributed.positions);
+  assert.equal(rows.length, 2, 'components replace rather than supplement their aggregate');
+  assert.deepEqual(rows.map(row => row.quantity), [100, 50]);
+  for (const row of rows) {
+    assert.ok(row.security.includes('Reported class: Class B common stock'));
+    assert.ok(row.attribution.includes('Voting / control authority · reported holder: Example Fund LP'));
+    assert.equal(row.position.attribution, position.attribution);
+  }
+  assert.ok(rows[0].attribution.startsWith('Direct holding as disclosed'));
+  for (const html of [
+    renderToStaticMarkup(createElement(LiquidityReportView, {report:attributed})),
+    renderToStaticMarkup(createElement(LiquidityProfileView, {report:attributed,onBack:()=>{},scenarioKey:'attribution'})),
+  ]) {
+    assert.ok(html.includes('Common shares · Reported class: Class B common stock'));
+    assert.ok(html.includes('Direct holding as disclosed · Voting / control authority · reported holder: Example Fund LP'));
+  }
+  assert.equal(JSON.stringify(attributed), before);
+});
+
+test('components with no recorded class keep it unknown and retain all parent attribution kinds', () => {
+  for (const [kind, label] of [['beneficial_entitlement', 'Beneficiary entitlement'], ['reported_beneficial_owner', 'SEC-reported beneficial owner']] as const) {
+    const position = structuredClone(report.positions[0]);
+    position.shareClass = null;
+    position.attribution = {kind,description:'Filing attribution only.',source};
+    const rows = ownershipRows([position]);
+    assert.ok(rows.every(row => row.security.endsWith('Reported class: unconfirmed')));
+    assert.ok(rows.every(row => row.attribution.includes(`${label} · reported holder: unconfirmed`)));
+  }
 });

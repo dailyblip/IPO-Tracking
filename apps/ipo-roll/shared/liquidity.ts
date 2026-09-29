@@ -12,6 +12,8 @@ export type LiquidityReport = {
   relationshipSource: Source;
   roles?: { title: string; relationship: string; source: Source }[];
   notice: string;
+  /** Optional on older immutable snapshots; absent means not established. */
+  historicalValues?: import('./historical-value.js').SavedHistoricalValues;
   positions: {
     id: string;
     shareClass: string | null;
