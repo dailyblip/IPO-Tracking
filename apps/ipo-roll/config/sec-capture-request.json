@@ -1,6 +1,6 @@
 {
   "version": "sec-discovery-request/1",
-  "request_id": "2026-09-28-independent-daily-discovery-01",
+  "request_id": "2026-09-28-independent-daily-discovery-02",
   "start": "2026-09-25",
   "end": "2026-09-28",
   "capture_limit": 4,

@@ -21,6 +21,16 @@ from import_legacy import canonical
 
 NY = ZoneInfo('America/New_York')
 INDEX_LIMIT = 20_000_000
+SAFE_INDEX_ERRORS = {
+    'Capture budget exhausted': 'request_budget',
+    'Index byte budget exhausted': 'byte_budget',
+    'SEC index response was not HTTP 200': 'http_status',
+    'Unexpected SEC index content type': 'content_type',
+    'SEC response lacks master-index header': 'missing_header',
+    'SEC retry requires a later run': 'retry_later',
+    'Malformed SEC index data row': 'malformed_row',
+    'SEC row outside index date or retrieval cutoff': 'row_date_conflict',
+}
 
 
 def validate_request(request, now=None):
@@ -81,9 +91,16 @@ def get_index(archive, url):
     archive.total_bytes += len(raw)
     if len(raw) > INDEX_LIMIT or archive.total_bytes > 256_000_000:
         raise ValueError('Index byte budget exhausted')
-    if kind not in ('text/plain', 'application/octet-stream'):
+    # Retain bounded responses privately for diagnosis, including access-denial
+    # responses. Such bytes never become a verified index or candidate source.
+    if hasattr(archive, 'directory'):
+        rejected = archive.directory/'index-responses'
+        rejected.mkdir(parents=True, exist_ok=True)
+        (rejected/sha(raw)).write_bytes(raw)
+        (rejected/(sha(raw)+'.json')).write_text(canonical(dict(url=url, content_type=kind, bytes=len(raw))))
+    if kind not in ('text/plain', 'application/octet-stream', 'binary/octet-stream', 'text/html'):
         raise ValueError('Unexpected SEC index content type')
-    if b'CIK|Company Name|Form Type|Date Filed|Filename' not in raw:
+    if b'CIK|Company Name|Form Type|Date Filed|Filename' not in raw or b'<html' in raw.lower():
         raise ValueError('SEC response lacks master-index header')
     meta = dict(url=url, sha256=sha(raw), bytes=len(raw), retrieved_at=datetime.now(timezone.utc).isoformat())
     return raw, meta
@@ -107,7 +124,9 @@ def run(request, recipient, output):
                 indexes.append(dict(meta, path=relative))
                 results.append(dict(url=url, status='captured'))
             except Exception as exc:
-                results.append(dict(url=url, status='held', error_type=type(exc).__name__))
+                results.append(dict(url=url, status='held', error_type=type(exc).__name__,
+                                    reason_code=SAFE_INDEX_ERRORS.get(str(exc), 'unclassified_index_error'),
+                                    http_status=exc.code if isinstance(exc, HTTPError) else None))
         spec = dict(version='commercial-discovery-input/1', start=request['start'], end=request['end'],
                     as_of=datetime.now(timezone.utc).isoformat(), engine_baseline_commit=request['engine_baseline_commit'], indexes=indexes)
         (directory/'discovery-input.json').write_text(canonical(spec))
