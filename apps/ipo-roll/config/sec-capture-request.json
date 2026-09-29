@@ -1,10 +1,8 @@
 {
-  "version": "sec-capture-request/1",
-  "request_id": "2026-09-27-january-census-03",
-  "filings": [
-    {"cik": "0002086263", "accession": "0001213900-26-002346"},
-    {"cik": "0002088295", "accession": "0001213900-26-002472"},
-    {"cik": "0001684688", "accession": "0001493152-26-001253"},
-    {"cik": "0001943421", "accession": "0001171843-26-000207"}
-  ]
+  "version": "sec-discovery-request/1",
+  "request_id": "2026-09-28-independent-daily-discovery-01",
+  "start": "2026-09-25",
+  "end": "2026-09-28",
+  "capture_limit": 4,
+  "engine_baseline_commit": "d453172852c7951dd6cf3e8f0c8a3c1e3a9ec252"
 }

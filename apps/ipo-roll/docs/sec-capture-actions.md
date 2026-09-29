@@ -10,7 +10,17 @@ It has no schedule and makes no database or repository writes. This push trigger
 works before a workflow is present on main; do not merge into main to activate it.
 Production workflows, feeds and schedules remain untouched.
 
-Requests contain only a request ID and one to four public CIK/accession pairs.
+Requests accept either one to four public CIK/accession pairs (`sec-capture-request/1`)
+or a date-only discovery interval (`sec-discovery-request/1`). The latter fetches
+canonical dated SEC daily indexes for at most seven calendar days, discovers exact
+CIK/accession/form/date candidates, and captures up to four without supplied issuer
+names. It stores hash-bound indexes, the private discovery queue, source packets and
+explicit retrieval/interpretation holds in the encrypted artifact. Current-day or
+missing indexes remain incomplete; discovery never establishes IPO eligibility.
+See `discovery-pipeline.md` for durable checkpoint/replay and reviewed handoff.
+The job itself still requires the existing request-file push trigger. It is not an
+independently scheduled or unattended source-approval/import service.
+
 Update those selectors under the development lock and ownership-history commit
 guard. The runner resolves SEC registration metadata, captures the root/current
 filing and latest preceding amendment, and marks all evidence unreviewed. It

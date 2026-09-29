@@ -74,6 +74,9 @@ def seal(directory, recipient, output):
 
 
 def run(request, recipient, output):
+    if request.get('version') == 'sec-discovery-request/1':
+        from actions_commercial_discovery import run as discover
+        return discover(request, recipient, output)
     rows = validate_request(request)
     output.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
