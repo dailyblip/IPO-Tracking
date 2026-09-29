@@ -1,5 +1,135 @@
 # IPO Roll development handoff
 
+## September 29 UTC: Alamar/Kailera depth, live discovery and reviewed historical reports
+
+**Applied, committed, deployed and verified within the scope below. The product
+and January–present census are not complete.** Feature commit
+`fae7a578b5636287d6ec58cdc4061230fa790b97` passed CI run `36519078561`.
+Render serves the tested `index-BBhitvBs.js`, SHA-256
+`e9eab6be24f1bfd98e3bac5537c03231c000abb432232a58253de889414c1a34`;
+health is staging/200, unauthenticated offerings and private-report GET/POST are
+401 with no-store. Live authenticated browser viewing remains unverified.
+
+### Applied April source-depth batch
+
+Alamar and Kailera add **33 people, 18 full biographies, 41 class/basis positions,
+17 attribution links and 8 components**. These deepen existing April offerings;
+**zero new offerings** were imported. Fresh totals are **94 offerings / 556 people /
+463 biography records / 795 positions / 193 attribution links / 34 components /
+zero quotes / zero reviewed historical-value claims**. Thirty offerings have
+positions and 64 have none. Multiple classes and snapshots are not additive owners.
+All thirteen pre-existing private reports remain unchanged.
+
+- **Kailera:** 21 people, 13 full biographies, 19 quantities and 11 attribution
+  links added. All 16 management biographies, 21 ownership rows and 11 linked
+  footnotes in the selected source are accounted for. One quantity column with
+  pre/post percentages is imported once as March 31 before-offering holdings.
+  Five option-underlying rows are not issued shares. Eight unknown quantities
+  and eight missing biographies stay explicit. Duplicate Atlas/Gladstone and
+  executive aggregates are held; departures/former roles retain qualifiers.
+- **Alamar:** 12 people, five full biographies, 22 pre/projected-post positions,
+  six attribution links and eight components added. All eight management
+  biographies reconcile to whole selected sections. Four Qiming upstream owners
+  are neutral footnote-named people, not inferred issuer-stock controllers.
+  Naclerio/Illumina overlap is attribution, not an additional holding. Timothy
+  White's missing quantity remains unknown. The literal management date April 16,
+  2025 conflicts with the 2026 context and is held; group arithmetic is unresolved.
+  Common/options/trust/spouse components reconcile without inferring liquidity.
+
+Current source versions: Kailera `0001193125-26-161521`, raw SHA-256
+`bb122e93d13cde99f7563773c7b88a1b296b2376ac17f30c99c4c55fed2a066b`;
+Alamar `0001193125-26-161647`, raw SHA-256
+`c7ddbce7e572b4d24bf1620bb10d1fa067aa2b23e4d3f641be8e9f5656d7239e`.
+Both were rollback-rehearsed, applied atomically, replayed without duplicates and
+checked against fresh canonical snapshots. `database-kailera-ownership.sql` and
+`database-alamar-ownership.sql` pass after application.
+
+### Implemented and verified discovery boundary
+
+Code `3e378104cc3fab944230cefa88cb6da236c440a2` and isolated capture run
+`36516858295` successfully discovered filings from dates alone: two daily indexes,
+**111 filing candidates: 4 captured/review-pending, 20 capture-pending, 87 held**.
+These are filings, not 111 qualifying IPOs. All 39 artifact files passed raw
+hash/length verification; all four capture packets replay against retained source
+and lineage. Fixed actual SEC daily-header/date differences, exact duplicate rows
+and late-disseminated filings without overwriting literal filing dates. September
+28 coverage stays incomplete because capture preceded that Eastern day's end.
+
+The private queue and source recovery objects are applied and verified in staging:
+184/184 stored objects, lengths and compressed bytes match (6,571,832 raw bytes).
+Recovery manifest SHA-256
+`e4ff2fdc5e73a6e472b8d0de2cc603872cc3d3ff500160cd1a581237335d48f5`;
+queue object `ff3382e7691b655b6e797a8169e95098a1aa10b901f5abdc14f86c8a089ebc47`.
+The earlier prepared-only receipt is superseded by the separate applied receipt
+below, not rewritten. No candidate has yet been reviewed/imported canonically.
+Reviewed-handoff validation is implemented and fixture-tested. **Automatic runtime
+checkpoint restore/controller/scheduling and existing-registration fact refresh
+remain open.** A successful date-triggered run does not satisfy ongoing ingestion.
+Production jobs and schedules are untouched.
+
+### Holder visibility and static historical-value reports
+
+Applied staging migrations `20260929031014` (visible_ownership_subjects) and
+`20260929034311` (reviewed_historical_value_snapshots); repository source names use
+`20260929040000` and `20260929060000` respectively. Qualifying current-source
+ownership can retain a natural person in offering detail/private reports even
+without a visible role. Neutral footnote relationships imply neither ownership
+nor control. Component grids preserve parent class, reported holder and attribution.
+General People Search remains role-based; the roleless fallback is detail/report
+scope, while neutral named people receive explicit roles.
+
+Historical values require separate reviewed security/class/quantity/basis/final-
+price/date claims. Exact deterministic calculations, source hashes, reviewed inputs
+and outputs freeze only into newly requested reports; reopening never recalculates
+and explicit refresh creates a new version. Completed holder sales require their
+own evidence. No quote or provider was added. Database/row-level authorization and
+source visibility govern the claim table. Existing reports were not rewritten.
+
+**Real valuation review remains held:** Alamar's USD 17 final price and date match,
+but even its BEFORE quantities are pro forma after assumed future conversions.
+Three direct-common candidates therefore produce **zero eligible claims**. The
+contract needs an explicit pro-forma/pre basis or separately reviewed post-offering
+components before use. Conflicting preferred/founder conversion descriptions also
+remain held; no aggregate is multiplied by price. Receipt SHA-256
+`165a9b1624669e77dadba0a9eb74a170ec43ea0a2044c89ea4b8d3c9fe30e4ba`.
+
+### QA, recovery and next checkpoint
+
+Final verification: **50 Node/API/render tests; 129 Python tests; production
+TypeScript/Vite build; one desktop/mobile Playwright journey with simulated auth
+and a retained Oura fixture** passed. The journey covers search/detail/grid,
+footnotes, private profile, reopen/refresh, keyboard focus and mobile width. It is
+not live authorized-session verification. Targeted rollback/postapply SQL covers
+both batches, roleless/neutral subjects, exact values, contradictory attribution,
+class/source/price mismatches, cross-account denial and immutable old snapshots.
+All 13 reports are byte-identical; disposable test users were rolled back.
+
+The rotating 94-offering audit passes structural identity/source/lifecycle checks;
+role-source alignment is 82 pass/12 unverified and holdings-source alignment is
+30 pass/64 unverified. Whole-source completeness/interpretation, live links,
+restrictions, browser access and census remain unverified except the separately
+reviewed batch tracks. These consistency checks are not an accuracy certification.
+Security advisor shows expected private-table default-deny INFO findings and the
+existing leaked-password-protection warning; no new security warning.
+
+Private batch recovery bundle (50 files, 6,898,654 raw bytes) is stored and
+compressed-hash verified in `ops.sec_artifacts` at
+`32fa0fd3ea202e5d7ede18951dbc17ca3176b9ac4f53209c2e40d4153b24b003`.
+Separate final applied/deployment receipt including the held valuation review:
+`8f61a78dcaa4d9f1703c3ca1d80d3d227009767e954f14865384c51ba5af857f`
+(11,310 raw bytes; compressed SHA-256
+`6cf215c64e90c4ac5064b1ced2de5d647a85b1419f35b22500ca48c34ac1721a`).
+No private source payload entered Git or public frontend.
+
+Next source cursor: **AEVEX**, offering `c1bde1e8-34a7-5ab6-ae78-371a3956d10a`,
+accession `0001193125-26-162601` (April 20); then **Elmet**,
+`0001213900-26-047144` (April 23). In parallel close durable discovery restore and
+reviewed refresh. `completion-gates.md` defines observable remaining product gates.
+Live reviewer/cross-account browser and genuinely concurrent-session quota checks
+remain unverified. No owner action, paid quotes or new AI service is needed to
+continue staging. Production auth/billing/rights/launch decisions remain later
+launch gates. Keep the development task enabled; this is a bounded checkpoint.
+
 ## September 28 UTC: Arxis / Madison Air source-depth batch
 
 **Applied and verified in staging.** Added 19 people and 18 complete biographies:

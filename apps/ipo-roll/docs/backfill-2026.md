@@ -1,5 +1,34 @@
 # Commercial 2026 backfill checkpoint
 
+## September 29 UTC: April Alamar/Kailera depth and September discovery
+
+**April: zero new offerings; two existing offerings deepened.** Applied 33 people,
+18 complete biographies, 41 class/basis positions, 17 attribution links and eight
+components. All 24 selected management biographies across Alamar and Kailera
+reconcile to whole source sections. Ownership rows and linked notes are accounted
+for with explicit duplicate/aggregate/unknown holds. Alamar's management-year and
+conversion/group arithmetic conflicts remain unresolved; Kailera options are not
+issued common shares. See the development log for source hashes and private receipts.
+
+Fresh totals: **94 offerings / 556 people / 463 biography records / 795 positions /
+193 attribution links / 34 components / zero quotes / zero historical-value claims**.
+30 offerings have positions; 64 have none. All 13 existing private reports are
+unchanged. Rollback/apply/replay, source reconciliation and targeted privacy SQL pass.
+The 94-row structural audit does not establish source-content completeness.
+
+**September: 111 independently discovered filing candidates**, not imported IPOs:
+four captured/review-pending, 20 capture-pending, 87 held. Date-only SEC capture
+run `36516858295` succeeded. Its private queue/recovery checkpoint is stored and
+verified, but September 28 cutoff remains conservatively incomplete. Zero new
+canonical imports from this queue; automatic checkpoint restore/controller and
+reviewed existing-registration refresh remain unfinished. No month or full-year
+census is declared complete; the legacy feed remains a candidate inventory.
+
+Next April depth cursor: AEVEX `0001193125-26-162601`, then Elmet
+`0001213900-26-047144`. Continue independent census/discovery alongside this review.
+Completion gates and exact applied/deployed/tested distinctions are in
+`completion-gates.md` and `development-log.md`.
+
 ## September 28 UTC: Arxis and Madison Air
 
 Applied source-reviewed additions: 19 people, 18 full biographies, 100 class/basis

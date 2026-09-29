@@ -5,6 +5,30 @@ Research Monitor in useful, source-backed coverage and quick reference. Preserve
 the existing engine, Research Monitor, legacy feed/Pages and production schedules.
 Commercial work stays on `ipo-roll/foundation` and authorized private staging.
 
+## September 29 implementation checkpoint
+
+Current source-reviewed staging contains 94 offerings, 556 people, 463 biography
+records, 795 positions, 193 attribution links and 34 components. Alamar/Kailera
+whole-section review adds 18 biographies and accounts for all 24 management
+biographies in their selected filings. 64 offerings still have no positions;
+neither census nor source depth is complete. Neutral footnote-named people and
+current-source roleless natural holders remain visible without inferred ownership.
+
+Date-only independent SEC discovery now has a successful live run and private
+durable queue: 111 filing candidates, four captured, no canonical imports yet.
+Runtime automatic checkpoint restoration/controller/scheduling and reviewed
+existing-registration updates remain open. Historical-value contracts and static
+report snapshots are implemented, applied, tested and served by staging at
+`fae7a578b5636287d6ec58cdc4061230fa790b97`; zero reviewed claims currently qualify.
+Alamar's pro-forma BEFORE quantities remain held. No current quote, completed
+holder sale or saleability is inferred. Thirteen saved reports remain unchanged.
+
+See `completion-gates.md` for observable closure criteria and `development-log.md`
+for source hashes, QA actually performed, recovery checkpoints and AEVEX/Elmet
+cursors. Live authenticated/cross-account browser and concurrent-session quota
+verification remain separate unverified gates. No new owner action is needed for
+continued staging development.
+
 ## September 28 accepted profile/liquidity extension
 
 The owner approved `liquidity-profiles-spec.md` following the corrected Opus
