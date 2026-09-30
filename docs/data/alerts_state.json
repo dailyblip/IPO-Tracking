@@ -1,7 +1,46 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-30T17:48:44.014349+00:00",
+  "updated_at": "2026-09-30T18:12:08.481220+00:00",
   "items": {
+    "s1:0002091680": {
+      "id": "s1:0002091680",
+      "cik": "0002091680",
+      "company": "Bitari Inc",
+      "form": "S-1/A",
+      "filed": "2026-09-29",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": "$7.00",
+      "priority": "High",
+      "value": 30000005,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526004385/0001185185-26-004385-index.htm"
+    },
+    "s1:0002146369": {
+      "id": "s1:0002146369",
+      "cik": "0002146369",
+      "company": "Londonla Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-28",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": "$0.10",
+      "priority": "High",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2146369/000209757026000030/0002097570-26-000030-index.htm"
+    },
+    "s1:0001838003": {
+      "id": "s1:0001838003",
+      "cik": "0001838003",
+      "company": "Encore Medical, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-28",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1838003/000110465926111104/0001104659-26-111104-index.htm"
+    },
     "0001193125-26-403094": {
       "id": "0001193125-26-403094",
       "cik": "0001802369",
@@ -404,19 +443,6 @@
       "priority": "Low",
       "value": 81250000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1903784/000118518526003448/0001185185-26-003448-index.htm"
-    },
-    "s1:0001838003": {
-      "id": "s1:0001838003",
-      "cik": "0001838003",
-      "company": "Encore Medical, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-08-10",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1838003/000110465926093252/0001104659-26-093252-index.htm"
     },
     "0001193125-26-340329": {
       "id": "0001193125-26-340329",
@@ -1265,6 +1291,27 @@
     }
   },
   "ciks": {
+    "0002091680": {
+      "company": "Bitari Inc",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002091680",
+      "last_filed": "2026-09-29",
+      "missing_runs": 0
+    },
+    "0002146369": {
+      "company": "Londonla Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002146369",
+      "last_filed": "2026-09-28",
+      "missing_runs": 0
+    },
+    "0001838003": {
+      "company": "Encore Medical, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001838003",
+      "last_filed": "2026-09-28",
+      "missing_runs": 0
+    },
     "0001802369": {
       "company": "ADARx Pharmaceuticals, Inc.",
       "stage": "priced",
@@ -1480,13 +1527,6 @@
       "stage": "priced",
       "last_filing_id": "0001185185-26-003448",
       "last_filed": "2026-08-12",
-      "missing_runs": 0
-    },
-    "0001838003": {
-      "company": "Encore Medical, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001838003",
-      "last_filed": "2026-08-10",
       "missing_runs": 0
     },
     "0002056611": {

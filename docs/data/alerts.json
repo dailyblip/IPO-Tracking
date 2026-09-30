@@ -1,8 +1,38 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-30T17:48:44.014436+00:00",
-  "count": 129,
+  "generated_at": "2026-09-30T18:12:08.481288+00:00",
+  "count": 131,
   "alerts": [
+    {
+      "type": "new_prepricing",
+      "company": "Bitari Inc",
+      "cik": "0002091680",
+      "filing_id": "s1:0002091680",
+      "form": "S-1/A",
+      "filed": "2026-09-29",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "New pre-pricing S-1/A candidate entered the researcher queue. Preliminary filing price: $7.00.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526004385/0001185185-26-004385-index.htm",
+      "detected_at": "2026-09-30T18:12:08.480858+00:00",
+      "new_value": "$7.00",
+      "key": "new_prepricing|s1:0002091680|0002091680|2026-09-29|$7.00"
+    },
+    {
+      "type": "new_prepricing",
+      "company": "Londonla Inc.",
+      "cik": "0002146369",
+      "filing_id": "s1:0002146369",
+      "form": "S-1/A",
+      "filed": "2026-09-28",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "New pre-pricing S-1/A candidate entered the researcher queue. Preliminary filing price: $0.10.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2146369/000209757026000030/0002097570-26-000030-index.htm",
+      "detected_at": "2026-09-30T18:12:08.480911+00:00",
+      "new_value": "$0.10",
+      "key": "new_prepricing|s1:0002146369|0002146369|2026-09-28|$0.10"
+    },
     {
       "type": "ipo_priced",
       "company": "ADARx Pharmaceuticals, Inc.",
