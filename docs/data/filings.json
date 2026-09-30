@@ -1,8 +1,235 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-09-30T17:41:16.537878+00:00",
+  "generated_at": "2026-09-30T17:52:19.280720+00:00",
   "source": "SEC EDGAR",
   "filings": [
+    {
+      "id": "s1:0002091680",
+      "company": "Bitari Inc",
+      "ticker": "BIAI",
+      "cik": "0002091680",
+      "accession_no": "0001185185-26-004385",
+      "form": "S-1/A",
+      "filed": "2026-09-29",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": "$7.00",
+      "offering_size_source": "SEC preliminary prospectus cover: primary offering; issuer-only; proposed point price",
+      "offering_size_confidence": "High",
+      "primary_offering_shares": 4285715,
+      "secondary_offering_shares": null,
+      "priority": "High",
+      "status": "New",
+      "value": 30000005,
+      "value_label": "$30M",
+      "people_count": 2,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "2 named beneficial owners disclosed",
+        "Preliminary offering price disclosed at $7.00 per share",
+        "IPO size disclosed or derived at approximately $30,000,005"
+      ],
+      "people": [
+        {
+          "name": "Pei Zhao",
+          "shares": 36996176,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 85.87,
+          "ownership_percent_before": 95.35,
+          "ownership_percent_after": 85.87,
+          "shares_before_ipo": 36996176,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 36996176
+        },
+        {
+          "name": "AI Power X Inc.",
+          "shares": 36996176,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Entity",
+          "ownership_percent": 85.87,
+          "ownership_percent_before": 95.35,
+          "ownership_percent_after": 85.87,
+          "shares_before_ipo": 36996176,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 36996176
+        }
+      ],
+      "ownership_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-29",
+        "accession_no": "0001185185-26-004385",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526004385/0001185185-26-004385-index.htm"
+      },
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526004385/0001185185-26-004385-index.htm",
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-29",
+        "accession_no": "0001185185-26-004385",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526004385/0001185185-26-004385-index.htm"
+      }
+    },
+    {
+      "id": "s1:0002146369",
+      "company": "Londonla Inc.",
+      "ticker": "",
+      "cik": "0002146369",
+      "accession_no": "0002097570-26-000030",
+      "form": "S-1/A",
+      "filed": "2026-09-28",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": "$0.10",
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": 3000000,
+      "secondary_offering_shares": null,
+      "priority": "High",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 1,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "Fixed offering price disclosed at $0.10 per share",
+        "1 named beneficial owner disclosed"
+      ],
+      "people": [
+        {
+          "name": "Shane Lowry30 N Gould St #62940Sheridan, Wyoming 82801",
+          "shares": null,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Unknown",
+          "ownership_percent": 76.92,
+          "ownership_percent_before": 100.0,
+          "ownership_percent_after": 76.92,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": null
+        }
+      ],
+      "ownership_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-28",
+        "accession_no": "0002097570-26-000030",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2146369/000209757026000030/0002097570-26-000030-index.htm"
+      },
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2146369/000209757026000030/0002097570-26-000030-index.htm",
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-28",
+        "accession_no": "0002097570-26-000030",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2146369/000209757026000030/0002097570-26-000030-index.htm"
+      }
+    },
+    {
+      "id": "s1:0001838003",
+      "company": "Encore Medical, Inc.",
+      "ticker": "EMI",
+      "cik": "0001838003",
+      "accession_no": "0001104659-26-111104",
+      "form": "S-1/A",
+      "filed": "2026-09-28",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": 3000000,
+      "secondary_offering_shares": null,
+      "priority": "Medium",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 5,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "5 named beneficial owners disclosed",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "people": [
+        {
+          "name": "Joseph A. Marino",
+          "shares": 1893395,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 15.5,
+          "ownership_percent_before": 24.4,
+          "ownership_percent_after": 15.5,
+          "shares_before_ipo": 1893395,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 1893395
+        },
+        {
+          "name": "Peter M. Buonomo",
+          "shares": 200000,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 1.6,
+          "ownership_percent_before": 2.6,
+          "ownership_percent_after": 1.6,
+          "shares_before_ipo": 200000,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 200000
+        },
+        {
+          "name": "Scott S. Robinson",
+          "shares": 100000,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 0.8,
+          "ownership_percent_before": 1.3,
+          "ownership_percent_after": 0.8,
+          "shares_before_ipo": 100000,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 100000
+        },
+        {
+          "name": "Christopher J. Turnbull",
+          "shares": 305505,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 2.5,
+          "ownership_percent_before": 3.9,
+          "ownership_percent_after": 2.5,
+          "shares_before_ipo": 305505,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 305505
+        },
+        {
+          "name": "Todd C. Johnson",
+          "shares": 750311,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": 6.2,
+          "ownership_percent_before": 9.7,
+          "ownership_percent_after": 6.2,
+          "shares_before_ipo": 750311,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 750311
+        }
+      ],
+      "ownership_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-28",
+        "accession_no": "0001104659-26-111104",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/1838003/000110465926111104/0001104659-26-111104-index.htm"
+      },
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1838003/000110465926111104/0001104659-26-111104-index.htm"
+    },
     {
       "id": "0001193125-26-403094",
       "company": "ADARx Pharmaceuticals, Inc.",
@@ -6635,107 +6862,6 @@
         "file_number": "333-297487",
         "sec_url": "https://www.sec.gov/Archives/edgar/data/1903784/000118518526003353/0001185185-26-003353-index.htm"
       }
-    },
-    {
-      "id": "s1:0001838003",
-      "company": "Encore Medical, Inc.",
-      "ticker": "EMI",
-      "cik": "0001838003",
-      "accession_no": "0001104659-26-093252",
-      "form": "S-1/A",
-      "filed": "2026-08-10",
-      "stage": "Pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "offering_size_source": null,
-      "offering_size_confidence": null,
-      "primary_offering_shares": null,
-      "secondary_offering_shares": null,
-      "priority": "Medium",
-      "status": "New",
-      "value": null,
-      "value_label": "—",
-      "people_count": 5,
-      "signals": [
-        "Registration statement amended — IPO remains pre-pricing",
-        "5 named beneficial owners disclosed",
-        "No preliminary price range or fixed offering price detected yet"
-      ],
-      "people": [
-        {
-          "name": "Joseph A. Marino",
-          "shares": 1893395,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": 15.5,
-          "ownership_percent_before": 24.4,
-          "ownership_percent_after": 15.5,
-          "shares_before_ipo": 1893395,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 1893395
-        },
-        {
-          "name": "Peter M. Buonomo",
-          "shares": 200000,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": 1.6,
-          "ownership_percent_before": 2.6,
-          "ownership_percent_after": 1.6,
-          "shares_before_ipo": 200000,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 200000
-        },
-        {
-          "name": "Scott S. Robinson",
-          "shares": 100000,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": 0.8,
-          "ownership_percent_before": 1.3,
-          "ownership_percent_after": 0.8,
-          "shares_before_ipo": 100000,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 100000
-        },
-        {
-          "name": "Christopher J. Turnbull",
-          "shares": 305505,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": 2.5,
-          "ownership_percent_before": 3.9,
-          "ownership_percent_after": 2.5,
-          "shares_before_ipo": 305505,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 305505
-        },
-        {
-          "name": "Todd C. Johnson",
-          "shares": 750311,
-          "stanford_university_bio": false,
-          "is_beneficial_owner": true,
-          "holder_type": "Individual",
-          "ownership_percent": 6.2,
-          "ownership_percent_before": 9.7,
-          "ownership_percent_after": 6.2,
-          "shares_before_ipo": 750311,
-          "shares_sold_ipo": null,
-          "shares_after_ipo": 750311
-        }
-      ],
-      "ownership_source": {
-        "source": "SEC EDGAR",
-        "form": "S-1/A",
-        "filing_date": "2026-08-10",
-        "accession_no": "0001104659-26-093252",
-        "sec_url": "https://www.sec.gov/Archives/edgar/data/1838003/000110465926093252/0001104659-26-093252-index.htm"
-      },
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1838003/000110465926093252/0001104659-26-093252-index.htm"
     },
     {
       "id": "0001193125-26-340329",
