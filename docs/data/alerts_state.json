@@ -1,7 +1,20 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-01T18:14:43.527344+00:00",
+  "updated_at": "2026-10-01T18:34:38.235134+00:00",
   "items": {
+    "s1:0001900851": {
+      "id": "s1:0001900851",
+      "cik": "0001900851",
+      "company": "Ambitious Entertainment, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-09-30",
+      "stage": "pre-pricing",
+      "price_range": "$4.00–$5.00",
+      "filing_price": "$4.00–$5.00",
+      "priority": "High",
+      "value": 18000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1900851/000149315226045063/0001493152-26-045063-index.htm"
+    },
     "s1:0002091680": {
       "id": "s1:0002091680",
       "cik": "0002091680",
@@ -105,6 +118,19 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2125056/000162828026063205/0001628280-26-063205-index.htm"
+    },
+    "s1:0002141406": {
+      "id": "s1:0002141406",
+      "cik": "0002141406",
+      "company": "Accelevation Holdings Corp.",
+      "form": "S-1/A",
+      "filed": "2026-09-22",
+      "stage": "pre-pricing",
+      "price_range": "$20.00–$24.00",
+      "filing_price": "$20.00–$24.00",
+      "priority": "High",
+      "value": 660000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026062945/0001628280-26-062945-index.htm"
     },
     "s1:0002133037": {
       "id": "s1:0002133037",
@@ -469,19 +495,6 @@
       "priority": "High",
       "value": 382500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2131524/000162828026054354/0001628280-26-054354-index.htm"
-    },
-    "s1:0001900851": {
-      "id": "s1:0001900851",
-      "cik": "0001900851",
-      "company": "Ambitious Entertainment, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-08-06",
-      "stage": "pre-pricing",
-      "price_range": "$4.00–$5.00",
-      "filing_price": "$4.00–$5.00",
-      "priority": "High",
-      "value": 18000000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1900851/000149315226036294/0001493152-26-036294-index.htm"
     },
     "0001193125-26-334997": {
       "id": "0001193125-26-334997",
@@ -1237,19 +1250,6 @@
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
     },
-    "s1:0002141406": {
-      "id": "s1:0002141406",
-      "cik": "0002141406",
-      "company": "Accelevation Holdings Corp.",
-      "form": "S-1/A",
-      "filed": "2026-09-22",
-      "stage": "pre-pricing",
-      "price_range": "$20.00–$24.00",
-      "filing_price": "$20.00–$24.00",
-      "priority": "High",
-      "value": 660000000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026062945/0001628280-26-062945-index.htm"
-    },
     "s1:0001802369": {
       "id": "s1:0001802369",
       "cik": "0001802369",
@@ -1291,6 +1291,13 @@
     }
   },
   "ciks": {
+    "0001900851": {
+      "company": "Ambitious Entertainment, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001900851",
+      "last_filed": "2026-09-30",
+      "missing_runs": 0
+    },
     "0002091680": {
       "company": "Bitari Inc",
       "stage": "pre-pricing",
@@ -1345,6 +1352,13 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002125056",
       "last_filed": "2026-09-23",
+      "missing_runs": 0
+    },
+    "0002141406": {
+      "company": "Accelevation Holdings Corp.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002141406",
+      "last_filed": "2026-09-22",
       "missing_runs": 0
     },
     "0002133037": {
@@ -1540,13 +1554,6 @@
       "company": "Braveheart Bio, Inc.",
       "stage": "priced",
       "last_filing_id": "0001628280-26-054354",
-      "last_filed": "2026-08-06",
-      "missing_runs": 0
-    },
-    "0001900851": {
-      "company": "Ambitious Entertainment, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001900851",
       "last_filed": "2026-08-06",
       "missing_runs": 0
     },
@@ -1955,13 +1962,6 @@
       "last_filing_id": "0001213900-25-120076",
       "last_filed": "2025-12-10",
       "missing_runs": 0
-    },
-    "0002141406": {
-      "company": "Accelevation Holdings Corp.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002141406",
-      "last_filed": "2026-09-22",
-      "missing_runs": 1
     }
   }
 }
