@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-02T17:25:07.076043+00:00",
+  "generated_at": "2026-10-02T17:35:48.463862+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -1203,6 +1203,103 @@
       ],
       "people": [],
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2125056/000162828026063205/0001628280-26-063205-index.htm"
+    },
+    {
+      "id": "s1:0002141406",
+      "company": "Accelevation Holdings Corp.",
+      "ticker": "ACCV",
+      "cik": "0002141406",
+      "accession_no": "0001628280-26-062945",
+      "form": "S-1/A",
+      "filed": "2026-09-22",
+      "stage": "Pre-pricing",
+      "price_range": "$20.00–$24.00",
+      "filing_price": "$20.00–$24.00",
+      "offering_size_source": "primary offering; THE OFFERING primary + secondary rows; cover title preceding IPO statement",
+      "offering_size_confidence": "High",
+      "primary_offering_shares": 8635165,
+      "secondary_offering_shares": 21364835,
+      "priority": "High",
+      "status": "New",
+      "value": 660000000,
+      "value_label": "$660M",
+      "people_count": 4,
+      "signals": [
+        "Registration statement amended — IPO remains pre-pricing",
+        "IPO size disclosed or derived at approximately $660,000,000",
+        "4 named beneficial owners disclosed",
+        "Preliminary offering range disclosed at $20.00–$24.00"
+      ],
+      "people": [
+        {
+          "name": "Olympus Funds",
+          "shares": 190939658,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Fund",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": 215000000,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 190939658
+        },
+        {
+          "name": "Michael Rubiera",
+          "shares": 1375666,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 1375666
+        },
+        {
+          "name": "Charles Hillman",
+          "shares": 226178,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 226178
+        },
+        {
+          "name": "Ericka Harrison",
+          "shares": 65695,
+          "stanford_university_bio": false,
+          "is_beneficial_owner": true,
+          "holder_type": "Individual",
+          "ownership_percent": null,
+          "ownership_percent_before": null,
+          "ownership_percent_after": null,
+          "shares_before_ipo": null,
+          "shares_sold_ipo": null,
+          "shares_after_ipo": 65695
+        }
+      ],
+      "ownership_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-22",
+        "accession_no": "0001628280-26-062945",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026062945/0001628280-26-062945-index.htm"
+      },
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026062945/0001628280-26-062945-index.htm",
+      "filing_price_source": {
+        "source": "SEC EDGAR",
+        "form": "S-1/A",
+        "filing_date": "2026-09-22",
+        "accession_no": "0001628280-26-062945",
+        "file_number": "333-298715",
+        "sec_url": "https://www.sec.gov/Archives/edgar/data/2141406/000162828026062945/0001628280-26-062945-index.htm"
+      }
     },
     {
       "id": "s1:0002133037",
