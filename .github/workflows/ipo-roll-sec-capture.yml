@@ -1,0 +1,46 @@
+name: IPO Roll private SEC capture
+
+on:
+  push:
+    branches: [ipo-roll/foundation]
+    paths:
+      - apps/ipo-roll/config/sec-capture-request.json
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ipo-roll-sec-capture
+  cancel-in-progress: false
+
+jobs:
+  capture:
+    if: github.repository == 'dailyblip/IPO-Tracking' && github.ref == 'refs/heads/ipo-roll/foundation'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test capture controls without service secrets
+        run: python -m unittest discover -s apps/ipo-roll/tests -p 'test_actions*.py'
+      - name: Capture bounded SEC sources using existing contact
+        env:
+          SEC_EDGAR_USER_AGENT: ${{ secrets.SEC_EDGAR_USER_AGENT }}
+        run: >-
+          python apps/ipo-roll/scripts/actions_sec_capture.py
+          --request apps/ipo-roll/config/sec-capture-request.json
+          --recipient apps/ipo-roll/config/sec-capture-recipient.pem
+          --output "$RUNNER_TEMP/ipo-roll-sec-capture"
+      - name: Retain encrypted evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ipo-roll-sec-capture-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ipo-roll-sec-capture/evidence.cms
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
