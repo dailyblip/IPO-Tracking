@@ -1,7 +1,72 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-02T17:55:16.534091+00:00",
+  "updated_at": "2026-10-06T18:26:05.353790+00:00",
   "items": {
+    "s1:0002139097": {
+      "id": "s1:0002139097",
+      "cik": "0002139097",
+      "company": "TRex Bio, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-05",
+      "stage": "pre-pricing",
+      "price_range": "$14.00–$16.00",
+      "filing_price": "$14.00–$16.00",
+      "priority": "High",
+      "value": 125000010,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2139097/000119312526413060/0001193125-26-413060-index.htm"
+    },
+    "s1:0002108671": {
+      "id": "s1:0002108671",
+      "cik": "0002108671",
+      "company": "Rothe Development, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-05",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226045717/0001493152-26-045717-index.htm"
+    },
+    "s1:0002002988": {
+      "id": "s1:0002002988",
+      "cik": "0002002988",
+      "company": "Retension Pharmaceuticals, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-05",
+      "stage": "pre-pricing",
+      "price_range": "$11.00–$13.00",
+      "filing_price": "$11.00–$13.00",
+      "priority": "High",
+      "value": 39600000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2002988/000121390026106636/0001213900-26-106636-index.htm"
+    },
+    "s1:0001806540": {
+      "id": "s1:0001806540",
+      "cik": "0001806540",
+      "company": "Lycia Therapeutics, Inc.",
+      "form": "S-1",
+      "filed": "2026-10-05",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1806540/000162828026064973/0001628280-26-064973-index.htm"
+    },
+    "s1:0001070965": {
+      "id": "s1:0001070965",
+      "cik": "0001070965",
+      "company": "Georgia Banking Co Inc",
+      "form": "S-1",
+      "filed": "2026-10-02",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1070965/000110465926113366/0001104659-26-113366-index.htm"
+    },
     "s1:0001900851": {
       "id": "s1:0001900851",
       "cik": "0001900851",
@@ -145,19 +210,6 @@
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026062846/0001628280-26-062846-index.htm"
     },
-    "s1:0002108671": {
-      "id": "s1:0002108671",
-      "cik": "0002108671",
-      "company": "Rothe Development, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-09-21",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226043509/0001493152-26-043509-index.htm"
-    },
     "s1:0002133022": {
       "id": "s1:0002133022",
       "cik": "0002133022",
@@ -209,32 +261,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2113640/000157587226000653/0001575872-26-000653-index.htm"
-    },
-    "s1:0002139097": {
-      "id": "s1:0002139097",
-      "cik": "0002139097",
-      "company": "TRex Bio, Inc.",
-      "form": "S-1",
-      "filed": "2026-09-18",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2139097/000119312526395671/0001193125-26-395671-index.htm"
-    },
-    "s1:0002002988": {
-      "id": "s1:0002002988",
-      "cik": "0002002988",
-      "company": "Retension Pharmaceuticals, Inc.",
-      "form": "S-1",
-      "filed": "2026-09-18",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2002988/000121390026101499/0001213900-26-101499-index.htm"
     },
     "0001193125-26-395670": {
       "id": "0001193125-26-395670",
@@ -1291,6 +1317,41 @@
     }
   },
   "ciks": {
+    "0002139097": {
+      "company": "TRex Bio, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002139097",
+      "last_filed": "2026-10-05",
+      "missing_runs": 0
+    },
+    "0002108671": {
+      "company": "Rothe Development, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002108671",
+      "last_filed": "2026-10-05",
+      "missing_runs": 0
+    },
+    "0002002988": {
+      "company": "Retension Pharmaceuticals, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002002988",
+      "last_filed": "2026-10-05",
+      "missing_runs": 0
+    },
+    "0001806540": {
+      "company": "Lycia Therapeutics, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001806540",
+      "last_filed": "2026-10-05",
+      "missing_runs": 0
+    },
+    "0001070965": {
+      "company": "Georgia Banking Co Inc",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001070965",
+      "last_filed": "2026-10-02",
+      "missing_runs": 0
+    },
     "0001900851": {
       "company": "Ambitious Entertainment, Inc.",
       "stage": "pre-pricing",
@@ -1368,13 +1429,6 @@
       "last_filed": "2026-09-21",
       "missing_runs": 0
     },
-    "0002108671": {
-      "company": "Rothe Development, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002108671",
-      "last_filed": "2026-09-21",
-      "missing_runs": 0
-    },
     "0002133022": {
       "company": "Oura Inc.",
       "stage": "pre-pricing",
@@ -1400,20 +1454,6 @@
       "company": "VME Companies, Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002113640",
-      "last_filed": "2026-09-18",
-      "missing_runs": 0
-    },
-    "0002139097": {
-      "company": "TRex Bio, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002139097",
-      "last_filed": "2026-09-18",
-      "missing_runs": 0
-    },
-    "0002002988": {
-      "company": "Retension Pharmaceuticals, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002002988",
       "last_filed": "2026-09-18",
       "missing_runs": 0
     },
