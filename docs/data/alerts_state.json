@@ -1,7 +1,33 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-08T18:42:15.533125+00:00",
+  "updated_at": "2026-10-08T19:28:29.052059+00:00",
   "items": {
+    "s1:0002002988": {
+      "id": "s1:0002002988",
+      "cik": "0002002988",
+      "company": "Retension Pharmaceuticals, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-07",
+      "stage": "pre-pricing",
+      "price_range": "$11.00–$13.00",
+      "filing_price": "$11.00–$13.00",
+      "priority": "High",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2002988/000121390026107572/0001213900-26-107572-index.htm"
+    },
+    "s1:0002132065": {
+      "id": "s1:0002132065",
+      "cik": "0002132065",
+      "company": "Centinel Spine Holdco, Inc.",
+      "form": "S-1",
+      "filed": "2026-10-07",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2132065/000110465926114375/0001104659-26-114375-index.htm"
+    },
     "s1:0002139097": {
       "id": "s1:0002139097",
       "cik": "0002139097",
@@ -27,19 +53,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226045717/0001493152-26-045717-index.htm"
-    },
-    "s1:0002002988": {
-      "id": "s1:0002002988",
-      "cik": "0002002988",
-      "company": "Retension Pharmaceuticals, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-10-05",
-      "stage": "pre-pricing",
-      "price_range": "$11.00–$13.00",
-      "filing_price": "$11.00–$13.00",
-      "priority": "High",
-      "value": 39600000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2002988/000121390026106636/0001213900-26-106636-index.htm"
     },
     "s1:0001806540": {
       "id": "s1:0001806540",
@@ -1304,6 +1317,20 @@
     }
   },
   "ciks": {
+    "0002002988": {
+      "company": "Retension Pharmaceuticals, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002002988",
+      "last_filed": "2026-10-07",
+      "missing_runs": 0
+    },
+    "0002132065": {
+      "company": "Centinel Spine Holdco, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002132065",
+      "last_filed": "2026-10-07",
+      "missing_runs": 0
+    },
     "0002139097": {
       "company": "TRex Bio, Inc.",
       "stage": "pre-pricing",
@@ -1315,13 +1342,6 @@
       "company": "Rothe Development, Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002108671",
-      "last_filed": "2026-10-05",
-      "missing_runs": 0
-    },
-    "0002002988": {
-      "company": "Retension Pharmaceuticals, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002002988",
       "last_filed": "2026-10-05",
       "missing_runs": 0
     },
