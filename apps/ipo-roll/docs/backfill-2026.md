@@ -1,0 +1,802 @@
+# Commercial 2026 backfill checkpoint
+
+## September 29 UTC: April Alamar/Kailera depth and September discovery
+
+**April: zero new offerings; two existing offerings deepened.** Applied 33 people,
+18 complete biographies, 41 class/basis positions, 17 attribution links and eight
+components. All 24 selected management biographies across Alamar and Kailera
+reconcile to whole source sections. Ownership rows and linked notes are accounted
+for with explicit duplicate/aggregate/unknown holds. Alamar's management-year and
+conversion/group arithmetic conflicts remain unresolved; Kailera options are not
+issued common shares. See the development log for source hashes and private receipts.
+
+Fresh totals: **94 offerings / 556 people / 463 biography records / 795 positions /
+193 attribution links / 34 components / zero quotes / zero historical-value claims**.
+30 offerings have positions; 64 have none. All 13 existing private reports are
+unchanged. Rollback/apply/replay, source reconciliation and targeted privacy SQL pass.
+The 94-row structural audit does not establish source-content completeness.
+
+**September: 111 independently discovered filing candidates**, not imported IPOs:
+four captured/review-pending, 20 capture-pending, 87 held. Date-only SEC capture
+run `36516858295` succeeded. Its private queue/recovery checkpoint is stored and
+verified, but September 28 cutoff remains conservatively incomplete. Zero new
+canonical imports from this queue; automatic checkpoint restore/controller and
+reviewed existing-registration refresh remain unfinished. No month or full-year
+census is declared complete; the legacy feed remains a candidate inventory.
+
+Next April depth cursor: AEVEX `0001193125-26-162601`, then Elmet
+`0001213900-26-047144`. Continue independent census/discovery alongside this review.
+Completion gates and exact applied/deployed/tested distinctions are in
+`completion-gates.md` and `development-log.md`.
+
+## September 28 UTC: Arxis and Madison Air
+
+Applied source-reviewed additions: 19 people, 18 full biographies, 100 class/basis
+ownership records and 24 attribution links. All 24 management biographies across
+both current filings reconcile to whole selected sections. Dashes, class differences,
+projected snapshots, excluded EAR awards and fund/control attribution stay explicit.
+Arxis's TEN-person aggregate versus nine named managers is held; Madison's duplicate
+Gies aggregate and executive group are not double counted. Full liquidity and
+component review remains incomplete.
+
+Verified totals: 94 offerings / 523 people / 445 biographies / 754 positions /
+26 components / zero quotes. 28 offerings have positions; 66 have none. Existing
+11 static reports unchanged. Rollback/apply/replay, reviewer/private-report QA and
+94-row structural audit pass; unperformed source/browser/completeness checks remain
+unverified. Private recovery hash and precise verification scope are recorded in
+the development log. No month or full-census completion claim.
+
+## September 28 UTC: Neutron component depth
+
+Applied ten source-reviewed components across three before-offering Neutron
+positions. Direct common shares, options, gross RSUs, trust-held shares and
+preferred-conversion underlying shares remain distinct. No post-allocation,
+completed sale, current wealth or liquidity inferred. Current totals remain
+94 offerings / 504 people / 427 biographies / 654 positions; components increase
+from 16 to 26. Twenty-six offerings have positions and 68 have none. All eleven
+existing private reports are unchanged; users explicitly refresh for new evidence.
+
+Three exact footnote sums, source hashes, application/replay, reviewer/private
+snapshot/security checks pass. The current 94-offering structural audit has zero
+failures; unreviewed completeness/interpretation tracks remain unverified.
+Frontend code `f8d1f017bf4311e352bc81c10b5d151455e53cd1` is CI-passing and its
+staging assets match the tested build. Full recovery and next tasks are in the
+development log. Arxis/Madison Air and independent census/discovery remain open;
+no month/census is complete.
+
+## September 28 UTC: corrected specification and quota follow-up
+
+No cohort data or backfill cursor changed. Applied private report serialization
+and preserved all nine report fingerprints; sequential boundary/privacy QA passes.
+Actual overlapping-session verification remains open, with a strict two-session
+harness prepared. The owner-approved corrected profile/liquidity specification
+keeps independent SEC discovery and January–present completion in scope. See the
+development log for exact applied/prepared/verified distinctions. Counts remain
+94 offerings / 504 people / 427 biographies / 654 positions; Arxis and Madison Air
+Solutions are the next source-review cursors.
+
+## September 28 UTC: account-private report boundary hardening
+
+Applied the Opus-reviewed database boundary fix without changing shared research
+facts or the backfill cursor. New static Liquidity Analysis generation is bounded
+to 100 reports per account and ten versions per offering/subject in a rolling 24
+hours across both RPC and direct authenticated insert paths. Internal functions
+no longer inherit PUBLIC execute; authenticated statements have a 15-second
+database timeout. New report version `liquidity/1.6` drops the obsolete filing-date
+alias while retaining explicit filing and holdings-as-of fields. Nine existing
+reports and all cohort counts remain unchanged. Rollback limit, access, evidence,
+HMH, API and build checks pass. Arxis and Madison Air Solutions remain the next
+priced ownership cursors; census/backfill completeness is unchanged.
+
+## September 28 UTC: HMH complete roster and ownership table
+
+Applied ten missing biographies to complete all 13 management/director people and
+biographies. Applied 36 before/base-post positions for two reported organizations
+and ten people. Filing dashes remain explicit unknowns; combined voting power,
+the full-option alternative and overlapping 13-person aggregate are reviewed but
+held out. Conditional LTI amounts for three executives are not treated as issued,
+vested, liquid, valuable or realized cash.
+
+Current totals: **94 offerings / 504 people / 427 biographies / 654 positions**;
+**26/94** offerings have positions and **68** have none. Nine private reports are
+unchanged. Rollback/application/replay, whole-section reconciliation, targeted
+privacy/value QA, the 94-offering structural audit, 20 Node/API tests, production
+build and 108 Python tests pass. The Opus review's multi-role duplication and
+Render proxy rate-limit findings are fixed, published at `50be1c868396ffd4c9e67e0e0747eaf4800d9952`,
+CI-passing and deployed to staging. Staging health, matching production assets,
+current UI copy and unauthenticated API denial were verified. Full census, live
+source links and authenticated browser journeys remain unverified. Next priced
+cursors: Arxis and Madison Air Solutions (April 15); no month or full census is
+complete.
+
+## September 28 UTC: MiniMed complete roster and ownership table
+
+Applied ten missing biographies, completing all 13 expected executive/director
+people and complete biographies. Applied 28 before/base-post ownership positions
+across Medtronic plc and all 13 named people. Twenty-six quantities remain explicit
+unknowns; Que Dallara's linked RSU conversion quantity was not determinable and
+is not zero. The full-option scenario and overlapping 13-person aggregate are
+reviewed but held out. Medtronic remains an organization, and no historical/current
+value, cash, completed vesting/conversion or saleability was inferred.
+
+Current totals: **94 offerings / 494 people / 417 biographies / 618 positions**;
+**25/94** offerings have positions and **69** have none. Nine private reports are
+unchanged. Rollback/application/replay, full-section reconciliation, private
+authorization regression, a zero-failure 94-offering structural audit and all
+108 Python tests pass. Full census, fresh-after-September-26 discovery, source-link
+checks and authenticated browser journeys remain unverified. Recovery hashes and
+exact publication state are in the development log. Next no-position cursor: HMH
+Holding Inc.; no month or full census is declared complete.
+
+## September 28 UTC: Generate Biomedicines management complete
+
+Applied twelve missing reviewed biographies, bringing Generate Biomedicines to
+all **15 unique management/director people and 15 complete biographies** across
+the whole reviewed management table and biography section. Source institution
+mentions remain neutral searchable evidence and do not imply beneficial ownership.
+
+Current totals: **94 offerings / 484 people / 407 biographies / 566 positions**;
+**23/94** offerings have positions and **71** have none. Rollback/application/
+replay, source-section reconciliation, private reviewer/search/customer-denial QA
+and all 107 Python tests pass. Nine private reports remain unchanged. Generate's
+principal-stockholders table and footnotes are the next quantity review; no value,
+current ownership or liquidity is inferred. Full census and discovery automation
+remain unfinished. Recovery hashes and publication state are in the development log.
+
+## September 28 UTC: reverse independent-index QA
+
+Fresh staging identity/form/date snapshot matches all 94 offerings against the
+hash-verified retained SEC indexes (11,061 scoped filing rows). New reverse QA
+reports absent staged filings and missing metadata as unverified, and date/form
+conflicts as failures. All 107 Python tests pass. The source cutoff remains
+September 26; this is neither fresh-through-today discovery nor an exhaustive
+IPO census. No facts or private reports changed. Recovery details and next fresh
+capture/ingestion work are in the development log.
+
+## September 28 UTC: ARKO conversion-safe ownership review
+
+All eight complete management biographies reconciled, including five previously
+applied director-nominee additions. Imported 17 projected positions: sixteen
+explicit undisclosed class quantities and one parent Class B total. The Class A
+conversion quantity is the same interest and remains held out with its full row
+and footnote evidence; the overlapping eight-person aggregate is also excluded.
+Organization-to-organization ACS attribution remains a structured-data gap.
+
+Current totals: **94 offerings / 472 people / 395 biographies / 566 positions**;
+**23/94** offerings have positions and **71** still have none. Nine private reports
+remain unchanged. Rollback/application/replay, targeted database privacy/grid QA,
+106 Python tests and a 94-offering structural audit passed. Full census, financial
+interpretation, live links and live reviewer-browser coverage remain unverified.
+Recovery hashes and exact publication state are in the development log. Next
+oldest priced cursor: Generate Biomedicines; no month is declared complete.
+
+## September 28 UTC: AGI complete dual-class ownership review
+
+Applied 68 Class A/Class B pre/base-post positions for all 17 non-overlapping
+subjects in AGI's complete principal-shareholders table. Forty filing dashes
+remain explicit nulls. The full-option columns, overlapping 14-person aggregate
+and duplicate Marciano Testa row are audited without simultaneous or duplicate
+positions. Proposed-sale cells were reviewed and all are dashes; no completed
+sale, proceeds or cash is asserted.
+
+Three holder entities remain organizations. Marciano Testa's AGI Partners control
+link is distinct from his filing-reported aggregate and from personal economics.
+The named Lumina and Vinci organization investment managers remain retained in
+footnote evidence but unverified as structured organization-to-organization
+attributions because the current relation supports natural people. Historical
+IPO-price compatibility, present ownership, value and liquidity remain unknown.
+
+Current totals: **94 offerings / 467 people / 390 biographies / 549 positions / 16
+components / 150 attributions / zero quotes**. Any-position coverage is **22 of
+94**; **72 still have none**. Nine private reports and their checksum remain
+unchanged. Rollback/application/replay, 14 staging ownership/privacy suites, 105
+Python tests, 18 Node/API tests and the production build pass. Independent census,
+live links and reviewer-authenticated browser journeys remain unverified. Private
+recovery hashes and verified publication receipt are in the latest development log.
+Next priced cursor: ARKO Petroleum Corp. (`0001193125-26-049767`), then Generate
+Biomedicines; no month or full census is declared complete.
+
+## September 28 UTC: SOLV complete management and two-class ownership review
+
+Applied 16 missing complete management biographies, one source-named former
+executive/beneficial owner and two named footnote controllers. All 19 management
+biographies now reconcile against the complete selected sections. Added 68 Class
+A/Class B pre/base-post positions for all 17 non-overlapping ownership-table
+subjects and 20 group-person attribution links.
+
+All 38 filing dashes in the selected quantity columns remain explicit nulls. The
+full-option columns and overlapping 19-person aggregate are audited without being
+added as simultaneous or duplicate positions. American Securities remains a
+group, Management Holdings remains an organization, and controller/deemed-owner
+links do not turn sponsor totals into personal economics. Up-C redemption,
+economic-interest, present-day ownership, historical-value compatibility and
+liquidity remain distinct or unknown.
+
+Current totals: **94 offerings / 467 people / 390 biographies / 481 positions / 16
+components / 146 attributions / zero quotes**. Any-position coverage is **21 of
+94**; **73 still have none**. Nine private reports and their checksum remain
+unchanged. Rollback/application/replay, 13 staging ownership/privacy suites, 105
+Python tests, 18 Node/API tests and the production build pass. Independent census,
+live links and reviewer-authenticated browser journeys remain unverified. Private
+recovery hashes and prepared publication state are in the latest development log.
+Next priced cursor: AGI Inc, then ARKO Petroleum and Generate Biomedicines; no
+month or full census is declared complete.
+
+## September 28 UTC: Once Upon a Farm complete management and ownership review
+
+Applied six missing complete management biographies, two source-named selling
+stockholders and one named footnote controller. All ten management biographies now
+reconcile against the complete selected sections. Added 58 before/projected-after
+positions for all 29 non-overlapping ownership-table subjects and four group-
+controller links. Ten dash positions remain null; the overlapping ten-person
+aggregate is audited without double counting.
+
+All eight anonymized selling-holder buckets remain visible as source groups.
+Proposed sale amounts remain proposals rather than completed sales or cash.
+Cambridge/CAVU control, entity/fund holdings, personal economics, mixed converted
+securities/options, historical-value compatibility and liquidity remain distinct
+or unknown.
+
+Current totals: **94 offerings / 448 people / 374 biographies / 413 positions / 16
+components / 126 attributions / zero quotes**. Any-position coverage is **20 of
+94**; **74 still have none**. Nine private reports and their checksum remain
+unchanged. Rollback/application/replay, 12 staging ownership/privacy suites, 105
+Python tests, 18 Node/API tests and the production build pass. Independent census,
+live links and reviewer-authenticated browser journeys remain unverified. Private
+recovery hashes and exact publication state are in the latest development log.
+Next equal-date cursors: SOLV Energy and AGI Inc; no month or full census is
+declared complete.
+
+## September 28 UTC: AgomAb complete ownership and controller review
+
+Applied 20 missing footnote people, 26 pre/projected-post ownership positions and
+44 attribution links from the complete reviewed AgomAb ownership table and notes.
+All eight reported holder organizations/groups remain separate from named people.
+Three repeated person/fund rows and the overlapping 12-person aggregate are audited
+without duplicating quantities. Six `*` positions remain explicit nulls.
+
+Tim Knotnerus's reported 668,855-share total differs by one share from its
+enumerated components; the filing-reported aggregate is retained without inventing
+a component or residual. The existing management roster remains complete at 11/11
+biographies; no filing biographies exist for the newly added controllers. Control,
+fund/trust attribution, personal economics, historical-value compatibility and
+liquidity remain separate or unknown.
+
+Current totals: **94 offerings / 439 people / 368 biographies / 355 positions / 16
+components / 122 attributions / zero quotes**. Any-position coverage is **19 of
+94**; **75 still have none**. Nine private reports and their checksum remain
+unchanged. Rollback/application/replay, 11 staging ownership/privacy suites, 105
+Python tests, 18 Node/API tests and the production build pass. Independent census,
+live links and reviewer-authenticated browser journeys remain unverified. Private
+recovery hashes and exact publication state are in the latest development log.
+Next no-position cursor: Once Upon a Farm, then continue oldest-first; no month or
+full census is declared complete.
+
+## September 28 UTC: Forgent complete management and ownership review
+
+Applied eight missing directors/biographies, corrected one truncated existing
+biography continuation, and added 48 two-class ownership positions from the full
+reviewed Forgent Power Solutions sections. All 11 management biographies reconcile.
+The one reported Neos group remains separate from its named upstream controller.
+
+Four Neos group quantities are populated across Class A/Class B and before/base-
+post scenarios. All 44 named-person entries are source dashes and remain explicit
+null records. The alternative full-option columns and overlapping 11-person total
+are audited without importing simultaneous or duplicate positions. Incentive units,
+excluded RSUs, control authority, personal economics, value and liquidity remain
+unknown unless separately established.
+
+Current totals: **94 offerings / 419 people / 368 biographies / 329 positions / 16
+components / 78 attributions / zero quotes**. Any-position coverage is **18 of 94**;
+**76 still have none**. Nine private reports and checksum remain unchanged.
+Rollback/application/replay, ten staging ownership/privacy suites, 104 Python tests,
+18 Node/API tests and the production build pass. Browser and live reviewer-
+authenticated journeys remain unverified. Private recovery hashes and exact
+publication state are in the latest development log. Next no-position cursor:
+AgomAb Therapeutics, then continue oldest-first; no month or full census is
+declared complete.
+
+## September 28 UTC: SpyGlass complete management and ownership review
+
+Applied ten missing complete management biographies, 15 named external footnote
+people, 14 non-duplicative pre-offering positions and 18 holder-person attribution
+links from the complete reviewed SpyGlass Pharma sections. All 14 management
+biographies reconcile. Six reported holder organizations/groups remain separate
+from people. Three repeated person/organization totals and the overlapping 13-person
+officers/directors aggregate are audited without duplicating quantities.
+
+The table gives one quantity as of December 31, 2025 beside before/projected-after
+percentages. Each selected quantity is stored once as pre-offering; no post amount
+is inferred. Four filing dashes remain null. Options, control, fund attribution,
+personal economics, value, current ownership and liquidity remain unknown unless
+separately established.
+
+Current totals: **94 offerings / 411 people / 360 biographies / 281 positions / 16
+components / 74 attributions / zero quotes**. Any-position coverage is **17 of 94**;
+**77 still have none**. Nine private reports and their checksum remain unchanged.
+Rollback, atomic application, replay, nine staging privacy/regression suites, 104
+Python tests, 18 Node/API tests and the production build pass. Browser and live
+reviewer-authenticated journeys remain unverified. Private recovery hashes and
+exact publication state are in the latest development log. Next no-position cursor:
+Forgent Power Solutions, then continue oldest-first; no month or full census is
+declared complete.
+
+## September 28 UTC: Eikon complete management and ownership review
+
+Applied six missing management biographies, nine named external footnote people,
+13 non-duplicative pre-offering positions and ten holder-person attribution links
+from the complete reviewed Eikon Therapeutics sections. All ten management
+biographies reconcile. Four holder groups and two holder organizations remain
+separate from people. Joshua Wolfe's repeated Lux total and the overlapping
+officers/directors aggregate are audited without duplicating quantities.
+
+The table provides one quantity as of December 31, 2025 and separate pre/post
+percentages. Each quantity is stored once as pre-offering; no post-offering amount
+is inferred. One dash remains null. Converted preferred shares, warrants, options,
+repurchase conditions, control authority and ultimate-beneficiary attribution are
+retained without promoting aggregate totals to issued, vested, liquid or personal
+economics.
+
+Current totals: **94 offerings / 386 people / 350 biographies / 267 positions / 16
+components / 56 attributions / zero quotes**. Any-position coverage is **16 of
+94**; **78 still have none**. Nine private reports remain unchanged. Rollback,
+atomic application, replay, eight staging privacy/regression suites, 104 Python
+tests, 18 Node/API tests and the production build pass. Browser and live reviewer-
+authenticated journeys remain unverified. Private recovery hashes and exact
+publication state are in the latest development log. Next no-position cursor:
+SpyGlass Pharma, then continue oldest-first; no month or full census is declared
+complete.
+
+## September 28 UTC: Bob's complete management and base-scenario ownership review
+
+Applied 16 missing complete management biographies and 32 pre/base-post ownership
+positions from the full reviewed Bob's Discount Furniture sections. All 19
+management biographies reconcile. The 16 unique ownership subjects comprise one
+Bain holder group and 15 named people; five dash rows remain null across both
+snapshots. The overlapping officers/directors aggregate and alternative full-
+underwriter-option column are audited but not added to the base scenario.
+
+No individual Bain controller is inferred because the footnote requires decisions
+by three or more partners and says none of the four named partners individually
+directs voting or disposition. Fund/group amounts therefore remain separate from
+personal economics. Options, trusts, restrictions, value and liquidity remain
+unknown unless separately established.
+
+Current totals: **94 offerings / 371 people / 344 biographies / 254 positions / 16
+components / 46 attributions / zero quotes**. Any-position coverage is **15 of
+94**; **79 still have none**. Nine private reports remain unchanged. Rollback,
+atomic application, replay, seven staging privacy/regression suites, 104 Python
+tests, 18 Node/API tests and the production build pass. Browser and live reviewer-
+authenticated journeys remain unverified. Private recovery hashes and exact
+publication state are in the latest development log. Next no-position cursor:
+Eikon Therapeutics, then continue oldest-first; no month or full census is declared
+complete.
+
+## September 28 UTC: Veradermics full management and ownership review
+
+Applied eight missing management biographies, six footnote controllers, 13
+non-duplicative ownership quantities and eight group-controller links from the
+complete reviewed Veradermics sections. All 11 management biographies reconcile.
+Six holder organizations/groups remain separate from people. Repeated/aggregate
+rows and Patrick Enright's unexplained one-share discrepancy are audited without
+being double-counted or promoted to personal economics.
+
+The source gives one quantity column, before/after percentages and conflicting
+September 30 versus December 31, 2025 date language. Each quantity is therefore
+stored once with an `unspecified` basis and null holdings date; no date, value,
+liquidity, current ownership or cash result is guessed. Dashes remain null.
+
+Current totals: **94 offerings / 355 people / 328 biographies / 222 positions / 16
+components / 46 attributions / zero quotes**. Any-position coverage is **14 of 94**;
+**80 still have none**. Nine private reports remain unchanged. Rollback/application/
+replay, six staging privacy/regression suites, 104 Python tests, 18 Node/API tests
+and the production build pass. Browser and live reviewer-authenticated journeys
+remain unverified. Private recovery hashes and exact publication state are in the
+latest development log. Next no-position cursor: Bob's Discount Furniture, then
+continue oldest-first; no month or full census is declared complete.
+
+## September 28 UTC: York complete principal-stockholder review
+
+Applied 22 York Space Systems before/projected-after positions covering all nine
+named table people plus the two aggregate holder-group rows. The overlapping
+10-person officers/directors total is audited but not imported again. Added Michael
+Greene and David Rowe as AE Industrial footnote controllers with no invented
+biographies or personal quantities. Dashes remain null, group control remains
+separate from personal economics and alternative snapshots are never summed.
+
+Current totals: **94 offerings / 341 people / 320 biographies / 209 positions / 16
+components / 38 attributions / zero quotes**. Any-position coverage is **13 of 94**;
+**81 still have none**. Nine private reports remain unchanged. York's complete table
+review does not establish the other per-offering tracks or any complete month.
+
+Rollback/application/replay, five live database privacy/regression suites, 102
+Python tests, 18 Node/API tests and the production build pass. Publication commit
+`a7daf8c4941bdda45217c081b815300d0531fe8b` and Test Research Monitor run
+`36385725250` are green; staging health and anonymous denial were reverified.
+Browser and live reviewer-authenticated journeys remain unverified in this
+execution image. Private recovery evidence is recorded in the latest development
+log. Next no-position cursor: Veradermics, then continue oldest-first.
+
+## September 28 UTC: Ethos complete selling-stockholder review
+
+Applied 53 non-duplicative Ethos before/projected-after positions from the complete
+reviewed principal/selling-stockholder table, plus 12 footnote-named people and 28
+organization-person attribution rows. Six organization holders and 11 anonymous
+other-selling-stockholder groups remain visible as reported parties. Four exact
+duplicate/aggregate rows are audited as intentionally non-imported, not silently
+lost or double-counted. Proposed-sale quantities are not treated as completed sales.
+
+Current totals: **94 offerings / 339 people / 320 biographies / 187 positions / 16
+components / 34 attributions / zero quotes**. Any-position coverage is **12 of 94**;
+**82 still have none**. Nine private reports remain unchanged. Ethos has 42 visible
+disclosed subjects and 53 positions, but this does not certify the other coverage
+tracks or any month. All liquidity classifications remain unknown and no value,
+saleability, current ownership or personal economics is inferred from fund totals.
+
+Migration, application, replay, access/privacy suites, 102 Python tests, 18
+Node/API tests and the production build pass. Browser fixtures are captured, but
+the desktop/mobile rerun is unverified because this execution image could not
+install a Playwright browser. Private recovery hash and applied/prepared publication
+status are in the latest development-log entry. The commercial commit, CI and exact
+Render bundle are verified deployed; anonymous Ethos detail/search remain denied.
+Next cursor: York, then continue systematically across all remaining no-position
+offerings.
+
+## September 28 UTC: PicPay entity holders and attributed people
+
+Applied six reviewed PicPay pre-offering positions: one Class B organization and
+five Class A organizations. Added four beneficiary-entitlement links (José Antonio
+Batista Costa, Anderson Chamon, Aguinaldo Gomes Ramos Filho and Eduardo Chedid
+Simões) and two upstream-control links (Joesley and Wesley Mendonça Batista). The
+organizations remain the reported holders; control is not personal economics, and
+the aggregate total is not counted again. Four missing footnote-named people were
+added without invented biographies.
+
+Current totals: **94 offerings / 327 people / 320 biographies / 134 positions /
+16 components / six holder-person attributions / zero quotes**. Holdings-record
+presence is **11 of 94 offerings**; **83 have none**. PicPay's no-option and
+full-option projected tables remain reviewed-but-unimported alternatives, not
+missing rows to be silently combined with the pre-offering snapshot. Nine private
+reports remain unchanged. No month or full table is certified complete. Next
+cursor: Ethos, then York; use the new organization/beneficiary/control contract.
+
+## September 27 late Pacific: second holdings batch
+
+Applied **76 January-filing positions** across BitGo (40/10 people) and
+EquipmentShare (36/nine people). Totals: **94 offerings / 323 people / 320
+biographies / 128 positions / 16 components / zero quotes**. Any-position coverage
+is **10 of 94 offerings**; **84 remain without positions**. No IPO, biography,
+quote, valuation or completed census month was added.
+
+Class A/Class B and before/projected-after snapshots remain separate. EquipmentShare
+full-option figures are not duplicated, its co-founder totals overlap, and filing
+dashes stay null. Selling columns are not realized proceeds. Rollback/application/
+replay, access isolation, saved-report immutability, full tests, build and captured
+desktop/mobile reviewer journeys passed. Nine prior private reports remain unchanged.
+Next cursor: PicPay, then Ethos and York. See the latest development-log entry for
+evidence limitations and prepared/applied/published distinctions.
+
+## September 28 UTC: holdings quantities expanded beyond Neutron
+
+Applied **20 January-filing positions** (Buda Juice 18; Green Circle two) and
+**18 July-filing positions** (Neutron), representing 19 people across pre/projected
+post snapshots. Ten Neutron dash records have null quantity; zeros remain zero.
+No new IPO or biography. Totals: **94 offerings / 323 people / 320 biographies /
+52 positions / 16 components / zero quotes**. Holdings-record presence expanded
+from five to **eight offerings**, with **86 still lacking positions**. This is not
+whole-table completeness even for the eight. Entity/group rows, decomposition,
+liquidity and historical values remain incomplete. Buda denominator conflict
+retained; no percentages inferred. Nine existing private reports unchanged.
+
+Each batch passed source/hash/cell/date/identity review, rollback/application and
+replay QA. Full 94-row structural audit has no failures but unavailable coverage
+checks remain unverified. Private coverage queue next cursor is BitGo, then
+EquipmentShare, PicPay, Ethos and York. Recovery hash, tested/deployed distinctions
+and source nuances are in the latest development-log entry. No census month is
+complete; prior entries below are history.
+
+## Latest applied coverage — September 27 night Pacific
+
+**94 offerings / 323 people / 320 biographies / 14 positions / 16 components**.
+Added **seven July-filing biographies** to Neutron Holdings, plus three named
+footnote controllers with no invented biography or personal quantity. Neutron now
+has 12 people, all nine complete management biographies, 16 inventoried ownership
+rows and 10 inventoried notes. Entity/group and quantity work remains pending.
+No new IPO, price, quote or completed census month. Eight private reports unchanged.
+
+Structural source/lineage/lifecycle QA ran across all 94 offerings; whole-section
+Neutron reconciliation passed. Biography-start discovery scanned 54 sources, left
+40 unavailable local artifacts explicit and found 440 unreviewed candidate starts
+across 46 offerings (including aliases/false positives). These are not imports or
+a verified missing-person count. Current source hashes, private receipts and next
+steps are in the latest development-log entry. Earlier counts below are history.
+
+## Latest applied people coverage — September 27 evening Pacific
+
+**94 offerings / 313 people / 313 biographies / 14 positions / 16 components**.
+Added **25 January biographies** (Buda Juice 9, Green Circle 6, Ethos 10) and
+**six February biographies** (Agomab), all to already imported offerings. No new
+IPO or ownership quantity was imported. Whole selected management sections now
+reconcile to 9, 6, 13 and 11 complete biographies, respectively. All 39 biographies
+match exact source text and hashes, including prior records and page continuations.
+Customer/anonymous denial, reviewer detail/search and saved-report preservation
+checks passed in rollback rehearsals and applications. Eight private reports are
+unchanged; zero quotes. No month, independent IPO census or ownership-table
+coverage is declared complete. See the latest development log for durable private
+receipts, tests and the next work. Earlier entries below are chronological history.
+
+## Comprehensive researcher pivot — September 27 Pacific
+
+Current verified staging: **94 offerings / 282 people / 282 biographies / 14
+reviewed positions / 16 components**. Added 31 source-reviewed January-filing
+biographies to existing offerings: Aktis +11, BitGo +7, EquipmentShare +6, York +7.
+Their reviewed management sections now reconcile to 14, 10, 9 and 10 complete
+biographies respectively. Added two separately reviewed Aktis option-only
+positions with dated source quantities and full footnotes/restrictions. Exact
+release replay leaves counts unchanged. No IPO additions, quote/value estimates,
+private-report rewrites or newly completed census months in this batch.
+
+Whole-section coverage receipts, source hashes, API/access tests and recovery
+paths are in the latest development log. Institutional mentions no longer cause
+source biographies to be dropped; commercial branding and search stay neutral.
+All 43 management biographies in these four filings are reconciled, while
+ownership/entity/controller and full-year census coverage remain incomplete.
+The Aktis table's 16 rows and 11 notes are inventoried, not all financially
+interpreted or imported. See `comprehensive-research.md` for separate completion
+criteria; prepared/captured/discovered records must never be counted as imports.
+
+## People/biography correction — September 27 Pacific
+
+Staging now has **94 offerings / 251 people / 251 biographies / 12 reviewed ownership positions**. Added 16 source-reviewed September-filing biographies to existing offerings: Orion180 +7 (9 management biographies now present) and Accelevation +9 (13 now present). Full biography continuations and search were verified through reviewer RPCs, with replay and access-denial tests. No new IPO, quantity or price was added. This corrects incomplete selected-person imports; it does not establish complete ownership-table coverage.
+
+Coverage must independently reconcile the management roster, every available biography, beneficial-owner table rows, institutional/group entries and controlling-person footnotes. The new private discovery checkpoint scans 51 retained current sources and leaves 43 unavailable local sources explicit. Its 462 unmatched paragraph starts across 46 offerings are unreviewed leads, not verified missing-person counts. See the development log for checkpoint SHA, replay-safe supplement tooling, applied batches and next steps. Owner clarification: anyone with a filing biography must have it attached and searchable, whether or not an ownership quantity has been reviewed.
+
+## Latest census reconciliation — September 27 Pacific
+
+The four prior exact-filing exclusions are now consumed by the offline reconciler after checkpoint, source, passage and index-identity validation. Current private inventory: **94 exact current snapshots, 240 issuer-lineage reviews, 4 reviewed excluded filings, 10,723 unreviewed filing rows** (all 11,061 retained). Other filings of a reviewed issuer are never suppressed. Recovery: `import-output/year-2026/census-reviewed-94/inventory.json`. Seven census tests / 78 total Python tests pass, including conflicts and altered evidence. No new canonical IPO import in this reconciliation step.
+
+January 8–12 capture `36328121647` passed with all 48 files verified. New exact-filing exclusions: Soren `0001213900-26-002346` and Bleichroeder II `0001213900-26-002472` (blank checks); Rubico `0001171843-26-000207` (follow-on after a November 2025 public offering). Atlas Critical Minerals `0001493152-26-001253` is **held for uplisting scope/lineage review**, not silently excluded: source describes prior OTCQB quotations and January 9 Nasdaq trading. No additional canonical IPOs imported.
+
+Latest reconciled totals supersede the paragraph above: **94 exact snapshots / 240 issuer-lineage reviews / 7 reviewed excluded filings / 1 held filing / 10,719 unreviewed filing rows**. Private output: `import-output/year-2026/census-reviewed-eight/inventory.json`. Second source-linked review checkpoint `ab7a9b122b8985766ff65c3f0daa25b0f6348bda09baf591148f9c38a7b465e5` is durable in staging `ops.sec_artifacts`; encrypted source recovery is documented in the development log. Full-year completeness, end-date freshness and holder/footnote coverage remain open. Next source batch starts January 14; do not recapture the eight reviewed filings.
+
+## Latest applied batch — September 27 UTC
+
+**94 offerings / 235 biographies** are now applied. Added PicPay (January pricing and filing; 9 reviewed biographies) and AGI Inc (February pricing and filing; 14 reviewed biographies). Source review covers all six captured root/amendment/final documents; both preliminary ranges, final prices and pricing dates are preserved. Release IDs and QA are recorded in `development-log.md`. Captured-only statements in earlier chronological sections below are superseded for these two issuers.
+
+| Current source filing month | Applied offering snapshots | Newly applied in this batch |
+| --- | ---: | ---: |
+| January | 8 | 1 |
+| February | 11 | 1 |
+| March | 1 | 0 |
+| April | 10 | 0 |
+| May | 10 | 0 |
+| June | 11 | 0 |
+| July | 8 | 0 |
+| August | 13 | 0 |
+| September | 22 | 0 |
+
+These are current filing-month counts, not pricing-month census totals. No month is certified complete. Holdings remain 12 positions / 14 components across five offerings; the 23 new biographies do not establish holdings. Five private static reports are unchanged, zero quotes. Reviewer API source/search/pricing and customer/anonymous denial checks passed; live login/browser QA remains unverified in this batch. Source rights stay internal-review-only.
+
+Capture `36296613333` completed for the next four January final-prospectus candidates. All 42 files verified. Exact-filing review dispositions: Brazil Potash `0001193125-26-000752` resale; STAK `0001493152-26-000242` follow-on after February 2025 IPO; Art Technology `0001213900-26-001875` blank check; Jefferson Capital `0001104659-26-002168` secondary after June 2025 IPO. **Zero new IPO imports from these four.** Evidence-linked disposition checkpoint `19885b338331d03cda4ac268d1c2ca984163dc404397d5a4446d0ff194ccd88f` is private in staging `ops.sec_artifacts`; full source capture has a durable encrypted backup listed in the development log. Do not exclude all filings of these issuers by name or CIK.
+
+Regenerated private `census-94/inventory.json` from `census-staged-94.json` (SHA-256 `a1992473ea5f8ab038c4e4e7c4f97fa732c54e4dd7130228f925e7ac6458d157`): 94 exact current snapshots, 240 known-issuer lineage rows, 10,727 unmatched rows. January is 8 exact / 40 lineage / 1,231 unmatched; February 11 / 8 / 1,203. The four dispositions remain a separate reviewed checkpoint pending deterministic reconciliation support; these large unmatched counts are filing rows, not missing IPO counts. Full independent SEC census, snapshot freshness, unpriced registration activity and beneficial-owner footnotes remain open.
+
+## Independent census expansion — September 26 Pacific / September 27 UTC
+
+Owner explicitly requires comprehensive coverage without supplying missing-company examples. Restored the three retained Q1/Q2/Q3 full SEC master indexes from 11 ordered private archive chunks. Verified every chunk's hash/length, complete-index hashes/lengths, and checkpoint `b91f8d3abff11629bba80676135770bbd4d63a4ab754e112fbb1cc1aaf1299b6`. Index snapshots were retrieved September 26 at 23:11–23:12 UTC; they still need a cutoff/freshness check before any completeness claim.
+
+New offline `scripts/reconcile_sec_census.py` accounts by **CIK plus accession**, never issuer name or CIK alone. An already imported issuer's other filings remain `issuer_present_lineage_review`, not silently discarded. The original five-form scan had 3,039 rows. Expanded discovery includes 424B1/424B3 and S-11/F-10 registrations/amendments, producing **11,061 filing rows across 2,192 CIKs**: 92 exact current staged snapshots, 236 other filings for staged issuers requiring lineage reconciliation, and 10,733 unreviewed rows. These are NOT missing IPO counts: 7,910 rows are 424B3 and require resale/follow-on/other classification. Other form families remain explicitly tallied outside this discovery scope, not assumed irrelevant.
+
+| Filing month, not pricing month | Exact current snapshots | Known issuer / lineage review | Unreviewed filing rows |
+| --- | ---: | ---: | ---: |
+| January | 7 | 36 | 1,236 |
+| February | 10 | 8 | 1,204 |
+| March | 1 | 17 | 1,172 |
+| April | 10 | 43 | 1,244 |
+| May | 10 | 38 | 1,234 |
+| June | 11 | 30 | 1,122 |
+| July | 8 | 34 | 1,187 |
+| August | 13 | 18 | 1,303 |
+| September through retained snapshot | 22 | 12 | 1,031 |
+
+Found a concrete systematic omission: final **424B1** prospectuses were rejected by commercial intake/capture/review, which previously supported only 424B4 finals. Added 424B1 support without relaxing explicit operating-company, initial-IPO, preliminary-history or final-terms evidence checks. The expanded inventory includes 18 424B1 rows (some are joint registrants, funds or follow-ons; do not import them automatically). Source-confirmed priority candidates include PicPay, CIK 0001841644 / accession 0001213900-26-009315 (January 29), and AGI, CIK 0002081206 / accession 0001753926-26-000308 (February 11). These are **discovered, not imported**. SEC filing indexes:
+
+- https://www.sec.gov/Archives/edgar/data/1841644/000121390026009315/0001213900-26-009315-index.htm
+- https://www.sec.gov/Archives/edgar/data/2081206/000175392626000308/0001753926-26-000308-index.htm
+
+Also corrected index parsing for legitimate joint registrants sharing one accession: unrelated candidate selection now works; selecting an ambiguous multi-registrant accession still fails closed pending explicit issuer review.
+
+Private reproducibility files: `import-output/year-2026/census-checkpoint.b64`, `census-chunks/`, `census-staged.json`, and `census/inventory.json`. Staging comparison SHA-256: `77d56688957e4eb6b2e6820ba93e2deebf12754504e974a57e05bf5a69b85362`. All raw/candidate payloads stay ignored, outside public Git/frontend. Re-run the census script against a fresh staged comparison before future releases.
+
+**Capture blockers resolved September 27 UTC:** owner authorized reusing the existing SEC contact in an isolated Actions job. Run `36295785408` captured both PicPay and AGI successfully: six root/amendment/final filings, with all 24 artifact-file hashes/lengths verified after authenticated decryption. PicPay's captured final is 21,852,289 bytes; all three of its filings exceed 20 MB and use the bounded large-file path without truncation or a database-limit change. The existing repository secret was used in place and never exported. Private recovered packets are under `import-output/actions-capture-36295785408/evidence/`. See `sec-capture-actions.md` for durable encrypted backup/recovery. These candidates are captured, **not reviewed/imported**; full census completeness and holder coverage remain open.
+
+**Status:** 68 Python tests passed, including 424B1 final/preliminary evidence, joint registrants, expanded discovery, same-name/different-issuer identity, same-issuer/different-accession retention, duplicate/malformed data and chunk/hash corruption rejection. No new offering, biography, holding, quote or private report imported/refreshed in this pass. Staging remains 92 offerings / 212 biographies / 12 positions across five offerings / 14 components / zero quotes. No frontend/backend deployment is required for these offline tooling changes. Full-year, month and holder coverage remain incomplete.
+
+## Tooling recovery checkpoint — September 27
+
+The strict Aktis voting-common/option review path has been recovered and verified against retained SEC evidence. Rebuilding the private review reproduces the exact already-applied release ID `ee9a8b51-add2-5859-bf5e-56987285d014`; no staging rows were added or changed. Two reviewed Aktis executives account for the existing two positions/four components. The third reconciled option-only source row remains held because its person identity/issuer relationship was not part of the reviewed January release. This checkpoint improves reproducibility; it does not increase beneficial-owner coverage or establish current wealth, liquidity, a lock-up expiry, or cash proceeds.
+
+## Latest applied checkpoint — September 27, 00:29 UTC
+
+**92 staged offerings / 212 sourced biographies / 12 positions / 14 components / zero quotes.** All research remains `internal_review` and unpublished; ordinary customers are denied. Five pre-existing account-private Liquidity Analysis reports are unchanged.
+
+Added one independently SEC-discovered operating-company IPO outside the original Monitor inventory:
+
+| Issuer | Ticker | Pricing date | Preliminary range | Final IPO price | Base offering value | Final prospectus |
+| --- | --- | --- | --- | ---: | ---: | --- |
+| AgomAb Therapeutics NV | AGMB | 2026-02-05 | $15.00–$17.00 | $16.00 | $200,000,000 | 0001104659-26-011523 |
+
+The exact Q1 SEC master-index row, January 16 F-1, January 29 F-1/A and February 6 424B4 are retained privately with verified hashes. Five complete executive biographies were released; selected commercial biography evidence has no Stanford reference. No holder position, lock-up expiry, quote, saleability or personal proceeds were inferred. The offering was rehearsed, applied, replayed and tested through customer/reviewer roles and the application RPCs. Polaryx was held as an explicit direct listing rather than forced into the operating-company IPO cohort.
+
+The original Monitor comparison below remains **89 exact reviewed/imported snapshots of 90 candidates plus one MFB hold**. Independent additions are now Buda Juice, Green Circle and AgomAb, producing 92 total staged offerings. This is still **not a complete independent SEC census**, and biography coverage is not beneficial-owner/footnote completeness.
+
+## Latest applied checkpoint — September 26, 23:45 UTC
+
+**91 staged offerings / 207 sourced biographies / 12 positions / 14 components.** See development-log.md for the full session and workspace-recovery instructions. Source rights remain internal_review/unpublished.
+
+| Month of original feed snapshot | Feed candidates | Exact reviewed/imported snapshots | Holds |
+| --- | ---: | ---: | ---: |
+| January | 5 | 5 | 0 |
+| February | 9 | 9 | 0 |
+| March | 2 | 2 | 0 |
+| April | 11 | 11 | 0 |
+| May | 8 | 8 | 0 |
+| June | 13 | 13 | 0 |
+| July | 6 | 6 | 0 |
+| August | 13 | 13 | 0 |
+| September | 23 | 22 | 1 |
+| Total | 90 | 89 | 1 |
+
+The remaining original-feed hold is MFB Bancorp (0002152813, 0001104659-26-107563, registration 333-298928): a second-step conversion involving previously OTC-quoted shares. Wella's current amendment 0001628280-26-063205 is reconciled, preserving its existing registration root and earlier biographies.
+
+Additional independent SEC discoveries applied: Buda Juice (0002079720, 333-289874, 0001493152-26-001005) and Green Circle (0001926293, 333-276943, 0001493152-26-002087), both January IPOs with initial registrations before 2026. They are outside the 90-row Monitor comparison, hence 91 total staged offerings.
+
+This is NOT a completed independent SEC census. The source-reviewed 2026 inventory, biographies and beneficial-owner/footnote coverage are separate completeness measures. Full Q1/Q2/Q3 index reconstruction/candidate checkpoint is archived privately in ops.sec_artifacts under SHA-256 b91f8d3abff11629bba80676135770bbd4d63a4ab754e112fbb1cc1aaf1299b6. Do not count unclassified 424B4 candidates as IPOs. Continue missing months and source-reviewed exclusions; preserve MFB/direct-listing/foreign-listing holds until resolved.
+
+
+Owner authorization, September 25, 2026: extend IPO Roll's commercial staging backfill to **January 1, 2026 through the present**, including April/May and qualifying smaller operating-company IPOs. The previous historical hold is superseded for this commercial work. Do not change legacy ingestion, production schedules, Pages, or the ownership-history commit guard.
+
+Include IPOs priced during the interval even if their initial registration predates January 1, as well as qualifying filing activity during the interval. Resolve issuer and registration identity before updating an existing offering. Do not equate a later amendment with a new IPO. Pre-/post-offering snapshots must remain distinct.
+
+## Baseline audited September 25
+
+Source: legacy `docs/data/filings.json` at `f4bdf65261fc583a406da3fd0b653b111143a2f6`, generated `2026-09-25T16:42:05.707069+00:00`. Private intake batch `e1554778-d4c5-54a7-87dd-1505e4e06f48`; payload SHA-256 `5fe74d887c35772eab6d61b7b69a08d295c7453f85900c5483abac2265741142`. Intake has 93 source records; 90 have qualifying interval dates. The three remaining records are outside the interval. The intake contains **unverified observations**, never publication approval.
+
+This is an inventory of the existing feed, **not a complete census of 2026 IPOs**. Independently reconcile SEC coverage for each month before marking that month complete. Count biographies, verified ownership, footnotes and liquidity evidence separately from company coverage.
+
+| Cohort month | Candidates | Exact staged snapshots | Existing issuer needing reconciliation | New source review |
+| --- | ---: | ---: | ---: | ---: |
+| January | 5 | 0 | 0 | 5 |
+| February | 9 | 0 | 0 | 9 |
+| March | 2 | 0 | 0 | 2 |
+| April | 11 | 0 | 0 | 11 |
+| May | 8 | 0 | 0 | 8 |
+| June | 13 | 0 | 0 | 13 |
+| July | 6 | 0 | 0 | 6 |
+| August | 13 | 3 | 0 | 10 |
+| September through 25th | 23 | 18 | 1 | 4 |
+| Total | 90 | 21 | 1 | 68 |
+
+Cohort uses pricing date when within the interval; otherwise the earliest qualifying filing date. These counts are not monthly completed-IPO totals. An exact staged snapshot does not establish complete holder/footnote coverage or current lifecycle status.
+
+## Initial capture checkpoint (superseded by release below)
+
+January capture completed for all five candidates: 15 filing documents and 34 automatically located biography candidates. These are **unreviewed candidate passages**, not verified people/affiliations. Capture packets and content-addressed bytes are retained privately under `import-output/year-2026/archive/`; no historical offering, biography or holding was imported in this step.
+
+`scripts/build_backfill_queue.py` validates the intake checksum, uses inclusive boundaries, detects duplicate filing identities, skips exact staged snapshots, and holds different accessions for an existing issuer for reconciliation. It records a hash of the staging comparison. Two tests cover pre-year registrations priced in-year, interval boundaries, empty months, exact deduplication, issuer reconciliation, duplicate identities and tampered intake rejection.
+
+Private inputs/queue/capture artifacts are under ignored `import-output/year-2026/`. Recreate the intake from the exact source commit if the workspace expires; fetch a new read-only staging snapshot before applying any reviewed release. Captured evidence alone is not reviewed or imported. All generated source payloads stay out of Git and frontend assets.
+
+## January staging release — September 26, 2026
+
+Applied the previously prepared 93-record SEC Monitor intake to private staging quarantine (90 interval candidates); reviewed and released **five January offerings and 15 executive biographies**. Staging now contains **27 offerings, 59 biographies and 10 ownership positions**. This release adds no ownership positions or market quotes. All five offerings remain unpublished with `internal_review` access; ordinary customers cannot retrieve them.
+
+| Reviewed issuer | Ticker | Pricing date | Preliminary range | Final IPO price | Base offering value |
+| --- | --- | --- | --- | ---: | ---: |
+| Aktis Oncology | AKTS | 2026-01-08 | $16.00–$18.00 | $18.00 | $317,700,000 |
+| BitGo Holdings | BTGO | 2026-01-21 | $15.00–$17.00 | $18.00 | $212,788,710 |
+| EquipmentShare | EQPT | 2026-01-22 | $23.50–$25.50 | $24.50 | $747,250,000 |
+| Ethos Technologies | LIFE | 2026-01-28 | $18.00–$20.00 | $19.00 | $199,999,985 |
+| York Space Systems | YSS | 2026-01-28 | $30.00–$34.00 | $34.00 | $629,000,000 |
+
+Final prospectus accessions, respectively: `0001193125-26-009078`, `0001628280-26-003180`, `0001628280-26-003334`, `0001193125-26-029993`, `0001193125-26-030469`. Initial registrations predate 2026 and remain separate from pricing dates. The queued Yellowstone Midco identity was reconciled to York Space Systems from its prospectus, preserving issuer CIK and registration lineage. Base offering values are IPO offering amounts, not personal proceeds.
+
+Reviewed complete, person-specific SEC biography passages for three executives per issuer. People Search now returns three University of Michigan matches and ten Harvard matches across staging (previously two and eight). The newly supported Michigan match is Devjyoti Rudra at York. Biography evidence does not establish beneficial ownership, stock quantities or saleability.
+
+Retained 15 filing documents plus normalized text/metadata as 35 immutable private evidence artifacts in `ops.sec_artifacts`. The release uses existing import/review scripts; no pipeline rewrite or migration. Private inputs, reviewed selections, manifest and generated SQL remain under ignored `import-output/year-2026/january-release/` and `january-reviews.json`; source payloads are not Git/frontend assets.
+
+Validation: full transaction rehearsal with rollback; apply; exact replay without duplication; post-apply rollback QA checking counts, authoritative pricing versus preliminary ranges, root dates, issuer identity, detail quote safeguards, evidence search, no inferred beneficial-owner match, ordinary-customer denial and anonymous RPC denial. Five pre-existing private liquidity reports retained their identical aggregate content fingerprint. These are database role/RPC tests, not a live authenticated browser journey. The old `tests/database-month-review.sql` records the earlier 22/44 baseline and must be scoped to that cohort before reuse; its global exact counts are now historical.
+
+For the original 90-candidate inventory, January moves from zero to five reviewed staged candidates. Overall comparison is now 26 reviewed staged candidates, one existing issuer awaiting reconciliation and 63 requiring new source review. This is **not a complete January census or a completed year backfill**. Holder, footnote and liquidity coverage remains separately incomplete.
+
+## Acceleration authorized September 25 (Pacific)
+
+Owner requested faster completion. Development/backfill is now scheduled hourly, including overnight, while the historical backlog remains. Keep the separate 6 PM Pacific digest; skip overlapping work using the shared development lock. Prioritize source-reviewed imports and ownership/footnote coverage ahead of cosmetic changes. Reuse retained SEC artifacts and batch independent preparation within SEC access limits. Evidence, access and commit guards remain unchanged. Restore the previous 8 AM/noon/4 PM Pacific development cadence after independently verifying historical completion.
+
+February capture is prepared for all nine candidates (27 filing documents, 42 automatically located unreviewed biography candidates). The first reviewed release below supersedes the capture-only status for four issuers. Automatic candidate counts are not verified-person counts. Reuse retained artifacts for the remaining review.
+
+## First February release — September 26, 2026
+
+Applied four reviewed offerings and 13 complete executive biographies, bringing staging to 31 offerings and 72 biographies; ownership positions remain 10. Archived 28 private evidence artifacts for 12 SEC filing documents. All data remains unpublished/internal_review. Rehearsal, apply, exact replay and post-apply database role/RPC QA passed; existing private reports remained unchanged. Live staging health passed, but the unauthenticated HTTP offerings check timed out and live authenticated browser QA was not performed.
+
+| Issuer | Ticker | Pricing date | Preliminary range | Final IPO price | Base offering value | Final prospectus |
+| --- | --- | --- | --- | ---: | ---: | --- |
+| Veradermics, Incorporated | MANE | 2026-02-03 | $14.00–$16.00 | $17.00 | $256,319,999 | 0001628280-26-005505 |
+| Eikon Therapeutics | EIKN | 2026-02-04 | $16.00–$18.00 | $18.00 | $381,196,800 | 0001193125-26-039375 |
+| Forgent Power Solutions | FPS | 2026-02-04 | $25.00–$29.00 | $27.00 | $1,512,000,000 | 0001193125-26-040029 |
+| Bob’s Discount Furniture | BOBS | 2026-02-04 | $17.00–$19.00 | $17.00 | $330,650,000 | 0001628280-26-005868 |
+
+Biography search now supports the newly reviewed named executives and their literal education/employment passages, including Ryan S. Fiedler’s investment banking experience and Carl Lukach’s Georgetown education across a page boundary. A biography is not an ownership position. Veradermics holdings are held because table and footnote date bases conflict (September 30 versus December 31, 2025), quantities mix common shares/options, and Tim/Timothy Durso needs identity reconciliation. Lock-up expiry alone would not establish current saleability.
+
+Within the original 90-candidate inventory: January 5/5 and February 4/9 candidates are now reviewed/imported. Overall comparison is 30 staged candidates, one existing issuer reconciliation and 59 requiring new source review. This is inventory progress, not a complete SEC census. Remaining February: Once Upon a Farm, SOLV Energy, ARKO Petroleum, Generate Biomedicines and SpyGlass Pharma. See `february-a-release/manifest.json` and private holdings notes for reproducible release evidence.
+
+## Second February release — September 26, 2026
+
+Applied the remaining five February feed candidates and 17 complete, person-specific SEC biographies. Staging now has **36 offerings / 89 biographies / 10 ownership positions**. January 5/5 and February 9/9 candidates from the original feed inventory are reviewed/imported; **neither month is an independently verified complete SEC census**. Across that inventory, 35 candidates are staged, one issuer requires reconciliation, and 54 need new source review.
+
+| Issuer | Ticker | Pricing date | Preliminary range | Final IPO price | Base offering value | Final prospectus |
+| --- | --- | --- | --- | ---: | ---: | --- |
+| Once Upon a Farm, PBC | OFRM | 2026-02-05 | $17.00–$19.00 | $18.00 | $197,949,762 | 0001193125-26-041885 |
+| SpyGlass Pharma | SGP | 2026-02-05 | $15.00–$17.00 | $16.00 | $150,000,000 | 0001628280-26-006068 |
+| SOLV Energy | MWH | 2026-02-10 | $22.00–$25.00 | $25.00 | $512,500,000 | 0001193125-26-046879 |
+| ARKO Petroleum | APC | 2026-02-11 | $18.00–$20.00 | $18.00 | $199,999,998 | 0001193125-26-049767 |
+| Generate Biomedicines | GENB | 2026-02-26 | $15.00–$17.00 | $16.00 | $400,000,000 | 0001193125-26-083190 |
+
+Source documents retain issuer CIK and registration lineage. ARKO Petroleum's APC ticker is sourced from its prospectus; ARKO is its separate parent. Once Upon a Farm's total includes issuer and selling-stockholder shares, not a person's cash proceeds. No inferred holdings or quotes were added. Selected biographies include complete cross-page evidence for Malik Y. Kahook and manually located ARKO executives. Search now returns four University of Michigan matches and 14 Harvard matches; each result preserves the literal person-specific passage and company relationship, without converting employment or visiting appointments into degrees.
+
+Archived 35 immutable private evidence artifacts for 15 SEC documents. Rehearsal with rollback, atomic apply, exact replay and post-apply role/RPC QA passed: exact prices/dates/ranges/values, biography search and cross-page continuation, unsupported search rejection, no inferred beneficial-owner role, saved/unsaved IPOs, reviewer access, ordinary-customer denial and anonymous denial. Five pre-existing private liquidity reports retained the same aggregate fingerprint; no customer report was generated or refreshed. Zero temporary QA accounts remain. Data remains unpublished/internal_review. This is an applied data-only staging release, not a new application deployment.
+
+Live health returned 200/ok/staging after an initial timeout; unauthenticated offerings returned 401. Live authenticated browser QA remains unperformed. No UI, schema, source access, legacy engine/feed/Pages, production schedule, billing or provider changes.
+
+ARKO holdings triage is retained privately: the projected post-offering parent row lists Class A conversion interests overlapping its Class B position; never count these twice or attribute them to individual executives. Individual dashes are not confirmed present-day zero holdings, particularly because offering purchases are excluded. No January/February positions or lock-up dates are imported by this release.
+
+Private reproducibility files: `february-b-reviews.json`, `select-february-b.py`, and `february-b-release/` (manifest, SQL, QA, holdings notes). March's two feed candidates, MiniMed and HMH, are now captured in six hash-verified documents but remain **unreviewed/unimported**. Automatic biography discovery found no candidates; manual review must preserve expected post-offering appointment wording. See private `march-capture-results.json` and `march-review-handoff.md`. These counts do not establish historical completeness.
+
+### Generate Biomedicines ownership follow-up — September 28, 2026
+
+The final 424B4 principal-stockholders table and all 13 footnotes are now fully
+reviewed. Staging contains 24 Generate positions covering twelve non-aggregate
+subjects on both the January 15, 2026 before-offering and projected after-offering
+bases. The overlapping 15-person aggregate is audited but not imported. Flagship
+fund totals stay on the holder group; Dr. Noubar Afeyan's control link preserves
+the source disclaimer and is not personal economic ownership. His reported person
+row overlaps the group total and must not be summed with it. Common, preferred-
+conversion, option, trust and fund components remain distinct in evidence.
+
+All selected liquidity assessments remain unknown, and no current quote, filing-
+price value or sale proceeds were created. Rehearsal/application/replay, complete
+section accounting, reviewer grid and private-report isolation QA passed. Existing
+reports remain byte-equivalent. Staging totals are 94 offerings, 484 people, 407
+biographies and 590 positions; 24 offerings have at least one position. This is a
+completed Generate source batch, not a complete February census, whole-cohort
+ownership audit, instrument decomposition, historical-value review or liquidity
+determination.
+
+## March release and April capture — September 26, 2026
+
+Applied **two March offerings and six biographies**, bringing staging to **38 offerings / 95 biographies / 10 ownership positions**. Original feed inventory progress is January 5/5, February 9/9 and March 2/2 reviewed/imported; independent SEC completeness remains unverified for all months. Overall: 37 staged candidates, one issuer reconciliation, 52 new source reviews remaining.
+
+| Issuer | Ticker | Pricing date | Preliminary range | Final IPO price | Base offering value | Final prospectus |
+| --- | --- | --- | --- | ---: | ---: | --- |
+| MiniMed Group, Inc. | MMED | 2026-03-05 | $25.00–$28.00 | $20.00 | $560,000,000 | 0001628280-26-015648 |
+| HMH Holding Inc. | HMH | 2026-03-31 | $19.00–$22.00 | $20.00 | $210,400,000 | 0001193125-26-138102 |
+
+MiniMed's three reviewed executive roles retain literal **“Will serve as…”** wording in the role title and complete biography; these are proposed appointments in the filing snapshot, not confirmation of today's roles. HMH's three selected directors are explicitly stated to have joined its board in March. Karl Erik Kjelstad's cross-page biography preserves an Advanced Management Program credential, not an inferred MBA. HMH's final filing is April 1 but its prospectus/pricing date is March 31; both dates remain distinct. MiniMed's final price remains below, and separate from, the preliminary range.
+
+Archived 14 immutable private artifacts for six SEC documents. Rehearsal with rollback, atomic apply, exact replay and post-apply database role/RPC QA passed: counts, exact pricing/ranges/dates/values, HMH's filing-versus-pricing boundary, proposed-role wording, complete biography search, unsupported search rejection, no inferred beneficial-owner match, saved/unsaved IPOs, reviewer access, ordinary-customer denial and anonymous denial. Search now returns four University of Michigan matches and 15 Harvard matches. The same five private reports retain their identical aggregate fingerprint, with no new or refreshed reports and no leftover test accounts. Data stays unpublished/internal_review. No schema, access or application code changed; this data release needs no new application deployment.
+
+HTTP health checks timed out twice and the unauthenticated offerings check timed out; live HTTP availability/denial was not verified in this run. Database authorization passed independently. Live authenticated browser QA was not performed. Do not turn connection timeouts into a claim that the deployed application is broken or accessible.
+
+Captured **all 11 April feed candidates**, with 33 SEC documents and 44 automatically located **unreviewed** biography candidates. All original and normalized hashes were checked. These are capture-only, not imported offerings or verified biographies. Use private `april-capture-results.json` and readable accession block files under `archive/`; start with April 15 candidates Arxis and Madison Air. April capture used two bounded workers and the existing SEC request pacing. May–September and independent SEC coverage remain pending.
+
+Aktis ownership review is prepared separately in private `january-release/aktis-holdings-triage.md`: its October 31, 2025 as-if-converted voting/non-voting table includes option-underlying shares. Three named executive component totals reconcile arithmetically, but require the correct instrument/table-basis importer profile and separate complete lock-up review before canonical import. No position or liquidity assertion was inserted; shared fund authority remains distinct from personal economic ownership.
+
+Private applied inputs: `select-march.py`, `march-reviews.json` and `march-release/` (manifest, SQL and QA). Source payloads remain outside Git/frontend assets. No new owner setup, paid AI provider or spending is required for the next SEC batch.
+
+## Next actions
+
+1. Use the expanded independent SEC census, not the superseded April–September Monitor queue (that original inventory is already reconciled except MFB). Process oldest-month registration groups and final prospectuses, explicitly recording imported/excluded/held evidence-backed decisions. PicPay and AGI's six filings are now captured and hash-verified through the existing SEC contact in isolated Actions; review January PicPay first, bind packets to validated index intakes, and apply only after source review and QA. Use the same capture job for subsequent bounded batches. Do not use names, existing CIKs, or 424B4-only filters as completeness gates.
+2. Review January ownership tables and footnotes independently before populating class/series, quantities, attribution, holdings dates or lock-up evidence. Unknown cash realizability stays unknown; do not infer personal proceeds from offering size or position differences.
+3. Apply only small reviewed releases with immutable evidence, rollback QA and exact replay. Keep rights as internal review and customer access denied until approved.
+4. Never generate or modify saved account-private Liquidity Analysis reports through backfill. Users request their own static report or explicit refresh.
+5. Paid quote providers are deferred by the owner. Filing-based historical IPO-price valuations and documented holder-sale gross proceeds may be implemented only with compatible reviewed securities/quantities and explicit evidence. Do not substitute IPO price for a current quote, infer cash from offering size or position differences, or modify saved reports. Provider purchase is not a standing owner action or prerequisite for filing-based work. SEC capture configuration above is a separate operational blocker; no paid AI provider is authorized or needed.
