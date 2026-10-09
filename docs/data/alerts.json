@@ -1,8 +1,39 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-09T18:21:47.571418+00:00",
-  "count": 135,
+  "generated_at": "2026-10-09T18:42:19.595228+00:00",
+  "count": 137,
   "alerts": [
+    {
+      "type": "price_range_update",
+      "company": "Iambic Therapeutics, Inc.",
+      "cik": "0001997038",
+      "filing_id": "s1:0001997038",
+      "form": "S-1/A",
+      "filed": "2026-10-08",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "Preliminary IPO price range changed to $15.00–$17.00.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1997038/000119312526417416/0001193125-26-417416-index.htm",
+      "detected_at": "2026-10-09T18:42:19.594803+00:00",
+      "new_value": "$15.00–$17.00",
+      "key": "price_range_update|s1:0001997038|0001997038|2026-10-08|$15.00–$17.00"
+    },
+    {
+      "type": "priority_escalation",
+      "company": "Iambic Therapeutics, Inc.",
+      "cik": "0001997038",
+      "filing_id": "s1:0001997038",
+      "form": "S-1/A",
+      "filed": "2026-10-08",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "Research priority increased from Medium to High.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1997038/000119312526417416/0001193125-26-417416-index.htm",
+      "detected_at": "2026-10-09T18:42:19.594824+00:00",
+      "old_value": "Medium",
+      "new_value": "High",
+      "key": "priority_escalation|s1:0001997038|0001997038|2026-10-08|High"
+    },
     {
       "type": "new_prepricing",
       "company": "Centinel Spine Holdco, Inc.",

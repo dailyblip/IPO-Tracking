@@ -1,7 +1,33 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-09T18:21:47.571354+00:00",
+  "updated_at": "2026-10-09T18:42:19.595158+00:00",
   "items": {
+    "s1:0001997038": {
+      "id": "s1:0001997038",
+      "cik": "0001997038",
+      "company": "Iambic Therapeutics, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-08",
+      "stage": "pre-pricing",
+      "price_range": "$15.00–$17.00",
+      "filing_price": "$15.00–$17.00",
+      "priority": "High",
+      "value": 150000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1997038/000119312526417416/0001193125-26-417416-index.htm"
+    },
+    "s1:0002141616": {
+      "id": "s1:0002141616",
+      "cik": "0002141616",
+      "company": "Amaero Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-08",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526417950/0001193125-26-417950-index.htm"
+    },
     "s1:0002002988": {
       "id": "s1:0002002988",
       "cik": "0002002988",
@@ -236,19 +262,6 @@
       "value": 240000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026062794/0001628280-26-062794-index.htm"
     },
-    "s1:0001997038": {
-      "id": "s1:0001997038",
-      "cik": "0001997038",
-      "company": "Iambic Therapeutics, Inc.",
-      "form": "S-1",
-      "filed": "2026-09-21",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1997038/000119312526396704/0001193125-26-396704-index.htm"
-    },
     "s1:0002113640": {
       "id": "s1:0002113640",
       "cik": "0002113640",
@@ -274,19 +287,6 @@
       "priority": "Medium",
       "value": 350000010.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526395670/0001193125-26-395670-index.htm"
-    },
-    "s1:0002141616": {
-      "id": "s1:0002141616",
-      "cik": "0002141616",
-      "company": "Amaero Inc.",
-      "form": "S-1/A",
-      "filed": "2026-09-18",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526395150/0001193125-26-395150-index.htm"
     },
     "s1:0001880995": {
       "id": "s1:0001880995",
@@ -1317,6 +1317,20 @@
     }
   },
   "ciks": {
+    "0001997038": {
+      "company": "Iambic Therapeutics, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001997038",
+      "last_filed": "2026-10-08",
+      "missing_runs": 0
+    },
+    "0002141616": {
+      "company": "Amaero Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002141616",
+      "last_filed": "2026-10-08",
+      "missing_runs": 0
+    },
     "0002002988": {
       "company": "Retension Pharmaceuticals, Inc.",
       "stage": "pre-pricing",
@@ -1443,13 +1457,6 @@
       "last_filed": "2026-09-21",
       "missing_runs": 0
     },
-    "0001997038": {
-      "company": "Iambic Therapeutics, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001997038",
-      "last_filed": "2026-09-21",
-      "missing_runs": 0
-    },
     "0002113640": {
       "company": "VME Companies, Inc.",
       "stage": "pre-pricing",
@@ -1461,13 +1468,6 @@
       "company": "Electra Therapeutics, Inc.",
       "stage": "priced",
       "last_filing_id": "0001193125-26-395670",
-      "last_filed": "2026-09-18",
-      "missing_runs": 0
-    },
-    "0002141616": {
-      "company": "Amaero Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002141616",
       "last_filed": "2026-09-18",
       "missing_runs": 0
     },
