@@ -1,8 +1,38 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-09T18:42:19.595228+00:00",
-  "count": 137,
+  "generated_at": "2026-10-12T21:13:47.633060+00:00",
+  "count": 139,
   "alerts": [
+    {
+      "type": "ipo_priced",
+      "company": "TRex Bio, Inc.",
+      "cik": "0002139097",
+      "filing_id": "0001193125-26-419203",
+      "form": "424B4",
+      "filed": "2026-10-09",
+      "stage": "priced",
+      "priority": "Medium",
+      "summary": "IPO advanced from pre-pricing monitoring to a filed 424B4.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2139097/000119312526419203/0001193125-26-419203-index.htm",
+      "detected_at": "2026-10-12T21:13:47.632825+00:00",
+      "new_value": "$117M",
+      "key": "ipo_priced|0001193125-26-419203|0002139097|2026-10-09|$117M"
+    },
+    {
+      "type": "ipo_priced",
+      "company": "Retension Pharmaceuticals, Inc.",
+      "cik": "0002002988",
+      "filing_id": "0001213900-26-108587",
+      "form": "424B4",
+      "filed": "2026-10-09",
+      "stage": "priced",
+      "priority": "Low",
+      "summary": "IPO advanced from pre-pricing monitoring to a filed 424B4.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2002988/000121390026108587/0001213900-26-108587-index.htm",
+      "detected_at": "2026-10-12T21:13:47.632852+00:00",
+      "new_value": "$45M",
+      "key": "ipo_priced|0001213900-26-108587|0002002988|2026-10-09|$45M"
+    },
     {
       "type": "price_range_update",
       "company": "Iambic Therapeutics, Inc.",

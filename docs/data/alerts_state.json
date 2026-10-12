@@ -1,7 +1,33 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-09T18:42:19.595158+00:00",
+  "updated_at": "2026-10-12T21:13:47.633023+00:00",
   "items": {
+    "0001193125-26-419203": {
+      "id": "0001193125-26-419203",
+      "cik": "0002139097",
+      "company": "TRex Bio, Inc.",
+      "form": "424B4",
+      "filed": "2026-10-09",
+      "stage": "priced",
+      "price_range": "14-16",
+      "filing_price": "14-16",
+      "priority": "Medium",
+      "value": 116666676.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2139097/000119312526419203/0001193125-26-419203-index.htm"
+    },
+    "0001213900-26-108587": {
+      "id": "0001213900-26-108587",
+      "cik": "0002002988",
+      "company": "Retension Pharmaceuticals, Inc.",
+      "form": "424B4",
+      "filed": "2026-10-09",
+      "stage": "priced",
+      "price_range": "11-13",
+      "filing_price": "11-13",
+      "priority": "Low",
+      "value": 45000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2002988/000121390026108587/0001213900-26-108587-index.htm"
+    },
     "s1:0001997038": {
       "id": "s1:0001997038",
       "cik": "0001997038",
@@ -28,19 +54,6 @@
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526417950/0001193125-26-417950-index.htm"
     },
-    "s1:0002002988": {
-      "id": "s1:0002002988",
-      "cik": "0002002988",
-      "company": "Retension Pharmaceuticals, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-10-07",
-      "stage": "pre-pricing",
-      "price_range": "$11.00–$13.00",
-      "filing_price": "$11.00–$13.00",
-      "priority": "High",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2002988/000121390026107572/0001213900-26-107572-index.htm"
-    },
     "s1:0002132065": {
       "id": "s1:0002132065",
       "cik": "0002132065",
@@ -53,19 +66,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2132065/000110465926114375/0001104659-26-114375-index.htm"
-    },
-    "s1:0002139097": {
-      "id": "s1:0002139097",
-      "cik": "0002139097",
-      "company": "TRex Bio, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-10-05",
-      "stage": "pre-pricing",
-      "price_range": "$14.00–$16.00",
-      "filing_price": "$14.00–$16.00",
-      "priority": "High",
-      "value": 125000010,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2139097/000119312526413060/0001193125-26-413060-index.htm"
     },
     "s1:0002108671": {
       "id": "s1:0002108671",
@@ -1276,6 +1276,32 @@
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
     },
+    "s1:0002002988": {
+      "id": "s1:0002002988",
+      "cik": "0002002988",
+      "company": "Retension Pharmaceuticals, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-07",
+      "stage": "pre-pricing",
+      "price_range": "$11.00–$13.00",
+      "filing_price": "$11.00–$13.00",
+      "priority": "High",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2002988/000121390026107572/0001213900-26-107572-index.htm"
+    },
+    "s1:0002139097": {
+      "id": "s1:0002139097",
+      "cik": "0002139097",
+      "company": "TRex Bio, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-05",
+      "stage": "pre-pricing",
+      "price_range": "$14.00–$16.00",
+      "filing_price": "$14.00–$16.00",
+      "priority": "High",
+      "value": 125000010,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2139097/000119312526413060/0001193125-26-413060-index.htm"
+    },
     "s1:0001802369": {
       "id": "s1:0001802369",
       "cik": "0001802369",
@@ -1317,6 +1343,20 @@
     }
   },
   "ciks": {
+    "0002139097": {
+      "company": "TRex Bio, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-419203",
+      "last_filed": "2026-10-09",
+      "missing_runs": 0
+    },
+    "0002002988": {
+      "company": "Retension Pharmaceuticals, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001213900-26-108587",
+      "last_filed": "2026-10-09",
+      "missing_runs": 0
+    },
     "0001997038": {
       "company": "Iambic Therapeutics, Inc.",
       "stage": "pre-pricing",
@@ -1331,25 +1371,11 @@
       "last_filed": "2026-10-08",
       "missing_runs": 0
     },
-    "0002002988": {
-      "company": "Retension Pharmaceuticals, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002002988",
-      "last_filed": "2026-10-07",
-      "missing_runs": 0
-    },
     "0002132065": {
       "company": "Centinel Spine Holdco, Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002132065",
       "last_filed": "2026-10-07",
-      "missing_runs": 0
-    },
-    "0002139097": {
-      "company": "TRex Bio, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002139097",
-      "last_filed": "2026-10-05",
       "missing_runs": 0
     },
     "0002108671": {
