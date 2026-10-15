@@ -1,8 +1,23 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-14T17:20:13.533494+00:00",
-  "count": 139,
+  "generated_at": "2026-10-15T16:54:54.317975+00:00",
+  "count": 140,
   "alerts": [
+    {
+      "type": "ipo_priced",
+      "company": "Amaero Inc.",
+      "cik": "0002141616",
+      "filing_id": "0001193125-26-422334",
+      "form": "424B4",
+      "filed": "2026-10-15",
+      "stage": "priced",
+      "priority": "Low",
+      "summary": "IPO advanced from pre-pricing monitoring to a filed 424B4.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526422334/0001193125-26-422334-index.htm",
+      "detected_at": "2026-10-15T16:54:54.317738+00:00",
+      "new_value": "$20M",
+      "key": "ipo_priced|0001193125-26-422334|0002141616|2026-10-15|$20M"
+    },
     {
       "type": "ipo_priced",
       "company": "TRex Bio, Inc.",
