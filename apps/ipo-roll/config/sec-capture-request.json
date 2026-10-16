@@ -1,0 +1,8 @@
+{
+  "version": "sec-discovery-request/1",
+  "request_id": "2026-09-28-independent-daily-discovery-03",
+  "start": "2026-09-25",
+  "end": "2026-09-28",
+  "capture_limit": 4,
+  "engine_baseline_commit": "d453172852c7951dd6cf3e8f0c8a3c1e3a9ec252"
+}
