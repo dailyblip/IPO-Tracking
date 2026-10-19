@@ -1,7 +1,20 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-16T16:52:00.192911+00:00",
+  "updated_at": "2026-10-19T18:52:57.965237+00:00",
   "items": {
+    "0001104659-26-116636": {
+      "id": "0001104659-26-116636",
+      "cik": "0002143850",
+      "company": "City Therapeutics, Inc.",
+      "form": "424B4",
+      "filed": "2026-10-16",
+      "stage": "priced",
+      "price_range": "17-19",
+      "filing_price": "17-19",
+      "priority": "High",
+      "value": 199999998.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2143850/000110465926116636/0001104659-26-116636-index.htm"
+    },
     "0001193125-26-422865": {
       "id": "0001193125-26-422865",
       "cik": "0001997038",
@@ -196,19 +209,6 @@
       "priority": "High",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2136571/000213657126000005/0002136571-26-000005-index.htm"
-    },
-    "s1:0002143850": {
-      "id": "s1:0002143850",
-      "cik": "0002143850",
-      "company": "City Therapeutics, Inc.",
-      "form": "S-1",
-      "filed": "2026-09-24",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2143850/000110465926110430/0001104659-26-110430-index.htm"
     },
     "s1:0002125056": {
       "id": "s1:0002125056",
@@ -1276,6 +1276,19 @@
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
     },
+    "s1:0002143850": {
+      "id": "s1:0002143850",
+      "cik": "0002143850",
+      "company": "City Therapeutics, Inc.",
+      "form": "S-1",
+      "filed": "2026-09-24",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2143850/000110465926110430/0001104659-26-110430-index.htm"
+    },
     "s1:0001997038": {
       "id": "s1:0001997038",
       "cik": "0001997038",
@@ -1369,6 +1382,13 @@
     }
   },
   "ciks": {
+    "0002143850": {
+      "company": "City Therapeutics, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001104659-26-116636",
+      "last_filed": "2026-10-16",
+      "missing_runs": 0
+    },
     "0001997038": {
       "company": "Iambic Therapeutics, Inc.",
       "stage": "priced",
@@ -1471,13 +1491,6 @@
       "company": "Evmand Corp",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002136571",
-      "last_filed": "2026-09-24",
-      "missing_runs": 0
-    },
-    "0002143850": {
-      "company": "City Therapeutics, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002143850",
       "last_filed": "2026-09-24",
       "missing_runs": 0
     },

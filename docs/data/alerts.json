@@ -1,8 +1,23 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-16T16:52:00.192957+00:00",
-  "count": 141,
+  "generated_at": "2026-10-19T18:52:57.965301+00:00",
+  "count": 142,
   "alerts": [
+    {
+      "type": "ipo_priced",
+      "company": "City Therapeutics, Inc.",
+      "cik": "0002143850",
+      "filing_id": "0001104659-26-116636",
+      "form": "424B4",
+      "filed": "2026-10-16",
+      "stage": "priced",
+      "priority": "High",
+      "summary": "IPO advanced from pre-pricing monitoring to a filed 424B4.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2143850/000110465926116636/0001104659-26-116636-index.htm",
+      "detected_at": "2026-10-19T18:52:57.964894+00:00",
+      "new_value": "$200M",
+      "key": "ipo_priced|0001104659-26-116636|0002143850|2026-10-16|$200M"
+    },
     {
       "type": "ipo_priced",
       "company": "Iambic Therapeutics, Inc.",
