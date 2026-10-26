@@ -1,7 +1,137 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-23T16:40:02.658115+00:00",
+  "updated_at": "2026-10-26T18:52:13.204882+00:00",
   "items": {
+    "s1:0002152813": {
+      "id": "s1:0002152813",
+      "cik": "0002152813",
+      "company": "MFB Bancorp, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-23",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152813/000110465926118481/0001104659-26-118481-index.htm"
+    },
+    "0001628280-26-067048": {
+      "id": "0001628280-26-067048",
+      "cik": "0001806540",
+      "company": "Lycia Therapeutics, Inc.",
+      "form": "424B4",
+      "filed": "2026-10-23",
+      "stage": "priced",
+      "price_range": "16-18",
+      "filing_price": "16-18",
+      "priority": "Medium",
+      "value": 317520000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1806540/000162828026067048/0001628280-26-067048-index.htm"
+    },
+    "s1:0002152644": {
+      "id": "s1:0002152644",
+      "cik": "0002152644",
+      "company": "Hometown Financial Group, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-23",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": "$10.00",
+      "priority": "High",
+      "value": 600000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526430519/0001193125-26-430519-index.htm"
+    },
+    "s1:0002124080": {
+      "id": "s1:0002124080",
+      "cik": "0002124080",
+      "company": "Aspen Neuroscience, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-22",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124080/000119312526428300/0001193125-26-428300-index.htm"
+    },
+    "s1:0001900851": {
+      "id": "s1:0001900851",
+      "cik": "0001900851",
+      "company": "Ambitious Entertainment, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-22",
+      "stage": "pre-pricing",
+      "price_range": "$4.00–$5.00",
+      "filing_price": "$4.00–$5.00",
+      "priority": "High",
+      "value": 18000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1900851/000149315226048068/0001493152-26-048068-index.htm"
+    },
+    "s1:0002141583": {
+      "id": "s1:0002141583",
+      "cik": "0002141583",
+      "company": "Rezera Inc.",
+      "form": "S-1",
+      "filed": "2026-10-21",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2141583/000110465926117853/0001104659-26-117853-index.htm"
+    },
+    "s1:0002142855": {
+      "id": "s1:0002142855",
+      "cik": "0002142855",
+      "company": "PBT Land & Minerals, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-21",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2142855/000121390026111162/0001213900-26-111162-index.htm"
+    },
+    "s1:0001070965": {
+      "id": "s1:0001070965",
+      "cik": "0001070965",
+      "company": "Georgia Banking Co Inc",
+      "form": "S-1/A",
+      "filed": "2026-10-20",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1070965/000110465926117474/0001104659-26-117474-index.htm"
+    },
+    "s1:0002150122": {
+      "id": "s1:0002150122",
+      "cik": "0002150122",
+      "company": "Talyxor Corp",
+      "form": "S-1",
+      "filed": "2026-10-16",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2150122/000215012226000004/0002150122-26-000004-index.htm"
+    },
+    "s1:0002136571": {
+      "id": "s1:0002136571",
+      "cik": "0002136571",
+      "company": "Evmand Corp",
+      "form": "S-1/A",
+      "filed": "2026-10-16",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": "$0.06",
+      "priority": "High",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2136571/000213657126000007/0002136571-26-000007-index.htm"
+    },
     "0001104659-26-116636": {
       "id": "0001104659-26-116636",
       "cik": "0002143850",
@@ -40,6 +170,84 @@
       "priority": "Low",
       "value": 20000003,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526422334/0001193125-26-422334-index.htm"
+    },
+    "s1:0002153476": {
+      "id": "s1:0002153476",
+      "cik": "0002153476",
+      "company": "Tattvance Corp",
+      "form": "S-1",
+      "filed": "2026-10-14",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2153476/000117152026000307/0001171520-26-000307-index.htm"
+    },
+    "s1:0002091680": {
+      "id": "s1:0002091680",
+      "cik": "0002091680",
+      "company": "Bitari Inc",
+      "form": "S-1/A",
+      "filed": "2026-10-14",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": "$7.00",
+      "priority": "High",
+      "value": 30000005,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526004746/0001185185-26-004746-index.htm"
+    },
+    "s1:0002113640": {
+      "id": "s1:0002113640",
+      "cik": "0002113640",
+      "company": "VME Companies, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-13",
+      "stage": "pre-pricing",
+      "price_range": "$4.00–$5.00",
+      "filing_price": "$4.00–$5.00",
+      "priority": "High",
+      "value": 18000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2113640/000157587226000691/0001575872-26-000691-index.htm"
+    },
+    "s1:0001966126": {
+      "id": "s1:0001966126",
+      "cik": "0001966126",
+      "company": "NuvOx Therapeutics, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-13",
+      "stage": "pre-pricing",
+      "price_range": "$6.00–$8.00",
+      "filing_price": "$6.00–$8.00",
+      "priority": "High",
+      "value": 20020000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1966126/000121390026108590/0001213900-26-108590-index.htm"
+    },
+    "s1:0002159678": {
+      "id": "s1:0002159678",
+      "cik": "0002159678",
+      "company": "Apex Treasury Corp II",
+      "form": "S-1",
+      "filed": "2026-10-13",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2159678/000121390026108751/0001213900-26-108751-index.htm"
+    },
+    "s1:0001834868": {
+      "id": "s1:0001834868",
+      "cik": "0001834868",
+      "company": "Alternative Ballistics Corp",
+      "form": "S-1",
+      "filed": "2026-10-13",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1834868/000149315226046881/0001493152-26-046881-index.htm"
     },
     "0001193125-26-419203": {
       "id": "0001193125-26-419203",
@@ -93,58 +301,6 @@
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226045717/0001493152-26-045717-index.htm"
     },
-    "s1:0001806540": {
-      "id": "s1:0001806540",
-      "cik": "0001806540",
-      "company": "Lycia Therapeutics, Inc.",
-      "form": "S-1",
-      "filed": "2026-10-05",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1806540/000162828026064973/0001628280-26-064973-index.htm"
-    },
-    "s1:0001070965": {
-      "id": "s1:0001070965",
-      "cik": "0001070965",
-      "company": "Georgia Banking Co Inc",
-      "form": "S-1",
-      "filed": "2026-10-02",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1070965/000110465926113366/0001104659-26-113366-index.htm"
-    },
-    "s1:0001900851": {
-      "id": "s1:0001900851",
-      "cik": "0001900851",
-      "company": "Ambitious Entertainment, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-09-30",
-      "stage": "pre-pricing",
-      "price_range": "$4.00–$5.00",
-      "filing_price": "$4.00–$5.00",
-      "priority": "High",
-      "value": 18000000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1900851/000149315226045063/0001493152-26-045063-index.htm"
-    },
-    "s1:0002091680": {
-      "id": "s1:0002091680",
-      "cik": "0002091680",
-      "company": "Bitari Inc",
-      "form": "S-1/A",
-      "filed": "2026-09-29",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": "$7.00",
-      "priority": "High",
-      "value": 30000005,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526004385/0001185185-26-004385-index.htm"
-    },
     "s1:0002146369": {
       "id": "s1:0002146369",
       "cik": "0002146369",
@@ -196,19 +352,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2084031/000182912626010431/0001829126-26-010431-index.htm"
-    },
-    "s1:0002136571": {
-      "id": "s1:0002136571",
-      "cik": "0002136571",
-      "company": "Evmand Corp",
-      "form": "S-1/A",
-      "filed": "2026-09-24",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": "$0.06",
-      "priority": "High",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2136571/000213657126000005/0002136571-26-000005-index.htm"
     },
     "s1:0002125056": {
       "id": "s1:0002125056",
@@ -262,19 +405,6 @@
       "value": 240000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2124472/000162828026062794/0001628280-26-062794-index.htm"
     },
-    "s1:0002113640": {
-      "id": "s1:0002113640",
-      "cik": "0002113640",
-      "company": "VME Companies, Inc.",
-      "form": "S-1",
-      "filed": "2026-09-18",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2113640/000157587226000653/0001575872-26-000653-index.htm"
-    },
     "0001193125-26-395670": {
       "id": "0001193125-26-395670",
       "cik": "0002088082",
@@ -301,32 +431,6 @@
       "value": 33000000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026101026/0001213900-26-101026-index.htm"
     },
-    "s1:0001966126": {
-      "id": "s1:0001966126",
-      "cik": "0001966126",
-      "company": "NuvOx Therapeutics, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-09-16",
-      "stage": "pre-pricing",
-      "price_range": "$6.00–$8.00",
-      "filing_price": "$6.00–$8.00",
-      "priority": "High",
-      "value": 20020000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1966126/000121390026100586/0001213900-26-100586-index.htm"
-    },
-    "s1:0002152813": {
-      "id": "s1:0002152813",
-      "cik": "0002152813",
-      "company": "MFB Bancorp, Inc.",
-      "form": "S-1",
-      "filed": "2026-09-14",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152813/000110465926107563/0001104659-26-107563-index.htm"
-    },
     "s1:0002065821": {
       "id": "s1:0002065821",
       "cik": "0002065821",
@@ -352,19 +456,6 @@
       "priority": "High",
       "value": 665000000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2125355/000162828026061664/0001628280-26-061664-index.htm"
-    },
-    "s1:0002152644": {
-      "id": "s1:0002152644",
-      "cik": "0002152644",
-      "company": "Hometown Financial Group, Inc.",
-      "form": "S-1",
-      "filed": "2026-09-10",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": "$10.00",
-      "priority": "High",
-      "value": 600000000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526388025/0001193125-26-388025-index.htm"
     },
     "s1:0002104277": {
       "id": "s1:0002104277",
@@ -1276,6 +1367,19 @@
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
     },
+    "s1:0001806540": {
+      "id": "s1:0001806540",
+      "cik": "0001806540",
+      "company": "Lycia Therapeutics, Inc.",
+      "form": "S-1",
+      "filed": "2026-10-05",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1806540/000162828026064973/0001628280-26-064973-index.htm"
+    },
     "s1:0002143850": {
       "id": "s1:0002143850",
       "cik": "0002143850",
@@ -1382,6 +1486,76 @@
     }
   },
   "ciks": {
+    "0002152813": {
+      "company": "MFB Bancorp, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002152813",
+      "last_filed": "2026-10-23",
+      "missing_runs": 0
+    },
+    "0001806540": {
+      "company": "Lycia Therapeutics, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-067048",
+      "last_filed": "2026-10-23",
+      "missing_runs": 0
+    },
+    "0002152644": {
+      "company": "Hometown Financial Group, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002152644",
+      "last_filed": "2026-10-23",
+      "missing_runs": 0
+    },
+    "0002124080": {
+      "company": "Aspen Neuroscience, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002124080",
+      "last_filed": "2026-10-22",
+      "missing_runs": 0
+    },
+    "0001900851": {
+      "company": "Ambitious Entertainment, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001900851",
+      "last_filed": "2026-10-22",
+      "missing_runs": 0
+    },
+    "0002141583": {
+      "company": "Rezera Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002141583",
+      "last_filed": "2026-10-21",
+      "missing_runs": 0
+    },
+    "0002142855": {
+      "company": "PBT Land & Minerals, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002142855",
+      "last_filed": "2026-10-21",
+      "missing_runs": 0
+    },
+    "0001070965": {
+      "company": "Georgia Banking Co Inc",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001070965",
+      "last_filed": "2026-10-20",
+      "missing_runs": 0
+    },
+    "0002150122": {
+      "company": "Talyxor Corp",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002150122",
+      "last_filed": "2026-10-16",
+      "missing_runs": 0
+    },
+    "0002136571": {
+      "company": "Evmand Corp",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002136571",
+      "last_filed": "2026-10-16",
+      "missing_runs": 0
+    },
     "0002143850": {
       "company": "City Therapeutics, Inc.",
       "stage": "priced",
@@ -1401,6 +1575,48 @@
       "stage": "priced",
       "last_filing_id": "0001193125-26-422334",
       "last_filed": "2026-10-15",
+      "missing_runs": 0
+    },
+    "0002153476": {
+      "company": "Tattvance Corp",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002153476",
+      "last_filed": "2026-10-14",
+      "missing_runs": 0
+    },
+    "0002091680": {
+      "company": "Bitari Inc",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002091680",
+      "last_filed": "2026-10-14",
+      "missing_runs": 0
+    },
+    "0002113640": {
+      "company": "VME Companies, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002113640",
+      "last_filed": "2026-10-13",
+      "missing_runs": 0
+    },
+    "0001966126": {
+      "company": "NuvOx Therapeutics, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001966126",
+      "last_filed": "2026-10-13",
+      "missing_runs": 0
+    },
+    "0002159678": {
+      "company": "Apex Treasury Corp II",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002159678",
+      "last_filed": "2026-10-13",
+      "missing_runs": 0
+    },
+    "0001834868": {
+      "company": "Alternative Ballistics Corp",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001834868",
+      "last_filed": "2026-10-13",
       "missing_runs": 0
     },
     "0002139097": {
@@ -1431,34 +1647,6 @@
       "last_filed": "2026-10-05",
       "missing_runs": 0
     },
-    "0001806540": {
-      "company": "Lycia Therapeutics, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001806540",
-      "last_filed": "2026-10-05",
-      "missing_runs": 0
-    },
-    "0001070965": {
-      "company": "Georgia Banking Co Inc",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001070965",
-      "last_filed": "2026-10-02",
-      "missing_runs": 0
-    },
-    "0001900851": {
-      "company": "Ambitious Entertainment, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001900851",
-      "last_filed": "2026-09-30",
-      "missing_runs": 0
-    },
-    "0002091680": {
-      "company": "Bitari Inc",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002091680",
-      "last_filed": "2026-09-29",
-      "missing_runs": 0
-    },
     "0002146369": {
       "company": "Londonla Inc.",
       "stage": "pre-pricing",
@@ -1485,13 +1673,6 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002084031",
       "last_filed": "2026-09-25",
-      "missing_runs": 0
-    },
-    "0002136571": {
-      "company": "Evmand Corp",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002136571",
-      "last_filed": "2026-09-24",
       "missing_runs": 0
     },
     "0002125056": {
@@ -1522,13 +1703,6 @@
       "last_filed": "2026-09-21",
       "missing_runs": 0
     },
-    "0002113640": {
-      "company": "VME Companies, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002113640",
-      "last_filed": "2026-09-18",
-      "missing_runs": 0
-    },
     "0002088082": {
       "company": "Electra Therapeutics, Inc.",
       "stage": "priced",
@@ -1543,20 +1717,6 @@
       "last_filed": "2026-09-17",
       "missing_runs": 0
     },
-    "0001966126": {
-      "company": "NuvOx Therapeutics, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001966126",
-      "last_filed": "2026-09-16",
-      "missing_runs": 0
-    },
-    "0002152813": {
-      "company": "MFB Bancorp, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002152813",
-      "last_filed": "2026-09-14",
-      "missing_runs": 0
-    },
     "0002065821": {
       "company": "Little West Holdings Inc.",
       "stage": "pre-pricing",
@@ -1569,13 +1729,6 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002125355",
       "last_filed": "2026-09-14",
-      "missing_runs": 0
-    },
-    "0002152644": {
-      "company": "Hometown Financial Group, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002152644",
-      "last_filed": "2026-09-10",
       "missing_runs": 0
     },
     "0002104277": {
