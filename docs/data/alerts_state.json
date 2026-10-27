@@ -1,7 +1,98 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-26T18:52:35.382051+00:00",
+  "updated_at": "2026-10-27T18:09:34.050485+00:00",
   "items": {
+    "s1:0002146369": {
+      "id": "s1:0002146369",
+      "cik": "0002146369",
+      "company": "Londonla Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-26",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": "$0.10",
+      "priority": "High",
+      "value": 300000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2146369/000147793226006459/0001477932-26-006459-index.htm"
+    },
+    "s1:0001973276": {
+      "id": "s1:0001973276",
+      "cik": "0001973276",
+      "company": "LIS Technologies Inc",
+      "form": "S-1",
+      "filed": "2026-10-26",
+      "stage": "pre-pricing",
+      "price_range": "$5.00–$7.00",
+      "filing_price": "$5.00–$7.00",
+      "priority": "High",
+      "value": 17000004,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1973276/000149315226048438/0001493152-26-048438-index.htm"
+    },
+    "s1:0001070965": {
+      "id": "s1:0001070965",
+      "cik": "0001070965",
+      "company": "Georgia Banking Co Inc",
+      "form": "S-1/A",
+      "filed": "2026-10-26",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1070965/000110465926118704/0001104659-26-118704-index.htm"
+    },
+    "s1:0002091680": {
+      "id": "s1:0002091680",
+      "cik": "0002091680",
+      "company": "Bitari Inc",
+      "form": "S-1/A",
+      "filed": "2026-10-26",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": "$7.00",
+      "priority": "High",
+      "value": 30000005,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526004983/0001185185-26-004983-index.htm"
+    },
+    "s1:0002044950": {
+      "id": "s1:0002044950",
+      "cik": "0002044950",
+      "company": "Bambusa Therapeutics, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-26",
+      "stage": "pre-pricing",
+      "price_range": "$15.00–$17.00",
+      "filing_price": "$15.00–$17.00",
+      "priority": "High",
+      "value": 150000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2044950/000162828026067119/0001628280-26-067119-index.htm"
+    },
+    "s1:0002124080": {
+      "id": "s1:0002124080",
+      "cik": "0002124080",
+      "company": "Aspen Neuroscience, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-26",
+      "stage": "pre-pricing",
+      "price_range": "$15.00–$17.00",
+      "filing_price": "$15.00–$17.00",
+      "priority": "High",
+      "value": 150000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124080/000119312526431023/0001193125-26-431023-index.htm"
+    },
+    "s1:0002130357": {
+      "id": "s1:0002130357",
+      "cik": "0002130357",
+      "company": "Anthropic, PBC",
+      "form": "S-1",
+      "filed": "2026-10-26",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026067168/0001628280-26-067168-index.htm"
+    },
     "s1:0002152813": {
       "id": "s1:0002152813",
       "cik": "0002152813",
@@ -41,19 +132,6 @@
       "value": 600000000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2152644/000119312526430519/0001193125-26-430519-index.htm"
     },
-    "s1:0002124080": {
-      "id": "s1:0002124080",
-      "cik": "0002124080",
-      "company": "Aspen Neuroscience, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-10-22",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124080/000119312526428300/0001193125-26-428300-index.htm"
-    },
     "s1:0001900851": {
       "id": "s1:0001900851",
       "cik": "0001900851",
@@ -92,19 +170,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2142855/000121390026111162/0001213900-26-111162-index.htm"
-    },
-    "s1:0001070965": {
-      "id": "s1:0001070965",
-      "cik": "0001070965",
-      "company": "Georgia Banking Co Inc",
-      "form": "S-1/A",
-      "filed": "2026-10-20",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1070965/000110465926117474/0001104659-26-117474-index.htm"
     },
     "s1:0002150122": {
       "id": "s1:0002150122",
@@ -183,19 +248,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2153476/000117152026000307/0001171520-26-000307-index.htm"
-    },
-    "s1:0002091680": {
-      "id": "s1:0002091680",
-      "cik": "0002091680",
-      "company": "Bitari Inc",
-      "form": "S-1/A",
-      "filed": "2026-10-14",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": "$7.00",
-      "priority": "High",
-      "value": 30000005,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526004746/0001185185-26-004746-index.htm"
     },
     "s1:0002113640": {
       "id": "s1:0002113640",
@@ -300,19 +352,6 @@
       "priority": "Medium",
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226045717/0001493152-26-045717-index.htm"
-    },
-    "s1:0002146369": {
-      "id": "s1:0002146369",
-      "cik": "0002146369",
-      "company": "Londonla Inc.",
-      "form": "S-1/A",
-      "filed": "2026-09-28",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": "$0.10",
-      "priority": "High",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2146369/000209757026000030/0002097570-26-000030-index.htm"
     },
     "s1:0001838003": {
       "id": "s1:0001838003",
@@ -1486,6 +1525,55 @@
     }
   },
   "ciks": {
+    "0002146369": {
+      "company": "Londonla Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002146369",
+      "last_filed": "2026-10-26",
+      "missing_runs": 0
+    },
+    "0001973276": {
+      "company": "LIS Technologies Inc",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001973276",
+      "last_filed": "2026-10-26",
+      "missing_runs": 0
+    },
+    "0001070965": {
+      "company": "Georgia Banking Co Inc",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001070965",
+      "last_filed": "2026-10-26",
+      "missing_runs": 0
+    },
+    "0002091680": {
+      "company": "Bitari Inc",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002091680",
+      "last_filed": "2026-10-26",
+      "missing_runs": 0
+    },
+    "0002044950": {
+      "company": "Bambusa Therapeutics, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002044950",
+      "last_filed": "2026-10-26",
+      "missing_runs": 0
+    },
+    "0002124080": {
+      "company": "Aspen Neuroscience, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002124080",
+      "last_filed": "2026-10-26",
+      "missing_runs": 0
+    },
+    "0002130357": {
+      "company": "Anthropic, PBC",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002130357",
+      "last_filed": "2026-10-26",
+      "missing_runs": 0
+    },
     "0002152813": {
       "company": "MFB Bancorp, Inc.",
       "stage": "pre-pricing",
@@ -1507,13 +1595,6 @@
       "last_filed": "2026-10-23",
       "missing_runs": 0
     },
-    "0002124080": {
-      "company": "Aspen Neuroscience, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002124080",
-      "last_filed": "2026-10-22",
-      "missing_runs": 0
-    },
     "0001900851": {
       "company": "Ambitious Entertainment, Inc.",
       "stage": "pre-pricing",
@@ -1533,13 +1614,6 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002142855",
       "last_filed": "2026-10-21",
-      "missing_runs": 0
-    },
-    "0001070965": {
-      "company": "Georgia Banking Co Inc",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001070965",
-      "last_filed": "2026-10-20",
       "missing_runs": 0
     },
     "0002150122": {
@@ -1581,13 +1655,6 @@
       "company": "Tattvance Corp",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002153476",
-      "last_filed": "2026-10-14",
-      "missing_runs": 0
-    },
-    "0002091680": {
-      "company": "Bitari Inc",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002091680",
       "last_filed": "2026-10-14",
       "missing_runs": 0
     },
@@ -1645,13 +1712,6 @@
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002108671",
       "last_filed": "2026-10-05",
-      "missing_runs": 0
-    },
-    "0002146369": {
-      "company": "Londonla Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002146369",
-      "last_filed": "2026-09-28",
       "missing_runs": 0
     },
     "0001838003": {
