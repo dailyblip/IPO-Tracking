@@ -1,7 +1,33 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-28T18:19:22.800840+00:00",
+  "updated_at": "2026-10-28T18:48:46.198345+00:00",
   "items": {
+    "s1:0002084031": {
+      "id": "s1:0002084031",
+      "cik": "0002084031",
+      "company": "Regenlab USA Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-27",
+      "stage": "pre-pricing",
+      "price_range": "$6.00–$8.00",
+      "filing_price": "$6.00–$8.00",
+      "priority": "High",
+      "value": 17500000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2084031/000182912626011539/0001829126-26-011539-index.htm"
+    },
+    "s1:0001880995": {
+      "id": "s1:0001880995",
+      "cik": "0001880995",
+      "company": "Alopexx, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-27",
+      "stage": "pre-pricing",
+      "price_range": "$10.00–$12.00",
+      "filing_price": "$10.00–$12.00",
+      "priority": "High",
+      "value": 33000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026112569/0001213900-26-112569-index.htm"
+    },
     "s1:0002146369": {
       "id": "s1:0002146369",
       "cik": "0002146369",
@@ -379,19 +405,6 @@
       "value": 446250000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526403094/0001193125-26-403094-index.htm"
     },
-    "s1:0002084031": {
-      "id": "s1:0002084031",
-      "cik": "0002084031",
-      "company": "Regenlab USA Inc.",
-      "form": "S-1",
-      "filed": "2026-09-25",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2084031/000182912626010431/0001829126-26-010431-index.htm"
-    },
     "s1:0002125056": {
       "id": "s1:0002125056",
       "cik": "0002125056",
@@ -456,19 +469,6 @@
       "priority": "Medium",
       "value": 350000010.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2088082/000119312526395670/0001193125-26-395670-index.htm"
-    },
-    "s1:0001880995": {
-      "id": "s1:0001880995",
-      "cik": "0001880995",
-      "company": "Alopexx, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-09-17",
-      "stage": "pre-pricing",
-      "price_range": "$10.00–$12.00",
-      "filing_price": "$10.00–$12.00",
-      "priority": "High",
-      "value": 33000000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026101026/0001213900-26-101026-index.htm"
     },
     "s1:0002065821": {
       "id": "s1:0002065821",
@@ -1525,6 +1525,20 @@
     }
   },
   "ciks": {
+    "0002084031": {
+      "company": "Regenlab USA Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002084031",
+      "last_filed": "2026-10-27",
+      "missing_runs": 0
+    },
+    "0001880995": {
+      "company": "Alopexx, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001880995",
+      "last_filed": "2026-10-27",
+      "missing_runs": 0
+    },
     "0002146369": {
       "company": "Londonla Inc.",
       "stage": "pre-pricing",
@@ -1728,13 +1742,6 @@
       "last_filed": "2026-09-28",
       "missing_runs": 0
     },
-    "0002084031": {
-      "company": "Regenlab USA Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002084031",
-      "last_filed": "2026-09-25",
-      "missing_runs": 0
-    },
     "0002125056": {
       "company": "Wella Co",
       "stage": "pre-pricing",
@@ -1768,13 +1775,6 @@
       "stage": "priced",
       "last_filing_id": "0001193125-26-395670",
       "last_filed": "2026-09-18",
-      "missing_runs": 0
-    },
-    "0001880995": {
-      "company": "Alopexx, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001880995",
-      "last_filed": "2026-09-17",
       "missing_runs": 0
     },
     "0002065821": {

@@ -1,8 +1,39 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-28T18:19:22.800928+00:00",
-  "count": 157,
+  "generated_at": "2026-10-28T18:48:46.198439+00:00",
+  "count": 159,
   "alerts": [
+    {
+      "type": "price_range_update",
+      "company": "Regenlab USA Inc.",
+      "cik": "0002084031",
+      "filing_id": "s1:0002084031",
+      "form": "S-1/A",
+      "filed": "2026-10-27",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "Preliminary IPO price range changed to $6.00–$8.00.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2084031/000182912626011539/0001829126-26-011539-index.htm",
+      "detected_at": "2026-10-28T18:48:46.197969+00:00",
+      "new_value": "$6.00–$8.00",
+      "key": "price_range_update|s1:0002084031|0002084031|2026-10-27|$6.00–$8.00"
+    },
+    {
+      "type": "priority_escalation",
+      "company": "Regenlab USA Inc.",
+      "cik": "0002084031",
+      "filing_id": "s1:0002084031",
+      "form": "S-1/A",
+      "filed": "2026-10-27",
+      "stage": "pre-pricing",
+      "priority": "High",
+      "summary": "Research priority increased from Medium to High.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2084031/000182912626011539/0001829126-26-011539-index.htm",
+      "detected_at": "2026-10-28T18:48:46.197992+00:00",
+      "old_value": "Medium",
+      "new_value": "High",
+      "key": "priority_escalation|s1:0002084031|0002084031|2026-10-27|High"
+    },
     {
       "type": "new_prepricing",
       "company": "LIS Technologies Inc",
