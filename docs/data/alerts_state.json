@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-28T18:48:46.198345+00:00",
+  "updated_at": "2026-10-29T18:25:00.604415+00:00",
   "items": {
     "s1:0002084031": {
       "id": "s1:0002084031",
@@ -53,19 +53,6 @@
       "priority": "High",
       "value": 17000004,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1973276/000149315226048438/0001493152-26-048438-index.htm"
-    },
-    "s1:0001070965": {
-      "id": "s1:0001070965",
-      "cik": "0001070965",
-      "company": "Georgia Banking Co Inc",
-      "form": "S-1/A",
-      "filed": "2026-10-26",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1070965/000110465926118704/0001104659-26-118704-index.htm"
     },
     "s1:0002091680": {
       "id": "s1:0002091680",
@@ -1406,6 +1393,19 @@
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
     },
+    "s1:0001070965": {
+      "id": "s1:0001070965",
+      "cik": "0001070965",
+      "company": "Georgia Banking Co Inc",
+      "form": "S-1/A",
+      "filed": "2026-10-26",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1070965/000110465926118704/0001104659-26-118704-index.htm"
+    },
     "s1:0001806540": {
       "id": "s1:0001806540",
       "cik": "0001806540",
@@ -1550,13 +1550,6 @@
       "company": "LIS Technologies Inc",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0001973276",
-      "last_filed": "2026-10-26",
-      "missing_runs": 0
-    },
-    "0001070965": {
-      "company": "Georgia Banking Co Inc",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001070965",
       "last_filed": "2026-10-26",
       "missing_runs": 0
     },
@@ -2280,6 +2273,13 @@
       "last_filing_id": "0001213900-25-120076",
       "last_filed": "2025-12-10",
       "missing_runs": 0
+    },
+    "0001070965": {
+      "company": "Georgia Banking Co Inc",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001070965",
+      "last_filed": "2026-10-26",
+      "missing_runs": 1
     }
   }
 }
