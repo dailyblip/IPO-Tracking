@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-29T18:25:00.604487+00:00",
-  "count": 159,
+  "generated_at": "2026-10-30T18:45:29.570197+00:00",
+  "count": 158,
   "alerts": [
     {
       "type": "price_range_update",
@@ -448,20 +448,6 @@
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1806540/000162828026064973/0001628280-26-064973-index.htm",
       "detected_at": "2026-10-06T18:26:05.353549+00:00",
       "key": "new_prepricing|s1:0001806540|0001806540|2026-10-05|"
-    },
-    {
-      "type": "new_prepricing",
-      "company": "Georgia Banking Co Inc",
-      "cik": "0001070965",
-      "filing_id": "s1:0001070965",
-      "form": "S-1",
-      "filed": "2026-10-02",
-      "stage": "pre-pricing",
-      "priority": "Medium",
-      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1070965/000110465926113366/0001104659-26-113366-index.htm",
-      "detected_at": "2026-10-06T18:26:05.353555+00:00",
-      "key": "new_prepricing|s1:0001070965|0001070965|2026-10-02|"
     },
     {
       "type": "new_prepricing",
