@@ -1,7 +1,33 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-10-30T18:45:29.570129+00:00",
+  "updated_at": "2026-11-02T21:51:04.876197+00:00",
   "items": {
+    "0001628280-26-068563": {
+      "id": "0001628280-26-068563",
+      "cik": "0002044950",
+      "company": "Bambusa Therapeutics, Inc.",
+      "form": "424B4",
+      "filed": "2026-10-30",
+      "stage": "priced",
+      "price_range": "15-17",
+      "filing_price": "15-17",
+      "priority": "Medium",
+      "value": 168888880.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2044950/000162828026068563/0001628280-26-068563-index.htm"
+    },
+    "0001193125-26-441782": {
+      "id": "0001193125-26-441782",
+      "cik": "0002124080",
+      "company": "Aspen Neuroscience, Inc.",
+      "form": "424B4",
+      "filed": "2026-10-30",
+      "stage": "priced",
+      "price_range": "15-17",
+      "filing_price": "15-17",
+      "priority": "Medium",
+      "value": 140625000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124080/000119312526441782/0001193125-26-441782-index.htm"
+    },
     "s1:0002084031": {
       "id": "s1:0002084031",
       "cik": "0002084031",
@@ -66,32 +92,6 @@
       "priority": "High",
       "value": 30000005,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526004983/0001185185-26-004983-index.htm"
-    },
-    "s1:0002044950": {
-      "id": "s1:0002044950",
-      "cik": "0002044950",
-      "company": "Bambusa Therapeutics, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-10-26",
-      "stage": "pre-pricing",
-      "price_range": "$15.00–$17.00",
-      "filing_price": "$15.00–$17.00",
-      "priority": "High",
-      "value": 150000000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2044950/000162828026067119/0001628280-26-067119-index.htm"
-    },
-    "s1:0002124080": {
-      "id": "s1:0002124080",
-      "cik": "0002124080",
-      "company": "Aspen Neuroscience, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-10-26",
-      "stage": "pre-pricing",
-      "price_range": "$15.00–$17.00",
-      "filing_price": "$15.00–$17.00",
-      "priority": "High",
-      "value": 150000000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124080/000119312526431023/0001193125-26-431023-index.htm"
     },
     "s1:0002130357": {
       "id": "s1:0002130357",
@@ -1393,6 +1393,32 @@
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
     },
+    "s1:0002044950": {
+      "id": "s1:0002044950",
+      "cik": "0002044950",
+      "company": "Bambusa Therapeutics, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-26",
+      "stage": "pre-pricing",
+      "price_range": "$15.00–$17.00",
+      "filing_price": "$15.00–$17.00",
+      "priority": "High",
+      "value": 150000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2044950/000162828026067119/0001628280-26-067119-index.htm"
+    },
+    "s1:0002124080": {
+      "id": "s1:0002124080",
+      "cik": "0002124080",
+      "company": "Aspen Neuroscience, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-10-26",
+      "stage": "pre-pricing",
+      "price_range": "$15.00–$17.00",
+      "filing_price": "$15.00–$17.00",
+      "priority": "High",
+      "value": 150000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124080/000119312526431023/0001193125-26-431023-index.htm"
+    },
     "s1:0001806540": {
       "id": "s1:0001806540",
       "cik": "0001806540",
@@ -1512,6 +1538,20 @@
     }
   },
   "ciks": {
+    "0002044950": {
+      "company": "Bambusa Therapeutics, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-068563",
+      "last_filed": "2026-10-30",
+      "missing_runs": 0
+    },
+    "0002124080": {
+      "company": "Aspen Neuroscience, Inc.",
+      "stage": "priced",
+      "last_filing_id": "0001193125-26-441782",
+      "last_filed": "2026-10-30",
+      "missing_runs": 0
+    },
     "0002084031": {
       "company": "Regenlab USA Inc.",
       "stage": "pre-pricing",
@@ -1544,20 +1584,6 @@
       "company": "Bitari Inc",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002091680",
-      "last_filed": "2026-10-26",
-      "missing_runs": 0
-    },
-    "0002044950": {
-      "company": "Bambusa Therapeutics, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002044950",
-      "last_filed": "2026-10-26",
-      "missing_runs": 0
-    },
-    "0002124080": {
-      "company": "Aspen Neuroscience, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002124080",
       "last_filed": "2026-10-26",
       "missing_runs": 0
     },

@@ -1,8 +1,38 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-30T18:45:29.570197+00:00",
-  "count": 158,
+  "generated_at": "2026-11-02T21:51:04.876274+00:00",
+  "count": 160,
   "alerts": [
+    {
+      "type": "ipo_priced",
+      "company": "Bambusa Therapeutics, Inc.",
+      "cik": "0002044950",
+      "filing_id": "0001628280-26-068563",
+      "form": "424B4",
+      "filed": "2026-10-30",
+      "stage": "priced",
+      "priority": "Medium",
+      "summary": "IPO advanced from pre-pricing monitoring to a filed 424B4.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2044950/000162828026068563/0001628280-26-068563-index.htm",
+      "detected_at": "2026-11-02T21:51:04.875827+00:00",
+      "new_value": "$169M",
+      "key": "ipo_priced|0001628280-26-068563|0002044950|2026-10-30|$169M"
+    },
+    {
+      "type": "ipo_priced",
+      "company": "Aspen Neuroscience, Inc.",
+      "cik": "0002124080",
+      "filing_id": "0001193125-26-441782",
+      "form": "424B4",
+      "filed": "2026-10-30",
+      "stage": "priced",
+      "priority": "Medium",
+      "summary": "IPO advanced from pre-pricing monitoring to a filed 424B4.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2124080/000119312526441782/0001193125-26-441782-index.htm",
+      "detected_at": "2026-11-02T21:51:04.875855+00:00",
+      "new_value": "$141M",
+      "key": "ipo_priced|0001193125-26-441782|0002124080|2026-10-30|$141M"
+    },
     {
       "type": "price_range_update",
       "company": "Regenlab USA Inc.",
