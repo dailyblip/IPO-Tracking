@@ -1,0 +1,182 @@
+import copy
+import sys
+import tempfile
+import unittest
+from datetime import date
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parents[1] / 'scripts'))
+import build_people_supplement as m
+
+
+class PeopleSupplementTests(unittest.TestCase):
+    def fixture(self, directory):
+        raw = ('<p>Jordan Example has served as Chief Legal Officer since 2020. Previously Jordan worked at a company overseas.</p>'
+               '<p>Jordan earned a degree from Example University.</p>'
+               '<p>Taylor Sample is currently a director nominee and will join the board after the offering closes. Taylor has prior experience.</p>').encode()
+        text, _ = m.text_blocks(raw)
+        (directory/'objects').mkdir()
+        (directory/'objects'/m.sha(raw)).write_bytes(raw)
+        f = dict(accessionNumber='0000000001-26-000001',form='S-1',filingDate='2026-01-01',fileNumber='333-123456')
+        packet = dict(cik='0000000001',lineage=dict(current=f,root=f,status='metadata_resolved'),documents=[dict(filing=f,source=dict(content_sha256=m.sha(raw)),normalized_text_sha256=m.sha(text.encode()))])
+        review = dict(reviewed_on=date.today().isoformat(),people=[dict(name='Jordan Example',title='Chief Legal Officer',relationship='Executive',identity_reviewed=True,biography_complete_reviewed=True,biography=dict(first=0,last=1),relationship_evidence=dict(first=0,last=0))])
+        return packet, review
+
+    def test_supplement_preserves_complete_biography_and_is_deterministic(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp); p,r=self.fixture(d); manifest,sql=m.build(p,r,d)
+            self.assertIn('Example University',sql)
+            self.assertIn('biography_text',sql)
+            self.assertIn('Canonical source or lineage mismatch',sql)
+            self.assertIn('Biography conflict',sql)
+            self.assertNotIn('insert into research.ownerships',sql)
+            self.assertNotIn('update ',sql.lower())
+            self.assertEqual((manifest,sql),m.build(p,r,d))
+            self.assertFalse(manifest['published'])
+
+    def test_discovery_does_not_require_previously_known_names_or_shareholdings(self):
+        raw = b'<p>Jordan Example has served as Chief Legal Officer since 2020. Previously Jordan worked overseas.</p><p>Taylor Sample is currently a director nominee and will join upon completion. Prior work included accounting.</p>'
+        _, blocks=m.text_blocks(raw)
+        candidates=m.discover(blocks)
+        self.assertEqual([c['name'] for c in candidates],['Jordan Example','Taylor Sample'])
+        self.assertTrue(all(c['review_status']=='unreviewed' and not c['biography_complete'] for c in candidates))
+
+    def test_factual_education_is_not_filtered_by_institution(self):
+        from capture_sec_evidence import biography_candidates
+        from prepare_sec_review import passage
+        for school in ('Stanford University', 'University of Michigan', 'Harvard University'):
+            text, blocks=m.text_blocks(('<p>Jordan Example has served as our Chief Legal Officer since 2020. Jordan earned a degree from '+school+'.</p>').encode())
+            candidates=biography_candidates(blocks, [])
+            self.assertEqual(len(candidates),1)
+            self.assertFalse(candidates[0]['approved'])
+            self.assertIn(school,passage(blocks,0,0,text)['excerpt'])
+
+    def test_credentials_do_not_make_the_same_subject_look_like_two_people(self):
+        from capture_sec_evidence import biography_candidates
+        _,blocks=m.text_blocks(b'<p>Jordan Example, PhD has served as our Chief Medical Officer since 2020. Jordan earned a degree from Example University.</p>')
+        candidates=biography_candidates(blocks,['Jordan Example'])
+        self.assertEqual([p['name'] for p in candidates],['Jordan Example, PhD'])
+        self.assertEqual(candidates[0]['identity_status'],'unverified')
+
+    def test_capture_uses_independent_names_and_flags_partial_biographies(self):
+        from capture_sec_evidence import biography_candidates
+        raw = b'<p>Jordan Example is expected to join our board on completion of this offering. Jordan previously worked in accounting.</p><p>Prior to this offering, there has been no public market for our common stock and no listing has been approved.</p>'
+        _, blocks=m.text_blocks(raw)
+        candidates=biography_candidates(blocks, [])
+        self.assertEqual([c['name'] for c in candidates],['Jordan Example'])
+        self.assertFalse(candidates[0]['biography_complete'])
+        self.assertFalse(candidates[0]['approved'])
+        _, wrapped=m.text_blocks(b'<p>Jordan Example is our Chief Legal Officer.</p><p>Additional biography continues in another block.</p>')
+        self.assertEqual(biography_candidates(wrapped,[])[0]['name'],'Jordan Example')
+
+    def test_coverage_audit_keeps_missing_sources_distinct_from_zero_candidates(self):
+        from audit_people_coverage import audit
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp);p,r=self.fixture(d)
+            h=p['documents'][0]['source']['content_sha256']
+            rows=[dict(offering_id='a',source_sha256=h,people=['Jordan Example']),dict(offering_id='b',source_sha256='0'*64,people=[])]
+            result=audit(rows,[d])
+            self.assertEqual(result['counts']['sources_scanned'],1)
+            self.assertEqual(result['counts']['sources_unavailable'],1)
+            self.assertEqual(result['offerings'][0]['unmatched_candidates'][0]['name'],'Taylor Sample')
+            self.assertNotIn('candidates',result['offerings'][1])
+            (d/'objects'/h).write_bytes(b'corrupt')
+            with self.assertRaises(ValueError):audit(rows,[d])
+
+    def test_rejects_wrong_identity_incomplete_review_and_corrupt_source(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp);p,r=self.fixture(d)
+            for key,val in [('name','Someone Else'),('title','Chief Financial Officer'),('identity_reviewed',False),('biography_complete_reviewed',False),('relationship','Investor')]:
+                bad=copy.deepcopy(r);bad['people'][0][key]=val
+                with self.subTest(key=key),self.assertRaises(ValueError):m.build(p,bad,d)
+            bad=copy.deepcopy(r);bad['people']*=2
+            with self.assertRaises(ValueError):m.build(p,bad,d)
+            bad=copy.deepcopy(p);bad['documents'][0]['normalized_text_sha256']='0'*64
+            with self.assertRaises(ValueError):m.build(bad,r,d)
+            path=d/'objects'/p['documents'][0]['source']['content_sha256'];path.write_bytes(b'corrupt')
+            with self.assertRaises(ValueError):m.build(p,r,d)
+
+    def test_roster_only_record_requires_explicit_missing_biography_disposition(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp);p,r=self.fixture(d);person=r['people'][0];del person['biography']
+            with self.assertRaises(ValueError):m.build(p,r,d)
+            person['biography_status']='not_found_in_reviewed_filing'
+            manifest,sql=m.build(p,r,d)
+            self.assertIsNone(manifest['people'][0]['biography_span'])
+            self.assertNotIn('insert into research.biographies',sql)
+
+    def test_footnote_controller_requires_review_and_never_creates_personal_holdings(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp);p,r=self.fixture(d)
+            raw=b'<p>Alex Controller is the managing member of Example Fund GP and may be deemed to share voting power over securities held by Example Fund.</p>'
+            doc=p['documents'][0]
+            doc['source']['content_sha256']=m.sha(raw)
+            doc['normalized_text_sha256']=m.sha(m.text_blocks(raw)[0].encode())
+            (d/'objects'/m.sha(raw)).write_bytes(raw)
+            person=dict(name='Alex Controller',title='managing member of Example Fund GP',
+                        relationship='Footnote controller',identity_reviewed=True,
+                        relationship_evidence=dict(first=0,last=0),
+                        biography_status='not_found_in_reviewed_filing')
+            r['people']=[person]
+            with self.assertRaisesRegex(ValueError,'control attribution'):m.build(p,r,d)
+            person.update(attribution_reviewed=True,attribution_kind='shared_voting_dispositive',
+                          attribution_reason='Source attributes voting authority over fund securities; no personal economic quantity established.')
+            manifest,sql=m.build(p,r,d)
+            self.assertIsNone(manifest['people'][0]['biography_span'])
+            self.assertIn('Footnote controller',sql)
+            for table in ('ownerships','ownership_components','biographies','claims'):
+                self.assertNotIn('insert into research.'+table,sql)
+            for change in ({'attribution_reviewed':False},{'attribution_kind':'personal_ownership'},
+                           {'attribution_reason':' '},{'name':'Another Person'}):
+                bad=copy.deepcopy(r);bad['people'][0].update(change)
+                with self.subTest(change=change),self.assertRaises(ValueError):m.build(p,bad,d)
+
+    def test_source_name_variant_requires_review_and_literal_relationship(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp);p,r=self.fixture(d)
+            doc=p['documents'][0]
+            raw=(d/'objects'/doc['source']['content_sha256']).read_bytes()
+            raw+=b'<p>J. Example Chief Legal Officer</p>'
+            doc['source']['content_sha256']=m.sha(raw)
+            doc['normalized_text_sha256']=m.sha(m.text_blocks(raw)[0].encode())
+            (d/'objects'/m.sha(raw)).write_bytes(raw)
+            person=r['people'][0]
+            person.update(relationship_name='J. Example',relationship_evidence=dict(first=3,last=3))
+            with self.assertRaisesRegex(ValueError,'alias review'):m.build(p,r,d)
+            person.update(alias_reviewed=True,alias_reason='Reviewed corresponding roster and complete biography for the same company role.')
+            manifest,sql=m.build(p,r,d)
+            self.assertEqual(manifest['people'][0]['name'],'Jordan Example')
+            self.assertEqual(manifest['review']['people'][0]['relationship_name'],'J. Example')
+            self.assertIn('Example University',sql)
+            for changes in ({'alias_reviewed':False},{'alias_reason':' '},{'relationship_name':'Different Name'},{'relationship_name':''},{'title':'Chief Financial Officer'}):
+                bad=copy.deepcopy(r);bad['people'][0].update(changes)
+                with self.subTest(changes=changes),self.assertRaises(ValueError):m.build(p,bad,d)
+
+    def test_neutral_footnote_name_preserves_upstream_relationship_without_attributing_issuer_shares(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            d=Path(tmp);p,r=self.fixture(d)
+            raw=b'<p>Example Fund GP is beneficially owned by Alex Named Person. No individual issuer-stock allocation is specified.</p>'
+            doc=p['documents'][0]
+            doc['source']['content_sha256']=m.sha(raw)
+            doc['normalized_text_sha256']=m.sha(m.text_blocks(raw)[0].encode())
+            (d/'objects'/m.sha(raw)).write_bytes(raw)
+            person=dict(name='Alex Named Person',title='Example Fund GP is beneficially owned by',
+                        relationship='Footnote-named person',identity_reviewed=True,
+                        relationship_evidence=dict(first=0,last=0),
+                        biography_status='not_found_in_reviewed_filing',
+                        interpretation_note='Upstream entity relationship only; individual issuer ownership and control are unestablished.')
+            r['people']=[person]
+            manifest,sql=m.build(p,r,d)
+            self.assertEqual(manifest['people'][0]['relationship'],'Footnote-named person')
+            self.assertIsNone(manifest['people'][0]['biography_span'])
+            self.assertIn(person['interpretation_note'],sql)
+            for table in ('ownerships','ownership_attributions','ownership_components','biographies','claims'):
+                self.assertNotIn('insert into research.'+table,sql)
+            for changes in ({'interpretation_note':''},{'interpretation_note':None},
+                            {'attribution_reviewed':True},{'attribution_kind':'upstream_control'},
+                            {'attribution_reason':'Implied control'},{'name':'Unmentioned Person'}):
+                bad=copy.deepcopy(r);bad['people'][0].update(changes)
+                with self.subTest(changes=changes),self.assertRaises(ValueError):m.build(p,bad,d)
+
+
+if __name__ == '__main__':
+    unittest.main()
