@@ -1,8 +1,23 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-18T20:23:40.333393+00:00",
-  "count": 160,
+  "generated_at": "2026-11-19T20:35:01.946036+00:00",
+  "count": 161,
   "alerts": [
+    {
+      "type": "ipo_priced",
+      "company": "Anthropic, PBC",
+      "cik": "0002130357",
+      "filing_id": "0001628280-26-074944",
+      "form": "424B4",
+      "filed": "2026-11-19",
+      "stage": "priced",
+      "priority": "High",
+      "summary": "IPO advanced from pre-pricing monitoring to a filed 424B4.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026074944/0001628280-26-074944-index.htm",
+      "detected_at": "2026-11-19T20:35:01.945645+00:00",
+      "new_value": "$81.3B",
+      "key": "ipo_priced|0001628280-26-074944|0002130357|2026-11-19|$81.3B"
+    },
     {
       "type": "ipo_priced",
       "company": "Bambusa Therapeutics, Inc.",

@@ -1,7 +1,20 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-18T20:23:40.333302+00:00",
+  "updated_at": "2026-11-19T20:35:01.945971+00:00",
   "items": {
+    "0001628280-26-074944": {
+      "id": "0001628280-26-074944",
+      "cik": "0002130357",
+      "company": "Anthropic, PBC",
+      "form": "424B4",
+      "filed": "2026-11-19",
+      "stage": "priced",
+      "price_range": "70-78",
+      "filing_price": "70-78",
+      "priority": "High",
+      "value": 81340000000.0,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026074944/0001628280-26-074944-index.htm"
+    },
     "0001628280-26-068563": {
       "id": "0001628280-26-068563",
       "cik": "0002044950",
@@ -92,19 +105,6 @@
       "priority": "High",
       "value": 30000005,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2091680/000118518526004983/0001185185-26-004983-index.htm"
-    },
-    "s1:0002130357": {
-      "id": "s1:0002130357",
-      "cik": "0002130357",
-      "company": "Anthropic, PBC",
-      "form": "S-1",
-      "filed": "2026-10-26",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026067168/0001628280-26-067168-index.htm"
     },
     "s1:0002152813": {
       "id": "s1:0002152813",
@@ -1393,6 +1393,19 @@
       "value": 241500000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2079999/000121390025120076/0001213900-25-120076-index.htm"
     },
+    "s1:0002130357": {
+      "id": "s1:0002130357",
+      "cik": "0002130357",
+      "company": "Anthropic, PBC",
+      "form": "S-1",
+      "filed": "2026-10-26",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026067168/0001628280-26-067168-index.htm"
+    },
     "s1:0002044950": {
       "id": "s1:0002044950",
       "cik": "0002044950",
@@ -1538,6 +1551,13 @@
     }
   },
   "ciks": {
+    "0002130357": {
+      "company": "Anthropic, PBC",
+      "stage": "priced",
+      "last_filing_id": "0001628280-26-074944",
+      "last_filed": "2026-11-19",
+      "missing_runs": 0
+    },
     "0002044950": {
       "company": "Bambusa Therapeutics, Inc.",
       "stage": "priced",
@@ -1584,13 +1604,6 @@
       "company": "Bitari Inc",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002091680",
-      "last_filed": "2026-10-26",
-      "missing_runs": 0
-    },
-    "0002130357": {
-      "company": "Anthropic, PBC",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002130357",
       "last_filed": "2026-10-26",
       "missing_runs": 0
     },
