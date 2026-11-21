@@ -1,0 +1,35 @@
+name: Research Alerts CSV Export
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Research Alerts"]
+    types: [completed]
+
+permissions:
+  contents: write
+
+jobs:
+  export-alerts-csv:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Export alerts CSV
+        run: python src/alerts_csv.py --alerts docs/data/alerts.json --output docs/data/alerts.csv
+      - name: Commit updated CSV
+        run: |
+          if git diff --quiet -- docs/data/alerts.csv; then
+            echo "No alert CSV changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/data/alerts.csv
+          git commit -m "Update research alerts CSV"
+          git push
