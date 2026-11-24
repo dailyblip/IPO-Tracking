@@ -1,7 +1,46 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-20T20:07:08.093185+00:00",
+  "updated_at": "2026-11-24T22:54:15.597357+00:00",
   "items": {
+    "s1:0002107904": {
+      "id": "s1:0002107904",
+      "cik": "0002107904",
+      "company": "Libertystream Infrastructure Partners Inc.",
+      "form": "S-1",
+      "filed": "2026-11-23",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2107904/000162828026075512/0001628280-26-075512-index.htm"
+    },
+    "s1:0001973276": {
+      "id": "s1:0001973276",
+      "cik": "0001973276",
+      "company": "LIS Technologies Inc",
+      "form": "S-1/A",
+      "filed": "2026-11-20",
+      "stage": "pre-pricing",
+      "price_range": "$5.00–$7.00",
+      "filing_price": "$5.00–$7.00",
+      "priority": "High",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1973276/000149315226053406/0001493152-26-053406-index.htm"
+    },
+    "s1:0002133037": {
+      "id": "s1:0002133037",
+      "cik": "0002133037",
+      "company": "SB Energy, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-11-19",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026075026/0001628280-26-075026-index.htm"
+    },
     "0001628280-26-074944": {
       "id": "0001628280-26-074944",
       "cik": "0002130357",
@@ -14,6 +53,110 @@
       "priority": "High",
       "value": 81340000000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026074944/0001628280-26-074944-index.htm"
+    },
+    "s1:0001838003": {
+      "id": "s1:0001838003",
+      "cik": "0001838003",
+      "company": "Encore Medical, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-11-16",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1838003/000110465926128582/0001104659-26-128582-index.htm"
+    },
+    "s1:0001834261": {
+      "id": "s1:0001834261",
+      "cik": "0001834261",
+      "company": "Core Specialty Insurance Holdings, Inc.",
+      "form": "S-1",
+      "filed": "2026-11-16",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1834261/000162828026074231/0001628280-26-074231-index.htm"
+    },
+    "s1:0002125056": {
+      "id": "s1:0002125056",
+      "cik": "0002125056",
+      "company": "Wella Co",
+      "form": "S-1/A",
+      "filed": "2026-11-13",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2125056/000162828026073693/0001628280-26-073693-index.htm"
+    },
+    "s1:0002153476": {
+      "id": "s1:0002153476",
+      "cik": "0002153476",
+      "company": "Tattvance Corp",
+      "form": "S-1/A",
+      "filed": "2026-11-13",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2153476/000117152026000334/0001171520-26-000334-index.htm"
+    },
+    "s1:0002108686": {
+      "id": "s1:0002108686",
+      "cik": "0002108686",
+      "company": "CloudDepots Holdings Inc.",
+      "form": "S-1",
+      "filed": "2026-11-13",
+      "stage": "pre-pricing",
+      "price_range": "$5.00–$6.00",
+      "filing_price": "$5.00–$6.00",
+      "priority": "High",
+      "value": 16500000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2108686/000121390026119865/0001213900-26-119865-index.htm"
+    },
+    "s1:0002108671": {
+      "id": "s1:0002108671",
+      "cik": "0002108671",
+      "company": "Rothe Development, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-11-12",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226051345/0001493152-26-051345-index.htm"
+    },
+    "s1:0002113640": {
+      "id": "s1:0002113640",
+      "cik": "0002113640",
+      "company": "VME Companies, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-11-10",
+      "stage": "pre-pricing",
+      "price_range": "$4.00–$5.00",
+      "filing_price": "$4.00–$5.00",
+      "priority": "High",
+      "value": 18000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2113640/000157587226000779/0001575872-26-000779-index.htm"
+    },
+    "s1:0002162540": {
+      "id": "s1:0002162540",
+      "cik": "0002162540",
+      "company": "American Barrick Gold Corp",
+      "form": "S-1",
+      "filed": "2026-11-10",
+      "stage": "pre-pricing",
+      "price_range": "$55.00–$81.00",
+      "filing_price": "$55.00–$81.00",
+      "priority": "High",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2162540/000119312526455481/0001193125-26-455481-index.htm"
     },
     "0001628280-26-068563": {
       "id": "0001628280-26-068563",
@@ -79,19 +222,6 @@
       "priority": "High",
       "value": 300000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2146369/000147793226006459/0001477932-26-006459-index.htm"
-    },
-    "s1:0001973276": {
-      "id": "s1:0001973276",
-      "cik": "0001973276",
-      "company": "LIS Technologies Inc",
-      "form": "S-1",
-      "filed": "2026-10-26",
-      "stage": "pre-pricing",
-      "price_range": "$5.00–$7.00",
-      "filing_price": "$5.00–$7.00",
-      "priority": "High",
-      "value": 17000004,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1973276/000149315226048438/0001493152-26-048438-index.htm"
     },
     "s1:0002091680": {
       "id": "s1:0002091680",
@@ -249,32 +379,6 @@
       "value": 20000003,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2141616/000119312526422334/0001193125-26-422334-index.htm"
     },
-    "s1:0002153476": {
-      "id": "s1:0002153476",
-      "cik": "0002153476",
-      "company": "Tattvance Corp",
-      "form": "S-1",
-      "filed": "2026-10-14",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2153476/000117152026000307/0001171520-26-000307-index.htm"
-    },
-    "s1:0002113640": {
-      "id": "s1:0002113640",
-      "cik": "0002113640",
-      "company": "VME Companies, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-10-13",
-      "stage": "pre-pricing",
-      "price_range": "$4.00–$5.00",
-      "filing_price": "$4.00–$5.00",
-      "priority": "High",
-      "value": 18000000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2113640/000157587226000691/0001575872-26-000691-index.htm"
-    },
     "s1:0001966126": {
       "id": "s1:0001966126",
       "cik": "0001966126",
@@ -353,32 +457,6 @@
       "value": null,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2132065/000110465926114375/0001104659-26-114375-index.htm"
     },
-    "s1:0002108671": {
-      "id": "s1:0002108671",
-      "cik": "0002108671",
-      "company": "Rothe Development, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-10-05",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2108671/000149315226045717/0001493152-26-045717-index.htm"
-    },
-    "s1:0001838003": {
-      "id": "s1:0001838003",
-      "cik": "0001838003",
-      "company": "Encore Medical, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-09-28",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1838003/000110465926111104/0001104659-26-111104-index.htm"
-    },
     "0001193125-26-403094": {
       "id": "0001193125-26-403094",
       "cik": "0001802369",
@@ -391,32 +469,6 @@
       "priority": "High",
       "value": 446250000.0,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/1802369/000119312526403094/0001193125-26-403094-index.htm"
-    },
-    "s1:0002125056": {
-      "id": "s1:0002125056",
-      "cik": "0002125056",
-      "company": "Wella Co",
-      "form": "S-1/A",
-      "filed": "2026-09-23",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2125056/000162828026063205/0001628280-26-063205-index.htm"
-    },
-    "s1:0002133037": {
-      "id": "s1:0002133037",
-      "cik": "0002133037",
-      "company": "SB Energy, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-09-21",
-      "stage": "pre-pricing",
-      "price_range": null,
-      "filing_price": null,
-      "priority": "Medium",
-      "value": null,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/2133037/000162828026062846/0001628280-26-062846-index.htm"
     },
     "s1:0002133022": {
       "id": "s1:0002133022",
@@ -1551,11 +1603,88 @@
     }
   },
   "ciks": {
+    "0002107904": {
+      "company": "Libertystream Infrastructure Partners Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002107904",
+      "last_filed": "2026-11-23",
+      "missing_runs": 0
+    },
+    "0001973276": {
+      "company": "LIS Technologies Inc",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001973276",
+      "last_filed": "2026-11-20",
+      "missing_runs": 0
+    },
+    "0002133037": {
+      "company": "SB Energy, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002133037",
+      "last_filed": "2026-11-19",
+      "missing_runs": 0
+    },
     "0002130357": {
       "company": "Anthropic, PBC",
       "stage": "priced",
       "last_filing_id": "0001628280-26-074944",
       "last_filed": "2026-11-19",
+      "missing_runs": 0
+    },
+    "0001838003": {
+      "company": "Encore Medical, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001838003",
+      "last_filed": "2026-11-16",
+      "missing_runs": 0
+    },
+    "0001834261": {
+      "company": "Core Specialty Insurance Holdings, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001834261",
+      "last_filed": "2026-11-16",
+      "missing_runs": 0
+    },
+    "0002125056": {
+      "company": "Wella Co",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002125056",
+      "last_filed": "2026-11-13",
+      "missing_runs": 0
+    },
+    "0002153476": {
+      "company": "Tattvance Corp",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002153476",
+      "last_filed": "2026-11-13",
+      "missing_runs": 0
+    },
+    "0002108686": {
+      "company": "CloudDepots Holdings Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002108686",
+      "last_filed": "2026-11-13",
+      "missing_runs": 0
+    },
+    "0002108671": {
+      "company": "Rothe Development, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002108671",
+      "last_filed": "2026-11-12",
+      "missing_runs": 0
+    },
+    "0002113640": {
+      "company": "VME Companies, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002113640",
+      "last_filed": "2026-11-10",
+      "missing_runs": 0
+    },
+    "0002162540": {
+      "company": "American Barrick Gold Corp",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002162540",
+      "last_filed": "2026-11-10",
       "missing_runs": 0
     },
     "0002044950": {
@@ -1590,13 +1719,6 @@
       "company": "Londonla Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002146369",
-      "last_filed": "2026-10-26",
-      "missing_runs": 0
-    },
-    "0001973276": {
-      "company": "LIS Technologies Inc",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001973276",
       "last_filed": "2026-10-26",
       "missing_runs": 0
     },
@@ -1684,20 +1806,6 @@
       "last_filed": "2026-10-15",
       "missing_runs": 0
     },
-    "0002153476": {
-      "company": "Tattvance Corp",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002153476",
-      "last_filed": "2026-10-14",
-      "missing_runs": 0
-    },
-    "0002113640": {
-      "company": "VME Companies, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002113640",
-      "last_filed": "2026-10-13",
-      "missing_runs": 0
-    },
     "0001966126": {
       "company": "NuvOx Therapeutics, Inc.",
       "stage": "pre-pricing",
@@ -1740,39 +1848,11 @@
       "last_filed": "2026-10-07",
       "missing_runs": 0
     },
-    "0002108671": {
-      "company": "Rothe Development, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002108671",
-      "last_filed": "2026-10-05",
-      "missing_runs": 0
-    },
-    "0001838003": {
-      "company": "Encore Medical, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001838003",
-      "last_filed": "2026-09-28",
-      "missing_runs": 0
-    },
     "0001802369": {
       "company": "ADARx Pharmaceuticals, Inc.",
       "stage": "priced",
       "last_filing_id": "0001193125-26-403094",
       "last_filed": "2026-09-28",
-      "missing_runs": 0
-    },
-    "0002125056": {
-      "company": "Wella Co",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002125056",
-      "last_filed": "2026-09-23",
-      "missing_runs": 0
-    },
-    "0002133037": {
-      "company": "SB Energy, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0002133037",
-      "last_filed": "2026-09-21",
       "missing_runs": 0
     },
     "0002133022": {
