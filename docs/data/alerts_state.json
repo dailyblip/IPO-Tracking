@@ -1,7 +1,46 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-24T22:54:37.568643+00:00",
+  "updated_at": "2026-11-25T22:03:16.623285+00:00",
   "items": {
+    "s1:0002148546": {
+      "id": "s1:0002148546",
+      "cik": "0002148546",
+      "company": "Patriot Mobile Inc.",
+      "form": "S-1/A",
+      "filed": "2026-11-24",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2148546/000110465926131695/0001104659-26-131695-index.htm"
+    },
+    "s1:0001490171": {
+      "id": "s1:0001490171",
+      "cik": "0001490171",
+      "company": "Earlens Corp",
+      "form": "S-1",
+      "filed": "2026-11-24",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1490171/000119312526472933/0001193125-26-472933-index.htm"
+    },
+    "s1:0001880995": {
+      "id": "s1:0001880995",
+      "cik": "0001880995",
+      "company": "Alopexx, Inc.",
+      "form": "S-1/A",
+      "filed": "2026-11-24",
+      "stage": "pre-pricing",
+      "price_range": "$10.00–$12.00",
+      "filing_price": "$10.00–$12.00",
+      "priority": "High",
+      "value": 33000000,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026123702/0001213900-26-123702-index.htm"
+    },
     "s1:0002107904": {
       "id": "s1:0002107904",
       "cik": "0002107904",
@@ -196,19 +235,6 @@
       "priority": "High",
       "value": 17500000,
       "sec_url": "https://www.sec.gov/Archives/edgar/data/2084031/000182912626011539/0001829126-26-011539-index.htm"
-    },
-    "s1:0001880995": {
-      "id": "s1:0001880995",
-      "cik": "0001880995",
-      "company": "Alopexx, Inc.",
-      "form": "S-1/A",
-      "filed": "2026-10-27",
-      "stage": "pre-pricing",
-      "price_range": "$10.00–$12.00",
-      "filing_price": "$10.00–$12.00",
-      "priority": "High",
-      "value": 33000000,
-      "sec_url": "https://www.sec.gov/Archives/edgar/data/1880995/000121390026112569/0001213900-26-112569-index.htm"
     },
     "s1:0002146369": {
       "id": "s1:0002146369",
@@ -1603,6 +1629,27 @@
     }
   },
   "ciks": {
+    "0002148546": {
+      "company": "Patriot Mobile Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002148546",
+      "last_filed": "2026-11-24",
+      "missing_runs": 0
+    },
+    "0001490171": {
+      "company": "Earlens Corp",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001490171",
+      "last_filed": "2026-11-24",
+      "missing_runs": 0
+    },
+    "0001880995": {
+      "company": "Alopexx, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0001880995",
+      "last_filed": "2026-11-24",
+      "missing_runs": 0
+    },
     "0002107904": {
       "company": "Libertystream Infrastructure Partners Inc.",
       "stage": "pre-pricing",
@@ -1705,13 +1752,6 @@
       "company": "Regenlab USA Inc.",
       "stage": "pre-pricing",
       "last_filing_id": "s1:0002084031",
-      "last_filed": "2026-10-27",
-      "missing_runs": 0
-    },
-    "0001880995": {
-      "company": "Alopexx, Inc.",
-      "stage": "pre-pricing",
-      "last_filing_id": "s1:0001880995",
       "last_filed": "2026-10-27",
       "missing_runs": 0
     },

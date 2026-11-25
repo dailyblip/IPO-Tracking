@@ -1,8 +1,36 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-24T22:54:37.568735+00:00",
-  "count": 165,
+  "generated_at": "2026-11-25T22:03:16.623382+00:00",
+  "count": 167,
   "alerts": [
+    {
+      "type": "new_prepricing",
+      "company": "Patriot Mobile Inc.",
+      "cik": "0002148546",
+      "filing_id": "s1:0002148546",
+      "form": "S-1/A",
+      "filed": "2026-11-24",
+      "stage": "pre-pricing",
+      "priority": "Medium",
+      "summary": "New pre-pricing S-1/A candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2148546/000110465926131695/0001104659-26-131695-index.htm",
+      "detected_at": "2026-11-25T22:03:16.622833+00:00",
+      "key": "new_prepricing|s1:0002148546|0002148546|2026-11-24|"
+    },
+    {
+      "type": "new_prepricing",
+      "company": "Earlens Corp",
+      "cik": "0001490171",
+      "filing_id": "s1:0001490171",
+      "form": "S-1",
+      "filed": "2026-11-24",
+      "stage": "pre-pricing",
+      "priority": "Medium",
+      "summary": "New pre-pricing S-1 candidate entered the researcher queue.",
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/1490171/000119312526472933/0001193125-26-472933-index.htm",
+      "detected_at": "2026-11-25T22:03:16.622866+00:00",
+      "key": "new_prepricing|s1:0001490171|0001490171|2026-11-24|"
+    },
     {
       "type": "new_prepricing",
       "company": "Libertystream Infrastructure Partners Inc.",
