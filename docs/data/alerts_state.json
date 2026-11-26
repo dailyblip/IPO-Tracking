@@ -1,7 +1,33 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-25T22:03:39.467889+00:00",
+  "updated_at": "2026-11-26T21:52:00.564618+00:00",
   "items": {
+    "s1:0002135148": {
+      "id": "s1:0002135148",
+      "cik": "0002135148",
+      "company": "Kalohexis, Inc.",
+      "form": "S-1",
+      "filed": "2026-11-25",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2135148/000149315226054198/0001493152-26-054198-index.htm"
+    },
+    "s1:0002166611": {
+      "id": "s1:0002166611",
+      "cik": "0002166611",
+      "company": "Fidelity Chainlink Fund",
+      "form": "S-1",
+      "filed": "2026-11-25",
+      "stage": "pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "priority": "Medium",
+      "value": null,
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2166611/000119312526477751/0001193125-26-477751-index.htm"
+    },
     "s1:0002148546": {
       "id": "s1:0002148546",
       "cik": "0002148546",
@@ -1629,6 +1655,20 @@
     }
   },
   "ciks": {
+    "0002135148": {
+      "company": "Kalohexis, Inc.",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002135148",
+      "last_filed": "2026-11-25",
+      "missing_runs": 0
+    },
+    "0002166611": {
+      "company": "Fidelity Chainlink Fund",
+      "stage": "pre-pricing",
+      "last_filing_id": "s1:0002166611",
+      "last_filed": "2026-11-25",
+      "missing_runs": 0
+    },
     "0002148546": {
       "company": "Patriot Mobile Inc.",
       "stage": "pre-pricing",
