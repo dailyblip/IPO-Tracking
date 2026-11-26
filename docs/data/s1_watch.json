@@ -1,8 +1,60 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-25T21:39:54.099937+00:00",
+  "generated_at": "2026-11-26T21:28:56.749409+00:00",
   "source": "SEC EDGAR",
   "filings": [
+    {
+      "id": "0001493152-26-054198",
+      "company": "Kalohexis, Inc.",
+      "ticker": "KHXS",
+      "cik": "0002135148",
+      "accession_no": "0001493152-26-054198",
+      "form": "S-1",
+      "filed": "2026-11-25",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "people_count": 0,
+      "people": [],
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2135148/000149315226054198/0001493152-26-054198-index.htm",
+      "ownership_source": null
+    },
+    {
+      "id": "0001193125-26-477751",
+      "company": "Fidelity Chainlink Fund",
+      "ticker": "",
+      "cik": "0002166611",
+      "accession_no": "0001193125-26-477751",
+      "form": "S-1",
+      "filed": "2026-11-25",
+      "stage": "Pre-pricing",
+      "priority": "Medium",
+      "price_range": null,
+      "filing_price": null,
+      "ipo_size": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "people_count": 0,
+      "people": [],
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2166611/000119312526477751/0001193125-26-477751-index.htm",
+      "ownership_source": null
+    },
     {
       "id": "0001104659-26-131695",
       "company": "Patriot Mobile Inc.",
@@ -9162,6 +9214,7 @@
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
         "10 named beneficial owners disclosed",
+        "Filing Price carried from SEC registration history dated 2026-07-29",
         "Filing Price carried from SEC registration history dated 2026-07-29",
         "Filing Price carried from SEC registration history dated 2026-07-29",
         "Filing Price carried from SEC registration history dated 2026-07-29",

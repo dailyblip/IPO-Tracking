@@ -1,8 +1,62 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-26T21:18:05.884008+00:00",
+  "generated_at": "2026-11-26T21:28:56.761035+00:00",
   "source": "SEC EDGAR",
   "filings": [
+    {
+      "id": "s1:0002135148",
+      "company": "Kalohexis, Inc.",
+      "ticker": "KHXS",
+      "cik": "0002135148",
+      "accession_no": "0001493152-26-054198",
+      "form": "S-1",
+      "filed": "2026-11-25",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "priority": "Medium",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 0,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2135148/000149315226054198/0001493152-26-054198-index.htm"
+    },
+    {
+      "id": "s1:0002166611",
+      "company": "Fidelity Chainlink Fund",
+      "ticker": "",
+      "cik": "0002166611",
+      "accession_no": "0001193125-26-477751",
+      "form": "S-1",
+      "filed": "2026-11-25",
+      "stage": "Pre-pricing",
+      "price_range": null,
+      "filing_price": null,
+      "offering_size_source": null,
+      "offering_size_confidence": null,
+      "primary_offering_shares": null,
+      "secondary_offering_shares": null,
+      "priority": "Medium",
+      "status": "New",
+      "value": null,
+      "value_label": "—",
+      "people_count": 0,
+      "signals": [
+        "Initial registration statement filed — IPO is pre-pricing",
+        "No preliminary price range or fixed offering price detected yet"
+      ],
+      "people": [],
+      "sec_url": "https://www.sec.gov/Archives/edgar/data/2166611/000119312526477751/0001193125-26-477751-index.htm"
+    },
     {
       "id": "s1:0002148546",
       "company": "Patriot Mobile Inc.",
