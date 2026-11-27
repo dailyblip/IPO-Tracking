@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-11-26T21:28:56.749409+00:00",
+  "generated_at": "2026-11-27T21:19:44.645171+00:00",
   "source": "SEC EDGAR",
   "filings": [
     {
@@ -9214,6 +9214,7 @@
       "signals": [
         "Registration statement amended — IPO remains pre-pricing",
         "10 named beneficial owners disclosed",
+        "Filing Price carried from SEC registration history dated 2026-07-29",
         "Filing Price carried from SEC registration history dated 2026-07-29",
         "Filing Price carried from SEC registration history dated 2026-07-29",
         "Filing Price carried from SEC registration history dated 2026-07-29",
